@@ -24,8 +24,8 @@ export default function KegiatanCard({
   kegiatanImageUrl = "/placeholder/kegiatan thumbnail.png",
 }: KegiatanCardProps) {
   return (
-    <Card className="flex overflow-hidden rounded-3xl border border-black/10 shadow-none">
-      <div className="relative h-[200px] w-[200px] flex-shrink-0 bg-black">
+    <Card className="flex flex-col overflow-hidden rounded-3xl border border-black/10 shadow-none md:flex-row">
+      <div className="relative h-[200px] w-full flex-shrink-0 bg-black md:w-[200px]">
         <Image
           alt={`${organization} logo`}
           className="h-full w-full object-cover"
