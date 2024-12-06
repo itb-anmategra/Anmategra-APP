@@ -1,11 +1,10 @@
-import { Report } from "../_components/laporan/board/report-card";
 import {
-  ColumnType,
-  ReportColumnProps,
+  ColumnProps,
 } from "../_components/laporan/board/report-column";
 import { LaporanMainContainer } from "../_components/laporan/laporan-main-container";
 
-const DummyData: ReportColumnProps[] = [
+
+const DummyData: ColumnProps[] = [
   {
     title: "Draft",
     reports: [
@@ -29,7 +28,7 @@ const DummyData: ReportColumnProps[] = [
   },
 ];
 const LaporanPage = () => {
-  return <LaporanMainContainer kanbanData={DummyData} />;
+  return <LaporanMainContainer data={DummyData}/>;
 };
 
 export default LaporanPage;

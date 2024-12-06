@@ -5,23 +5,29 @@ import {
   DndContext,
   DragEndEvent,
   DragOverlay,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Droppable } from "./droppable";
-import { ColumnType, ReportColumn, ReportColumnProps } from "./report-column";
+import { ColumnProps, ColumnType, ReportColumn } from "./report-column";
 import { Report } from "./report-card";
 
 export interface KanbanBoardProps {
-  kanbanData : ReportColumnProps[];
+  kanbanData: ColumnProps[];
+  displayedColumn: ColumnType[];
+  hideColumn: (type: ColumnType) => void;
 }
 
 /**
- * 
+ *
  * @param data Props
  * @returns Convert data to Record<ColumnType, Report[]> to convert data to be used in useState
  */
-function handleConvertDataToRecord(data: ReportColumnProps[]) {
+function handleConvertDataToRecord(data: ColumnProps[]) {
   return data.reduce(
     (acc, column) => {
       acc[column.title] = column.reports;
@@ -31,7 +37,25 @@ function handleConvertDataToRecord(data: ReportColumnProps[]) {
   );
 }
 
-export const KanbanBoard = ({ kanbanData }: KanbanBoardProps) => {
+export const KanbanBoard = ({
+  kanbanData,
+  hideColumn,
+  displayedColumn,
+}: KanbanBoardProps) => {
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      distance: 10,
+    },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      distance: 5,
+      delay: 150,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
+
   const [reports, setReports] = useState<Record<ColumnType, Report[]>>(() =>
     handleConvertDataToRecord(kanbanData),
   );
@@ -80,8 +104,9 @@ export const KanbanBoard = ({ kanbanData }: KanbanBoardProps) => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto">
       <DndContext
+        sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={(event) => {
           const { active } = event;
@@ -94,13 +119,15 @@ export const KanbanBoard = ({ kanbanData }: KanbanBoardProps) => {
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveReport(null)}
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="flex flex-col gap-4 overflow-x-scroll md:flex-row">
           {(Object.keys(reports) as ColumnType[]).map((columnId) => (
             <Droppable id={columnId} key={columnId}>
               <ReportColumn
                 key={columnId}
                 title={columnId}
                 reports={reports[columnId]}
+                hideColumn={hideColumn}
+                displayedStatus={displayedColumn}
               />
             </Droppable>
           ))}
