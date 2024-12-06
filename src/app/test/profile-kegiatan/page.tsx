@@ -12,10 +12,10 @@ export default function DashboardPage() {
       <div className={`pl-[240px]`}>
         <main className="p-8">
           <div className="mb-4">
-            <h1 className="text-2xl font-semibold text-slate-900">Kegiatan</h1>
+            <h1 className="text-3xl font-semibold text-slate-900">Kegiatan</h1>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <SearchBar placeholder="Pencarian lembaga, kegiatan, atau mahasiswa" />
           </div>
 
@@ -27,7 +27,7 @@ export default function DashboardPage() {
           />
 
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-900">
+            <h2 className="text-[28px] font-semibold text-slate-900">
               Penyelenggara
             </h2>
           </div>
@@ -39,7 +39,7 @@ export default function DashboardPage() {
           />
 
           <div className="my-4 mt-6 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-slate-900">Anggota</h2>
+            <h2 className="text-3xl font-semibold text-slate-900">Anggota</h2>
           </div>
 
           <div className="mb-4">

@@ -44,11 +44,14 @@ export function EventHeader({
               />
             </div>
 
-            <div className="flex flex-col">
-              <h1 className="text-[28px] font-bold text-white">{title}</h1>
-              <p className="text-xl font-light text-white">{organizer}</p>
-              <div className="flex flex-1 flex-col justify-end">
-                <Button className="rounded-xl bg-[#00B7B7] text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4]">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-3xl font-bold text-white">{title}</h1>
+              <p className="text-2xl font-light text-white">{organizer}</p>
+              <div className="mt-2 flex flex-1 flex-col justify-end">
+                <Button
+                  size="lg"
+                  className="flex-1 rounded-xl bg-[#00B7B7] text-lg text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4]"
+                >
                   Daftar menjadi Panitia
                 </Button>
               </div>
