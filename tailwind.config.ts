@@ -44,6 +44,7 @@ export default {
 				"secondary-800": "#006E6E",
 				"secondary-900": "#005252",
 				"secondary-1000": "#004040",
+				"secondary-1100" : "#636A6D",
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
