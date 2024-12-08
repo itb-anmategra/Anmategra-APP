@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { MahasiswaCardTable } from "~/app/anggota-kegiatan/_components/MahasiswaCardTable"; // Adjust the path if needed
+import { KegiatanContainer } from "~/app/kegiatan-kegiatan/_components/kegiatanContainer"; // Adjust the path if needed
 import { Sidebar } from "./_components/layout/Sidebar";
 
 export default async function Home() {
@@ -28,7 +28,7 @@ export default async function Home() {
       <div className="flex-1">
         {/* Search Bar */}
         <div className="mt-20 mx-20 w-full">
-          <p className="text-[32px] mb-2 font-semibold">Anggota</p>
+          <p className="text-[32px] mb-2 font-semibold">Kegiatan</p>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
             <div className="relative w-full max-w-[84%]">
@@ -47,13 +47,13 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* List Anggota */}
+        {/* List Kegiatan */}
         <div className="mt-6 mx-20">
           {/* Button Section */}
           <div className="flex justify-between">
             <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 py-2 shadow-none flex items-center gap-2">
               <Image src={Plus} alt="plus" width={16} height={16} />
-              Tambah Anggota Baru
+              Tambah Kegiatan Baru
             </Button>
 
             {/* Filter Button */}
@@ -63,10 +63,10 @@ export default async function Home() {
             </Button>
           </div>
 
-          {/* List Anggota Section */}
+          {/* List Kegiatan Section */}
           <div className="mt-6">
-            {/* Integrate MahasiswaCardTable here */}
-            <MahasiswaCardTable />
+            {/* Integrate KegiatanContainer here */}
+            <KegiatanContainer />
           </div>
         </div>
       </div>
