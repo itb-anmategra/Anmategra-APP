@@ -1,0 +1,94 @@
+import {
+  CalendarIcon,
+  EnvelopeOpenIcon,
+  ExclamationTriangleIcon,
+  ExitIcon,
+  HomeIcon,
+  PersonIcon,
+} from "@radix-ui/react-icons";
+import Image from "next/image";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import type { Lembaga } from "~/types/lembaga";
+
+type SidebarItem = { label: string; href: string; icon: React.ReactElement };
+const SIDEBAR_ITEMS: SidebarItem[] = [
+  { label: "Beranda", href: "/", icon: <HomeIcon /> },
+  { label: "Kegiatan", href: "/kegiatan", icon: <CalendarIcon /> },
+  { label: "Anggota", href: "/anggota", icon: <PersonIcon /> },
+  { label: "Inbox", href: "/inbox", icon: <EnvelopeOpenIcon /> },
+  { label: "Laporan", href: "/laporan", icon: <ExclamationTriangleIcon /> },
+];
+
+export const Sidebar = () => {
+  return (
+    <div className="max-w-[16rem] border-r bg-white px-6 py-16">
+      <nav className="flex size-full flex-col justify-center">
+        <div className="flex flex-grow flex-col gap-8">
+          <Link className="relative w-full px-3" href="/">
+            <Image
+              src="/logo-anmategra.png"
+              alt="Logo Anmategra"
+              width={185}
+              height={34}
+            />
+          </Link>
+          <SidebarItems />
+        </div>
+        <SidebarProfile />
+      </nav>
+    </div>
+  );
+};
+
+const SidebarItems = () => {
+  return (
+    <div className="flex flex-col gap-4">
+      {SIDEBAR_ITEMS.map((item) => (
+        <Button
+          key={item.href}
+          className="flex items-center justify-start gap-3"
+          variant="ghost"
+          asChild
+        >
+          <Link href={item.href}>
+            {item.icon}
+            {item.label}
+          </Link>
+        </Button>
+      ))}
+    </div>
+  );
+};
+
+const SidebarProfile = () => {
+  const lembaga: Lembaga = {
+    name: "HMIF ITB",
+    profilePicture: "/logo-hmif.png",
+  };
+  return (
+    <div className="flex w-full flex-col gap-4 px-3">
+      <div className="flex items-center gap-4 px-1 py-2">
+        <Avatar>
+          <AvatarImage
+            className="object-contain"
+            src={lembaga.profilePicture}
+          />
+          <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col gap-0">
+          <span className="line-clamp-1 font-semibold">{lembaga.name}</span>
+          <span className="line-clamp-1 text-xs">Lembaga</span>
+        </div>
+      </div>
+      <Button
+        variant="destructive"
+        className="flex items-center justify-start gap-3 bg-transparent px-3 py-2 text-base text-destructive shadow-none hover:text-destructive-foreground"
+      >
+        <ExitIcon />
+        Logout
+      </Button>
+    </div>
+  );
+};
