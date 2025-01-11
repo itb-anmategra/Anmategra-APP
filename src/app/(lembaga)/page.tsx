@@ -16,7 +16,6 @@ import MahasiswaCard from "../_components/beranda/MahasiswaCard";
 import dummyProfile from "public/placeholder/profilepic.png"
 import dummyLembaga from "public/logo-hmif.png"
 
-
 export default function Home() {
   const [isSearchBegin, setIsSearchBegin] = useState(false)
 
@@ -42,7 +41,7 @@ export default function Home() {
 
       {/* List of Kepanitiaan */}
       {!isSearchBegin && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
             <Button variant="ghost" className="flex items-center gap-2">
@@ -62,44 +61,49 @@ export default function Home() {
       }
 
       {/* Search Result */}
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <h5 className="text-xl text-neutral-1000 font-semibold">Mahasiswa</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SearchResultMahasiswa.map((item) => (
-              <MahasiswaCard 
-                key={item.id}
-                nama={item.name}
-                NIM={item.NIM}
-                jurusan={item.Jurusan}
-                profilePicture={dummyProfile}
-              />
-            ))}
+      {isSearchBegin && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Mahasiswa</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {SearchResultMahasiswa.map((item) => (
+                <MahasiswaCard 
+                  key={item.id}
+                  nama={item.name}
+                  NIM={item.NIM}
+                  jurusan={item.Jurusan}
+                  profilePicture={dummyProfile}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Lembaga</h5>
+            <div className="flex flex-col w-full gap-y-4">
+              {SearchResultLembaga.map((item) => (
+                <Link key={item.id} href={`/lembaga/${item.id}`}>
+                  <LembagaCard 
+                    nama={item.nama}
+                    kategori={item.kategori}
+                    deskripsi={item.deskripsi}
+                    lembagaPicture={dummyLembaga}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Kegiatan</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {SearchResultKegiatan.map((item) => (
+                <Link href={`/profile-kegiatan/${item.name}`}>
+                  <KepanitiaanCard kepanitiaan={item} />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="space-y-2">
-          <h5 className="text-xl text-neutral-1000 font-semibold">Lembaga</h5>
-          <div className="flex flex-col w-full gap-y-4">
-            {SearchResultLembaga.map((item) => (
-              <LembagaCard 
-                key={item.id}
-                nama={item.nama}
-                kategori={item.kategori}
-                deskripsi={item.deskripsi}
-                lembagaPicture={dummyLembaga}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="space-y-2">
-          <h5 className="text-xl text-neutral-1000 font-semibold">Kegiatan</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SearchResultKegiatan.map((item) => (
-              <KepanitiaanCard kepanitiaan={item} key={item.name} />
-            ))}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

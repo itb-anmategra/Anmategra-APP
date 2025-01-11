@@ -16,7 +16,7 @@ const LembagaCard = ({
   lembagaPicture: StaticImageData
 }) => {
   return (
-    <Card className="px-6 py-4 flex items-center justify-start gap-x-6">
+    <Card className="px-6 py-4 flex items-center justify-start gap-x-6 transition-all hover:shadow-md">
       <Image 
         src={lembagaPicture}
         alt='Foto Lembaga'

@@ -1,7 +1,6 @@
 // Library Import
 import React from 'react'
 // Components Import
-import { SearchBar } from "~/app/_components/placeholder/search-bar";
 import { EventHeader } from "~/app/_components/placeholder/event-header";
 import { PenyelenggaraCard } from "~/app/_components/placeholder/penyelenggara-card";
 import { FilterButton } from "~/app/_components/placeholder/filter-button";
