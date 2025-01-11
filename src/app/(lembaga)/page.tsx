@@ -6,6 +6,7 @@ import { KepanitiaanCard } from "../_components/lembaga/KepanitiaanCard";
 import { ChevronRightIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 // Constants Import
 import { KEPANITIAAN_DATA } from "~/lib/constants";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -33,7 +34,9 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {KEPANITIAAN_DATA.map((kepanitiaan) => (
-            <KepanitiaanCard kepanitiaan={kepanitiaan} key={kepanitiaan.name} />
+            <Link href={`/profile-kegiatan/${kepanitiaan.name}`}>
+              <KepanitiaanCard kepanitiaan={kepanitiaan} key={kepanitiaan.name} />
+            </Link>
           ))}
         </div>
       </div>
