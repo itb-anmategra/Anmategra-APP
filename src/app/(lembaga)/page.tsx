@@ -1,225 +1,111 @@
-import { ChevronRightIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+'use client'
+// Library Import
+import { useState } from "react";
+import Link from "next/link";
+// Components Import
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import type { Kepanitiaan } from "~/types/kepanitiaan";
-import { KepanitiaanCard } from "./_components/KepanitiaanCard";
+import { KepanitiaanCard } from "../_components/beranda/KepanitiaanCard";
+import LembagaCard from "../_components/beranda/LembagaCard";
+// Icons Import
+import { ChevronRightIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+// Constants Import
+import { KEPANITIAAN_DATA, SearchResultKegiatan, SearchResultLembaga, SearchResultMahasiswa } from "~/lib/constants";
+import MahasiswaCard from "../_components/beranda/MahasiswaCard";
+// Asset Import
+import dummyProfile from "public/placeholder/profilepic.png"
+import dummyLembaga from "public/logo-hmif.png"
 
 export default function Home() {
+  const [isSearchBegin, setIsSearchBegin] = useState(false)
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setIsSearchBegin(value.trim() !== "");
+  };
+
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4 p-6">
+      {/* Title and Search */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Beranda</h1>
+        <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
         <Input
           placeholder="Cari lembaga, kegiatan, atau mahasiswa"
-          className="rounded-3xl bg-white"
+          className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
           startAdornment={
-            <MagnifyingGlassIcon className="size-5 text-gray-500" />
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
           }
+          onChange={handleSearchChange}
         />
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
-          <Button variant="ghost" className="flex items-center gap-2">
-            Lihat Semua
-            <ChevronRightIcon />
-          </Button>
+
+      {/* List of Kepanitiaan */}
+      {!isSearchBegin && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
+            <Button variant="ghost" className="flex items-center gap-2">
+              Lihat Semua
+              <ChevronRightIcon />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {KEPANITIAAN_DATA.map((kepanitiaan) => (
+              <Link href={`/profile-kegiatan/${kepanitiaan.name}`}>
+                <KepanitiaanCard kepanitiaan={kepanitiaan} key={kepanitiaan.name} />
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {KEPANITIAAN_DATA.map((kepanitiaan) => (
-            <KepanitiaanCard kepanitiaan={kepanitiaan} key={kepanitiaan.name} />
-          ))}
+        )
+      }
+
+      {/* Search Result */}
+      {isSearchBegin && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Mahasiswa</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {SearchResultMahasiswa.map((item) => (
+                <Link href={`/mahasiswa/${item.name}`}>
+                  <MahasiswaCard 
+                    key={item.id}
+                    nama={item.name}
+                    NIM={item.NIM}
+                    jurusan={item.Jurusan}
+                    profilePicture={dummyProfile}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Lembaga</h5>
+            <div className="flex flex-col w-full gap-y-4">
+              {SearchResultLembaga.map((item) => (
+                <Link key={item.id} href={`/lembaga/${item.id}`}>
+                  <LembagaCard 
+                    nama={item.nama}
+                    kategori={item.kategori}
+                    deskripsi={item.deskripsi}
+                    lembagaPicture={dummyLembaga}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h5 className="text-xl text-neutral-1000 font-semibold">Kegiatan</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {SearchResultKegiatan.map((item) => (
+                <Link href={`/profile-kegiatan/${item.name}`}>
+                  <KepanitiaanCard kepanitiaan={item} />
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
-const KEPANITIAAN_DATA: Kepanitiaan[] = [
-  {
-    lembaga: {
-      name: "HMIF ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Wisokto HMIF 2024",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-    quota: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "Anmategra ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "Anmategra ITB 2024",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do euismod tempor.",
-    quota: 15,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "Ganesha ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Ganesha Project 2024",
-    description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.",
-    quota: 30,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "Senapati ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "Senapati Cup 2024",
-    description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
-    quota: 25,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "Himatika ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Math Fun Day 2024",
-    description:
-      "Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat.",
-    quota: 40,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "ComLabs ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "ComLabs Bootcamp 2024",
-    description: "Cupidatat non proident, sunt in culpa qui officia deserunt.",
-    quota: 20,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "KM ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "KM Leadership 2024",
-    description: "Mollit anim id est laborum. Lorem ipsum dolor sit amet.",
-    quota: 35,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HMT ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "HMT Workshop 2024",
-    description: "Adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
-    quota: 10,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HME ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Electro Meet 2024",
-    description: "Nisi ut aliquip ex ea commodo consequat. Duis aute irure.",
-    quota: 50,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HMTF ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "Chemical Engineering Expo 2024",
-    description:
-      "Velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint.",
-    quota: 60,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HMP ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Pharmaceutical Day 2024",
-    description:
-      "Non proident, sunt in culpa qui officia deserunt mollit anim.",
-    quota: 25,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "PSM ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "PSM Choir Concert 2024",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    quota: 20,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "KMK ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Spiritual Retreat 2024",
-    description:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    quota: 15,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "U-Green ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "Environmental Awareness 2024",
-    description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    quota: 30,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HMPPI ITB",
-      profilePicture: "/logo-hmif.png",
-    },
-    name: "Geoscience Summit 2024",
-    description:
-      "Reprehenderit in voluptate velit esse cillum dolore eu fugiat.",
-    quota: 45,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-  {
-    lembaga: {
-      name: "HIMAFI ITB",
-      profilePicture: "/logo-anmategra.png",
-    },
-    name: "Physics Fair 2024",
-    description: "Pariatur. Excepteur sint occaecat cupidatat non proident.",
-    quota: 40,
-    startDate: new Date(),
-    endDate: new Date(),
-  },
-];
