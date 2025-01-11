@@ -6,7 +6,7 @@ import { GeistSans } from "geist/font/sans";
 // Library Import
 import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
-import { Sidebar } from "./(lembaga)/_components/Sidebar";
+import { Sidebar } from "./_components/Sidebar";
 
 // Metadata
 export const metadata: Metadata = {

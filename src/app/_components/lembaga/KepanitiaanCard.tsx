@@ -18,14 +18,14 @@ export const KepanitiaanCard = ({
   return (
     <Card
       className={cn(
-        "flex w-full cursor-pointer overflow-hidden transition-shadow ease-out hover:shadow-md",
+        "flex w-full cursor-pointer overflow-hidden transition-shadow ease-out hover:shadow-md h-[350px]",
         orientation === "vertical" && "flex-col",
         orientation === "horizontal" && "flex-row",
       )}
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden",
+          "relative w-full overflow-hidden h-[250px]",
           orientation === "vertical" && "aspect-[2.35]",
           orientation === "horizontal" && "aspect-square max-w-52",
         )}
@@ -37,7 +37,7 @@ export const KepanitiaanCard = ({
           fill
         />
       </div>
-      <div className="flex w-full flex-col gap-[0.6rem] px-6 py-5">
+      <div className="flex w-full h-full relative flex-col gap-[0.6rem] px-6 py-5">
         <div className="flex w-fit items-center gap-2 rounded-full bg-primary-400 px-3 py-1 text-[0.7rem] text-white">
           <Avatar className="size-4 bg-white">
             <AvatarImage
@@ -64,7 +64,7 @@ export const KepanitiaanCard = ({
         <span className="line-clamp-3 text-sm leading-tight">
           {kepanitiaan.description}
         </span>
-        <div className="mt-auto flex items-center gap-1 text-sm text-Regent-Gray">
+        <div className="flex items-center gap-1 absolute bottom-4 mt-auto text-sm text-Regent-Gray">
           <CalendarIcon />
           {dayjs(kepanitiaan.startDate).format("MMMM YYYY")} -{" "}
           {dayjs(kepanitiaan.endDate).format("MMMM YYYY")}
