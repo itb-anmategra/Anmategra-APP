@@ -14,6 +14,8 @@ import InProgress from "/public/images/laporan/in-progress.svg";
 import Resolved from "/public/images/laporan/resolved.svg";
 import ListIcon from "/public/images/laporan/display-list.svg";
 import BoardIcon from "/public/images/laporan/board.svg";
+import { LayoutDashboard } from 'lucide-react';
+import { AlignJustify } from 'lucide-react';
 
 export type CurrentDisplay = "Board" | "List";
 
@@ -29,17 +31,17 @@ export const LaporanHeader = ({
   toggleStatus,
 }: LaporanHeaderProps) => {
   return (
-    <header className="mb-6 flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Laporan</h1>
+    <header className="flex items-center justify-between">
+      <h1 className="text-2xl font-semibold">Laporan</h1>
       <div className="flex space-x-2 text-lg font-semibold">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center rounded-md border px-6 py-2 text-lg font-semibold"
+              className="flex items-center rounded-md border py-2 px-4 text-lg font-semibold"
             >
-              <LayoutGrid className="h-6 w-6" />
-              Display
+              <LayoutGrid className="h-4 w-4" />
+              <p className="text-sm">Display</p>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -47,35 +49,27 @@ export const LaporanHeader = ({
             className="flex flex-col items-center gap-4 rounded-md border py-4 pl-3 pr-3"
           >
             <DropdownMenuItem
-              className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold "
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold "
               onClick={() => setCurrentDisplay("List")}
             >
-              <Image
-                className="h-4 w-4"
-                src={ListIcon}
-                alt={"Draft Icon"}
-              ></Image>
-              <h1>List</h1>
+              <LayoutDashboard className="w-4 h-4" />
+              <p className="text-sm">List</p>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold hover:bg-gray-200"
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold hover:bg-gray-200"
               onClick={() => setCurrentDisplay("Board")}
             >
-              <Image
-                className="h-4 w-4"
-                src={BoardIcon}
-                alt={"Draft Icon"}
-              ></Image>
-              <h1>Board</h1>
+              <AlignJustify className="w-4 h-4" />
+              <p className="text-sm text-neutral-900">Board</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="px-6 text-lg font-semibold">
+            <Button variant="outline" className="px-4 py-2 text-lg font-semibold">
               <AlignLeft className="h-4 w-4" />
-              Status
+              <p className="text-sm">Status</p>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -88,7 +82,7 @@ export const LaporanHeader = ({
               onClick={() => toggleStatus("Draft")}
             >
               <Image src={Draft} alt="Draft Icon" className="h-5 w-5" />
-              <span>Draft</span>
+              <span className="text-sm">Draft</span>
             </DropdownMenuCheckboxItem>
 
             <DropdownMenuCheckboxItem
@@ -101,7 +95,7 @@ export const LaporanHeader = ({
                 alt="In Progress Icon"
                 className="h-5 w-5"
               />
-              <span>In Progress</span>
+              <span className="text-sm text-yellow-500">In Progress</span>
             </DropdownMenuCheckboxItem>
 
             <DropdownMenuCheckboxItem
@@ -110,12 +104,12 @@ export const LaporanHeader = ({
               onClick={() => toggleStatus("Resolved")}
             >
               <Image src={Resolved} alt="Resolved Icon" className="h-5 w-5" />
-              <span>Resolved</span>
+              <span className="text-sm text-green-700">Resolved</span>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button className="min-w-[100px] bg-primary-400 text-white">
+        <Button className="bg-primary-400 text-white hover:bg-primary-500 transition-all">
           <Plus /> Buat laporan
         </Button>
       </div>

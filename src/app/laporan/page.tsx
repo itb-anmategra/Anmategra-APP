@@ -1,8 +1,9 @@
+// Props Import
 import {
   ColumnProps,
 } from "../_components/laporan/board/report-column";
+// Components Import
 import { LaporanMainContainer } from "../_components/laporan/laporan-main-container";
-
 
 const DummyData: ColumnProps[] = [
   {
