@@ -15,35 +15,47 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
-				"Dark-Navy": "#0F222D",
-				"Midnight-Blue": "#2D4554",
-				"Regent-Gray": "#8196A3",
-				"Titan-White": "#FCFDFD",
-				"Grass-Green": "#29BC5B",
-				"Sunglow": "#F5CB69",
-				"Sweet-Red": "#F16350",
-				"primary-50": "#FCFDFD",
-				"primary-100": "#EAEFF2",
-				"primary-200": "#DFE7EC",
-				"primary-300": "#BDCED8",
-				"primary-400": "#2B6282",
-				"primary-500": "#265673",
-				"primary-600": "#224D66",
-				"primary-700": "#204860",
-				"primary-800": "#193A4D",
-				"primary-900": "#132B3A",
-				"primary-1000": "#0F222D",
-				"secondary-50": "#F7FDFD",
-				"secondary-100": "#E6F8F8",
-				"secondary-200": "#D9F4F4",
-				"secondary-300": "#B0E9E9",
-				"secondary-400": "#00B7B7",
-				"secondary-500": "#00A5A5",
-				"secondary-600": "#009292",
-				"secondary-700": "#008989",
-				"secondary-800": "#006E6E",
-				"secondary-900": "#005252",
-				"secondary-1000": "#004040",
+  			'Dark-Navy': '#0F222D',
+  			'Midnight-Blue': '#2D4554',
+				'Blue-Dark': "#2B6282",
+  			'Regent-Gray': '#8196A3',
+  			'Titan-White': '#FCFDFD',
+  			'Grass-Green': '#29BC5B',
+  			'Sunglow': '#F5CB69',
+  			'Sweet-Red': '#F16350',
+  			'primary-50': '#FCFDFD',
+  			'primary-100': '#EAEFF2',
+  			'primary-200': '#DFE7EC',
+  			'primary-300': '#BDCED8',
+  			'primary-400': '#2B6282',
+  			'primary-500': '#265673',
+  			'primary-600': '#224D66',
+  			'primary-700': '#204860',
+  			'primary-800': '#193A4D',
+  			'primary-900': '#132B3A',
+  			'primary-1000': '#0F222D',
+  			'secondary-50': '#F7FDFD',
+  			'secondary-100': '#E6F8F8',
+  			'secondary-200': '#D9F4F4',
+  			'secondary-300': '#B0E9E9',
+  			'secondary-400': '#00B7B7',
+  			'secondary-500': '#00A5A5',
+  			'secondary-600': '#009292',
+  			'secondary-700': '#008989',
+  			'secondary-800': '#006E6E',
+  			'secondary-900': '#005252',
+  			'secondary-1000': '#004040',
+				'neutral-50': "#FFFFFF",
+				'neutral-100': "#FAFAFA",
+				'neutral-200': "#E9EDF1",
+				'neutral-300': "#C7CCCF",
+				'neutral-400': '#C4CACE',
+				'neutral-500': "#9DA4A8",
+				'neutral-600': "#768085",
+				'neutral-700': "#636A6D",
+				'neutral-800': "#474E50",
+				'neutral-900': '#262B2D',
+				'neutral-1000': '#141718',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -84,6 +96,28 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
+  		},
+  		keyframes: {
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		}
   	}
   },

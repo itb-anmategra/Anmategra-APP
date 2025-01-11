@@ -1,0 +1,118 @@
+import { AlignLeft, LayoutGrid, Plus } from "lucide-react";
+import Image from "next/image";
+import { Button } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem
+} from "~/components/ui/dropdown-menu";
+import { ColumnType } from "./board/report-column";
+import Draft from "/public/images/laporan/draft.svg";
+import InProgress from "/public/images/laporan/in-progress.svg";
+import Resolved from "/public/images/laporan/resolved.svg";
+import ListIcon from "/public/images/laporan/display-list.svg";
+import BoardIcon from "/public/images/laporan/board.svg";
+import { LayoutDashboard } from 'lucide-react';
+import { AlignJustify } from 'lucide-react';
+
+export type CurrentDisplay = "Board" | "List";
+
+interface LaporanHeaderProps {
+  setCurrentDisplay: (value: CurrentDisplay) => void;
+  status: ColumnType[];
+  toggleStatus: (column: ColumnType) => void;
+}
+
+export const LaporanHeader = ({
+  setCurrentDisplay,
+  status,
+  toggleStatus,
+}: LaporanHeaderProps) => {
+  return (
+    <header className="flex items-center justify-between">
+      <h1 className="text-2xl font-semibold">Laporan</h1>
+      <div className="flex space-x-2 text-lg font-semibold">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex items-center rounded-md border py-2 px-4 text-lg font-semibold"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              <p className="text-sm">Display</p>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="flex flex-col items-center gap-4 rounded-md border py-4 pl-3 pr-3"
+          >
+            <DropdownMenuItem
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold "
+              onClick={() => setCurrentDisplay("List")}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <p className="text-sm">List</p>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold hover:bg-gray-200"
+              onClick={() => setCurrentDisplay("Board")}
+            >
+              <AlignJustify className="w-4 h-4" />
+              <p className="text-sm text-neutral-900">Board</p>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="px-4 py-2 text-lg font-semibold">
+              <AlignLeft className="h-4 w-4" />
+              <p className="text-sm">Status</p>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="flex flex-col items-center gap-4 rounded-md border py-4 pl-3 pr-3"
+          >
+            <DropdownMenuCheckboxItem
+              className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold"
+              checked={status.includes("Draft")}
+              onClick={() => toggleStatus("Draft")}
+            >
+              <Image src={Draft} alt="Draft Icon" className="h-5 w-5" />
+              <span className="text-sm">Draft</span>
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold"
+              checked={status.includes("In Progress")}
+              onClick={() => toggleStatus("In Progress")}
+            >
+              <Image
+                src={InProgress}
+                alt="In Progress Icon"
+                className="h-5 w-5"
+              />
+              <span className="text-sm text-yellow-500">In Progress</span>
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold"
+              checked={status.includes("Resolved")}
+              onClick={() => toggleStatus("Resolved")}
+            >
+              <Image src={Resolved} alt="Resolved Icon" className="h-5 w-5" />
+              <span className="text-sm text-green-700">Resolved</span>
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button className="bg-primary-400 text-white hover:bg-primary-500 transition-all">
+          <Plus /> Buat laporan
+        </Button>
+      </div>
+    </header>
+  );
+};
