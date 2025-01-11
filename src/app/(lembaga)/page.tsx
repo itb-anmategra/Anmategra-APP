@@ -13,7 +13,7 @@ export default function Home() {
     <div className="flex w-full flex-col gap-4 p-6">
       {/* Title and Search */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Beranda</h1>
+        <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
         <Input
           placeholder="Cari lembaga, kegiatan, atau mahasiswa"
           className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"

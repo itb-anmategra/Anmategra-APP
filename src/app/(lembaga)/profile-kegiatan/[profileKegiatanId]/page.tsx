@@ -5,16 +5,25 @@ import { SearchBar } from "~/app/_components/placeholder/search-bar";
 import { EventHeader } from "~/app/_components/placeholder/event-header";
 import { PenyelenggaraCard } from "~/app/_components/placeholder/penyelenggara-card";
 import { FilterButton } from "~/app/_components/placeholder/filter-button";
+import { Input } from '~/components/ui/input';
+// Icons Import
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 const ProfileKegiatan = () => {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="mb-4">
-        <h1 className="text-3xl font-semibold text-slate-900">Kegiatan</h1>
+        <h1 className="text-2xl font-semibold text-neutral-1000">Kegiatan</h1>
       </div>
 
       <div className="mb-5">
-        <SearchBar placeholder="Pencarian lembaga, kegiatan, atau mahasiswa" />
+        <Input
+          placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+          className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
+          startAdornment={
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+          }
+        />
       </div>
 
       <EventHeader

@@ -55,6 +55,7 @@ export default {
 				'neutral-700': "#636A6D",
 				'neutral-800': "#474E50",
 				'neutral-900': '#262B2D',
+				'neutral-1000': '#141718',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
