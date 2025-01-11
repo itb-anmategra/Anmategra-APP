@@ -5,7 +5,7 @@ export default function LembagaRootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="grid h-dvh grid-cols-[auto_1fr] overflow-hidden bg-[#FAFAFA]">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <main className="w-full overflow-y-auto px-6 py-16">{children}</main>
     </div>
   );

@@ -1,3 +1,9 @@
+"use client"
+// Library Import
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+// Icons Import
 import {
   CalendarIcon,
   EnvelopeOpenIcon,
@@ -6,14 +12,21 @@ import {
   HomeIcon,
   PersonIcon,
 } from "@radix-ui/react-icons";
-import Image from "next/image";
-import Link from "next/link";
+// Components Import
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
+// Type Import
 import type { Lembaga } from "~/types/lembaga";
+// Lib Import
+import { cn } from "~/lib/utils";
 
-type SidebarItem = { label: string; href: string; icon: React.ReactElement };
-const SIDEBAR_ITEMS: SidebarItem[] = [
+type SidebarItemType = { 
+  label: string; 
+  href: string; 
+  icon: React.ReactElement 
+};
+
+const SIDEBAR_ITEMS: SidebarItemType[] = [
   { label: "Beranda", href: "/", icon: <HomeIcon /> },
   { label: "Kegiatan", href: "/kegiatan", icon: <CalendarIcon /> },
   { label: "Anggota", href: "/anggota", icon: <PersonIcon /> },
@@ -23,15 +36,15 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 
 export const Sidebar = () => {
   return (
-    <div className="max-w-[16rem] border-r bg-white px-6 py-16">
-      <nav className="flex size-full flex-col justify-center">
-        <div className="flex flex-grow flex-col gap-8">
-          <Link className="relative w-full px-3" href="/">
+    <div className="w-[16rem] border-r bg-neutral-50 p-6 fixed left-0 h-screen">
+      <nav className="w-full h-full flex flex-col justify-between">
+        <div className="space-y-6">
+          <Link href={"/"}>
             <Image
               src="/logo-anmategra.png"
               alt="Logo Anmategra"
-              width={185}
-              height={34}
+              width={150}
+              height={50}
             />
           </Link>
           <SidebarItems />
@@ -43,16 +56,24 @@ export const Sidebar = () => {
 };
 
 const SidebarItems = () => {
+  const pathname = usePathname()
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {SIDEBAR_ITEMS.map((item) => (
         <Button
           key={item.href}
-          className="flex items-center justify-start gap-3"
+          className="flex items-center justify-start px-4"
           variant="ghost"
           asChild
         >
-          <Link href={item.href}>
+          <Link 
+            href={item.href}
+            className={cn(
+              "text-neutral-700",
+              pathname === item.href && "bg-neutral-200 text-Blue-Dark"
+            )}
+          >
             {item.icon}
             {item.label}
           </Link>
@@ -67,8 +88,9 @@ const SidebarProfile = () => {
     name: "HMIF ITB",
     profilePicture: "/logo-hmif.png",
   };
+
   return (
-    <div className="flex w-full flex-col gap-4 px-3">
+    <div className="flex w-full flex-col gap-y-2">
       <div className="flex items-center gap-4 px-1 py-2">
         <Avatar>
           <AvatarImage
@@ -79,7 +101,7 @@ const SidebarProfile = () => {
         </Avatar>
         <div className="flex flex-col gap-0">
           <span className="line-clamp-1 font-semibold">{lembaga.name}</span>
-          <span className="line-clamp-1 text-xs">Lembaga</span>
+          <span className="line-clamp-1 text-xs text-neutral-700">Lembaga</span>
         </div>
       </div>
       <Button
