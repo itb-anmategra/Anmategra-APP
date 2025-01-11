@@ -67,13 +67,15 @@ export default function Home() {
             <h5 className="text-xl text-neutral-1000 font-semibold">Mahasiswa</h5>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {SearchResultMahasiswa.map((item) => (
-                <MahasiswaCard 
-                  key={item.id}
-                  nama={item.name}
-                  NIM={item.NIM}
-                  jurusan={item.Jurusan}
-                  profilePicture={dummyProfile}
-                />
+                <Link href={`/mahasiswa/${item.name}`}>
+                  <MahasiswaCard 
+                    key={item.id}
+                    nama={item.name}
+                    NIM={item.NIM}
+                    jurusan={item.Jurusan}
+                    profilePicture={dummyProfile}
+                  />
+                </Link>
               ))}
             </div>
           </div>

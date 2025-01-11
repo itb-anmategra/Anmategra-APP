@@ -8,9 +8,12 @@ import LogoHMIFKecil from 'public/placeholder/logo if.png'
 // Components Import
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
-import { CalendarIcon } from 'lucide-react'
 import { SearchResultKegiatan } from '~/lib/constants'
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
+import { Input } from '~/components/ui/input'
+// Icons Import
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
+import { CalendarIcon } from 'lucide-react'
 
 const DetailLembagaPage = () => {
   return (
@@ -19,6 +22,13 @@ const DetailLembagaPage = () => {
       <div className="flex flex-col gap-y-2">
         <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
         <p>Beranda / Nama Lembaga</p>
+        <Input
+          placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+          className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
+          startAdornment={
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+          }
+        />
       </div>
 
       {/* Lembaga */}
