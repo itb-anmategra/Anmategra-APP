@@ -188,3 +188,66 @@ export const KEPANITIAAN_DATA: Kepanitiaan[] = [
     endDate: new Date(),
   },
 ];
+
+export const SearchResultMahasiswa = [
+  {
+    id: 1,
+    name: "Jason Jahja",
+    NIM: "18222126",
+    Jurusan: "STI"
+  },
+  {
+    id: 2,
+    name: "Jason Jahja",
+    NIM: "18222126",
+    Jurusan: "STI"
+  },
+  {
+    id: 3,
+    name: "Jason Jahja",
+    NIM: "18222126",
+    Jurusan: "STI"
+  }
+]
+
+export const SearchResultLembaga = [
+  {
+    id: 1,
+    nama: "Lembaga/UKM ITB",
+    kategori: "Kategori",
+    deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+  },
+  {
+    id: 2,
+    nama: "Lembaga/UKM ITB",
+    kategori: "Kategori",
+    deskripsi: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+  }
+]
+
+export const SearchResultKegiatan = [
+  {
+    lembaga: {
+      name: "HMIF ITB",
+      profilePicture: "/logo-hmif.png",
+    },
+    name: "Wisokto HMIF 2024",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
+    quota: 50,
+    startDate: new Date(),
+    endDate: new Date(),
+  },
+  {
+    lembaga: {
+      name: "Anmategra ITB",
+      profilePicture: "/logo-anmategra.png",
+    },
+    name: "Anmategra ITB 2024",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do euismod tempor.",
+    quota: 15,
+    startDate: new Date(),
+    endDate: new Date(),
+  },
+]

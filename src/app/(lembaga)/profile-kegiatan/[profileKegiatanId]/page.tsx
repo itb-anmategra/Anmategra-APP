@@ -50,7 +50,13 @@ const ProfileKegiatan = () => {
       </div>
 
       <div className="mb-4">
-        <SearchBar placeholder="Cari nama anggota" />
+        <Input
+          placeholder="Cari nama anggota"
+          className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
+          startAdornment={
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+          }
+        />
       </div>
       <div>
         <FilterButton />
