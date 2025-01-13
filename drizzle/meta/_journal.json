@@ -22,6 +22,13 @@
       "when": 1736754924561,
       "tag": "0002_aromatic_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736769350395,
+      "tag": "0003_dark_lucky_pierre",
+      "breakpoints": true
     }
   ]
 }

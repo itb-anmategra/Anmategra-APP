@@ -238,6 +238,7 @@ export const events = createTable('event', {
   oprec_link: varchar('oprec_link', { length: 255 }),
   location: varchar('location', { length: 255 }),
   participant_limit: integer('participant_limit'),
+  participant_count: integer('participant_count'),
   is_highlighted: boolean('is_highlighted').notNull().default(false),
   is_organogram: boolean('is_organogram').notNull().default(false),
   created_at: timestamp('created_at').notNull().defaultNow(),
