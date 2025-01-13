@@ -5,7 +5,7 @@ import {
 } from "~/server/api/trpc";
 
 export const landingRouter = createTRPCRouter({
-  getRecentKepanitiaan: publicProcedure.query(async ({ ctx }) => {
+  getRecentKepanitiaan: protectedProcedure.query(async ({ ctx }) => {
     const kepanitiaan = await ctx.db.query.lembaga.findMany({
       where: (lembaga, { eq }) => eq(lembaga.type, "Kepanitiaan"),
       orderBy: (lembaga, { desc }) => desc(lembaga.foundingDate),
@@ -19,7 +19,7 @@ export const landingRouter = createTRPCRouter({
     return kepanitiaan;
   }),
 
-  getRecentEvents: publicProcedure.query(async ({ ctx }) => {
+  getRecentEvents: protectedProcedure.query(async ({ ctx }) => {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
@@ -38,7 +38,7 @@ export const landingRouter = createTRPCRouter({
     return events;
   }),
 
-  getTopEvents: publicProcedure.query(async ({ ctx }) => {
+  getTopEvents: protectedProcedure.query(async ({ ctx }) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const events = await ctx.db.query.events.findMany({
