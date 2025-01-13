@@ -327,24 +327,19 @@ export const keanggotaanRelations = relations(keanggotaan, ({ one }) => ({
   }),
   position: one(eventOrganograms, {
     fields: [keanggotaan.position_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "position"
   }),
   division: one(eventOrganograms, {
     fields: [keanggotaan.division_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "division"
   }),
   bidang: one(eventOrganograms, {
     fields: [keanggotaan.bidang_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "bidang"
   }),
-  associationRequests: one(associationRequests, {
-    fields: [keanggotaan.user_id, keanggotaan.event_id, keanggotaan.position_id],
-    references: [
-      associationRequests.user_id, 
-      associationRequests.event_id, 
-      associationRequests.position_id
-    ]
-  })
 }));
 
 // Relations for Association Requests
@@ -359,15 +354,18 @@ export const associationRequestRelations = relations(associationRequests, ({ one
   }),
   position: one(eventOrganograms, {
     fields: [associationRequests.position_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "position"
   }),
   division: one(eventOrganograms, {
     fields: [associationRequests.division_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "division"
   }),
   bidang: one(eventOrganograms, {
     fields: [associationRequests.bidang_id],
-    references: [eventOrganograms.eventOrganogram_id]
+    references: [eventOrganograms.eventOrganogram_id],
+    relationName: "bidang"
   })
 }));
 
