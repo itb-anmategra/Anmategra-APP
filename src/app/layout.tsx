@@ -6,7 +6,6 @@ import { GeistSans } from "geist/font/sans";
 // Library Import
 import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
-import { Sidebar } from "./_components/Sidebar";
 
 // Metadata
 export const metadata: Metadata = {
@@ -22,10 +21,7 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="bg-neutral-100 overflow-auto">
         <TRPCReactProvider>
-          <Sidebar />
-          <div className="ml-[16rem]">
-            {children}
-          </div>
+          {children}
         </TRPCReactProvider>
       </body>
     </html>
