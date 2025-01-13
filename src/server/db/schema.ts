@@ -68,7 +68,7 @@ export const users = createTable("user", {
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
-  role: roleEnum('role').notNull(),
+  role: roleEnum('role').notNull().default('mahasiswa'),
   ...timestamps
 });
 
@@ -440,3 +440,12 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [users.id]
   })
 }));
+
+// Verified Users table
+export const verifiedUsers = createTable("verified_user", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  email: varchar("email", { length: 255 }).notNull(),
+})

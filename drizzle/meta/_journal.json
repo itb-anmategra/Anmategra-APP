@@ -8,6 +8,20 @@
       "when": 1734363670216,
       "tag": "0000_stale_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736739912311,
+      "tag": "0001_wandering_gorilla_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736754924561,
+      "tag": "0002_aromatic_jackpot",
+      "breakpoints": true
     }
   ]
 }

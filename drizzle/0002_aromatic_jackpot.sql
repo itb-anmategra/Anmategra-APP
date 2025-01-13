@@ -1,0 +1,1 @@
+ALTER TABLE "anmategra_user" ALTER COLUMN "role" SET DEFAULT 'mahasiswa';
