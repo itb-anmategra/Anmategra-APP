@@ -6,7 +6,7 @@ import Image from "next/image";
 const NotFoundPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl flex-col items-center justify-center px-4">
+      <main className="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl flex-col items-center justify-center px-10 md:px-24">
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-16 md:flex-row">
           <div className="align-center flex h-96 w-48 shrink-0 items-center justify-center">
             <Image
