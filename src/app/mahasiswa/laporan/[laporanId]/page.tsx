@@ -1,10 +1,11 @@
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 
 import {
   LaporanCard,
   LaporanDetailProps,
 } from "~/app/_components/laporan/detail/laporan-card";
 import { SearchBar } from "~/app/_components/placeholder/search-bar";
+import { Button } from "~/components/ui/button";
 
 export default function ReportDetail() {
   const dummyData: LaporanDetailProps = {
@@ -18,18 +19,15 @@ export default function ReportDetail() {
     attachment: [{ name: "Attachment1.pdf" }],
   };
 
+  function backToPreviousPage() {
+    Router.back();
+  }
+
   return (
     <div className="flex flex-col gap-3 p-8">
-      <h1>Beranda</h1>
-      <span>
-        <a className="underline">Beranda</a>
-        {" /"}
-        <a className="underline">Kegiatan</a>
-        {" / "}
-        <a className="underline">Detail</a>
-      </span>
-      <SearchBar placeholder={"Cari laporan"} />
-
+      <Button onClick={backToPreviousPage} variant={"ghost"}>
+        {"< Kembali"}
+      </Button>
       <LaporanCard
         status={dummyData.status}
         content={dummyData.content}

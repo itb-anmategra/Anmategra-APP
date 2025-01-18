@@ -6,7 +6,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuItem
+  DropdownMenuItem,
 } from "~/components/ui/dropdown-menu";
 import { ColumnType } from "./board/report-column";
 import Draft from "/public/images/laporan/draft.svg";
@@ -14,31 +14,37 @@ import InProgress from "/public/images/laporan/in-progress.svg";
 import Resolved from "/public/images/laporan/resolved.svg";
 import ListIcon from "/public/images/laporan/display-list.svg";
 import BoardIcon from "/public/images/laporan/board.svg";
-import { LayoutDashboard } from 'lucide-react';
-import { AlignJustify } from 'lucide-react';
+import { LayoutDashboard } from "lucide-react";
+import { AlignJustify } from "lucide-react";
+import { LaporanDialog } from "./detail/laporan-dialog";
 
 export type CurrentDisplay = "Board" | "List";
 
 interface LaporanHeaderProps {
   setCurrentDisplay: (value: CurrentDisplay) => void;
   status: ColumnType[];
+
   toggleStatus: (column: ColumnType) => void;
+  isLaporanEmpty: boolean;
 }
 
 export const LaporanHeader = ({
   setCurrentDisplay,
   status,
+
   toggleStatus,
+  isLaporanEmpty = false,
 }: LaporanHeaderProps) => {
   return (
     <header className="flex items-center justify-between">
       <h1 className="text-2xl font-semibold">Laporan</h1>
       <div className="flex space-x-2 text-lg font-semibold">
+        {/* Dropdown for Display Management */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center rounded-md border py-2 px-4 text-lg font-semibold"
+              className="flex items-center rounded-md border px-4 py-2 text-lg font-semibold"
             >
               <LayoutGrid className="h-4 w-4" />
               <p className="text-sm">Display</p>
@@ -49,25 +55,29 @@ export const LaporanHeader = ({
             className="flex flex-col items-center gap-4 rounded-md border py-4 pl-3 pr-3"
           >
             <DropdownMenuItem
-              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold "
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold"
               onClick={() => setCurrentDisplay("List")}
             >
-              <LayoutDashboard className="w-4 h-4" />
+              <LayoutDashboard className="h-4 w-4" />
               <p className="text-sm">List</p>
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold hover:bg-gray-200"
               onClick={() => setCurrentDisplay("Board")}
             >
-              <AlignJustify className="w-4 h-4" />
+              <AlignJustify className="h-4 w-4" />
               <p className="text-sm text-neutral-900">Board</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* Dropdown for Status Management */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="px-4 py-2 text-lg font-semibold">
+            <Button
+              variant="outline"
+              className="px-4 py-2 text-lg font-semibold"
+            >
               <AlignLeft className="h-4 w-4" />
               <p className="text-sm">Status</p>
             </Button>
@@ -109,9 +119,16 @@ export const LaporanHeader = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button className="bg-primary-400 text-white hover:bg-primary-500 transition-all">
-          <Plus /> Buat laporan
-        </Button>
+        {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
+        {!isLaporanEmpty && (
+          <LaporanDialog
+            trigger={
+              <div className="flex flex-row items-center gap-2 rounded-lg bg-primary-400 px-3 py-1.5 text-sm text-white transition-all hover:bg-primary-500">
+                <Plus width={14} height={14} /> Buat laporan
+              </div>
+            }
+          />
+        )}
       </div>
     </header>
   );
