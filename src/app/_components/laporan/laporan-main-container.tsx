@@ -6,9 +6,11 @@ import { KanbanBoard } from "./board/kanban-board";
 import { CurrentDisplay, LaporanHeader } from "./laporan-header";
 import { ColumnProps, ColumnType } from "./board/report-column";
 import { ListDisplay } from "./list/list-display";
-import { SearchBar } from "./search-bar";
 import { Input } from "~/components/ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Button } from "~/components/ui/button";
+import { Plus } from "lucide-react";
+import { LaporanDialog } from "./detail/laporan-dialog";
 
 interface LaporanProps {
   data: ColumnProps[];
@@ -38,25 +40,30 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
     );
   };
 
+  const isLaporanEmpty = Laporan.data.length === 0;
+
   return (
-    <div className="container p-6 space-y-4">
+    <div className="container h-screen space-y-4 p-6">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
         status={status}
         toggleStatus={toggleStatus}
+        isLaporanEmpty={isLaporanEmpty}
       />
       {/* Input */}
-      <Input
-        placeholder="Cari laporan"
-        className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
-        startAdornment={
-          <MagnifyingGlassIcon className="size-4 text-gray-500" />
-        }
-      />
+      {!isLaporanEmpty && (
+        <Input
+          placeholder="Cari laporan"
+          className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+          startAdornment={
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+          }
+        />
+      )}
 
       {/* Board Display */}
-      {display === "Board" && (
+      {display === "Board" && !isLaporanEmpty && (
         <KanbanBoard
           kanbanData={Laporan.data}
           hideColumn={hideStatus}
@@ -64,12 +71,28 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
         />
       )}
       {/* List Display */}
-      {display === "List" && (
+      {display === "List" && !isLaporanEmpty && (
         <ListDisplay
           kanbanData={Laporan.data}
           hideColumn={hideStatus}
           displayedColumn={status}
         />
+      )}
+      {/* Show Tambah Laporan Button in the middle of Screen */}
+      {isLaporanEmpty && (
+        <div className="flex h-4/5 flex-col items-center justify-center gap-3">
+          <h1 className="text-2xl font-semibold text-neutral-300">
+            Buat laporan baru!
+          </h1>
+          <LaporanDialog
+            trigger={
+              <div className="flex flex-row items-center justify-center gap-2 rounded-xl bg-primary-400 px-6 py-3 text-base text-white">
+                <Plus></Plus>
+                <span>Buat laporan</span>
+              </div>
+            }
+          ></LaporanDialog>
+        </div>
       )}
     </div>
   );
