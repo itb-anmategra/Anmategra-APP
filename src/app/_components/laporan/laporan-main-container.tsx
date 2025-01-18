@@ -1,12 +1,14 @@
 "use client";
-
+// Library Import
 import { useState } from "react";
-
+// Components Import
 import { KanbanBoard } from "./board/kanban-board";
 import { CurrentDisplay, LaporanHeader } from "./laporan-header";
 import { ColumnProps, ColumnType } from "./board/report-column";
 import { ListDisplay } from "./list/list-display";
 import { SearchBar } from "./search-bar";
+import { Input } from "~/components/ui/input";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 interface LaporanProps {
   data: ColumnProps[];
@@ -37,15 +39,23 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container p-6 space-y-4">
+      {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
         status={status}
         toggleStatus={toggleStatus}
       />
+      {/* Input */}
+      <Input
+        placeholder="Cari laporan"
+        className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
+        startAdornment={
+          <MagnifyingGlassIcon className="size-4 text-gray-500" />
+        }
+      />
 
-      <SearchBar />
-
+      {/* Board Display */}
       {display === "Board" && (
         <KanbanBoard
           kanbanData={Laporan.data}
@@ -53,6 +63,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           displayedColumn={status}
         />
       )}
+      {/* List Display */}
       {display === "List" && (
         <ListDisplay
           kanbanData={Laporan.data}
