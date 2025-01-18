@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { KegiatanContainer } from "~/app/kegiatan-kegiatan/_components/kegiatanContainer"; // Adjust the path if needed
+import { KegiatanContainer } from "./_components/kegiatanContainer";
 import { Sidebar } from "./_components/layout/Sidebar";
 
 export default async function Home() {
@@ -21,9 +21,6 @@ export default async function Home() {
 
   return (
     <main className="flex flex-row bg-[#FAFAFA] w-full">
-      {/* Sidebar */}
-      <Sidebar />
-
       {/* Content */}
       <div className="flex-1">
         {/* Search Bar */}

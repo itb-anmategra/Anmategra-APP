@@ -73,7 +73,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {KEPANITIAAN_DATA.map((kepanitiaan) => (
-              <Link href={`/profile-kegiatan/${kepanitiaan.name}`}>
+              <Link key={kepanitiaan.name} href={`/profile-kegiatan/${kepanitiaan.name}`}>
                 <KepanitiaanCard
                   kepanitiaan={kepanitiaan}
                   key={kepanitiaan.name}

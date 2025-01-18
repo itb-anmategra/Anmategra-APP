@@ -2,7 +2,9 @@ import React from 'react'
 
 const MahasiswaPage = () => {
   return (
-    <div>MahasiswaPage</div>
+    <div className='w-full h-full'>
+      MahasiswaPage
+    </div>
   )
 }
 

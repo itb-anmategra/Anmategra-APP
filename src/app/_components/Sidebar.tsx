@@ -27,31 +27,59 @@ type SidebarItemType = {
 };
 
 const SIDEBAR_ITEMS: SidebarItemType[] = [
-  { label: "Beranda", href: "/", icon: <HomeIcon /> },
-  { label: "Kegiatan", href: "/kegiatan", icon: <CalendarIcon /> },
+  { label: "Beranda", href: "/lembaga", icon: <HomeIcon /> },
+  { label: "Kegiatan", href: "/lembaga/kegiatan", icon: <CalendarIcon /> },
   { label: "Anggota", href: "/anggota", icon: <PersonIcon /> },
-  { label: "Inbox", href: "/inbox", icon: <EnvelopeOpenIcon /> },
-  { label: "Laporan", href: "/laporan", icon: <ExclamationTriangleIcon /> },
+  { label: "Inbox", href: "/lembaga/inbox", icon: <EnvelopeOpenIcon /> },
+  { label: "Laporan", href: "/lembaga/laporan", icon: <ExclamationTriangleIcon /> },
 ];
 
 export const Sidebar = () => {
+  // if (pathname?.startsWith("/halaman-mahasiswa")) {
+  //   return (
+  //     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100 mb-8">
+  //       <div className="w-full max-w-7xl flex justify-between items-center py-4">
+  //         <div>
+  //           <Image 
+  //             src={"/logo-anmategra.png"}
+  //             alt="Logo Anmategra"
+  //             width={150}
+  //             height={50}
+  //           />
+  //         </div>
+  //         <nav>
+  //           <Link href={"/halaman-mahasiswa"}>
+  //             Beranda
+  //           </Link>
+  //           <Link href={"/halaman-mahasiswa/laporan"}>
+  //             Laporan
+  //           </Link>
+  //         </nav>
+  //       </div>
+  //     </div>
+  //   )
+  // }
+
   return (
-    <div className="w-[16rem] border-r bg-neutral-50 p-6 fixed left-0 h-screen">
-      <nav className="w-full h-full flex flex-col justify-between">
-        <div className="space-y-6">
-          <Link href={"/"}>
-            <Image
-              src="/logo-anmategra.png"
-              alt="Logo Anmategra"
-              width={150}
-              height={50}
-            />
-          </Link>
-          <SidebarItems />
-        </div>
-        <SidebarProfile />
-      </nav>
-    </div>
+    <>
+      <div className="ml-[16rem]" />
+      <div className="w-[16rem] border-r bg-neutral-50 p-6 fixed left-0 h-screen">
+        <nav className="w-full h-full flex flex-col justify-between">
+          <div className="space-y-6">
+            <Link href={"/"}>
+              <Image
+                src="/logo-anmategra.png"
+                alt="Logo Anmategra"
+                width={150}
+                height={50}
+              />
+            </Link>
+            <SidebarItems />
+          </div>
+          <SidebarProfile />
+        </nav>
+      </div>
+    </>
   );
 };
 

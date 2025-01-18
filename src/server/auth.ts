@@ -5,8 +5,8 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
-
+import Google from "next-auth/providers/google";
+import { eq } from "drizzle-orm";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import {
@@ -26,15 +26,19 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      name: string;
+      emailVerified: Date;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    name: string;
+    emailVerified: Date;
+    // ...other properties
+    // role: UserRole;
+  }
 }
 
 /**
@@ -49,8 +53,24 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
+        name: user.name,
+        emailVerified: user.emailVerified,
       },
     }),
+    signIn: async ({ user, account }) => {
+      if (account?.provider === "google") {
+        const isVerified = await isEmailInVerifiedUsers(user.email!);
+        console.log("isVerified", isVerified);
+        if (isVerified) {
+          console.log("User is verified");
+          return true;
+        }
+        console.log("User is not verified");
+        return false;
+      }
+
+      return true;
+    },
   },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -59,7 +79,7 @@ export const authOptions: NextAuthOptions = {
     verificationTokensTable: verificationTokens,
   }) as Adapter,
   providers: [
-    GoogleProvider({
+    Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
@@ -73,6 +93,14 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+};
+
+const isEmailInVerifiedUsers = async (email: string) => {
+  const user = await db.query.verifiedUsers.findFirst({
+    where: eq(users.email, email),
+  });
+
+  return user !== undefined;
 };
 
 /**
