@@ -4,7 +4,7 @@ import HeroSection from "../_components/landing/hero";
 
 const page = () => {
   return (
-    <div className="h-[200vh]">
+    <div className="w-full">
       <MahasiswaSidebar />
       <HeroSection />
     </div>
