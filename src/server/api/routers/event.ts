@@ -8,7 +8,7 @@ import {
 // import { events } from "~/server/db/schema";
 
 export const eventRouter = createTRPCRouter({
-    readEvent: protectedProcedure
+    getByID: protectedProcedure
       .input(
         z.object({
           id: z.string()
