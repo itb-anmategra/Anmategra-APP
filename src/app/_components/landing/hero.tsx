@@ -3,14 +3,14 @@ import { SearchBar } from "../placeholder/search-bar";
 
 export default function HeroSection() {
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="relative mx-4 flex min-h-screen flex-col">
       {/* Small Ellipse */}
       <Image
         src="/images/landing/Ellipse16.png"
         alt="Ellipse16"
         height={760}
         width={760}
-        className="absolute left-1/2 top-[30%] z-[-1] -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-[19%] z-[-1] -translate-x-1/2 -translate-y-1/2 scale-100 sm:top-[21%] sm:scale-[0.75] md:top-[20%] md:scale-[0.7] lg:top-[31%] lg:scale-100 xl:top-[35%] xl:scale-100"
         priority
       />
       {/* Bigger Ellipse */}
@@ -19,7 +19,7 @@ export default function HeroSection() {
         alt="Ellipse15"
         height={1140}
         width={1140}
-        className="absolute left-1/2 top-[41%] z-[-2] -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-[25%] z-[-2] -translate-x-1/2 -translate-y-1/2 scale-150 sm:top-[25%] sm:scale-125 md:top-[25%] md:scale-100 lg:top-[38%] xl:top-[44%] xl:scale-100"
         priority
       />
       {/* Blue Glow */}
@@ -41,7 +41,7 @@ export default function HeroSection() {
               </p>
             </h1>
 
-            <p className="my-5 text-xl">
+            <p className="my-5 text-balance text-xl">
               Cari kegiatan, lembaga, atau mahasiswa yang Anda inginkan sekarang
             </p>
 
