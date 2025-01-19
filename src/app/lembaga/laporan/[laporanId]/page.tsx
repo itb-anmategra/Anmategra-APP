@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 
 import {
-  LaporanDetail,
+  LaporanCard,
   LaporanDetailProps,
-} from "~/app/_components/laporan/detail/laporan-detail";
+} from "~/app/_components/laporan/detail/laporan-card";
+import { SearchBar } from "~/app/_components/placeholder/search-bar";
 
 export default function ReportDetail() {
   const dummyData: LaporanDetailProps = {
@@ -18,14 +19,26 @@ export default function ReportDetail() {
   };
 
   return (
-    <LaporanDetail
-      status={dummyData.status}
-      content={dummyData.content}
-      id={dummyData.id}
-      name={dummyData.name}
-      date={dummyData.date}
-      category={dummyData.category}
-      attachment={dummyData.attachment}
-    />
+    <div className="flex flex-col gap-3 p-8">
+      <h1>Beranda</h1>
+      <span>
+        <a className="underline">Beranda</a>
+        {" / "}
+        <a className="underline">Kegiatan</a>
+        {" / "}
+        <a className="underline">Detail</a>
+      </span>
+      <SearchBar placeholder={"Cari laporan"} />
+
+      <LaporanCard
+        status={dummyData.status}
+        content={dummyData.content}
+        id={dummyData.id}
+        name={dummyData.name}
+        date={dummyData.date}
+        category={dummyData.category}
+        attachment={dummyData.attachment}
+      />
+    </div>
   );
 }
