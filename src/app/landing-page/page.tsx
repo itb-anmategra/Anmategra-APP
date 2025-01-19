@@ -1,14 +1,11 @@
-import React from "react";
-import MahasiswaSidebar from "../_components/MahasiswaSidebar";
 import HeroSection from "../_components/landing/hero";
 
-const page = () => {
+const LandingPage = () => {
   return (
-    <div className="w-full">
-      <MahasiswaSidebar />
+    <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
       <HeroSection />
-    </div>
+    </main>
   );
 };
 
-export default page;
+export default LandingPage;
