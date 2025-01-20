@@ -87,7 +87,7 @@ export const accounts = createTable(
   {
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade'}),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
@@ -158,7 +158,7 @@ export const mahasiswa = createTable(
   {
     userId: varchar("user_id", { length: 255 })
       .primaryKey()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade' }),
     nim: integer("nim")
       .notNull(),
     jurusan: varchar("jurusan", { length: 255 })
@@ -183,7 +183,7 @@ export const lembaga = createTable(
     id: varchar("id", {length:255})
       .primaryKey(),
     userId: varchar("user_id", { length: 255 })
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
     name: varchar("name", {length:255})
       .notNull(),
