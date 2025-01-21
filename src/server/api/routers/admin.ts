@@ -7,12 +7,19 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { users, verifiedUsers } from "~/server/db/schema";
+import { getServerAuthSession } from "~/server/auth";
+import { accounts, users, verifiedUsers } from "~/server/db/schema";
 
 export const adminRouter = createTRPCRouter({
   addVerifiedEmail: protectedProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
+
+      const session = await getServerAuthSession()
+      if (session?.user.role !== "admin") {
+        throw new Error("Unauthorized")
+      }
+
       const user = await ctx.db.insert(verifiedUsers).values({
         email: input.email,
       }).returning();
@@ -21,6 +28,12 @@ export const adminRouter = createTRPCRouter({
   deleteVerifiedEmail: protectedProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
+
+      const session = await getServerAuthSession()
+      if (session?.user.role !== "admin") {
+        throw new Error("Unauthorized")
+      }
+
       const verified_user = await ctx.db.query.verifiedUsers.findFirst({
         where: eq(verifiedUsers.email, input.email),
       });
@@ -35,6 +48,7 @@ export const adminRouter = createTRPCRouter({
       });
       if (user) {
         await ctx.db.delete(users).where(eq(users.email, input.email));
+        return user;
       }
       return userVer;
     }),
