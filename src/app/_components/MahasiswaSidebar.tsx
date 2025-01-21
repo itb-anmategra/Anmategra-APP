@@ -11,7 +11,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 
 const MahasiswaSidebar = () => {
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100 mb-4">
+    <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
       <div className="w-full max-w-7xl flex justify-between items-center py-4">
         <div className='flex items-center gap-x-8'>
           <Image 
