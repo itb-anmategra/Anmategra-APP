@@ -1,0 +1,526 @@
+[
+  {
+    "kode": 101,
+    "jurusan": "Matematika"
+  },
+  {
+    "kode": 102,
+    "jurusan": "Fisika"
+  },
+  {
+    "kode": 103,
+    "jurusan": "Astronomi"
+  },
+  {
+    "kode": 104,
+    "jurusan": "Mikrobiologi"
+  },
+  {
+    "kode": 105,
+    "jurusan": "Kimia"
+  },
+  {
+    "kode": 106,
+    "jurusan": "Biologi"
+  },
+  {
+    "kode": 107,
+    "jurusan": "Sains dan Teknologi Farmasi"
+  },
+  {
+    "kode": 116,
+    "jurusan": "Farmasi Klinik dan Komunitas"
+  },
+  {
+    "kode": 120,
+    "jurusan": "Teknik Geologi"
+  },
+  {
+    "kode": 121,
+    "jurusan": "Teknik Pertambangan"
+  },
+  {
+    "kode": 122,
+    "jurusan": "Teknik Perminyakan"
+  },
+  {
+    "kode": 123,
+    "jurusan": "Teknik Geofisika"
+  },
+  {
+    "kode": 124,
+    "jurusan": "Geofisika"
+  },
+  {
+    "kode": 125,
+    "jurusan": "Teknik Metalurgi"
+  },
+  {
+    "kode": 128,
+    "jurusan": "Meteorologi"
+  },
+  {
+    "kode": 129,
+    "jurusan": "Oseanografi"
+  },
+  {
+    "kode": 130,
+    "jurusan": "Teknik Kimia"
+  },
+  {
+    "kode": 131,
+    "jurusan": "Teknik Mesin"
+  },
+  {
+    "kode": 132,
+    "jurusan": "Teknik Elektro"
+  },
+  {
+    "kode": 133,
+    "jurusan": "Teknik Fisika"
+  },
+  {
+    "kode": 134,
+    "jurusan": "Teknik Industri"
+  },
+  {
+    "kode": 135,
+    "jurusan": "Teknik Informatika"
+  },
+  {
+    "kode": 136,
+    "jurusan": "Aeronotika dan Astronotika"
+  },
+  {
+    "kode": 137,
+    "jurusan": "Teknik Material"
+  },
+  {
+    "kode": 144,
+    "jurusan": "Manajemen Rekayasa Industri"
+  },
+  {
+    "kode": 150,
+    "jurusan": "Teknik Sipil"
+  },
+  {
+    "kode": 151,
+    "jurusan": "Teknik Geodesi dan Geomatika"
+  },
+  {
+    "kode": 152,
+    "jurusan": "Arsitektur"
+  },
+  {
+    "kode": 153,
+    "jurusan": "Teknik Lingkungan"
+  },
+  {
+    "kode": 154,
+    "jurusan": "Perencanaan Wilayah dan Kota"
+  },
+  {
+    "kode": 155,
+    "jurusan": "Teknik Kelautan"
+  },
+  {
+    "kode": 157,
+    "jurusan": "Rekayasa Infrastruktur Lingkungan"
+  },
+  {
+    "kode": 160,
+    "jurusan": "Tahap Tahun Pertama FMIPA"
+  },
+  {
+    "kode": 161,
+    "jurusan": "Tahap Tahun Pertama SITH"
+  },
+  {
+    "kode": 162,
+    "jurusan": "Tahap Tahun Pertama SF"
+  },
+  {
+    "kode": 163,
+    "jurusan": "Tahap Tahun Pertama FITB"
+  },
+  {
+    "kode": 164,
+    "jurusan": "Tahap Tahun Pertama FTTM"
+  },
+  {
+    "kode": 165,
+    "jurusan": "Tahap Tahun Pertama STEI"
+  },
+  {
+    "kode": 166,
+    "jurusan": "Tahap Tahun Pertama FTSL"
+  },
+  {
+    "kode": 167,
+    "jurusan": "Tahap Tahun Pertama FTI"
+  },
+  {
+    "kode": 168,
+    "jurusan": "Tahap Tahun Pertama FSRD"
+  },
+  {
+    "kode": 169,
+    "jurusan": "Tahap Tahun Pertama FTMD"
+  },
+  {
+    "kode": 170,
+    "jurusan": "Seni Rupa"
+  },
+  {
+    "kode": 172,
+    "jurusan": "Kriya"
+  },
+  {
+    "kode": 173,
+    "jurusan": "Desain Interior"
+  },
+  {
+    "kode": 174,
+    "jurusan": "Desain Komunikasi Visual"
+  },
+  {
+    "kode": 175,
+    "jurusan": "Desain Produk"
+  },
+  {
+    "kode": 179,
+    "jurusan": "MKDU"
+  },
+  {
+    "kode": 180,
+    "jurusan": "Teknik Tenaga Listrik"
+  },
+  {
+    "kode": 181,
+    "jurusan": "Teknik Telekomunikasi"
+  },
+  {
+    "kode": 182,
+    "jurusan": "Sistem dan Teknologi Informasi"
+  },
+  {
+    "kode": 190,
+    "jurusan": "Manajemen"
+  },
+  {
+    "kode": 199,
+    "jurusan": "Tahap Tahun Pertama SAPPK"
+  },
+  {
+    "kode": 201,
+    "jurusan": "Matematika"
+  },
+  {
+    "kode": 202,
+    "jurusan": "Fisika"
+  },
+  {
+    "kode": 203,
+    "jurusan": "Astronomi"
+  },
+  {
+    "kode": 205,
+    "jurusan": "Kimia"
+  },
+  {
+    "kode": 206,
+    "jurusan": "Biologi"
+  },
+  {
+    "kode": 207,
+    "jurusan": "Farmasi"
+  },
+  {
+    "kode": 208,
+    "jurusan": "Aktuaria"
+  },
+  {
+    "kode": 209,
+    "jurusan": "Sains Komputasi"
+  },
+  {
+    "kode": 211,
+    "jurusan": "Bioteknologi"
+  },
+  {
+    "kode": 213,
+    "jurusan": "Biomanajemen"
+  },
+  {
+    "kode": 220,
+    "jurusan": "Teknik Geologi"
+  },
+  {
+    "kode": 221,
+    "jurusan": "Rekayasa Pertambangan"
+  },
+  {
+    "kode": 222,
+    "jurusan": "Teknik Perminyakan"
+  },
+  {
+    "kode": 223,
+    "jurusan": "Teknik Geofisika"
+  },
+  {
+    "kode": 224,
+    "jurusan": "Sains Kebumian"
+  },
+  {
+    "kode": 225,
+    "jurusan": "Teknik Metalurgi"
+  },
+  {
+    "kode": 226,
+    "jurusan": "Teknik Panas Bumi"
+  },
+  {
+    "kode": 227,
+    "jurusan": "Teknik Air Tanah"
+  },
+  {
+    "kode": 230,
+    "jurusan": "Teknik Kimia"
+  },
+  {
+    "kode": 231,
+    "jurusan": "Teknik Mesin"
+  },
+  {
+    "kode": 232,
+    "jurusan": "Teknik Elektro"
+  },
+  {
+    "kode": 233,
+    "jurusan": "Teknik Fisika"
+  },
+  {
+    "kode": 234,
+    "jurusan": "Teknik dan Manajemen Industri"
+  },
+  {
+    "kode": 235,
+    "jurusan": "Informatika"
+  },
+  {
+    "kode": 236,
+    "jurusan": "Aeronotika dan Astronotika"
+  },
+  {
+    "kode": 237,
+    "jurusan": "Ilmu dan Teknik Material"
+  },
+  {
+    "kode": 238,
+    "jurusan": "Instrumentasi dan Kontrol"
+  },
+  {
+    "kode": 239,
+    "jurusan": "Studi Pertahanan"
+  },
+  {
+    "kode": 240,
+    "jurusan": "Studi Pembangunan"
+  },
+  {
+    "kode": 242,
+    "jurusan": "Transportasi"
+  },
+  {
+    "kode": 249,
+    "jurusan": "Ilmu dan Rekayasa Nuklir"
+  },
+  {
+    "kode": 250,
+    "jurusan": "Teknik Sipil"
+  },
+  {
+    "kode": 251,
+    "jurusan": "Teknik Geodesi dan Geomatika"
+  },
+  {
+    "kode": 252,
+    "jurusan": "Arsitektur"
+  },
+  {
+    "kode": 253,
+    "jurusan": "Teknik Lingkungan"
+  },
+  {
+    "kode": 254,
+    "jurusan": "Perencanaan Wilayah dan Kota"
+  },
+  {
+    "kode": 255,
+    "jurusan": "Teknik Kelautan"
+  },
+  {
+    "kode": 256,
+    "jurusan": "Rancang Kota"
+  },
+  {
+    "kode": 269,
+    "jurusan": "Sistem dan Teknik Jalan Raya"
+  },
+  {
+    "kode": 270,
+    "jurusan": "Seni Rupa"
+  },
+  {
+    "kode": 271,
+    "jurusan": "Desain"
+  },
+  {
+    "kode": 289,
+    "jurusan": "Arsitektur Lanskap"
+  },
+  {
+    "kode": 290,
+    "jurusan": "Sains Manajemen"
+  },
+  {
+    "kode": 291,
+    "jurusan": "Administrasi Bisnis"
+  },
+  {
+    "kode": 301,
+    "jurusan": "Matematika"
+  },
+  {
+    "kode": 302,
+    "jurusan": "Fisika"
+  },
+  {
+    "kode": 303,
+    "jurusan": "Astronomi"
+  },
+  {
+    "kode": 305,
+    "jurusan": "Kimia"
+  },
+  {
+    "kode": 306,
+    "jurusan": "Biologi"
+  },
+  {
+    "kode": 307,
+    "jurusan": "Farmasi"
+  },
+  {
+    "kode": 320,
+    "jurusan": "Teknik Geologi"
+  },
+  {
+    "kode": 321,
+    "jurusan": "Rekayasa Pertambangan"
+  },
+  {
+    "kode": 322,
+    "jurusan": "Teknik Perminyakan"
+  },
+  {
+    "kode": 323,
+    "jurusan": "Teknik Geofisika"
+  },
+  {
+    "kode": 324,
+    "jurusan": "Sains Kebumian"
+  },
+  {
+    "kode": 330,
+    "jurusan": "Teknik Kimia"
+  },
+  {
+    "kode": 331,
+    "jurusan": "Teknik Mesin"
+  },
+  {
+    "kode": 332,
+    "jurusan": "Teknik Elektro dan Informatika"
+  },
+  {
+    "kode": 333,
+    "jurusan": "Teknik Fisika"
+  },
+  {
+    "kode": 334,
+    "jurusan": "Teknik dan Manajemen Industri"
+  },
+  {
+    "kode": 336,
+    "jurusan": "Aeronotika dan Astronotika"
+  },
+  {
+    "kode": 337,
+    "jurusan": "Ilmu dan Teknik Material"
+  },
+  {
+    "kode": 342,
+    "jurusan": "Transportasi"
+  },
+  {
+    "kode": 349,
+    "jurusan": "Rekayasa Nuklir"
+  },
+  {
+    "kode": 350,
+    "jurusan": "Teknik Sipil"
+  },
+  {
+    "kode": 351,
+    "jurusan": "Teknik Geodesi dan Geomatika"
+  },
+  {
+    "kode": 352,
+    "jurusan": "Arsitektur"
+  },
+  {
+    "kode": 353,
+    "jurusan": "Teknik Lingkungan"
+  },
+  {
+    "kode": 354,
+    "jurusan": "Perencanaan Wilayah dan Kota"
+  },
+  {
+    "kode": 370,
+    "jurusan": "Ilmu Seni Rupa dan Desain"
+  },
+  {
+    "kode": 371,
+    "jurusan": "Desain"
+  },
+  {
+    "kode": 390,
+    "jurusan": "Sains Manajemen"
+  },
+  {
+    "kode": 901,
+    "jurusan": "Pengajaran Matematika"
+  },
+  {
+    "kode": 902,
+    "jurusan": "Pengajaran Fisika"
+  },
+  {
+    "kode": 905,
+    "jurusan": "Pengajaran Kimia"
+  },
+  {
+    "kode": 907,
+    "jurusan": "Profesi Apoteker"
+  },
+  {
+    "kode": 950,
+    "jurusan": "Pengelolaan Sumberdaya Air (PSDA)"
+  },
+  {
+    "kode": 957,
+    "jurusan": "Terapan Perencanaan Kepariwisataan"
+  }
+]
