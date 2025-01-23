@@ -141,3 +141,13 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+
+export const isLembaga = t.middleware(async ({ ctx, next }) => {
+  if (ctx.session?.user.role !== "lembaga") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next();
+})
+
+export const lembagaProcedure = protectedProcedure.use(isLembaga)
