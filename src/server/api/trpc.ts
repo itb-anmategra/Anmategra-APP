@@ -100,13 +100,13 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
   // Uncomment this to include the execution time in the response
 
-  const duration = end - start;
-  if (result.ok) {
-    result.data = {
-      data: result.data,
-      executionTime: `${duration}ms`, // Include execution time in the response
-    };
-  }
+  // const duration = end - start;
+  // if (result.ok) {
+  //   result.data = {
+  //     data: result.data,
+  //     executionTime: `${duration}ms`, // Include execution time in the response
+  //   };
+  // }
 
   return result;
 });
