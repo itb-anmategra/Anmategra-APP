@@ -31,9 +31,11 @@ const MahasiswaSidebar = () => {
           />
         </div>
         <nav className='flex items-center'>
-          <Button className='bg-secondary-400 text-white space-x-4 transition-all hover:bg-secondary-500'>
-            Masuk <LogIn />
-          </Button>
+          <Link href={"/authentication"}>
+            <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+              Masuk <LogIn />
+            </Button>
+          </Link>
         </nav>
       </div>
     </div>
