@@ -1,9 +1,7 @@
-// File: src/server/api/routers/kegiatan.ts
 import { z } from "zod";
 import {
   createTRPCRouter,
   publicProcedure,
-  protectedProcedure,
   lembagaProcedure,
 } from "~/server/api/trpc";
 
@@ -60,7 +58,8 @@ export const kegiatanRouter = createTRPCRouter({
     }),
 
   // lembaga procedure
-  getAllByLembaga: lembagaProcedure.query(async ({ ctx }) => {
+  getAllByLembaga: lembagaProcedure
+      .query(async ({ ctx }) => {
     const userLembaga = await ctx.db.query.lembaga.findFirst({
       where: (lembaga, { eq }) => eq(lembaga.userId, ctx.session.user.id),
     });
@@ -76,4 +75,5 @@ export const kegiatanRouter = createTRPCRouter({
     });
     return kegiatan;
   }),
+
 });
