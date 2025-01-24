@@ -5,7 +5,7 @@ import { Sidebar } from "../_components/Sidebar";
 
 // Metadata
 export const metadata: Metadata = {
-  title: "Lambaga",
+  title: "Lembaga",
   description: "Anmategra by KM ITB",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };

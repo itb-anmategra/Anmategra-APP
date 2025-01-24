@@ -18,14 +18,14 @@ export const KepanitiaanCard = ({
   return (
     <Card
       className={cn(
-        "flex w-full cursor-pointer overflow-hidden transition-shadow ease-out hover:shadow-md h-[350px]",
+        "flex h-[350px] w-full cursor-pointer overflow-hidden transition-shadow ease-out hover:shadow-md",
         orientation === "vertical" && "flex-col",
         orientation === "horizontal" && "flex-row",
       )}
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden h-[250px]",
+          "relative h-[250px] w-full overflow-hidden",
           orientation === "vertical" && "aspect-[2.35]",
           orientation === "horizontal" && "aspect-square max-w-52",
         )}
@@ -37,7 +37,7 @@ export const KepanitiaanCard = ({
           fill
         />
       </div>
-      <div className="flex w-full h-full relative flex-col gap-[0.6rem] px-6 py-5">
+      <div className="relative flex h-full w-full flex-col gap-[0.6rem] px-6 py-5">
         <div className="flex w-fit items-center gap-2 rounded-full bg-primary-400 px-3 py-1 text-[0.7rem] text-white">
           <Avatar className="size-4 bg-white">
             <AvatarImage
@@ -53,7 +53,7 @@ export const KepanitiaanCard = ({
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <span className="text-lg font-semibold leading-tight text-primary-400">
+          <span className="line-clamp-2 text-lg font-semibold leading-tight text-primary-400">
             {kepanitiaan.name}
           </span>
           <div className="flex items-center gap-1 text-sm text-Regent-Gray">
@@ -61,13 +61,15 @@ export const KepanitiaanCard = ({
             {kepanitiaan.quota}
           </div>
         </div>
-        <span className="line-clamp-3 text-sm leading-tight">
+        <span className="line-clamp-2 text-sm leading-tight xl:line-clamp-3">
           {kepanitiaan.description}
         </span>
-        <div className="flex items-center gap-1 absolute bottom-4 mt-auto text-sm text-Regent-Gray">
+        <div className="absolute bottom-4 mt-auto flex items-center gap-1 text-sm text-Regent-Gray">
           <CalendarIcon />
-          {dayjs(kepanitiaan.startDate).format("MMMM YYYY")} -{" "}
-          {dayjs(kepanitiaan.endDate).format("MMMM YYYY")}
+          <span className="line-clamp-1">
+            {dayjs(kepanitiaan.startDate).format("MMM YYYY")} -{" "}
+            {dayjs(kepanitiaan.endDate).format("MMM YYYY")}
+          </span>
         </div>
       </div>
     </Card>

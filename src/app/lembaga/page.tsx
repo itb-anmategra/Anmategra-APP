@@ -110,7 +110,7 @@ export default function Home() {
             </h5>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {SearchResultMahasiswa.map((item) => (
-                <Link href={`/mahasiswa/${item.name}`}>
+                <Link key={item.id} href={`/mahasiswa/${item.name}`}>
                   <MahasiswaCard
                     key={item.id}
                     nama={item.name}
@@ -143,7 +143,7 @@ export default function Home() {
             </h5>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {SearchResultKegiatan.map((item) => (
-                <Link href={`/profile-kegiatan/${item.name}`}>
+                <Link key={item.name} href={`/profile-kegiatan/${item.name}`}>
                   <KepanitiaanCard kepanitiaan={item} />
                 </Link>
               ))}
