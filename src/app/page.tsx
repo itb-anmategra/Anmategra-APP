@@ -1,27 +1,22 @@
-import Link from 'next/link'
-import React from 'react'
-import { Button } from '~/components/ui/button'
+// Component Import
+import HeroSection from "./_components/landing/hero"; 
+import { KegiatanSection } from "./_components/landing/KegiatanSection";
+import { KepanitiaanSection } from "./_components/landing/KepanitiaanSection";
+import MahasiswaSidebar from "./_components/MahasiswaSidebar";
 
-const LogInPage = () => {
+const LandingPage = () => {
   return (
-    <div className='h-screen w-full flex items-center justify-center gap-x-4'>
-      <Link href={"/lembaga"}>
-        <Button>
-          Lembaga
-        </Button>
-      </Link>
-      <Link href={"/mahasiswa"}>
-        <Button>
-          Mahasiswa
-        </Button>
-      </Link>
-      <Link href={"/admin"}>
-        <Button>
-          Admin
-        </Button>
-      </Link>
-    </div>
-  )
-}
+    <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
+      <div className="mb-12 fixed w-full shadow-sm z-20">
+        <MahasiswaSidebar />
+      </div>
+      <HeroSection />
+      <div className="space-y-16">
+        <KepanitiaanSection />
+        <KegiatanSection />
+      </div>
+    </main>
+  );
+};
 
-export default LogInPage
+export default LandingPage;
