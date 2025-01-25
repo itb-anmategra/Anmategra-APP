@@ -1,0 +1,1 @@
+ALTER TABLE "anmategra_event" ADD COLUMN "participant_count" integer;

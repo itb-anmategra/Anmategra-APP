@@ -4,17 +4,26 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import type { DefaultJWT } from "next-auth/jwt";
 import { type Adapter } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
-
+import Google from "next-auth/providers/google";
+import AzureADProvider from "next-auth/providers/azure-ad";
+import { eq } from "drizzle-orm";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import {
   accounts,
+  mahasiswa,
   sessions,
   users,
   verificationTokens,
 } from "~/server/db/schema";
+import daftarProdi from "./db/kode-program-studi.json";
+
+interface Prodi {
+  kode: number;
+  jurusan: string;
+}
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -26,15 +35,26 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      image: string;
+      role: "admin" | "lembaga" | "mahasiswa";
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+    image: string;
+    role: "admin" | "lembaga" | "mahasiswa";
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    id: string;
+    picture: string;
+    role: "admin" | "lembaga" | "mahasiswa";
+  }
 }
 
 /**
@@ -44,13 +64,74 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: async ({ token, user, account }) => {
+      // Initial token on first sign in
+      if (user) { // jwt only returns user on sign in, otherwise it's undefined
+
+        // insert mahasiswa table
+        if (account?.provider === "azure-ad"){
+          const nim = user.email.split("@")[0];
+          const kodeProdi = parseInt(nim!.substring(0, 3));
+          const jurusan = daftarProdi.find(
+            (item: Prodi) => item.kode === kodeProdi,
+          )!.jurusan;
+
+          // asumsi cuma ada angkatan 2000-an
+          const angkatan = parseInt(nim!.substring(3, 5)) + 2000;
+          await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+        }
+
+        token.id = user.id;
+        token.picture = user.image;
+        token.role = user.role;
+
+      }
+      return token;
+    },
+
+    session: async ({ session, token }) => {
+      session.user.id = token.id;
+      session.user.image = token.picture;
+      session.user.role = token.role;
+      return session
+    },
+
+    signIn: async ({ user, account }) => {
+      // signin lembaga
+      if (account?.provider === "google") {
+
+        const isValidLembaga = user.email?.endsWith("@km.itb.ac.id");
+        const isVerified = await isEmailInVerifiedUsers(user.email);
+
+        return isValidLembaga || isVerified;
+      }
+
+      // signin mahasiswa
+      else if (account?.provider === "azure-ad") {
+        // cek email mahasiswa
+        if (user.email?.endsWith("@mahasiswa.itb.ac.id")) {
+
+          // cek nim valid
+          const nim = user.email.split("@")[0];
+          if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
+
+          // cari jurusan
+          const kodeProdi = parseInt(nim.substring(0, 3));
+          const jurusan = daftarProdi.find(
+            (item: Prodi) => item.kode === kodeProdi,
+          )?.jurusan;
+          
+          // cek jurusan valid
+          return !!jurusan;
+        }
+        return false;
+      }
+
+      return true;
+    },
+  },
+  session: {
+    strategy: "jwt",
   },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -59,9 +140,14 @@ export const authOptions: NextAuthOptions = {
     verificationTokensTable: verificationTokens,
   }) as Adapter,
   providers: [
-    GoogleProvider({
+    Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+    AzureADProvider({
+      clientId: env.AZURE_AD_CLIENT_ID,
+      clientSecret: env.AZURE_AD_CLIENT_SECRET,
+      tenantId: env.AZURE_AD_TENANT_ID,
     }),
     /**
      * ...add more providers here.
@@ -73,6 +159,38 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+};
+
+const isEmailInVerifiedUsers = async (email: string) => {
+  const user = await db.query.verifiedUsers.findFirst({
+    where: eq(users.email, email),
+  });
+
+  return user !== undefined;
+};
+
+const insertMahasiswa = async (
+  id: string,
+  nim: number,
+  jurusan: string,
+  angkatan: number,
+) => {
+
+  const mahasiswaExists = await db.query.mahasiswa.findFirst({
+    where: eq(mahasiswa.userId, id),
+  })
+  if (mahasiswaExists) return mahasiswaExists;
+
+  const newMahasiswa = await db
+    .insert(mahasiswa)
+    .values({
+      userId: id,
+      nim: nim,
+      jurusan: jurusan,
+      angkatan: angkatan,
+    })
+    .returning();
+  return newMahasiswa;
 };
 
 /**

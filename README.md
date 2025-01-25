@@ -40,3 +40,7 @@ Contoh : `fix(api): resolve CORS issue`
 3. Folder dan File :
 - Format : `kebab-case`
 - Contoh : `user-profile.tsx`, `nav-bar.tsx`, `api-enpoint.ts`
+
+## TRPC Panel
+
+- [Anmategra Panel](http://localhost:3000/api/panel)
