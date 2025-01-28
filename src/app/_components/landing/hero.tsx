@@ -54,7 +54,7 @@ export default function HeroSection() {
                 src="/images/landing/ANGGOTA1.png"
                 alt="ANGGOTA1"
                 width={725}
-                height={725} // auto
+                height={725}
                 className="top-0 rounded-3xl border-black shadow-[0px_4px_72px_0px_#3174981A]"
                 priority
               />

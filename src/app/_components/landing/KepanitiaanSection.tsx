@@ -11,7 +11,7 @@ export const KepanitiaanSection = () => {
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {/* show only first 6 data (depends on api response), click show all to see every data */}
-        {KEPANITIAAN_DATA.slice(0, 6).map((kepanitiaan) => (
+        {KEPANITIAAN_DATA.slice(0, 3).map((kepanitiaan) => (
           <KepanitiaanCard
             key={kepanitiaan.name + kepanitiaan.description}
             kepanitiaan={kepanitiaan}
