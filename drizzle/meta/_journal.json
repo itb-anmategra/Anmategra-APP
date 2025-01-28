@@ -8,6 +8,34 @@
       "when": 1734363670216,
       "tag": "0000_stale_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736739912311,
+      "tag": "0001_wandering_gorilla_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736754924561,
+      "tag": "0002_aromatic_jackpot",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736769350395,
+      "tag": "0003_dark_lucky_pierre",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1737372689293,
+      "tag": "0004_silent_big_bertha",
+      "breakpoints": true
     }
   ]
 }
