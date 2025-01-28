@@ -24,7 +24,6 @@ export const LaporanDialog = ({ trigger }: LaporanDialogProps) => {
             Laporan yang dibuat akan berada pada status Draft
           </DialogDescription>
         </DialogHeader>
-
         <LaporanForm />
       </DialogContent>
     </Dialog>
