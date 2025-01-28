@@ -1,3 +1,5 @@
+"use client"
+
 // Library Import
 import React from 'react'
 import Image from 'next/image'
@@ -8,6 +10,8 @@ import { Button } from '~/components/ui/button'
 import Logo from 'public/logo-anmategra.png'
 import Google from 'public/google.webp'
 import Microsoft from 'public/microsoft.webp'
+
+import { signIn } from "next-auth/react";
 
 const LogInPage = () => {
   return (
@@ -28,18 +32,18 @@ const LogInPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-y-2'>
-          <Button variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
+          <Button onClick={() => signIn("azure-ad")} variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
             <Image
-              src={Google}
-              alt='Logo Google'
+              src={Microsoft}
+              alt='Logo Microst'
               width={16}
               height={16} 
             /> 
-            <p className='text-slate-600'>Masuk dengar Microsoft</p>
+            <p className='text-slate-600'>Masuk dengan Microsoft</p>
           </Button>
-          <Button variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
+          <Button onClick={() => signIn("google")} variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
             <Image 
-              src={Microsoft}
+              src={Google}
               alt='Logo Microsoft'
               width={14}
               height={14}

@@ -3,23 +3,40 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import {Kepanitiaan} from "~/types/kepanitiaan";
 
 export const landingRouter = createTRPCRouter({
-  getRecentKepanitiaan: protectedProcedure.query(async ({ ctx }) => {
+  getRecentKepanitiaan: publicProcedure.query(async ({ ctx }) => {
     const kepanitiaan = await ctx.db.query.lembaga.findMany({
       where: (lembaga, { eq }) => eq(lembaga.type, "Kepanitiaan"),
       orderBy: (lembaga, { desc }) => desc(lembaga.foundingDate),
       limit: 8,
       columns: {
-        id: true,
         name: true,
+        description: true,
+        memberCount: true,
         foundingDate: true,
+        endingDate: true,
+        image: true,
       },
     });
-    return kepanitiaan;
+
+    const formattedKepanitiaan: Kepanitiaan[] = kepanitiaan.map((item) => ({
+      lembaga: {
+        name: item.name,
+        profilePicture: item.image,
+      },
+      name: item.name,
+      description: item.description,
+      quota: item.memberCount ?? 0,
+      startDate: new Date(item.foundingDate),
+      endDate: item.endingDate ? new Date(item.endingDate) : null,
+    }));
+
+    return formattedKepanitiaan;
   }),
 
-  getRecentEvents: protectedProcedure.query(async ({ ctx }) => {
+  getRecentEvents: publicProcedure.query(async ({ ctx }) => {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
@@ -33,12 +50,27 @@ export const landingRouter = createTRPCRouter({
         description: true,
         image: true,
         start_date: true,
+        end_date: true,
+        participant_count: true,
       },
     });
-    return events;
+
+    const formattedEvents: Kepanitiaan[] = events.map((item) => ({
+      lembaga: {
+        name: item.name,
+        profilePicture: item.image,
+      },
+      name: item.name,
+      description: item.description,
+      quota: item.participant_count ?? 0,
+      startDate: new Date(item.start_date),
+      endDate: item.end_date ? new Date(item.end_date) : null,
+    }));
+
+    return formattedEvents;
   }),
 
-  getTopEvents: protectedProcedure.query(async ({ ctx }) => {
+  getTopEvents: publicProcedure.query(async ({ ctx }) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const events = await ctx.db.query.events.findMany({
@@ -51,8 +83,23 @@ export const landingRouter = createTRPCRouter({
         description: true,
         image: true,
         start_date: true,
+        end_date: true,
+        participant_count: true,
       },
     });
-    return events;
+
+    const formattedEvents: Kepanitiaan[] = events.map((item) => ({
+      lembaga: {
+        name: item.name,
+        profilePicture: item.image,
+      },
+      name: item.name,
+      description: item.description,
+      quota: item.participant_count ?? 0,
+      startDate: new Date(item.start_date),
+      endDate: item.end_date ? new Date(item.end_date) : null,
+    }));
+
+    return formattedEvents;
   }),
 });

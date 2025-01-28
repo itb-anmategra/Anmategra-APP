@@ -139,6 +139,9 @@ export const authOptions: NextAuthOptions = {
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }) as Adapter,
+  pages: {
+    error: "/auth-error",
+  },
   providers: [
     Google({
       clientId: env.GOOGLE_CLIENT_ID,

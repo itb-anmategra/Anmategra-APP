@@ -36,6 +36,13 @@
       "when": 1737372689293,
       "tag": "0004_silent_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1738071623809,
+      "tag": "0005_aromatic_cable",
+      "breakpoints": true
     }
   ]
 }

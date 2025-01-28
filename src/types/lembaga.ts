@@ -1,4 +1,4 @@
 export interface Lembaga {
   name: string;
-  profilePicture: string;
+  profilePicture: string | null;
 }

@@ -42,7 +42,7 @@ export const KepanitiaanCard = ({
           <Avatar className="size-4 bg-white">
             <AvatarImage
               className="object-contain"
-              src={kepanitiaan.lembaga.profilePicture}
+              src={kepanitiaan.lembaga.profilePicture ?? "/logo-hmif.png"}
             />
             <AvatarFallback>
               {kepanitiaan.lembaga.name.slice(0, 2)}
@@ -68,7 +68,7 @@ export const KepanitiaanCard = ({
           <CalendarIcon />
           <span className="line-clamp-1">
             {dayjs(kepanitiaan.startDate).format("MMM YYYY")} -{" "}
-            {dayjs(kepanitiaan.endDate).format("MMM YYYY")}
+            {kepanitiaan.endDate ? dayjs(kepanitiaan.endDate).format("MMM YYYY") : "Sekarang" }
           </span>
         </div>
       </div>
