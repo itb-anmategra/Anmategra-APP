@@ -12,6 +12,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import { KegiatanContainer } from "./_components/kegiatanContainer";
 import { Sidebar } from "./_components/layout/Sidebar";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -20,15 +21,15 @@ export default async function Home() {
   void api.post.getLatest.prefetch();
 
   return (
-    <main className="flex flex-row bg-[#FAFAFA] w-full">
+    <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
       {/* Content */}
-      <div className="flex-1">
+      <div className="flex-1 space-y-8">
         {/* Search Bar */}
-        <div className="mt-20 mx-20 w-full">
-          <p className="text-[32px] mb-2 font-semibold">Kegiatan</p>
+        <div className="w-full">
+          <p className="text-2xl mb-4 font-semibold">Kegiatan</p>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
-            <div className="relative w-full max-w-[84%]">
+            <div className="relative w-full">
               <Image
                 src={SearchIcon}
                 alt="Search"
@@ -37,31 +38,34 @@ export default async function Home() {
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                className="rounded-[24px] pl-12 pr-4 border-[1px] border-neutral-400 w-full"
                 placeholder="Cari nama anggota"
+                className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+                startAdornment={
+                  <MagnifyingGlassIcon className="size-4 text-gray-500" />
+                }
               />
             </div>
           </div>
         </div>
 
         {/* List Kegiatan */}
-        <div className="mt-6 mx-20">
+        <div>
           {/* Button Section */}
           <div className="flex justify-between">
-            <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 py-2 shadow-none flex items-center gap-2">
+            <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
               <Image src={Plus} alt="plus" width={16} height={16} />
               Tambah Kegiatan Baru
             </Button>
 
             {/* Filter Button */}
-            <Button className="bg-white text-black rounded-[24px] px-4 py-2 shadow-none border border-neutral-400 flex items-center gap-2">
+            <Button className="bg-white text-black rounded-[24px] px-4 shadow-none border border-neutral-400 flex items-center gap-2">
               <Image src={Filter} alt="filter" width={16} height={16} />
               Filter
             </Button>
           </div>
 
           {/* List Kegiatan Section */}
-          <div className="mt-6">
+          <div>
             {/* Integrate KegiatanContainer here */}
             <KegiatanContainer />
           </div>

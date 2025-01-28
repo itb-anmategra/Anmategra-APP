@@ -27,7 +27,7 @@ export function KegiatanContainer() {
   ];
 
   return (
-    <div className="p-6">
+    <div className="py-4">
       <div className="text-purple-600 mb-4 font-medium"></div>
       <div className="space-y-4">
         {activities.map((activity, index) => (

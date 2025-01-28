@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { MahasiswaCardTable } from "~/app/anggota-kegiatan/_components/MahasiswaCardTable"; // Adjust the path if needed
+import { MahasiswaCardTable } from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable"; // Adjust the path if needed
 import { Sidebar } from "./_components/layout/Sidebar";
 
 export default async function Home() {
@@ -20,18 +20,15 @@ export default async function Home() {
   void api.post.getLatest.prefetch();
 
   return (
-    <main className="flex flex-row bg-[#FAFAFA] w-full">
-      {/* Sidebar */}
-      <Sidebar />
-
+    <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
       {/* Content */}
-      <div className="flex-1">
+      <div className="flex-1 space-y-8">
         {/* Search Bar */}
-        <div className="mt-20 mx-20 w-full">
-          <p className="text-[32px] mb-2 font-semibold">Anggota</p>
+        <div className="w-full">
+          <p className="text-2xl mb-4 font-semibold">Anggota</p>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
-            <div className="relative w-full max-w-[84%]">
+            <div className="relative w-full">
               <Image
                 src={SearchIcon}
                 alt="Search"
@@ -48,7 +45,7 @@ export default async function Home() {
         </div>
 
         {/* List Anggota */}
-        <div className="mt-6 mx-20">
+        <div>
           {/* Button Section */}
           <div className="flex justify-between">
             <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 py-2 shadow-none flex items-center gap-2">
