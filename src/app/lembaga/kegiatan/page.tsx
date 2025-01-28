@@ -1,17 +1,23 @@
-import Link from "next/link";
+// Library Impoty
 import Image from "next/image";
-import { Calendar, Users, Inbox, FileText, LogOut } from "lucide-react";
-
-import Plus from "~/../public/icons/plus.svg";
-import Filter from "~/../public/icons/filter.svg";
-import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
-
+import { getServerAuthSession } from "~/server/auth";
+import { api } from "~/trpc/server";
+// Component Import
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
+import { KegiatanContainer } from "./_components/kegiatanContainer";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-import { KegiatanContainer } from "./_components/kegiatanContainer";
-import { Sidebar } from "./_components/layout/Sidebar";
+import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
+// Icons Import
+import Plus from "~/../public/icons/plus.svg";
+import Filter from "~/../public/icons/filter.svg";
+import SearchIcon from "~/../public/icons/search.svg";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export default async function Home() {
@@ -52,10 +58,20 @@ export default async function Home() {
         <div>
           {/* Button Section */}
           <div className="flex justify-between">
-            <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-              <Image src={Plus} alt="plus" width={16} height={16} />
-              Tambah Kegiatan Baru
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                  <Image src={Plus} alt="plus" width={16} height={16} />
+                  Tambah Kegiatan Baru
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Tambah Kegiatan</DialogTitle>
+                </DialogHeader>
+                <TambahKegiatanForm />
+              </DialogContent>
+            </Dialog>
 
             {/* Filter Button */}
             <Button className="bg-white text-black rounded-[24px] px-4 shadow-none border border-neutral-400 flex items-center gap-2">
