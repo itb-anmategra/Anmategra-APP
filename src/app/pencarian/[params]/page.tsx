@@ -27,7 +27,7 @@ const PencarianPage = () => {
             </h5>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {SearchResultMahasiswa.map((item) => (
-                <Link href={`/mahasiswa/${item.name}`}>
+                <Link href={`/profil-mahasiswa/${item.name}`}>
                   <MahasiswaCard
                     key={item.id}
                     nama={item.name}
@@ -43,7 +43,7 @@ const PencarianPage = () => {
             <h5 className="text-2xl font-semibold text-slate-600">Lembaga</h5>
             <div className="flex w-full flex-col gap-y-4">
               {SearchResultLembaga.map((item) => (
-                <Link key={item.id} href={`/lembaga/${item.id}`}>
+                <Link key={item.id} href={`/profil-gitlembaga/${item.id}`}>
                   <LembagaCard
                     nama={item.nama}
                     kategori={item.kategori}
