@@ -29,7 +29,7 @@ type SidebarItemType = {
 const SIDEBAR_ITEMS: SidebarItemType[] = [
   { label: "Beranda", href: "/lembaga", icon: <HomeIcon /> },
   { label: "Kegiatan", href: "/lembaga/kegiatan", icon: <CalendarIcon /> },
-  { label: "Anggota", href: "/anggota", icon: <PersonIcon /> },
+  { label: "Anggota", href: "/lembaga/anggota-kegiatan", icon: <PersonIcon /> },
   { label: "Inbox", href: "/lembaga/inbox", icon: <EnvelopeOpenIcon /> },
   { label: "Laporan", href: "/lembaga/laporan", icon: <ExclamationTriangleIcon /> },
 ];

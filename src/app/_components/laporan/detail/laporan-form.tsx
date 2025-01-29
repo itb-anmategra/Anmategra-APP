@@ -1,10 +1,8 @@
 "use client";
-
 import { useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "~/components/ui/button";
 import {
   FormField,
@@ -88,11 +86,12 @@ export const LaporanForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
         {/* Title */}
         <FormField
           control={form.control}
           name="title"
+          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
@@ -108,6 +107,7 @@ export const LaporanForm = () => {
         <FormField
           control={form.control}
           name="category"
+          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
@@ -139,6 +139,7 @@ export const LaporanForm = () => {
         <FormField
           control={form.control}
           name="description"
+          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
@@ -165,7 +166,7 @@ export const LaporanForm = () => {
                   {error}
                 </p>
               ))}
-              {form.watch("attachments")?.map((file, index) => (
+              {form.watch("attachments")?.map((file: any, index: number) => (
                 <p key={index} className="text-sm text-green-500">
                   {file.name} - {file.size} bytes
                 </p>

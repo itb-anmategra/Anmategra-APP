@@ -60,8 +60,8 @@ const InboxPage = () => {
 
   return (
     <main>
-      <div className="px-8 py-12">
-        <h1 className="mb-3 text-3xl font-semibold"> Permintaan Asosiasi</h1>
+      <div className="p-6 w-full h-full">
+        <h1 className="mb-4 text-2xl font-semibold"> Permintaan Asosiasi</h1>
         <Input
           value={searchTerm}
           onChange={handleSearch}
