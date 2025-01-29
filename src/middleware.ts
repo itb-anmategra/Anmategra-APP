@@ -9,6 +9,10 @@ export default async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (AUTH_ROUTES.includes(req.nextUrl.pathname) && token) {
+        if (token.role === "mahasiswa") {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
+
         return NextResponse.redirect(new URL(`/${token.role}`, req.url));
     }
 

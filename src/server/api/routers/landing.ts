@@ -1,9 +1,8 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import {createTRPCRouter, protectedProcedure, publicProcedure,} from "~/server/api/trpc";
 import {Kepanitiaan} from "~/types/kepanitiaan";
+import {z} from "zod";
+import {mahasiswa, users} from "~/server/db/schema";
+import {eq, ilike, or, sql} from "drizzle-orm";
 
 export const landingRouter = createTRPCRouter({
   getRecentKepanitiaan: publicProcedure.query(async ({ ctx }) => {
@@ -102,4 +101,67 @@ export const landingRouter = createTRPCRouter({
 
     return formattedEvents;
   }),
+
+  getResults: protectedProcedure
+      .input(z.object({query: z.string()}))
+      .query(async ({ ctx, input }) => {
+        const { query } = input;
+        const limit = 10;
+
+        // Cek apakah query adalah angka (hanya digit 0-9)
+        const isNumeric = /^\d+$/.test(query);
+
+        // Inner join User dan Mahasiswa dengan kondisi pencarian
+        const mahasiswaResults = await ctx.db
+            .select({
+              userId: users.id,
+              nama: users.name,
+              nim: mahasiswa.nim,
+              jurusan: mahasiswa.jurusan,
+              image: users.image,
+            })
+            .from(users)
+            .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+            .where(
+                isNumeric
+                    ? or(
+                        // Jika query numerik: cari di kolom nim (integer) dan name (string)
+                        ilike(sql`${mahasiswa.nim}::text`, `%${query}%`), // Cast integer ke text untuk ilike
+                        ilike(users.name, `%${query}%`)
+                    )
+                    : // Jika bukan numerik: cari hanya di kolom name
+                    ilike(users.name, `%${query}%`)
+            )
+            .limit(limit);
+
+
+        const lembaga = await ctx.db.query.lembaga.findMany({
+          where: (lembaga, {ilike}) => ilike(lembaga.name, `%${query}%`),
+          limit,
+        });
+
+
+        const event = await ctx.db.query.events.findMany({
+          where: (event, {ilike}) => ilike(event.name, `%${query}%`),
+          limit,
+        });
+
+        const formattedKepanitiaan: Kepanitiaan[] = event.map((item) => ({
+          lembaga: {
+            name: item.name,
+            profilePicture: item.image,
+          },
+          name: item.name,
+          description: item.description,
+          quota: item.participant_count ?? 0,
+          startDate: new Date(item.start_date),
+          endDate: item.end_date ? new Date(item.end_date) : null,
+        }));
+
+        return {
+          "mahasiswa": mahasiswaResults,
+          "lembaga": lembaga,
+          "kegiatan": formattedKepanitiaan,
+        };
+      }),
 });

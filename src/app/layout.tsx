@@ -7,6 +7,7 @@ import {GeistSans} from "geist/font/sans";
 import {type Metadata} from "next";
 import {TRPCReactProvider} from "~/trpc/react";
 import {HydrateClient} from "~/trpc/server";
+import {SessionProvider} from "next-auth/react";
 
 // Metadata
 export const metadata: Metadata = {
@@ -20,11 +21,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
       <html lang="en" className={`${GeistSans.variable}`}>
-        <body className="bg-neutral-100 overflow-auto">
-        <TRPCReactProvider>
+      <body className="bg-neutral-100 overflow-auto">
+      <TRPCReactProvider>
           {children}
-        </TRPCReactProvider>
-        </body>
+      </TRPCReactProvider>
+      </body>
       </html>
   );
 }

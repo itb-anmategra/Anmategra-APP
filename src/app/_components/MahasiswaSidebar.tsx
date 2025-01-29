@@ -1,5 +1,7 @@
+"use client"
+
 // Library Import
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 // Components Import
@@ -8,13 +10,25 @@ import { Input } from '~/components/ui/input'
 // Icon Import
 import { LogIn } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import {useRouter} from "next/navigation";
 
-const MahasiswaSidebar = () => {
+
+const MahasiswaSidebar = ({ session }: { session: boolean }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const router = useRouter();
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      void router.push(`/pencarian/${searchQuery}`);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
       <div className="w-full max-w-7xl flex justify-between items-center py-4">
         <div className='flex items-center gap-x-8'>
-          <Image 
+          <Image
             src={"/logo-anmategra.png"}
             alt="Logo Anmategra"
             width={150}
@@ -28,18 +42,29 @@ const MahasiswaSidebar = () => {
             startAdornment={
               <MagnifyingGlassIcon className="size-4 text-gray-500" />
             }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <nav className='flex items-center'>
-          <Link href={"/authentication"}>
-            <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
-              Masuk <LogIn />
-            </Button>
-          </Link>
+          {session ? (
+            <Link href={"/profil-mahasiswa/1"}>
+              <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+                Profil
+              </Button>
+            </Link>
+          ) : (
+            <Link href={"/authentication"}>
+              <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+                Masuk <LogIn />
+              </Button>
+            </Link>
+          )}
         </nav>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MahasiswaSidebar
+export default MahasiswaSidebar;
