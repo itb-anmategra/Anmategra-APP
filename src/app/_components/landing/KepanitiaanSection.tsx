@@ -10,6 +10,8 @@ export const KepanitiaanSection = (
         data: Kepanitiaan[];
     }
 ) => {
+
+
   return (
     <ListSectionWrapper
       className="container mx-auto"

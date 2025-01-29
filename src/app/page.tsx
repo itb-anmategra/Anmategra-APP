@@ -1,3 +1,5 @@
+"use server"
+
 // Component Import
 import HeroSection from "./_components/landing/hero"; 
 import { KegiatanSection } from "./_components/landing/KegiatanSection";
@@ -9,6 +11,7 @@ const LandingPage = async () => {
 
   const kepanitiaanTerbaru = await api.landing.getRecentKepanitiaan();
   const kegiatanTerbaru = await api.landing.getRecentEvents();
+
   return (
       <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
         <div className="mb-12 fixed w-full shadow-sm z-20">
