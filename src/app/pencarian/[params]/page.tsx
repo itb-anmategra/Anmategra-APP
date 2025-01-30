@@ -6,10 +6,14 @@ import {getServerAuthSession} from "~/server/auth";
 import {api} from "~/trpc/server";
 
 export default async function SearchPage({ params }: {
-  params: { input: string };
+  params: Promise<{ params: string }>
 }) {
+  const query = (await params).params
   const session = await getServerAuthSession();
+  const sessionId = session?.user?.id;
+  const data = await api.landing.getResults({query: query});
+
   return (
-      <PencarianPage session={!!session}/>
+      <PencarianPage session={sessionId} data={data} />
   );
 }

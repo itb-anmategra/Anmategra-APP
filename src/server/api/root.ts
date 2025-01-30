@@ -1,9 +1,10 @@
-import { postRouter } from "~/server/api/routers/post";
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { adminRouter } from "./routers/admin";
-import { landingRouter } from "./routers/landing";
-import { eventRouter } from "./routers/event";
-import { kegiatanRouter } from "./routers/kegiatan";
+import {postRouter} from "~/server/api/routers/post";
+import {createCallerFactory, createTRPCRouter} from "~/server/api/trpc";
+import {adminRouter} from "./routers/admin";
+import {landingRouter} from "./routers/landing";
+import {eventRouter} from "./routers/event";
+import {kegiatanRouter} from "./routers/kegiatan";
+import {profileRouter} from "~/server/api/routers/profil";
 
 /**
  * This is the primary router for your server.
@@ -15,7 +16,8 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   landing: landingRouter,
   event: eventRouter,
-  kegiatan: kegiatanRouter
+  kegiatan: kegiatanRouter,
+  profil: profileRouter,
 });
 
 // export type definition of API

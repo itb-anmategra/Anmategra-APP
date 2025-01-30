@@ -13,7 +13,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import {useRouter} from "next/navigation";
 
 
-const MahasiswaSidebar = ({ session }: { session: boolean }) => {
+const MahasiswaSidebar = ({ session }: { session: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const router = useRouter();
@@ -49,7 +49,7 @@ const MahasiswaSidebar = ({ session }: { session: boolean }) => {
         </div>
         <nav className='flex items-center'>
           {session ? (
-            <Link href={"/profil-mahasiswa/1"}>
+            <Link href={`/profil-mahasiswa/${session}`}>
               <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
                 Profil
               </Button>

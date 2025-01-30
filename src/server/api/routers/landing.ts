@@ -140,6 +140,19 @@ export const landingRouter = createTRPCRouter({
           limit,
         });
 
+        const formattedLembaga: Kepanitiaan[] = lembaga.map((item) => ({
+          lembaga: {
+            id: item.id,
+            name: item.name,
+            profilePicture: item.image,
+          },
+          name: item.name,
+          description: item.description,
+          quota: item.memberCount ?? 0,
+          startDate: new Date(item.foundingDate),
+          endDate: item.endingDate ? new Date(item.endingDate) : null,
+        }));
+
 
         const event = await ctx.db.query.events.findMany({
           where: (event, {ilike}) => ilike(event.name, `%${query}%`),
@@ -151,6 +164,7 @@ export const landingRouter = createTRPCRouter({
             name: item.name,
             profilePicture: item.image,
           },
+          id: item.id,
           name: item.name,
           description: item.description,
           quota: item.participant_count ?? 0,
@@ -160,7 +174,7 @@ export const landingRouter = createTRPCRouter({
 
         return {
           "mahasiswa": mahasiswaResults,
-          "lembaga": lembaga,
+          "lembaga": formattedLembaga,
           "kegiatan": formattedKepanitiaan,
         };
       }),

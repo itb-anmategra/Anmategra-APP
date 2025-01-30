@@ -6,15 +6,17 @@ import { useSearchParams } from "next/navigation"
 import { Button } from "~/components/ui/button"
 import Logo from 'public/logo-anmategra.png'
 import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
+import {useSession} from "next-auth/react";
 
 export default function AuthError() {
     const searchParams = useSearchParams()
     const error = searchParams.get("error")
+    const session = useSession()
 
     return (
         <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
             <div className="mb-12 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar/>
+                <MahasiswaSidebar session={session.data?.user.id ?? ''} />
             </div>
 
             {/* Error Content */}

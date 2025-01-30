@@ -12,19 +12,20 @@ export default async function middleware(req: NextRequest) {
         if (token.role === "mahasiswa") {
             return NextResponse.redirect(new URL("/", req.url));
         }
-
         return NextResponse.redirect(new URL(`/${token.role}`, req.url));
     }
 
     if (req.nextUrl.pathname.startsWith("/admin") && token && token?.role !== "admin") {
+        if (token.role === "mahasiswa") {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
         return NextResponse.redirect(new URL(`/${token.role}`, req.url));
     }
 
     if (req.nextUrl.pathname.startsWith("/lembaga") && token && token?.role !== "lembaga") {
-        return NextResponse.redirect(new URL(`/${token.role}`, req.url));
-    }
-
-    if (req.nextUrl.pathname.startsWith("/mahasiswa") && token && token?.role !== "mahasiswa") {
+        if (token.role === "mahasiswa") {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
         return NextResponse.redirect(new URL(`/${token.role}`, req.url));
     }
 
