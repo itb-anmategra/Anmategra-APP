@@ -20,9 +20,11 @@ export const KegiatanSection = (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {/* show only first 6 data (depends on api response), click show all to see every data */}
         {data.map((kepanitiaan) => (
-          <Link href={`/profil-kegiatan/${kepanitiaan.id}`}>
+          <Link 
+            key={kepanitiaan.name + kepanitiaan.description}
+            href={`/profil-kegiatan/${kepanitiaan.id}`}
+          >
             <KepanitiaanCard
-              key={kepanitiaan.name + kepanitiaan.description}
               kepanitiaan={kepanitiaan}
               orientation="vertical"
             />
