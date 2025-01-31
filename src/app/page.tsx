@@ -16,7 +16,7 @@ const LandingPage = async () => {
   return (
       <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
           <div className="mb-12 fixed w-full shadow-sm z-20">
-              <MahasiswaSidebar session={sessionId}/>
+              <MahasiswaSidebar session={session?.user.id ?? ""}/>
           </div>
           <HeroSection/>
           <div className="space-y-16">

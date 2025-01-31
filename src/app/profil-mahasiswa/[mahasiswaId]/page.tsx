@@ -53,7 +53,7 @@ const DetailMahasiswaPage = async ({params}: {
             <div className='w-full flex justify-between fixed z-20'>
                 <MahasiswaSidebar session={session?.user.id ?? ""}  />
             </div>
-            <div className='w-full flex min-h-screen flex-col items-center pt-20 bg-red-100'>
+            <div className='w-full flex min-h-screen flex-col items-center pt-20'>
                 <div className="max-w-7xl flex w-full flex-col gap-4 p-6">
                 {/* Title and Search */}
                 <div className="flex flex-col gap-y-2">
