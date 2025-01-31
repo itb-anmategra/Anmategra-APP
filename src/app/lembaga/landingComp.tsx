@@ -21,6 +21,7 @@ import dummyProfile from "public/placeholder/profilepic.png";
 import dummyLembaga from "public/logo-hmif.png";
 import {Kepanitiaan} from "~/types/kepanitiaan";
 import {Session} from "next-auth";
+import { useRouter } from "next/navigation";
 
 export default function LandingComp(
     {
@@ -35,11 +36,14 @@ export default function LandingComp(
         session: Session | null
     }
 ) {
-    const [isSearchBegin, setIsSearchBegin] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setIsSearchBegin(value.trim() !== "");
+    const router = useRouter();
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+        void router.push(`/pencarian/${searchQuery}`);
+    }
     };
 
     return (
@@ -53,7 +57,9 @@ export default function LandingComp(
                     startAdornment={
                         <MagnifyingGlassIcon className="size-4 text-gray-500" />
                     }
-                    onChange={handleSearchChange}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
             </div>
 
@@ -115,57 +121,6 @@ export default function LandingComp(
                     ))}
                 </div>
             </div>
-
-            {/* Search Result */}
-            {isSearchBegin && (
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <h5 className="text-xl font-semibold text-neutral-1000">
-                            Mahasiswa
-                        </h5>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {SearchResultMahasiswa.map((item) => (
-                                <Link key={item.id} href={`/mahasiswa/${item.name}`}>
-                                    <MahasiswaCard
-                                        key={item.id}
-                                        nama={item.name}
-                                        NIM={item.NIM}
-                                        jurusan={item.Jurusan}
-                                        profilePicture={dummyProfile}
-                                    />
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <h5 className="text-xl font-semibold text-neutral-1000">Lembaga</h5>
-                        <div className="flex w-full flex-col gap-y-4">
-                            {SearchResultLembaga.map((item) => (
-                                <Link key={item.id} href={`/lembaga/${item.id}`}>
-                                    <LembagaCard
-                                        nama={item.nama}
-                                        kategori={item.kategori}
-                                        deskripsi={item.deskripsi}
-                                        lembagaPicture={dummyLembaga}
-                                    />
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <h5 className="text-xl font-semibold text-neutral-1000">
-                            Kegiatan
-                        </h5>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {SearchResultKegiatan.map((item) => (
-                                <Link key={item.name} href={`/profile-kegiatan/${item.name}`}>
-                                    <KepanitiaanCard kepanitiaan={item} />
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
