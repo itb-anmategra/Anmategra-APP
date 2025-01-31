@@ -50,6 +50,13 @@
       "when": 1738270018450,
       "tag": "0006_large_secret_warriors",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1738330277930,
+      "tag": "0007_loving_swordsman",
+      "breakpoints": true
     }
   ]
 }

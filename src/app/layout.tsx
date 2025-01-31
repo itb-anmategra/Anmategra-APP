@@ -6,8 +6,6 @@ import {GeistSans} from "geist/font/sans";
 // Library Import
 import {type Metadata} from "next";
 import {TRPCReactProvider} from "~/trpc/react";
-import {HydrateClient} from "~/trpc/server";
-import {SessionProvider} from "next-auth/react";
 
 // Metadata
 export const metadata: Metadata = {

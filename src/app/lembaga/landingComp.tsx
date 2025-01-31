@@ -32,7 +32,7 @@ export default function LandingComp(
             kegiatanTerbaru: Kepanitiaan[];
             kepanitiaanTerbesar: Kepanitiaan[];
         }
-        session: Session
+        session: Session | null
     }
 ) {
     const [isSearchBegin, setIsSearchBegin] = useState(false);

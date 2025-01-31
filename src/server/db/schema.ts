@@ -238,7 +238,7 @@ export const events = createTable('event', {
   image: varchar('image', { length: 255 }),
   background_image: varchar('background_image', { length: 255 }),
   start_date: timestamp('start_date').notNull(),
-  end_date: timestamp('end_date').notNull(),
+  end_date: timestamp('end_date'),
   status: eventStatusEnum('status').notNull(),
   oprec_link: varchar('oprec_link', { length: 255 }),
   location: varchar('location', { length: 255 }),

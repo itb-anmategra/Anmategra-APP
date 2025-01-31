@@ -1,24 +1,12 @@
 // Library Impoty
 import Image from "next/image";
-import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+import {api} from "~/trpc/server";
 // Component Import
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog"
-import { KegiatanContainer } from "./_components/kegiatanContainer";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
+import {Input} from "~/components/ui/input";
 // Icons Import
-import Plus from "~/../public/icons/plus.svg";
-import Filter from "~/../public/icons/filter.svg";
 import SearchIcon from "~/../public/icons/search.svg";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
+import ActivityList from "~/app/lembaga/kegiatan/_components/kegiatanContainer";
 
 export default async function Home() {
 
@@ -64,34 +52,8 @@ export default async function Home() {
 
         {/* List Kegiatan */}
         <div>
-          {/* Button Section */}
-          <div className="flex justify-between">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-                  <Image src={Plus} alt="plus" width={16} height={16} />
-                  Tambah Kegiatan Baru
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Tambah Kegiatan</DialogTitle>
-                </DialogHeader>
-                <TambahKegiatanForm />
-              </DialogContent>
-            </Dialog>
-
-            {/* Filter Button */}
-            <Button className="bg-white text-black rounded-[24px] px-4 shadow-none border border-neutral-400 flex items-center gap-2">
-              <Image src={Filter} alt="filter" width={16} height={16} />
-              Filter
-            </Button>
-          </div>
-
-          {/* List Kegiatan Section */}
           <div>
-            {/* Integrate KegiatanContainer here */}
-            <KegiatanContainer />
+            <ActivityList propActivites={formattedActivities}/>
           </div>
         </div>
       </div>

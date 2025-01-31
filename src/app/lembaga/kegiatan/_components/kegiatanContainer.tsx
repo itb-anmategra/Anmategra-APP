@@ -1,10 +1,13 @@
 "use client"
 
-import { useState, useEffect} from "react"
-import { useDebounce } from "~/components/debounceHook";
-import {Search, Plus, ChevronRight, Filter} from "lucide-react"
+import {useEffect, useState} from "react"
+import {useDebounce} from "~/components/debounceHook";
+import {ChevronRight, Plus, Search} from "lucide-react"
 import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
+import Image from "next/image";
+import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
 
 export interface Activity {
     id: string
@@ -38,6 +41,7 @@ export default function ActivityList(
 
     return (
         <div className="p-4 max-w-7xl mx-auto space-y-4">
+
             <h1 className="text-2xl font-semibold">Kegiatan</h1>
 
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -53,20 +57,28 @@ export default function ActivityList(
                 </div>
 
                 <div className="flex gap-2">
-                    <Button className="bg-teal-500 hover:bg-teal-600">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Tambah Kegiatan Baru
-                    </Button>
-                    <Button variant="outline">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
-                    </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button
+                                className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                                <Plus className="h-4 w-4"/>
+                                Tambah Kegiatan Baru
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Tambah Kegiatan</DialogTitle>
+                            </DialogHeader>
+                            <TambahKegiatanForm/>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
 
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="min-w-full">
-                    <div className="grid grid-cols-[80px_1fr_120px_100px_100px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
+                    <div
+                        className="grid grid-cols-[80px_1fr_120px_100px_100px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
                         <div>Thumbnail</div>
                         <div>Judul</div>
                         <div>Tanggal</div>
@@ -83,7 +95,8 @@ export default function ActivityList(
                             >
                                 <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden">
                                     {activity.thumbnail && (
-                                        <img src={activity.thumbnail || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
+                                        <img src={activity.thumbnail || "/placeholder.svg"} alt=""
+                                             className="w-full h-full object-cover"/>
                                     )}
                                 </div>
                                 <div>
@@ -93,12 +106,13 @@ export default function ActivityList(
                                 <div className="text-sm text-gray-500">{activity.start_date}</div>
                                 <div className="text-sm text-gray-500">{activity.participant_count}</div>
                                 <div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                     {activity.status}
                   </span>
                                 </div>
                                 <Button variant="ghost" size="icon">
-                                    <ChevronRight className="h-4 w-4" />
+                                    <ChevronRight className="h-4 w-4"/>
                                 </Button>
                             </div>
                         ))}

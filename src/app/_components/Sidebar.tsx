@@ -20,6 +20,7 @@ import type { Lembaga } from "~/types/lembaga";
 // Lib Import
 import { cn } from "~/lib/utils";
 import {Session} from "next-auth";
+import {signOut} from "next-auth/react";
 
 type SidebarItemType = { 
   label: string; 
@@ -39,7 +40,7 @@ export const Sidebar = (
     {
         session
     } : {
-        session: Session
+        session: Session | null
     }
 ) => {
   // if (pathname?.startsWith("/halaman-mahasiswa")) {
@@ -75,7 +76,7 @@ export const Sidebar = (
           <div className="space-y-6">
             <Link href={"/"}>
               <Image
-                src={session.user.image ??"/logo-anmategra.png"}
+                src={session?.user.image ??"/logo-anmategra.png"}
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
@@ -83,7 +84,7 @@ export const Sidebar = (
             </Link>
             <SidebarItems />
           </div>
-          <SidebarProfile lembaga={{ name: session.user.name, profilePicture: session.user.image }} />
+          <SidebarProfile lembaga={{ name: session?.user.name ?? '', profilePicture: session?.user.image ?? ''}} />
         </nav>
       </div>
     </>
@@ -130,7 +131,7 @@ const SidebarProfile = ({
         <Avatar>
           <AvatarImage
             className="object-contain"
-            src={lembaga.profilePicture}
+            src={lembaga.profilePicture ?? ""}
           />
           <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
         </Avatar>
@@ -142,6 +143,9 @@ const SidebarProfile = ({
       <Button
         variant="destructive"
         className="flex items-center justify-start gap-3 bg-transparent px-3 py-2 text-base text-destructive shadow-none hover:text-destructive-foreground"
+        onClick={() => {
+            signOut({callbackUrl: '/'})
+        }}
       >
         <ExitIcon />
         Logout

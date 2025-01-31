@@ -11,6 +11,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import { Input } from '~/components/ui/input';
+import { api } from "~/trpc/react";
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
@@ -54,11 +55,20 @@ const TambahKegiatanForm = () => {
   });
 
   // Function submit
-  const onSubmit = (values: EventInputSchemaType) => {
-    console.log(values);
-  };
+    const onSubmit = (values: EventInputSchemaType) => {
+        const mutation = api.event.create.useMutation();
 
-  return (
+        mutation.mutate(values, {
+            onSuccess: () => {
+                console.log("Kegiatan berhasil ditambahkan");
+            },
+            onError: (error) => {
+                console.error("Error creating event:", error);
+            },
+        });
+    };
+
+    return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
         {/* Nama Kegiatan */}

@@ -17,7 +17,7 @@ export const createEvent = adminProcedure
           description: z.string(),
           image: z.string(),
           start_date: z.string().datetime(),
-          end_date: z.string().datetime(),
+          end_date: z.string().datetime().optional(),
           status: z.enum(["Coming Soon", "On going", "Ended"]),
           oprec_link: z.string().url(),
           location: z.string(),
@@ -35,7 +35,7 @@ export const createEvent = adminProcedure
             id: generateShortId(),
             ...input,
             start_date: new Date(input.start_date),
-            end_date: new Date(input.end_date),
+            end_date: input.end_date ? new Date(input.end_date) : null
           }).returning();
         
           return newEvent[0];
