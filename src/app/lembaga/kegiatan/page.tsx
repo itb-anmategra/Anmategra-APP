@@ -21,10 +21,18 @@ import SearchIcon from "~/../public/icons/search.svg";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await getServerAuthSession();
 
-  void api.post.getLatest.prefetch();
+  // Get activities from API
+  const activitites = await api.kegiatan.getAllByLembaga(); // Belum ada Auth
+  const formattedActivities = activitites.map((activity) => ({
+    id: activity.id,
+    name: activity.name,
+    description: activity.description,
+    start_date: activity.start_date.toLocaleDateString(),
+    participant_count: activity.participant_count,
+    status: activity.status,
+    thumbnail: activity.image,
+  }));
 
   return (
     <main className="flex flex-row bg-[#FAFAFA] w-full p-6">

@@ -1,11 +1,13 @@
 import "~/styles/globals.css";
 
 // Font Import
-import { GeistSans } from "geist/font/sans";
+import {GeistSans} from "geist/font/sans";
 
 // Library Import
-import { type Metadata } from "next";
-import { TRPCReactProvider } from "~/trpc/react";
+import {type Metadata} from "next";
+import {TRPCReactProvider} from "~/trpc/react";
+import {HydrateClient} from "~/trpc/server";
+import {SessionProvider} from "next-auth/react";
 
 // Metadata
 export const metadata: Metadata = {
@@ -18,12 +20,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+      <html lang="en" className={`${GeistSans.variable}`}>
       <body className="bg-neutral-100 overflow-auto">
-        <TRPCReactProvider>
+      <TRPCReactProvider>
           {children}
-        </TRPCReactProvider>
+      </TRPCReactProvider>
       </body>
-    </html>
+      </html>
   );
 }

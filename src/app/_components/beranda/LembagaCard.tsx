@@ -10,10 +10,10 @@ const LembagaCard = ({
   deskripsi,
   lembagaPicture,
 }:{
-  nama: String
-  kategori: String
-  deskripsi: String
-  lembagaPicture: StaticImageData
+  nama: string
+  kategori: string
+  deskripsi: string
+  lembagaPicture: StaticImageData | string
 }) => {
   return (
     <Card className="px-6 py-4 flex items-center justify-start gap-x-6 transition-all hover:shadow-md">

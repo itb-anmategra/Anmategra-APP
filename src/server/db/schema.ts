@@ -193,6 +193,10 @@ export const lembaga = createTable(
       withTimezone: true
     })
       .notNull(),
+    endingDate: timestamp("ending_date", {
+        mode: "date",
+        withTimezone: true
+    }),
     type: lembagaTypeEnum("type"),
     image: varchar("image", { length: 255 }),
     major: varchar("major", { length: 255 }),
@@ -232,6 +236,7 @@ export const events = createTable('event', {
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   image: varchar('image', { length: 255 }),
+  background_image: varchar('background_image', { length: 255 }),
   start_date: timestamp('start_date').notNull(),
   end_date: timestamp('end_date').notNull(),
   status: eventStatusEnum('status').notNull(),

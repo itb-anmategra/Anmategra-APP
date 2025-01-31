@@ -19,6 +19,7 @@ import { Button } from "~/components/ui/button";
 import type { Lembaga } from "~/types/lembaga";
 // Lib Import
 import { cn } from "~/lib/utils";
+import {Session} from "next-auth";
 
 type SidebarItemType = { 
   label: string; 
@@ -34,7 +35,13 @@ const SIDEBAR_ITEMS: SidebarItemType[] = [
   { label: "Laporan", href: "/lembaga/laporan", icon: <ExclamationTriangleIcon /> },
 ];
 
-export const Sidebar = () => {
+export const Sidebar = (
+    {
+        session
+    } : {
+        session: Session
+    }
+) => {
   // if (pathname?.startsWith("/halaman-mahasiswa")) {
   //   return (
   //     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100 mb-8">
@@ -68,7 +75,7 @@ export const Sidebar = () => {
           <div className="space-y-6">
             <Link href={"/"}>
               <Image
-                src="/logo-anmategra.png"
+                src={session.user.image ??"/logo-anmategra.png"}
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
@@ -76,7 +83,7 @@ export const Sidebar = () => {
             </Link>
             <SidebarItems />
           </div>
-          <SidebarProfile />
+          <SidebarProfile lembaga={{ name: session.user.name, profilePicture: session.user.image }} />
         </nav>
       </div>
     </>
@@ -111,11 +118,11 @@ const SidebarItems = () => {
   );
 };
 
-const SidebarProfile = () => {
-  const lembaga: Lembaga = {
-    name: "HMIF ITB",
-    profilePicture: "/logo-hmif.png",
-  };
+const SidebarProfile = ({
+    lembaga,
+                        } : {
+    lembaga: Lembaga;
+}) => {
 
   return (
     <div className="flex w-full flex-col gap-y-2">

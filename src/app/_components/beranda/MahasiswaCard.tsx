@@ -11,10 +11,10 @@ const MahasiswaCard = ({
   jurusan,
   profilePicture,
 }:{
-  nama: String
-  NIM: String
-  jurusan: String
-  profilePicture: StaticImageData
+  nama: string
+  NIM: string
+  jurusan: string
+  profilePicture: StaticImageData | string
 }) => {
   return (
     <Card className='px-6 py-4 flex items-center justify-start gap-x-6 transition-all hover:shadow-md'>
