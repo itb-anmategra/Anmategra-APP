@@ -1,17 +1,18 @@
-import { relations, sql } from "drizzle-orm";
+import {relations, sql} from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   serial,
   text,
   timestamp,
-  varchar,
-  pgEnum,
-  boolean
+  uuid,
+  varchar
 } from "drizzle-orm/pg-core";
-import { type AdapterAccount } from "next-auth/adapters";
+import {type AdapterAccount} from "next-auth/adapters";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -181,7 +182,7 @@ export const lembaga = createTable(
   "lembaga",
   {
     id: varchar("id", {length:255})
-      .primaryKey(),
+        .primaryKey(),
     userId: varchar("user_id", { length: 255 })
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
@@ -454,4 +455,20 @@ export const verifiedUsers = createTable("verified_user", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   email: varchar("email", { length: 255 }).notNull(),
+})
+
+// Kehimpunan Table
+export const kehimpunan = createTable("kehimpunan", {
+  id: varchar("id", {length: 255})
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id", {length: 255})
+      .notNull()
+      .references(() => users.id),
+  lembagaId: varchar("lembaga_id", {length: 255})
+      .notNull()
+      .references(() => lembaga.id),
+  division: varchar("division", {length: 255}).notNull(),
+  position: varchar("position", {length: 255}).notNull(),
 })

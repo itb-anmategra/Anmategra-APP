@@ -1,23 +1,13 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
-import type { DefaultJWT } from "next-auth/jwt";
-import { type Adapter } from "next-auth/adapters";
+import {DrizzleAdapter} from "@auth/drizzle-adapter";
+import {type DefaultSession, getServerSession, type NextAuthOptions,} from "next-auth";
+import type {DefaultJWT} from "next-auth/jwt";
+import {type Adapter} from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
-import { eq } from "drizzle-orm";
-import { env } from "~/env";
-import { db } from "~/server/db";
-import {
-  accounts,
-  mahasiswa,
-  sessions,
-  users,
-  verificationTokens,
-} from "~/server/db/schema";
+import {eq} from "drizzle-orm";
+import {env} from "~/env";
+import {db} from "~/server/db";
+import {accounts, lembaga, mahasiswa, sessions, users, verificationTokens,} from "~/server/db/schema";
 import daftarProdi from "./db/kode-program-studi.json";
 
 interface Prodi {
@@ -79,12 +69,38 @@ export const authOptions: NextAuthOptions = {
           // asumsi cuma ada angkatan 2000-an
           const angkatan = parseInt(nim!.substring(3, 5)) + 2000;
           await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+
+          token.role = user.role;
+        }
+
+        // insert Lembaga table
+        else if (account?.provider === "google") {
+          const lembagaExists = await db.query.lembaga.findFirst({
+            where: eq(users.id, user.id),
+          });
+          if (!lembagaExists) {
+            await db
+                .update(users)
+                .set({role: "lembaga"})
+                .where(eq(users.id, user.id))
+                .returning();
+            await db
+                .insert(lembaga)
+                .values({
+                  id: crypto.randomUUID(),
+                  userId: user.id,
+                  name: user.name,
+                  image: user.image,
+                  foundingDate: new Date(),
+                })
+                .returning();
+
+            token.role = "lembaga";
+          }
         }
 
         token.id = user.id;
         token.picture = user.image;
-        token.role = user.role;
-
       }
       return token;
     },

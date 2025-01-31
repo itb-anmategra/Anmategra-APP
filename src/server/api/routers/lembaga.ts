@@ -1,7 +1,9 @@
 // File: src/server/api/routers/lembaga.ts
-import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { db } from "~/server/db";
+import {z} from "zod";
+import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc";
+import {db} from "~/server/db";
+import {kehimpunan, mahasiswa, users} from "~/server/db/schema";
+import {eq} from "drizzle-orm";
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -30,6 +32,41 @@ export const lembagaRouter = createTRPCRouter({
         },
       };
     }),
+
+  getAllAnggota: protectedProcedure
+      .input(z.object({lembagaId: z.string().nonempty()}))
+      .query(async ({ctx, input}) => {
+        try {
+          const anggota = await db
+              .select({
+                id: users.id,
+                nama: users.name,
+                nim: mahasiswa.nim,
+                divisi: kehimpunan.division,
+                posisi: kehimpunan.position,
+              })
+              .from(kehimpunan)
+              .innerJoin(users, eq(kehimpunan.userId, users.id))
+              .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+              .where(eq(kehimpunan.lembagaId, input.lembagaId))
+
+          return {
+            anggota: anggota.map((anggota) => ({
+              id: anggota.id,
+              nama: anggota.nama ?? 'Tidak Diketahui',
+              nim: anggota.nim.toString(),
+              divisi: anggota.divisi,
+              posisi: anggota.posisi,
+              posisiColor: "blue",
+            })),
+          }
+        } catch (error) {
+          console.error("Database Error:", error);
+          return {
+            error: "Database Error",
+          }
+        }
+      }),
 
   // Fetch highlighted/pinned event
   getHighlightedEvent: protectedProcedure

@@ -30,17 +30,6 @@ export type Member = {
   posisiColor: string; // To map colors for positions
 };
 
-const staticData: Member[] = [
-  { id: "1", nama: "Nicholas Andhika Lucas", nim: "13523014", divisi: "Visual and Design", posisi: "Staff", posisiColor: "yellow" },
-  { id: "2", nama: "Lidya Marthadilla", nim: "18223134", divisi: "Extracampus", posisi: "Wakil", posisiColor: "green" },
-  { id: "3", nama: "Lidya Marthadilla", nim: "18223134", divisi: "Club and Hobbies", posisi: "Ketua", posisiColor: "blue" },
-  { id: "4", nama: "Rizqi Andhika Pratama", nim: "13523014", divisi: "Visual and Design", posisi: "Sekretaris", posisiColor: "navy" },
-  { id: "5", nama: "Nicholas Andhika Lucas", nim: "13523014", divisi: "Visual and Design", posisi: "Bendahara", posisiColor: "red" },
-  { id: "6", nama: "Nicholas Andhika Lucas", nim: "13523014", divisi: "Visual and Design", posisi: "Staff", posisiColor: "yellow" },
-  { id: "7", nama: "Rizqi Andhika Pratama", nim: "18223134", divisi: "Extracampus", posisi: "Wakil", posisiColor: "green" },
-  { id: "8", nama: "Lidya Marthadilla", nim: "18223134", divisi: "Club and Hobbies", posisi: "Ketua", posisiColor: "blue" },
-];
-
 const columns: ColumnDef<Member>[] = [
   {
     accessorKey: "nama",
@@ -83,11 +72,17 @@ const columns: ColumnDef<Member>[] = [
   },
 ];
 
-export function MahasiswaCardTable() {
+export function MahasiswaCardTable(
+    {
+        data
+    } : {
+        data: Member[]
+    }
+) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
-    data: staticData,
+    data: data,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
