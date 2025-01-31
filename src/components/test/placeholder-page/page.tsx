@@ -2,7 +2,7 @@ import { Sidebar } from "~/app/_components/placeholder/sidebar";
 import { SearchBar } from "~/app/_components/placeholder/search-bar";
 import { EventCard } from "~/app/_components/placeholder/event-card";
 
-import ProfilMahasiswa from "../../_components/beranda/profilMahasiswa";
+import ProfilMahasiswa from "../../../app/_components/beranda/profilMahasiswa";
 
 import Image from "next/image";
 import Link from "next/link";

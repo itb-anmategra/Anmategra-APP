@@ -43,7 +43,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const isLaporanEmpty = Laporan.data.length === 0;
 
   return (
-    <div className="container h-screen space-y-4 p-6">
+    <div className="h-screen space-y-4 p-6">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}

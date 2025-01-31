@@ -1,5 +1,5 @@
-import KegiatanCard from "../../_components/beranda/kegiatanCard";
-import ProfilMahasiswa from "../../_components/beranda/profilMahasiswa";
+import KegiatanCard from "../../../app/_components/beranda/kegiatanCard";
+import ProfilMahasiswa from "../../../app/_components/beranda/profilMahasiswa";
 
 export default function TestPage() {
   return (
