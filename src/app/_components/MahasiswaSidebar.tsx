@@ -12,7 +12,6 @@ import { LogIn } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import {useRouter} from "next/navigation";
 
-
 const MahasiswaSidebar = ({ session }: { session: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
 

@@ -1,7 +1,25 @@
+"use client"
+// Library Import
+import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+// Component Import
 import { SearchBar } from "../placeholder/search-bar";
+import { Input } from "~/components/ui/input";
+// Icon Import
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export default function HeroSection() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const router = useRouter();
+  
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      void router.push(`/pencarian/${searchQuery}`);
+    }
+  };
+  
   return (
     <div className="relative mx-4 flex min-h-screen flex-col">
       {/* Small Ellipse */}
@@ -46,7 +64,16 @@ export default function HeroSection() {
             </p>
 
             <div className="mb-14 mt-3 w-[450px] max-w-2xl">
-              <SearchBar placeholder="Pencarian lembaga, kegiatan, atau mahasiswa" />
+              <Input
+              placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
+              className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent w-[750px]"
+              startAdornment={
+                <MagnifyingGlassIcon className="size-4 text-gray-500" />
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
             </div>
 
             <div className="relative flex w-full max-w-4xl items-center justify-center">
