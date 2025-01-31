@@ -28,12 +28,14 @@ const MahasiswaSidebar = ({ session }: { session: string }) => {
     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
       <div className="w-full max-w-7xl flex justify-between items-center py-4">
         <div className='flex items-center gap-x-8'>
-          <Image
-            src={"/logo-anmategra.png"}
-            alt="Logo Anmategra"
-            width={150}
-            height={50}
-          />
+          <Link href={"/"}>
+            <Image
+              src={"/logo-anmategra.png"}
+              alt="Logo Anmategra"
+              width={150}
+              height={50}
+            />
+          </Link>
         </div>
         <div>
           <Input
