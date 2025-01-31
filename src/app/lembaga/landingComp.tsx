@@ -58,61 +58,63 @@ export default function LandingComp(
             </div>
 
             {/* List of Kepanitiaan */}
-            {!isSearchBegin && (
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between gap-4">
-                        <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
-                        <Button variant="ghost" className="flex items-center gap-2">
-                            Lihat Semua
-                            <ChevronRightIcon />
-                        </Button>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                        {data.kepanitiaanTerbaru.map((kepanitiaan) => (
-                            <Link key={kepanitiaan.name} href={`/profile-kegiatan/${kepanitiaan.name}`}>
-                                <KepanitiaanCard
-                                    kepanitiaan={kepanitiaan}
-                                    key={kepanitiaan.name}
-                                />
-                            </Link>
-                        ))}
-                    </div>
-                    <div className="mt-10 flex items-center justify-between gap-4">
-                        <h2 className="text-xl font-semibold">Event Terbaru</h2>
-                        <Button variant="ghost" className="flex items-center gap-2">
-                            Lihat Semua
-                            <ChevronRightIcon />
-                        </Button>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                        {data.kegiatanTerbaru.map((kepanitiaan) => (
-                            <Link key={kepanitiaan.name} href={`/profile-kegiatan/${kepanitiaan.name}`}>
-                                <KepanitiaanCard
-                                    kepanitiaan={kepanitiaan}
-                                    key={kepanitiaan.name}
-                                />
-                            </Link>
-                        ))}
-                    </div>
-                    <div className="mt-10 flex items-center justify-between gap-4">
-                        <h2 className="text-xl font-semibold">Event Terbesar</h2>
-                        <Button variant="ghost" className="flex items-center gap-2">
-                            Lihat Semua
-                            <ChevronRightIcon />
-                        </Button>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                        {data.kepanitiaanTerbaru.map((kepanitiaan) => (
-                            <Link key={kepanitiaan.name} href={`/profile-kegiatan/${kepanitiaan.name}`}>
-                                <KepanitiaanCard
-                                    kepanitiaan={kepanitiaan}
-                                    key={kepanitiaan.name}
-                                />
-                            </Link>
-                        ))}
-                    </div>
+
+            <div className="flex flex-col gap-x-2">
+                {/* <div className="flex items-center justify-between gap-4">
+                    <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                        Lihat Semua
+                        <ChevronRightIcon />
+                    </Button>
+                </div> */}
+                <h3 className="text-left text-xl font-semibold mb-2">Kepanitiaan</h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                    {data.kepanitiaanTerbaru.map((kepanitiaan) => (
+                        <Link 
+                            key={kepanitiaan.name} 
+                            href={`/profil-lembaga/${kepanitiaan.lembaga.id}`}
+                        >
+                            <KepanitiaanCard
+                                kepanitiaan={kepanitiaan}
+                            />
+                        </Link>
+                    ))}
                 </div>
-            )}
+                {/* <div className="mt-10 flex items-center justify-between gap-4">
+                    <h2 className="text-xl font-semibold">Event Terbaru</h2>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                        Lihat Semua
+                        <ChevronRightIcon />
+                    </Button>
+                </div> */}
+                <h3 className="text-left text-xl font-semibold mb-2">Kegiatan</h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                    {data.kegiatanTerbaru.map((kepanitiaan) => (
+                        <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                            <KepanitiaanCard
+                                kepanitiaan={kepanitiaan}
+                            />
+                        </Link>
+                    ))}
+                </div>
+                {/* <div className="mt-10 flex items-center justify-between gap-4">
+                    <h2 className="text-xl font-semibold">Event Terbesar</h2>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                        Lihat Semua
+                        <ChevronRightIcon />
+                    </Button>
+                </div> */}
+                <h3 className="text-left text-xl font-semibold mb-2">Kepanitiaan?</h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                    {data.kepanitiaanTerbaru.map((kepanitiaan) => (
+                        <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                            <KepanitiaanCard
+                                kepanitiaan={kepanitiaan}
+                            />
+                        </Link>
+                    ))}
+                </div>
+            </div>
 
             {/* Search Result */}
             {isSearchBegin && (
