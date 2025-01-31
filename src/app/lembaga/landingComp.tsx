@@ -20,16 +20,19 @@ import MahasiswaCard from "../_components/beranda/MahasiswaCard";
 import dummyProfile from "public/placeholder/profilepic.png";
 import dummyLembaga from "public/logo-hmif.png";
 import {Kepanitiaan} from "~/types/kepanitiaan";
+import {Session} from "next-auth";
 
 export default function LandingComp(
     {
-        data
+        data,
+        session
     }: {
         data: {
             kepanitiaanTerbaru: Kepanitiaan[];
             kegiatanTerbaru: Kepanitiaan[];
             kepanitiaanTerbesar: Kepanitiaan[];
         }
+        session: Session
     }
 ) {
     const [isSearchBegin, setIsSearchBegin] = useState(false);

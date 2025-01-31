@@ -1,8 +1,8 @@
 import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
 import {db} from "~/server/db";
-import {eventOrganograms, events, mahasiswa, users} from "~/server/db/schema";
-import {desc, eq} from "drizzle-orm";
+import {eventOrganograms, events, keanggotaan, lembaga, mahasiswa, users} from "~/server/db/schema";
+import {and, desc, eq} from "drizzle-orm";
 import {Kepanitiaan} from "~/types/kepanitiaan";
 
 export const profileRouter = createTRPCRouter({
@@ -20,8 +20,8 @@ export const profileRouter = createTRPCRouter({
             const newestEvent = await db
                 .select()
                 .from(events)
-                .innerJoin(eventOrganograms, eq(events.id, eventOrganograms.event_id))
-                .where(eq(eventOrganograms.value, input.mahasiswaId))
+                .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
+                .where(eq(keanggotaan.user_id, input.mahasiswaId))
                 .orderBy(desc(events.start_date))
 
             const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
@@ -106,27 +106,85 @@ export const profileRouter = createTRPCRouter({
     getKegiatan: publicProcedure
         .input(z.object({kegiatanId: z.string()}))
         .query(async ({ctx, input}) => {
-            const kegiatan = await ctx.db.query.events.findFirst({
-                where: (events, {eq}) => eq(events.id, input.kegiatanId),
-                with: {
-                    lembaga: {
-                        columns: {
-                            id: true,
-                            name: true,
-                            description: true,
-                            image: true,
-                        },
-                    },
-                    eventOrganograms: {
-                        columns: {
-                            eventOrganogram_id: true,
-                            type: true,
-                            value: true,
-                        },
-                    },
-                },
-                columns: {},
-            });
-            return kegiatan;
+            const kegiatan = await db
+                .select()
+                .from(events)
+                .where(eq(events.id, input.kegiatanId))
+                .limit(1)
+
+            if (kegiatan.length === 0 || !kegiatan[0]) {
+                return {
+                    error: "Kegiatan not found",
+                }
+            }
+
+            if (kegiatan[0].org_id === null) {
+                return {
+                    error: "Lembaga not defined",
+                }
+            }
+
+            const lembagaRes = await db
+                .select()
+                .from(lembaga)
+                .where(eq(lembaga.id, kegiatan[0].org_id))
+                .limit(1)
+
+            if (lembagaRes.length === 0) {
+                return {
+                    error: "Lembaga not found",
+                }
+            }
+
+            const participants = await db
+                .select({
+                    userId: mahasiswa.userId,
+                    nama: users.name,
+                    nim: mahasiswa.nim,
+                    jurusan: mahasiswa.jurusan,
+                    image: users.image,
+                    position: keanggotaan.position_id,
+                    divisi: keanggotaan.division_id,
+                    bidang: keanggotaan.bidang_id,
+                })
+                .from(keanggotaan)
+                .innerJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.userId))
+                .innerJoin(users, eq(mahasiswa.userId, users.id))
+                .where(eq(keanggotaan.event_id, input.kegiatanId));
+
+            const updatedParticipants = await Promise.all(participants.map(async (participant) => {
+                const [position, divisi, bidang] = await Promise.all([
+                    participant.position ? db.select({value: eventOrganograms.value})
+                        .from(eventOrganograms)
+                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.position)))
+                        .limit(1)
+                        .then(res => res[0]?.value ?? null) : null,
+
+                    participant.divisi ? db.select({value: eventOrganograms.value})
+                        .from(eventOrganograms)
+                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.divisi)))
+                        .limit(1)
+                        .then(res => res[0]?.value ?? null) : null,
+
+                    participant.bidang ? db.select({value: eventOrganograms.value})
+                        .from(eventOrganograms)
+                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.bidang)))
+                        .limit(1)
+                        .then(res => res[0]?.value ?? null) : null,
+                ]);
+
+                return {
+                    ...participant,
+                    position,
+                    divisi,
+                    bidang,
+                };
+            }));
+
+            return {
+                kegiatan: kegiatan[0],
+                lembaga: lembagaRes[0],
+                participant: updatedParticipants,
+            };
         }),
 });

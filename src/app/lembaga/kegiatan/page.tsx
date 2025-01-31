@@ -1,6 +1,3 @@
-import ActivityList, {Activity} from "./_components/kegiatanContainer";
-import {api, HydrateClient} from "~/trpc/server";
-
 // Library Impoty
 import Image from "next/image";
 import { getServerAuthSession } from "~/server/auth";
@@ -26,8 +23,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 export default async function Home() {
 
   // Get activities from API
-  // const activitites = await api.kegiatan.getAllByLembaga(); // Belum ada Auth
-  const activitites = await api.kegiatan.getAllPublic();
+  const activitites = await api.kegiatan.getAllByLembaga(); // Belum ada Auth
   const formattedActivities = activitites.map((activity) => ({
     id: activity.id,
     name: activity.name,
