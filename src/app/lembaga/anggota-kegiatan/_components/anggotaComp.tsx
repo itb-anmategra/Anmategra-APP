@@ -1,11 +1,26 @@
+// Library Import
 import Image from "next/image";
-
-import Plus from "~/../public/icons/plus.svg";
-import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
+// Auth Import
+import {Session} from "next-auth";
+// Components Import
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import {MahasiswaCardTable, Member} from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable";
 import {Button} from "~/components/ui/button";
 import {Input} from "~/components/ui/input";
-import {MahasiswaCardTable, Member} from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable";
-import {Session} from "next-auth";
+// Icon Import
+import Plus from "~/../public/icons/plus.svg";
+import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
+import TambahAnggotaForm from "~/app/_components/anggota/TambahAnggotaForm";
+
+type Keanggotaan = {
+    id: string;
+    event_id: string;
+    user_id: string;
+    position_id: string;
+    bidang_id: string;
+    description: string;
+  };
+  
 
 export default function AnggotaComp(
     {
@@ -16,6 +31,7 @@ export default function AnggotaComp(
         data: Member[]
     }
 ) {
+    
 
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
@@ -46,11 +62,20 @@ export default function AnggotaComp(
                 <div>
                     {/* Button Section */}
                     <div className="flex justify-between">
-                        <Button
-                            className="bg-[#00B7B7] text-white rounded-[16px] px-4 py-2 shadow-none flex items-center gap-2">
-                            <Image src={Plus} alt="plus" width={16} height={16}/>
-                            Tambah Anggota Baru
-                        </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                                <Plus className="h-4 w-4" />
+                                Tambah Anggota Baru
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Tambah Anggota</DialogTitle>
+                            </DialogHeader>
+                            <TambahAnggotaForm />
+                        </DialogContent>
+                    </Dialog>
                     </div>
 
                     {/* List Anggota Section */}

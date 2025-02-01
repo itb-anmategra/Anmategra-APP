@@ -1,3 +1,4 @@
+'use client'
 import Router, { useRouter } from "next/router";
 
 import {
