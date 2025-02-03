@@ -13,7 +13,6 @@ import {Session} from "next-auth";
 
 // ✅ Schema Validasi dengan Zod
 const AnggotaSchema = z.object({
-  name: z.string().min(1, "Nama wajib diisi"),
     user_id: z.string().min(1, "User ID wajib diisi"),
     position: z.string().min(1, "Posisi wajib diisi"),
     division: z.string().min(1, "Bidang wajib diisi"),
@@ -27,10 +26,11 @@ const TambahAnggotaForm = ({
                            } : {
     session: Session | null
 }) => {
+    const mutation = api.lembaga.addAnggota.useMutation();
+
     const form = useForm<AnggotaSchemaType>({
         resolver: zodResolver(AnggotaSchema),
         defaultValues: {
-            name: "",
             user_id: "",
             position: "",
             division: "",
@@ -42,27 +42,18 @@ const TambahAnggotaForm = ({
             ...values,
             lembagaId: session?.user.id ?? ""
         };
-        const res = api.lembaga.addAnggota.useMutation(query);
+
+        mutation.mutate(query, {
+            onSuccess: () => {
+                form.reset();
+            }
+        });
+
     };
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                {/* Nama Anggota */}
-                <FormField
-                    control={form.control}
-                    name="name"
-                    // @ts-ignore
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Nama Anggota</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Masukkan nama anggota" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
                 {/* User ID */}
                 <FormField
@@ -83,7 +74,7 @@ const TambahAnggotaForm = ({
                 {/* Posisi Anggota */}
                 <FormField
                     control={form.control}
-                    name="position_id"
+                    name="position"
                     // @ts-ignore
                     render={({ field }) => (
                         <FormItem>
@@ -106,7 +97,7 @@ const TambahAnggotaForm = ({
                 {/* Bidang */}
                 <FormField
                     control={form.control}
-                    name="bidang_id"
+                    name="division"
                     // @ts-ignore
                     render={({ field }) => (
                         <FormItem>

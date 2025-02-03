@@ -37,32 +37,42 @@ export const lembagaRouter = createTRPCRouter({
       .input(z.object({lembagaId: z.string().nonempty()}))
       .query(async ({ctx, input}) => {
         try {
-          const anggota = await db
-              .select({
-                id: users.id,
-                nama: users.name,
-                nim: mahasiswa.nim,
-                divisi: kehimpunan.division,
-                posisi: kehimpunan.position,
-              })
-              .from(kehimpunan)
-              .innerJoin(users, eq(kehimpunan.userId, users.id))
-              .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-              .where(eq(kehimpunan.lembagaId, input.lembagaId))
+            const user_lembaga_id = await db.select({
+                id: lembaga.id,
+            }).from(lembaga).where(eq(lembaga.userId, input.lembagaId))
+                .limit(1);
+            if (!user_lembaga_id || user_lembaga_id.length === 0 || !user_lembaga_id[0]) {
+                return {
+                    error: "Lembaga not found",
+                };
+            }
+            ;
+            const anggota = await db
+                .select({
+                    id: users.id,
+                    nama: users.name,
+                    nim: mahasiswa.nim,
+                    divisi: kehimpunan.division,
+                    posisi: kehimpunan.position,
+                })
+                .from(kehimpunan)
+                .innerJoin(users, eq(kehimpunan.userId, users.id))
+                .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+                .where(eq(kehimpunan.lembagaId, user_lembaga_id[0].id));
 
-          return {
-            anggota: anggota.map((anggota) => ({
-              id: anggota.id,
-              nama: anggota.nama ?? 'Tidak Diketahui',
-              nim: anggota.nim.toString(),
-              divisi: anggota.divisi,
-              posisi: anggota.posisi,
-              posisiColor: "blue",
-            })),
-          }
+            return {
+                anggota: anggota.map((anggota) => ({
+                    id: anggota.id,
+                    nama: anggota.nama ?? 'Tidak Diketahui',
+                    nim: anggota.nim.toString(),
+                    divisi: anggota.divisi,
+                    posisi: anggota.posisi,
+                    posisiColor: "blue",
+                })),
+            }
         } catch (error) {
-          console.error("Database Error:", error);
-          return {
+            console.error("Database Error:", error);
+            return {
             error: "Database Error",
           }
         }
@@ -129,18 +139,30 @@ export const lembagaRouter = createTRPCRouter({
     addAnggota: protectedProcedure
         .input(z.object({
             lembagaId: z.string().nonempty(),
-            userId: z.string().nonempty(),
+            user_id: z.string().nonempty(),
             division: z.string().nonempty(),
             position: z.string().nonempty(),
         }))
         .mutation(async ({ctx, input}) => {
             try {
+                const lembaga_id = await db.select({
+                    id: lembaga.id,
+                }).from(lembaga).where(eq(lembaga.userId, input.lembagaId))
+                    .limit(1);
+
+                if (!lembaga_id || lembaga_id.length === 0 || !lembaga_id[0]) {
+                    return {
+                        success: false,
+                        error: "Lembaga not found",
+                    };
+                }
+
                 await db
                     .insert(kehimpunan)
                     .values({
-                        id: input.userId + '_' + input.lembagaId,
-                        lembagaId: input.lembagaId,
-                        userId: input.userId,
+                        id: input.user_id + '_' + input.lembagaId,
+                        lembagaId: lembaga_id[0].id,
+                        userId: input.user_id,
                         division: input.division,
                         position: input.position,
                     })
