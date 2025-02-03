@@ -50,19 +50,6 @@ export default function LandingComp(
 
     return (
         <div className="flex w-full flex-col gap-4 p-6">
-            <Dialog>
-                <DialogTrigger>
-                    Buka
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            Haiaya
-                        </DialogTitle>
-                    </DialogHeader>
-                    <TambahKegiatanForm />
-                </DialogContent>
-            </Dialog>
             {/* Title and Search */}
             <div className="flex flex-col gap-4">
                 <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
