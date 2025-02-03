@@ -4,14 +4,26 @@ import React from 'react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns"
 // Components Import
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Calendar } from "~/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 import { Textarea } from "~/components/ui/textarea";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import { Input } from '~/components/ui/input';
+// TRPC Import
 import { api } from "~/trpc/react";
+// Utils Import
+import { cn } from '~/lib/utils';
+// Icon Import
+import { CalendarIcon } from 'lucide-react';
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
@@ -34,6 +46,10 @@ const EventInputSchema = z.object({
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
 const TambahKegiatanForm = () => {
+  const [startDate, setStartDate] = React.useState<Date>()
+  const [endDate, setEndDate] = React.useState<Date>()
+
+
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
@@ -102,15 +118,36 @@ const TambahKegiatanForm = () => {
         />
 
         {/* Layout: Tanggal Mulai & Selesai */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 pt-2">
           <FormField
             control={form.control}
             name="start_date"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 flex flex-col gap-y-[2px]">
                 <FormLabel>Tanggal Mulai</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -121,10 +158,31 @@ const TambahKegiatanForm = () => {
             control={form.control}
             name="end_date"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 flex flex-col gap-y-[2px]">
                 <FormLabel>Tanggal Selesai</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </FormControl>
                 <FormMessage />
               </FormItem>

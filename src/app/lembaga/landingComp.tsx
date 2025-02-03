@@ -22,6 +22,7 @@ import dummyLembaga from "public/logo-hmif.png";
 import {Kepanitiaan} from "~/types/kepanitiaan";
 import {Session} from "next-auth";
 import { useRouter } from "next/navigation";
+import TambahKegiatanForm from "../_components/kegiatan/TambahKegiatanForm";
 
 export default function LandingComp(
     {
