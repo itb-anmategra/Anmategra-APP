@@ -24,11 +24,13 @@ import { api } from "~/trpc/react";
 import { cn } from '~/lib/utils';
 // Icon Import
 import { CalendarIcon } from 'lucide-react';
+// Upload Thing Import
+import { UploadButton } from "~/utils/uploadthing";
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
   name: z.string().min(1, "Nama kegiatan wajib diisi"),
-  org_id: z.string().optional(),
+  // org_id: z.string().optional(),
   description: z.string().min(10, "Deskripsi minimal 10 karakter"),
   image: z.string().url("Harus berupa URL yang valid"),
   start_date: z.string().datetime(),
@@ -38,24 +40,21 @@ const EventInputSchema = z.object({
   location: z.string().min(3, "Lokasi minimal 3 karakter"),
   participant_limit: z.number().int().min(1, "Minimal 1 peserta"),
   participant_count: z.number().int().min(0, "Minimal 0 peserta"),
-  is_highlighted: z.boolean(),
-  is_organogram: z.boolean(),
+  is_highlighted: z.boolean().optional(),
+  is_organogram: z.boolean().optional(),
 });
 
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
 const TambahKegiatanForm = () => {
-  const [startDate, setStartDate] = React.useState<Date>()
-  const [endDate, setEndDate] = React.useState<Date>()
-
-
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
+    mode: "onChange", 
     defaultValues: {
       name: "",
-      org_id: undefined,
+      // org_id: session?.user?.id,
       description: "",
       image: "",
       start_date: new Date().toISOString(),
@@ -70,19 +69,23 @@ const TambahKegiatanForm = () => {
     },
   });
 
-  // Function submit
-    const onSubmit = (values: EventInputSchemaType) => {
-        const mutation = api.event.create.useMutation();
+  const mutation = api.event.create.useMutation({
+    onSuccess: () => {
+      console.log("Kegiatan berhasil ditambahkan");
+    },
+    onError: (error) => {
+      console.error("Error creating event:", error);
+    },
+  });
 
-        mutation.mutate(values, {
-            onSuccess: () => {
-                console.log("Kegiatan berhasil ditambahkan");
-            },
-            onError: (error) => {
-                console.error("Error creating event:", error);
-            },
-        });
-    };
+  // Function submit
+  const onSubmit = (values: EventInputSchemaType) => {
+    console.log("Mengirim data:", values); 
+
+    // mutation.mutate(values); 
+  };
+
+  const isValid = form.formState.isValid
 
     return (
     <Form {...form}>
@@ -116,7 +119,6 @@ const TambahKegiatanForm = () => {
             </FormItem>
           )}
         />
-
         {/* Layout: Tanggal Mulai & Selesai */}
         <div className="flex space-x-4 pt-2">
           <FormField
@@ -129,21 +131,18 @@ const TambahKegiatanForm = () => {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
+                      variant="outline"
+                      className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                      {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 z-20">
                     <Calendar
                       mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
+                      selected={field.value ? new Date(field.value) : undefined}
+                      onSelect={(date) => field.onChange(date?.toISOString())}
                       initialFocus
                     />
                   </PopoverContent>
@@ -164,21 +163,18 @@ const TambahKegiatanForm = () => {
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !endDate && "text-muted-foreground"
-                        )}
+                        variant="outline"
+                        className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                        {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 z-20">
                       <Calendar
                         mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => field.onChange(date?.toISOString())}
                         initialFocus
                       />
                     </PopoverContent>
@@ -252,7 +248,12 @@ const TambahKegiatanForm = () => {
               <FormItem className="flex-1">
                 <FormLabel>Batas Peserta</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Masukkan jumlah maksimal peserta" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="Masukkan jumlah maksimal peserta"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))} // Konversi ke angka
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -266,7 +267,12 @@ const TambahKegiatanForm = () => {
               <FormItem className="flex-1">
                 <FormLabel>Jumlah Peserta Saat Ini</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Masukkan jumlah peserta saat ini" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="Masukkan jumlah peserta saat ini"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))} // Konversi ke angka
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -291,8 +297,37 @@ const TambahKegiatanForm = () => {
           )} />
         </div>
 
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Upload Gambar</FormLabel>
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  if (res && res.length > 0) {
+                    // @ts-ignore
+                    field.onChange(res[0].url);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+       
         {/* Tombol Submit */}
-        <Button type="submit" className="w-full">Simpan Kegiatan</Button>
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={!isValid}
+        >
+          Simpan Kegiatan
+        </Button>
       </form>
     </Form>
   );

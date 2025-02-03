@@ -2,28 +2,16 @@
 // Library Import
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 // Components Import
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { KepanitiaanCard } from "../_components/beranda/KepanitiaanCard";
-import LembagaCard from "../_components/beranda/LembagaCard";
 // Icons Import
-import { ChevronRightIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-// Constants Import
-import {
-    SearchResultKegiatan,
-    SearchResultLembaga,
-    SearchResultMahasiswa,
-} from "~/lib/constants";
-import MahasiswaCard from "../_components/beranda/MahasiswaCard";
-// Asset Import
-import dummyProfile from "public/placeholder/profilepic.png";
-import dummyLembaga from "public/logo-hmif.png";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+// Types Import
 import {Kepanitiaan} from "~/types/kepanitiaan";
+// Auth Import
 import {Session} from "next-auth";
-import { useRouter } from "next/navigation";
-import TambahKegiatanForm from "../_components/kegiatan/TambahKegiatanForm";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 
 export default function LandingComp(
     {

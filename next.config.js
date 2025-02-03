@@ -7,7 +7,12 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
     images: {
-        domains: ["example.com", "picsum.photos", "lh3.googleusercontent.com"],
+        domains: ["example.com", "picsum.photos", "lh3.googleusercontent.com, utfs.uploadthing.com"],
+        remotePatterns: [
+            {
+              hostname: "utfs.io",
+            },
+          ],
     },
     headers: async () => {
         return [
