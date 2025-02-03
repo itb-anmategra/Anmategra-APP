@@ -65,7 +65,7 @@ export default function AnggotaComp(
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-                                <Plus className="h-4 w-4" />
+                                <Image src={Plus} alt="Tambah Anggota" width={24} height={24} />
                                 Tambah Anggota Baru
                             </Button>
                         </DialogTrigger>
@@ -73,7 +73,7 @@ export default function AnggotaComp(
                             <DialogHeader>
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
-                            <TambahAnggotaForm />
+                            <TambahAnggotaForm session={session}/>
                         </DialogContent>
                     </Dialog>
                     </div>
@@ -81,7 +81,7 @@ export default function AnggotaComp(
                     {/* List Anggota Section */}
                     <div className="mt-6">
                         {/* Integrate MahasiswaCardTable here */}
-                        <MahasiswaCardTable data={[]}/>
+                        <MahasiswaCardTable data={data}/>
                     </div>
                 </div>
             </div>

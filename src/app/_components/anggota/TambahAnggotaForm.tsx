@@ -1,40 +1,48 @@
 "use client";
+
 import React from 'react';
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { api } from "~/trpc/react";
+import {z} from "zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "~/components/ui/form";
+import {Input} from "~/components/ui/input";
+import {Button} from "~/components/ui/button";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/select";
+import {api} from "~/trpc/react";
+import {Session} from "next-auth";
 
 // ✅ Schema Validasi dengan Zod
 const AnggotaSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  user_id: z.string().min(1, "User ID wajib diisi"),
-  position_id: z.string().min(1, "Posisi wajib diisi"),
-  bidang_id: z.string().min(1, "Bidang wajib diisi"),
-  description: z.string().optional(),
+    user_id: z.string().min(1, "User ID wajib diisi"),
+    position: z.string().min(1, "Posisi wajib diisi"),
+    division: z.string().min(1, "Bidang wajib diisi"),
 });
 
 // ✅ Type inference dari schema
 type AnggotaSchemaType = z.infer<typeof AnggotaSchema>;
 
-const TambahAnggotaForm = () => {
+const TambahAnggotaForm = ({
+    session
+                           } : {
+    session: Session | null
+}) => {
     const form = useForm<AnggotaSchemaType>({
         resolver: zodResolver(AnggotaSchema),
         defaultValues: {
             name: "",
             user_id: "",
-            position_id: "",
-            bidang_id: "",
-            description: "",
+            position: "",
+            division: "",
         },
     });
 
     const onSubmit = (values: AnggotaSchemaType) => {
-        
+        const query = {
+            ...values,
+            lembagaId: session?.user.id ?? ""
+        };
+        const res = api.lembaga.addAnggota.useMutation(query);
     };
 
     return (
@@ -113,22 +121,6 @@ const TambahAnggotaForm = () => {
                                     <SelectItem value="HRD">HRD</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                {/* Deskripsi (opsional) */}
-                <FormField
-                    control={form.control}
-                    name="description"
-                    // @ts-ignore
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Deskripsi</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Opsional" {...field} />
-                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

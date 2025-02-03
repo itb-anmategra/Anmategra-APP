@@ -2,7 +2,7 @@
 import {z} from "zod";
 import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc";
 import {db} from "~/server/db";
-import {kehimpunan, mahasiswa, users} from "~/server/db/schema";
+import {kehimpunan, lembaga, mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
 
 export const lembagaRouter = createTRPCRouter({
@@ -124,4 +124,36 @@ export const lembagaRouter = createTRPCRouter({
         totalPages: Math.ceil(totalEvents / limit),
       };
     }),
+
+    // Add new anggota to lembaga
+    addAnggota: protectedProcedure
+        .input(z.object({
+            lembagaId: z.string().nonempty(),
+            userId: z.string().nonempty(),
+            division: z.string().nonempty(),
+            position: z.string().nonempty(),
+        }))
+        .mutation(async ({ctx, input}) => {
+            try {
+                await db
+                    .insert(kehimpunan)
+                    .values({
+                        id: input.userId + '_' + input.lembagaId,
+                        lembagaId: input.lembagaId,
+                        userId: input.userId,
+                        division: input.division,
+                        position: input.position,
+                    })
+
+                return {
+                    success: true,
+                };
+            } catch (error) {
+                console.error("Database Error:", error);
+                return {
+                    success: false,
+                    error: "Database Error",
+                };
+            }
+        }),
 });
