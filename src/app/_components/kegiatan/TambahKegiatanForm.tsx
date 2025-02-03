@@ -49,7 +49,13 @@ const EventInputSchema = z.object({
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
 const TambahKegiatanForm = (
-    { session }: { session: Session | null }
+    { 
+      session,
+      setIsOpen
+    }: { 
+      session: Session | null 
+      setIsOpen: (param: boolean) => void
+    }
 ) => {
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
@@ -74,6 +80,7 @@ const TambahKegiatanForm = (
   const mutation = api.event.create.useMutation({
     onSuccess: () => {
       console.log("Kegiatan berhasil ditambahkan");
+      setIsOpen(false)
     },
     onError: (error) => {
       console.error("Error creating event:", error);

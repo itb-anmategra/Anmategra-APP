@@ -31,6 +31,7 @@ export default function ActivityList(
     const [activities, setActivities] = useState<Activity[]>(propActivites)
     const [searchQuery, setSearchQuery] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     useEffect(() => {
@@ -63,7 +64,7 @@ export default function ActivityList(
                 </div>
 
                 <div className="flex gap-2">
-                    <Dialog>
+                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <DialogTrigger asChild>
                             <Button
                                 className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
@@ -75,7 +76,7 @@ export default function ActivityList(
                             <DialogHeader>
                                 <DialogTitle>Tambah Kegiatan</DialogTitle>
                             </DialogHeader>
-                            <TambahKegiatanForm session={session}/>
+                            <TambahKegiatanForm session={session} setIsOpen={setIsOpen} />
                         </DialogContent>
                     </Dialog>
                 </div>
