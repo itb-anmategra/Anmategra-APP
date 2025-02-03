@@ -1,7 +1,9 @@
-import { adminProcedure } from "../../trpc";
+import {adminProcedure, protectedProcedure, publicProcedure} from "../../trpc";
 import { z } from "zod";
-import { events } from "~/server/db/schema";
+import {events, lembaga} from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
+import {db} from "~/server/db";
+import {eq} from "drizzle-orm";
 
 function generateShortId(length = 10) {
     const array = new Uint8Array(length);
@@ -9,11 +11,11 @@ function generateShortId(length = 10) {
     return Array.from(array, byte => byte.toString(16).padStart(2, "0")).join("").slice(0, length);
   }
 
-export const createEvent = adminProcedure
+export const createEvent = protectedProcedure
       .input(
         z.object({
           name: z.string(),
-          org_id: z.string().optional(),
+          org_id: z.string(),
           description: z.string(),
           image: z.string(),
           start_date: z.string().datetime(),
@@ -31,6 +33,23 @@ export const createEvent = adminProcedure
         console.log("Event Creation called.")
 
         try {
+            const lembaga_user_id = await db
+                .select({
+                    id: lembaga.id
+                })
+                .from(lembaga)
+                .where(eq(lembaga.userId, input.org_id))
+                .limit(1)
+
+            if (!lembaga_user_id || lembaga_user_id.length === 0 || !lembaga_user_id[0]) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: "Organization not found."
+                });
+            }
+
+            input.org_id = lembaga_user_id[0].id;
+
           const newEvent = await ctx.db.insert(events).values({
             id: generateShortId(),
             ...input,

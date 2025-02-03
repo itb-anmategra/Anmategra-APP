@@ -1,12 +1,8 @@
 // Library Impoty
-import Image from "next/image";
 import {api} from "~/trpc/server";
-// Component Import
-import {Input} from "~/components/ui/input";
 // Icons Import
-import SearchIcon from "~/../public/icons/search.svg";
-import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
 import ActivityList from "~/app/lembaga/kegiatan/_components/kegiatanContainer";
+import {getServerAuthSession} from "~/server/auth";
 
 export default async function Home() {
 
@@ -22,9 +18,11 @@ export default async function Home() {
     thumbnail: activity.image,
   }));
 
+  const session = await getServerAuthSession();
+
   return (
-    <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
-        <ActivityList propActivites={formattedActivities}/>
-    </main>
+      <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
+        <ActivityList propActivites={formattedActivities} session={session}/>
+      </main>
   );
 }

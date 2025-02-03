@@ -7,6 +7,7 @@ import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
 import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
+import {Session} from "next-auth";
 
 export interface Activity {
     id: string
@@ -19,7 +20,13 @@ export interface Activity {
 }
 
 export default function ActivityList(
-    {propActivites}: { propActivites: Activity[] }
+    {
+        propActivites,
+        session
+    }: {
+        propActivites: Activity[],
+        session: Session | null
+    }
 ) {
     const [activities, setActivities] = useState<Activity[]>(propActivites)
     const [searchQuery, setSearchQuery] = useState("")
@@ -68,7 +75,7 @@ export default function ActivityList(
                             <DialogHeader>
                                 <DialogTitle>Tambah Kegiatan</DialogTitle>
                             </DialogHeader>
-                            <TambahKegiatanForm/>
+                            <TambahKegiatanForm session={session}/>
                         </DialogContent>
                     </Dialog>
                 </div>

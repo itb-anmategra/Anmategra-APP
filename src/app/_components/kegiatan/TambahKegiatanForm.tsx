@@ -26,6 +26,7 @@ import { cn } from '~/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 // Upload Thing Import
 import { UploadButton } from "~/utils/uploadthing";
+import type {Session} from "next-auth";
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
@@ -47,14 +48,15 @@ const EventInputSchema = z.object({
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
-const TambahKegiatanForm = () => {
+const TambahKegiatanForm = (
+    { session }: { session: Session | null }
+) => {
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
     mode: "onChange", 
     defaultValues: {
       name: "",
-      // org_id: session?.user?.id,
       description: "",
       image: "",
       start_date: new Date().toISOString(),
@@ -80,9 +82,13 @@ const TambahKegiatanForm = () => {
 
   // Function submit
   const onSubmit = (values: EventInputSchemaType) => {
-    console.log("Mengirim data:", values); 
-
-    // mutation.mutate(values); 
+    const query = {
+        ...values,
+        org_id: session?.user?.id,
+        is_organogram: values.is_organogram ?? false,
+        is_highlighted: values.is_highlighted ?? false,
+    }
+    mutation.mutate(query);
   };
 
   const isValid = form.formState.isValid
