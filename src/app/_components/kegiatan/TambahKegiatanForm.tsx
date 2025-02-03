@@ -139,7 +139,7 @@ const TambahKegiatanForm = () => {
                       {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="w-auto p-0 z-20">
                     <Calendar
                       mode="single"
                       selected={startDate}
@@ -174,7 +174,7 @@ const TambahKegiatanForm = () => {
                         {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="w-auto p-0 z-20">
                       <Calendar
                         mode="single"
                         selected={endDate}

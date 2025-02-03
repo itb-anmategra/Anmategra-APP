@@ -23,6 +23,7 @@ import {Kepanitiaan} from "~/types/kepanitiaan";
 import {Session} from "next-auth";
 import { useRouter } from "next/navigation";
 import TambahKegiatanForm from "../_components/kegiatan/TambahKegiatanForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 
 export default function LandingComp(
     {
@@ -49,6 +50,19 @@ export default function LandingComp(
 
     return (
         <div className="flex w-full flex-col gap-4 p-6">
+            <Dialog>
+                <DialogTrigger>
+                    Buka
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Haiaya
+                        </DialogTitle>
+                    </DialogHeader>
+                    <TambahKegiatanForm />
+                </DialogContent>
+            </Dialog>
             {/* Title and Search */}
             <div className="flex flex-col gap-4">
                 <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
