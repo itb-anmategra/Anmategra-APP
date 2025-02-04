@@ -1,16 +1,20 @@
-import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
+import {getToken} from "next-auth/jwt";
 
-const PUBLIC_ROUTES = ["/"];
 const AUTH_ROUTES = ["/authentication"];
+const STATIC = ["/_next", "/api"];
+
 
 export default async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // if ((!AUTH_ROUTES.includes(req.nextUrl.pathname) && !PUBLIC_ROUTES.includes(req.nextUrl.pathname)) && !token) {
-    //     return NextResponse.redirect(new URL('/authentication', req.url))
-    // }
+    if (STATIC.some((route) => req.nextUrl.pathname.startsWith(route))) {
+        return NextResponse.next();
+    }
+
+    if (req.nextUrl.pathname !== "/" && req.nextUrl.pathname !== "/authentication" && !token) {
+        return NextResponse.redirect(new URL("/authentication", req.url));
+    }
 
     if (AUTH_ROUTES.includes(req.nextUrl.pathname) && token) {
         if (token.role === "mahasiswa") {
