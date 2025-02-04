@@ -50,7 +50,7 @@ export function EventHeader({
               <div className="mt-2 flex flex-1 flex-col justify-end">
                 <Button
                   size="lg"
-                  className="flex-1 rounded-xl bg-[#00B7B7] text-lg text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4]"
+                  className="flex-1 rounded-xl bg-[#00B7B7] text-lg text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] max-w-[250px]"
                 >
                   Daftar menjadi Panitia
                 </Button>
