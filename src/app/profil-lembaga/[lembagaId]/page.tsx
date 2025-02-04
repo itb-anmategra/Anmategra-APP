@@ -58,7 +58,7 @@ const DetailLembagaPage = async (
       <div className='w-full flex justify-between fixed z-20'>
         <MahasiswaSidebar session={session?.user.id ?? ""}  />
       </div>
-      <div className='w-full flex min-h-screen flex-col items-center pt-20 bg-red-100'>
+      <div className='w-full flex min-h-screen flex-col items-center pt-20'>
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col gap-y-2">
