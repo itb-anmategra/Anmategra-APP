@@ -76,7 +76,7 @@ export const Sidebar = (
           <div className="space-y-6">
             <Link href={"/"}>
               <Image
-                src={session?.user.image ??"/logo-anmategra.png"}
+                src="/logo-anmategra.png"
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
