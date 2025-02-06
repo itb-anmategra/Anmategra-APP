@@ -20,8 +20,7 @@ export const KepanitiaanSection = (
       seeAllLink="#"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {/* show only first 6 data (depends on api response), click show all to see every data */}
-        {data.map((kepanitiaan) => (
+        {data && data.map((kepanitiaan) => (
           <Link 
             key={kepanitiaan.name + kepanitiaan.description}  
             href={`profil-lembaga/${kepanitiaan.lembaga.id}`}
@@ -32,6 +31,11 @@ export const KepanitiaanSection = (
             />
           </Link>
         ))}
+        {!data || data.length === 0 && (
+          <div>
+            <p className="text-slate-600">Tidak ada kepanitiaan terbaru yang dapat ditampilkan.</p>
+          </div>
+        )}
       </div>
     </ListSectionWrapper>
   );
