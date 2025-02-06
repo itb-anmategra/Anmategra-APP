@@ -64,7 +64,7 @@ export default function AnggotaComp(
                     <div className="flex justify-between">
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                            <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
                                 <Image src={Plus} alt="Tambah Anggota" width={24} height={24} />
                                 Tambah Anggota Baru
                             </Button>

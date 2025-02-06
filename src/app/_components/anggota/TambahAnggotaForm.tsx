@@ -1,11 +1,9 @@
 "use client";
-
-import React from "react";
+// Library Import
+import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { Session } from "next-auth";
 // Components Import
@@ -22,7 +20,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+// Icons Import
 import { Check, ChevronsUpDown } from "lucide-react";
+// Utils Import
 import { cn } from "~/lib/utils";
 
 // ✅ Schema Validasi dengan Zod
@@ -55,10 +58,15 @@ const bidangData = [
   { value: "HRD", label: "HRD" },
 ];
 
+type comboboxDataType = {
+  value: string;
+  label: string;
+}
+
 const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
-  const [open, setOpen] = React.useState(false);
-  const [posisiOpen, setPosisiOpen] = React.useState(false);
-  const [bidangOpen, setBidangOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [posisiOpen, setPosisiOpen] = useState(false);
+  const [bidangOpen, setBidangOpen] = useState(false);
 
   const mutation = api.lembaga.addAnggota.useMutation();
 
@@ -70,6 +78,11 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
       division: "",
     },
   });
+
+  const [mahasiswaList, setMahasiswaList] = useState<comboboxDataType[]>(mahasiswaData)
+  const [posisiList, setPosisiList] = useState<comboboxDataType[]>(posisiData)
+  const [bidangList, setBidangList] = useState<comboboxDataType[]>(bidangData)
+  const [customValue, setCustomValue] = useState("");
 
   const onSubmit = (values: AnggotaSchemaType) => {
     const query = {
@@ -99,18 +112,18 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-between">
                       {field.value
-                        ? mahasiswaData.find((m) => m.value === field.value)?.label
+                        ? mahasiswaList.find((m) => m.value === field.value)?.label
                         : "Pilih Mahasiswa"}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 PopoverContent">
+                  <PopoverContent className="p-0 PopoverContent">
                     <Command>
                       <CommandInput placeholder="Cari Mahasiswa" />
                       <CommandList>
                         <CommandEmpty>Mahasiswa Tidak Ditemukan.</CommandEmpty>
                         <CommandGroup>
-                          {mahasiswaData.map((m) => (
+                          {mahasiswaList.map((m) => (
                             <CommandItem
                               key={m.value}
                               value={m.value}
@@ -123,6 +136,26 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                               <Check className={cn("ml-auto", field.value === m.value ? "opacity-100" : "opacity-0")} />
                             </CommandItem>
                           ))}
+                          <CommandItem>
+                            <Input
+                              className="w-full focus-visible:ring-transparent bg-white"
+                              value={customValue}
+                              onChange={(e) => setCustomValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && customValue.trim() !== "") {
+                                  const newMahasiswa = { value: customValue, label: customValue };
+
+                                  if (!mahasiswaList.some((m) => m.value === customValue)) {
+                                    setMahasiswaList([...mahasiswaList, newMahasiswa]);
+                                  }
+
+                                  field.onChange(customValue);
+                                  setCustomValue("");
+                                  setOpen(false)
+                                }
+                              }}
+                            />
+                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -145,17 +178,17 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                 <Popover open={posisiOpen} onOpenChange={setPosisiOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-between">
-                      {field.value ? posisiData.find((p) => p.value === field.value)?.label : "Pilih Posisi"}
+                      {field.value ? posisiList.find((p) => p.value === field.value)?.label : "Pilih Posisi"}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 PopoverContent">
+                  <PopoverContent className="p-0 PopoverContent">
                     <Command>
                       <CommandInput placeholder="Cari Posisi" />
                       <CommandList>
                         <CommandEmpty>Posisi Tidak Ditemukan.</CommandEmpty>
                         <CommandGroup>
-                          {posisiData.map((p) => (
+                          {posisiList.map((p) => (
                             <CommandItem
                               key={p.value}
                               value={p.value}
@@ -168,6 +201,26 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                               <Check className={cn("ml-auto", field.value === p.value ? "opacity-100" : "opacity-0")} />
                             </CommandItem>
                           ))}
+                          <CommandItem>
+                            <Input
+                              className="w-full focus-visible:ring-transparent bg-white"
+                              value={customValue}
+                              onChange={(e) => setCustomValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && customValue.trim() !== "") {
+                                  const newPosisi = { value: customValue, label: customValue };
+
+                                  if (!posisiList.some((p) => p.value === customValue)) {
+                                    setPosisiList([...posisiList, newPosisi]);
+                                  }
+
+                                  field.onChange(customValue);
+                                  setCustomValue("");
+                                  setOpen(false)
+                                }
+                              }}
+                            />
+                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -190,17 +243,17 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                 <Popover open={bidangOpen} onOpenChange={setBidangOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-between">
-                      {field.value ? bidangData.find((b) => b.value === field.value)?.label : "Pilih Bidang"}
+                      {field.value ? bidangList.find((b) => b.value === field.value)?.label : "Pilih Bidang"}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 PopoverContent">
+                  <PopoverContent className="p-0 PopoverContent">
                     <Command>
                       <CommandInput placeholder="Cari Bidang" />
                       <CommandList>
                         <CommandEmpty>Bidang Tidak Ditemukan.</CommandEmpty>
                         <CommandGroup>
-                          {bidangData.map((b) => (
+                          {bidangList.map((b) => (
                             <CommandItem
                               key={b.value}
                               value={b.value}
@@ -213,6 +266,26 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
                               <Check className={cn("ml-auto", field.value === b.value ? "opacity-100" : "opacity-0")} />
                             </CommandItem>
                           ))}
+                          <CommandItem>
+                            <Input
+                              className="w-full focus-visible:ring-transparent bg-white"
+                              value={customValue}
+                              onChange={(e) => setCustomValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && customValue.trim() !== "") {
+                                  const newBidang = { value: customValue, label: customValue };
+
+                                  if (!bidangList.some((b) => b.value === customValue)) {
+                                    setBidangList([...bidangList, newBidang]);
+                                  }
+
+                                  field.onChange(customValue);
+                                  setCustomValue("");
+                                  setOpen(false)
+                                }
+                              }}
+                            />
+                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>
