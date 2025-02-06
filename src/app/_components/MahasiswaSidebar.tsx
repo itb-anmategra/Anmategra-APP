@@ -3,14 +3,14 @@
 // Library Import
 import React, { useState } from 'react'
 import Image from 'next/image'
+import {useRouter} from "next/navigation";
 import Link from 'next/link'
 // Components Import
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 // Icon Import
-import { LogIn } from 'lucide-react';
+import { LogIn, LogOut, CircleUserRound } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import {useRouter} from "next/navigation";
 
 const MahasiswaSidebar = ({ session }: { session: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,11 +50,16 @@ const MahasiswaSidebar = ({ session }: { session: string }) => {
         </div>
         <nav className='flex items-center'>
           {session ? (
-            <Link href={`/profil-mahasiswa/${session}`}>
-              <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
-                Profil
+            <div className='flex items-center gap-x-2'>
+              <Link href={`/profil-mahasiswa/${session}`}>
+                <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+                  Profil <CircleUserRound />
+                </Button>
+              </Link>
+              <Button variant={"outline"} className='space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all'>
+                Keluar <LogOut />
               </Button>
-            </Link>
+            </div>
           ) : (
             <Link href={"/authentication"}>
               <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
