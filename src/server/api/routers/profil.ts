@@ -83,6 +83,7 @@ export const profileRouter = createTRPCRouter({
                     name: item.name,
                     profilePicture: item.image,
                 },
+                id: item.id,
                 name: item.name,
                 description: item.description,
                 quota: item.participant_count ?? 0,
