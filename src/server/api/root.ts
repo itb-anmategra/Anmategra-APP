@@ -1,10 +1,9 @@
-import {postRouter} from "~/server/api/routers/post";
 import {createCallerFactory, createTRPCRouter} from "~/server/api/trpc";
-import {adminRouter} from "./routers/admin";
 import {landingRouter} from "./routers/landing";
 import { lembagaRouter } from "./routers/lembaga";
 import {eventRouter} from "./routers/event";
 import {kegiatanRouter} from "./routers/kegiatan";
+import {userRouter} from "./routers/user";
 import {profileRouter} from "~/server/api/routers/profil";
 
 
@@ -20,6 +19,7 @@ export const appRouter = createTRPCRouter({
   event: eventRouter,
   kegiatan: kegiatanRouter,
   profil: profileRouter,
+  users: userRouter,
 });
 
 // export type definition of API

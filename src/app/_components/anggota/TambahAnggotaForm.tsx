@@ -38,38 +38,43 @@ const AnggotaSchema = z.object({
 // ✅ Type inference dari schema
 type AnggotaSchemaType = z.infer<typeof AnggotaSchema>;
 
-// Ini Harusnya Mahasiswa (Gantilah dengan data dari API)
-const mahasiswaData = [
-  { value: "1", label: "Mahasiswa 1" },
-  { value: "2", label: "Mahasiswa 2" },
-  { value: "3", label: "Mahasiswa 3" },
-];
-
-// Dummy Posisi
-const posisiData = [
-  { value: "Ketua", label: "Ketua" },
-  { value: "Wakil", label: "Wakil" },
-  { value: "Anggota", label: "Anggota" },
-];
-
-const bidangData = [
-  { value: "IT", label: "IT" },
-  { value: "Marketing", label: "Marketing" },
-  { value: "HRD", label: "HRD" },
-];
-
 type comboboxDataType = {
   value: string;
   label: string;
 }
 
-const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
+const posisiData: comboboxDataType[] = [
+    { value: "1", label: "Ketua" },
+    { value: "2", label: "Wakil Ketua" },
+    { value: "3", label: "Sekretaris" },
+    { value: "4", label: "Bendahara" },
+    { value: "5", label: "Anggota" },
+    ];
+
+const bidangData: comboboxDataType[] = [
+    { value: "1", label: "Bidang 1" },
+    { value: "2", label: "Bidang 2" },
+    { value: "3", label: "Bidang 3" },
+    { value: "4", label: "Bidang 4" },
+    { value: "5", label: "Bidang 5" },
+    ];
+
+const TambahAnggotaForm = ({
+                             session,
+    data
+}: {
+  session: Session | null ,
+  data: {
+    mahasiswa: comboboxDataType[],
+    posisi: comboboxDataType[],
+    bidang: comboboxDataType[],
+  }
+
+}) => {
   const [open, setOpen] = useState(false);
   const [posisiOpen, setPosisiOpen] = useState(false);
   const [bidangOpen, setBidangOpen] = useState(false);
-
   const mutation = api.lembaga.addAnggota.useMutation();
-
   const form = useForm<AnggotaSchemaType>({
     resolver: zodResolver(AnggotaSchema),
     defaultValues: {
@@ -78,10 +83,9 @@ const TambahAnggotaForm = ({ session }: { session: Session | null }) => {
       division: "",
     },
   });
-
-  const [mahasiswaList, setMahasiswaList] = useState<comboboxDataType[]>(mahasiswaData)
-  const [posisiList, setPosisiList] = useState<comboboxDataType[]>(posisiData)
-  const [bidangList, setBidangList] = useState<comboboxDataType[]>(bidangData)
+  const [mahasiswaList, setMahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa)
+  const [posisiList, setPosisiList] = useState<comboboxDataType[]>(data.posisi)
+  const [bidangList, setBidangList] = useState<comboboxDataType[]>(data.bidang)
   const [customValue, setCustomValue] = useState("");
 
   const onSubmit = (values: AnggotaSchemaType) => {

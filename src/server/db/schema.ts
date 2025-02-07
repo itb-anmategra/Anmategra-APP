@@ -9,7 +9,6 @@ import {
   serial,
   text,
   timestamp,
-  uuid,
   varchar
 } from "drizzle-orm/pg-core";
 import {type AdapterAccount} from "next-auth/adapters";
@@ -258,30 +257,6 @@ export const eventsRelations = relations(events, ({ many, one }) => ({
   }),
   keanggotaan: many(keanggotaan),
   associationRequests: many(associationRequests),
-  eventOrganograms: many(eventOrganograms)
-}));
-
-export const organogramTypeEnum = pgEnum('organogram_type', ['Posisi', 'Bidang', 'Divisi']);
-
-export const eventOrganograms = createTable('event_organogram', {
-  eventOrganogram_id: varchar('eventOrganogram_id', { length: 255 }).primaryKey(),
-  event_id: varchar('event_id', { length: 255 })
-    .references(() => events.id),
-  type: organogramTypeEnum('type').notNull(),
-  value: varchar('value', { length: 255 }).notNull()
-});
-
-export const eventOrganogramsRelations = relations(eventOrganograms, ({ many,one }) => ({
-  event: one(events, {
-    fields: [eventOrganograms.event_id],
-    references: [events.id]
-  }),
-  keanggotaan_positions: many(keanggotaan, { relationName: 'position' }),
-  keanggotaan_divisions: many(keanggotaan, { relationName: 'division' }),
-  keanggotaan_bidangs: many(keanggotaan, { relationName: 'bidang' }),
-  association_request_positions: many(associationRequests, { relationName: 'position' }),
-  association_request_divisions: many(associationRequests, { relationName: 'division' }),
-  association_request_bidangs: many(associationRequests, { relationName: 'bidang' })
 }));
 
 // Enum for association request status
@@ -295,12 +270,9 @@ export const keanggotaan = createTable('keanggotaan', {
   user_id: varchar('user_id', { length: 255 })
     .references(() => users.id),
   position_id: varchar('position_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id)
     .notNull(),
-  division_id: varchar('division_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id),
-  bidang_id: varchar('bidang_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id),
+  division_id: varchar('division_id', { length: 255 }),
+  bidang_id: varchar('bidang_id', { length: 255 }),
   description: text('description')
 });
 
@@ -312,12 +284,9 @@ export const associationRequests = createTable('association_request', {
   user_id: varchar('user_id', { length: 255 })
     .references(() => users.id),
   position_id: varchar('position_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id)
     .notNull(),
-  division_id: varchar('division_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id),
-  bidang_id: varchar('bidang_id', { length: 255 })
-    .references(() => eventOrganograms.eventOrganogram_id),
+  division_id: varchar('division_id', { length: 255 }),
+  bidang_id: varchar('bidang_id', { length: 255 }),
   status: associationRequestStatusEnum('status').notNull().default('Pending'),
   created_at: timestamp('created_at').notNull().defaultNow()
 });
@@ -332,21 +301,6 @@ export const keanggotaanRelations = relations(keanggotaan, ({ one }) => ({
     fields: [keanggotaan.user_id],
     references: [users.id]
   }),
-  position: one(eventOrganograms, {
-    fields: [keanggotaan.position_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "position"
-  }),
-  division: one(eventOrganograms, {
-    fields: [keanggotaan.division_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "division"
-  }),
-  bidang: one(eventOrganograms, {
-    fields: [keanggotaan.bidang_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "bidang"
-  }),
 }));
 
 // Relations for Association Requests
@@ -359,21 +313,6 @@ export const associationRequestRelations = relations(associationRequests, ({ one
     fields: [associationRequests.user_id],
     references: [users.id]
   }),
-  position: one(eventOrganograms, {
-    fields: [associationRequests.position_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "position"
-  }),
-  division: one(eventOrganograms, {
-    fields: [associationRequests.division_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "division"
-  }),
-  bidang: one(eventOrganograms, {
-    fields: [associationRequests.bidang_id],
-    references: [eventOrganograms.eventOrganogram_id],
-    relationName: "bidang"
-  })
 }));
 
 // Enum for support ticket status

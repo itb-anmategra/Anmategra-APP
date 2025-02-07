@@ -11,6 +11,7 @@ import {Input} from "~/components/ui/input";
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
 import TambahAnggotaForm from "~/app/_components/anggota/TambahAnggotaForm";
+import {api} from "~/trpc/react";
 
 type Keanggotaan = {
     id: string;
@@ -31,7 +32,7 @@ export default function AnggotaComp(
         data: Member[]
     }
 ) {
-    
+    const mahasiswaData = api.users.tambahAnggotaLembagaData.useQuery( { lembagaId: session?.user.id ?? "" }).data ?? [];
 
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
