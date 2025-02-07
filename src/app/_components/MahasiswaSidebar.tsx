@@ -1,5 +1,4 @@
 "use client"
-
 // Library Import
 import React, { useState } from 'react'
 import Image from 'next/image'
@@ -11,7 +10,8 @@ import { Input } from '~/components/ui/input'
 // Icon Import
 import { LogIn, LogOut, CircleUserRound } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import {signOut} from "next-auth/react";
+// Next Auth Import
+import { signOut } from "next-auth/react";
 
 const MahasiswaSidebar = ({ session }: { session: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,18 +37,20 @@ const MahasiswaSidebar = ({ session }: { session: string }) => {
             />
           </Link>
         </div>
-        <div>
-          <Input
-            placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
-            className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent w-[750px]"
-            startAdornment={
-              <MagnifyingGlassIcon className="size-4 text-gray-500" />
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+        {session && (
+          <div>
+            <Input
+              placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
+              className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent w-[750px]"
+              startAdornment={
+                <MagnifyingGlassIcon className="size-4 text-gray-500" />
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+        )}
         <nav className='flex items-center'>
           {session ? (
             <div className='flex items-center gap-x-2'>

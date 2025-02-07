@@ -30,8 +30,8 @@ const DetailMahasiswaPage = async ({params}: {
                 </div>
                 <div className='w-full flex min-h-screen flex-col items-center pt-20'>
                     <div className="max-w-7xl w-full flex flex-col gap-y-2">
-                        <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
-                        <p>Beranda / Mahasiswa</p>
+                        <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
+                        <p className='text-slate-400'>Beranda / Mahasiswa</p>
                         {/* <Input
                             placeholder="Cari lembaga, kegiatan, atau mahasiswa"
                             className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
@@ -57,8 +57,8 @@ const DetailMahasiswaPage = async ({params}: {
                 <div className="max-w-7xl flex w-full flex-col gap-4 p-6">
                 {/* Title and Search */}
                 <div className="flex flex-col gap-y-2">
-                    <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
-                    <p>Beranda / Mahaisiswa</p>
+                    <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
+                    <p className='text-slate-400'>Beranda / Mahasiswa</p>
                     {/* <Input
                         placeholder="Cari lembaga, kegiatan, atau mahasiswa"
                         className="rounded-2xl bg-white focus-visible:ring-transparent placeholder:text-neutral-700"
