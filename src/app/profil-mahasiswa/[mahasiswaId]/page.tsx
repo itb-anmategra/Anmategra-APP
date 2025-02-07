@@ -7,11 +7,13 @@ import FotoProfil from "public/placeholder/profilepic.png"
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
 import MahasiswaSidebar from "../../_components/MahasiswaSidebar";
-// Icon Import
-import {api} from "~/trpc/server";
-import { Kepanitiaan } from '~/types/kepanitiaan'
+import EditProfileDialog from '~/app/_components/profil-mahasiswa/EditProfileDialog';
 // Auth
 import { getServerAuthSession } from '~/server/auth';
+// API Import
+import { api } from "~/trpc/server";
+// Types Import
+import { Kepanitiaan } from '~/types/kepanitiaan'
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>
@@ -50,7 +52,7 @@ const DetailMahasiswaPage = async ({params}: {
                 {/* Title and Search */}
                 <div className="flex flex-col">
                     <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-                    <p className='text-slate-400'>Beranda / Mah asiswa</p>
+                    <p className='text-slate-400'>Beranda / Mahasiswa</p>
                 </div>
 
                 {/* Profil Mahasiswa */}
@@ -65,6 +67,11 @@ const DetailMahasiswaPage = async ({params}: {
                         <p className='text-3xl text-slate-700 font-semibold'>{mahasiswaData?.user.name}</p>
                         <p className='text-[18px] text-slate-600 font-medium'>{mahasiswaData?.mahasiswa.nim}</p>
                         <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
+                        {session?.user.id === userId && (
+                            <div className='pt-2'>
+                                <EditProfileDialog />
+                            </div>
+                        )}
                     </div>
                 </div>
 

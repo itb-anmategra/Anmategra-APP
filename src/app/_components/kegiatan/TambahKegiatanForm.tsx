@@ -95,6 +95,7 @@ const TambahKegiatanForm = (
         is_organogram: values.is_organogram ?? false,
         is_highlighted: values.is_highlighted ?? false,
     }
+    // @ts-ignore
     mutation.mutate(query);
   };
 

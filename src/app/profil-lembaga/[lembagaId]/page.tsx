@@ -110,8 +110,8 @@ const DetailLembagaPage = async (
             <h5 className='text-2xl font-semibold text-slate-600'>Kepanitiaan Terbaru</h5>  
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
               {newestEvent && newestEvent.length !== 0 ? newestEvent.map((item) => (
-                <Link href={`/profil-kegiatan/${item.id}`}>
-                  <KepanitiaanCard kepanitiaan={item} key={item.id} />
+                <Link href={`/profil-kegiatan/${item.id}`} key={item.id}>
+                  <KepanitiaanCard kepanitiaan={item} />
                 </Link>
               )) : <p className='text-slate-600'>Belum ada kepanitiaan</p>}
             </div>

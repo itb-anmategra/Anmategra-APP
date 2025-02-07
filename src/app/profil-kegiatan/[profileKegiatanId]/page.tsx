@@ -58,8 +58,8 @@ const ProfileKegiatan = async (
                     </div>
                     <Link href={`/profil-lembaga/${lembaga?.id}`}>
                         <PenyelenggaraCard
-                            title={lembaga?.name ?? 'null'}
-                            category={lembaga?.type ?? 'null'}
+                            title={lembaga?.name ?? 'Tidak ada nama'}
+                            category={lembaga?.type ?? 'Tidak ada kategori'}
                             logo={lembaga?.image ??"/profile-kegiatan-placeholder/oskm-organizer.png"}
                         />
                     </Link>
