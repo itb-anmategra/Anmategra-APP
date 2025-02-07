@@ -25,6 +25,7 @@ export const adminRouter = createTRPCRouter({
       }).returning();
       return user;
     }),
+
   deleteVerifiedEmail: protectedProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {

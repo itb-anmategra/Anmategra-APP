@@ -14,8 +14,7 @@ import {profileRouter} from "~/server/api/routers/profil";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
-  admin: adminRouter,
+  // admin: adminRouter,
   landing: landingRouter,
   lembaga: lembagaRouter,
   event: eventRouter,
