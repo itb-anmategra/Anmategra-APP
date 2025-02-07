@@ -11,6 +11,7 @@ import { Input } from '~/components/ui/input'
 // Icon Import
 import { LogIn, LogOut, CircleUserRound } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import {signOut} from "next-auth/react";
 
 const MahasiswaSidebar = ({ session }: { session: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +57,8 @@ const MahasiswaSidebar = ({ session }: { session: string }) => {
                   Profil <CircleUserRound />
                 </Button>
               </Link>
-              <Button variant={"outline"} className='space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all'>
+              <Button onClick={() => void signOut()}
+                  variant={"outline"} className='space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all'>
                 Keluar <LogOut />
               </Button>
             </div>
