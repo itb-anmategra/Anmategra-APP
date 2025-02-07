@@ -14,19 +14,19 @@ const config = {
             },
           ],
     },
-    headers: async () => {
-        return [
-            {
-                source: "/api/trpc/profil",
-                headers: [
-                    {
-                        key: "Cache-Control",
-                        value: "public, s-maxage=90, max-age=90",
-                    },
-                ],
-            },
-        ];
-    },
+    // headers: async () => {
+    //     return [
+    //         {
+    //             source: "/api/trpc/profil",
+    //             headers: [
+    //                 {
+    //                     key: "Cache-Control",
+    //                     value: "public, s-maxage=90, max-age=90",
+    //                 },
+    //             ],
+    //         },
+    //     ];
+    // },
 };
 
 export default config;
