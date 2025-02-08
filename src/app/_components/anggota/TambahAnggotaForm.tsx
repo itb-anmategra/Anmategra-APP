@@ -38,7 +38,7 @@ const AnggotaSchema = z.object({
 // ✅ Type inference dari schema
 type AnggotaSchemaType = z.infer<typeof AnggotaSchema>;
 
-type comboboxDataType = {
+export type comboboxDataType = {
   value: string;
   label: string;
 }

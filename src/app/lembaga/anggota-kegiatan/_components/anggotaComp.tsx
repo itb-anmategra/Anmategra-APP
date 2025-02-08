@@ -10,8 +10,7 @@ import {Input} from "~/components/ui/input";
 // Icon Import
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
-import TambahAnggotaForm from "~/app/_components/anggota/TambahAnggotaForm";
-import {api} from "~/trpc/react";
+import TambahAnggotaForm, {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 
 type Keanggotaan = {
     id: string;
@@ -26,14 +25,18 @@ type Keanggotaan = {
 export default function AnggotaComp(
     {
         session,
-        data
+        data,
+        dataAddAnggota
     }: {
         session: Session | null,
-        data: Member[]
+        data: Member[],
+        dataAddAnggota: {
+            mahasiswa: comboboxDataType[],
+            posisi: comboboxDataType[],
+            bidang: comboboxDataType[],
+        }
     }
 ) {
-    const mahasiswaData = api.users.tambahAnggotaLembagaData.useQuery( { lembagaId: session?.user.id ?? "" }).data ?? [];
-
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
             {/* Content */}
@@ -74,7 +77,7 @@ export default function AnggotaComp(
                             <DialogHeader>
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
-                            <TambahAnggotaForm session={session}/>
+                            <TambahAnggotaForm session={session} data={dataAddAnggota}/>
                         </DialogContent>
                     </Dialog>
                     </div>
