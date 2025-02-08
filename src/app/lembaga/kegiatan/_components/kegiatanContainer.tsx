@@ -1,6 +1,7 @@
 "use client"
 // Library Import
 import { useEffect, useState } from "react"
+import Link from "next/link";
 // Components Import
 import { useDebounce } from "~/components/debounceHook";
 import { Button } from "~/components/ui/button"
@@ -11,6 +12,7 @@ import EditKegiatanForm from "~/app/_components/kegiatan/EditKegiatanForm";
 // Icons Import
 import { Plus } from "lucide-react"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { ArrowUpRight } from 'lucide-react';
 // Auth Import
 import { Session } from "next-auth";
 
@@ -95,7 +97,7 @@ export default function ActivityList(
             <div className="bg-white rounded-lg overflow-hidden">
                 <div className="min-w-full">
                     <div
-                        className="grid grid-cols-[80px_1fr_120px_100px_100px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
+                        className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
                         <div>Thumbnail</div>
                         <div>Judul</div>
                         <div>Tanggal</div>
@@ -108,7 +110,7 @@ export default function ActivityList(
                         {activities.map((activity, index) => (
                             <div
                                 key={activity.id}
-                                className="grid grid-cols-[80px_1fr_120px_100px_100px_50px] gap-4 p-4 items-center hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 items-center hover:bg-gray-50 transition-colors"
                             >
                                 <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden">
                                     {activity.thumbnail && (
@@ -121,7 +123,14 @@ export default function ActivityList(
                                     <p className="text-sm text-gray-500 truncate">{activity.description}</p>
                                 </div>
                                 <div className="text-sm text-gray-500">{activity.start_date}</div>
-                                <div className="text-sm text-gray-500">{activity.participant_count}</div>
+                                <div className="text-sm text-gray-500 flex items-center gap-x-2">
+                                    <p>{activity.participant_count}</p>
+                                    <Link href={`/lembaga/kegiatan/${activity.id}`}>
+                                        <Button variant={"outline"} className="space-x-2" size={"sm"}>
+                                            Lihat <ArrowUpRight />
+                                        </Button>
+                                    </Link>
+                                </div>
                                 <div>
                   <span
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">

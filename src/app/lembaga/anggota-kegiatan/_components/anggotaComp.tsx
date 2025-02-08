@@ -47,7 +47,7 @@ export default function AnggotaComp(
             <div className="flex-1 space-y-4">
                 {/* Search Bar */}
                 <div className="w-full">
-                    <p className="text-2xl mb-4 font-semibold">Anggota</p>
+                    <p className="text-2xl mb-4 font-semibold">Nama Kegiatan</p>
                     <div className="flex items-center gap-4">
                         {/* Search Bar */}
                         <div className="relative w-full">
