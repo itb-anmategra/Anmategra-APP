@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
+import {api} from "~/trpc/react";
 
 export type Member = {
   id: string;
@@ -59,6 +60,11 @@ const columns: ColumnDef<Member>[] = [
         red: "bg-red-400",
       };
       const posisiColor = colorMap[row.original.posisiColor] || "bg-gray-400";
+      const mutation = api.lembaga.removeAnggota.useMutation()
+
+      const onDelete = (id: string) => {
+        mutation.mutate({user_id: id})
+      }
 
       return (
         <div className="flex items-center justify-between">
@@ -66,7 +72,9 @@ const columns: ColumnDef<Member>[] = [
             <span className={`h-2 w-2 rounded-full ${posisiColor}`}></span>
             {row.getValue("posisi")}
           </div>
-          <Button variant={"outline"} size={"sm"} className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500">
+          <Button
+              onClick={() => onDelete(row.original.id)}
+              variant={"outline"} size={"sm"} className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500">
             Hapus
           </Button>
         </div>

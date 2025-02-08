@@ -2,7 +2,7 @@ import {z} from "zod";
 import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc";
 import {db} from "~/server/db";
 import {kehimpunan, lembaga, mahasiswa, users} from "~/server/db/schema";
-import {eq} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -175,6 +175,33 @@ export const lembagaRouter = createTRPCRouter({
                     success: false,
                     error: "Database Error",
                 };
+            }
+        }),
+
+    removeAnggota: protectedProcedure
+        .input(z.object({
+            user_id: z.string().nonempty(),
+        }))
+        .mutation(async ({ctx, input}) => {
+            const user_lembaga_id = ctx.session.user.id;
+            const lembaga_id = await db.select({
+                id: lembaga.id,
+            }).from(lembaga).where(eq(lembaga.userId, user_lembaga_id))
+                .limit(1);
+
+            if (!lembaga_id || lembaga_id.length === 0 || !lembaga_id[0]) {
+                return {
+                    success: false,
+                    error: "Lembaga not found",
+                };
+            }
+
+            await db
+                .delete(kehimpunan)
+                .where(and(eq(kehimpunan.userId, input.user_id), eq(kehimpunan.lembagaId, lembaga_id[0].id)));
+
+            return {
+                success: true,
             }
         }),
 });
