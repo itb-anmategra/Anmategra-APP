@@ -1,13 +1,17 @@
 "use client"
-
-import {useEffect, useState} from "react"
+// Library Import
+import { useEffect, useState } from "react"
+// Components Import
 import {useDebounce} from "~/components/debounceHook";
-import {ChevronRight, Plus, Search} from "lucide-react"
 import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
 import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
-import {Session} from "next-auth";
+// Icons Import
+import {ChevronRight, Plus, Search} from "lucide-react"
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+// Auth Import
+import { Session } from "next-auth";
 
 export interface Activity {
     id: string
@@ -46,40 +50,45 @@ export default function ActivityList(
         getActivities();
     }, [debouncedSearchQuery, propActivites]);
 
-    return (
-        <div className="p-4 max-w-7xl mx-auto space-y-4">
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            // Nampilin hasil pencarian client side fetching
+        }
+    };
 
-            <h1 className="text-2xl font-semibold">Kegiatan</h1>
+    return (
+        <div className="flex w-full flex-col gap-4 p-6">
+            {/* Title and Search */}
+            <div className="flex flex-col gap-4">
+                <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+                <Input
+                    placeholder="Cari kegiatan"
+                    className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+                    startAdornment={
+                        <MagnifyingGlassIcon className="size-4 text-gray-500" />
+                    }
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
-                    <Input
-                        type="text"
-                        placeholder="Cari nama kegiatan"
-                        className="pl-10"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-
-                <div className="flex gap-2">
-                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                        <DialogTrigger asChild>
-                            <Button
-                                className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-                                <Plus className="h-4 w-4"/>
-                                Tambah Kegiatan Baru
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Tambah Kegiatan</DialogTitle>
-                            </DialogHeader>
-                            <TambahKegiatanForm session={session} setIsOpen={setIsOpen} />
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                    <DialogTrigger asChild>
+                        <Button
+                            className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                            <Plus className="h-4 w-4"/>
+                            Tambah Kegiatan Baru
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Tambah Kegiatan</DialogTitle>
+                        </DialogHeader>
+                        <TambahKegiatanForm session={session} setIsOpen={setIsOpen} />
+                    </DialogContent>
+                </Dialog>
             </div>
 
             <div className="bg-white rounded-lg shadow overflow-hidden">

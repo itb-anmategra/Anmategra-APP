@@ -21,7 +21,7 @@ export default async function Home() {
   const session = await getServerAuthSession();
 
   return (
-      <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
+      <main className="flex flex-row bg-[#FAFAFA] w-full">
         <ActivityList propActivites={formattedActivities} session={session}/>
       </main>
   );
