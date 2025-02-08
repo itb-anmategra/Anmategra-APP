@@ -31,16 +31,16 @@ export default function LandingComp(
     const router = useRouter();
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-        void router.push(`/lembaga/pencarian/${searchQuery}`);
-    }
+        if (event.key === 'Enter') {
+            void router.push(`/lembaga/pencarian/${searchQuery}`);
+        }
     };
 
     return (
         <div className="flex w-full flex-col gap-4 p-6">
             {/* Title and Search */}
             <div className="flex flex-col gap-4">
-                <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
+                <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
                 <Input
                     placeholder="Cari lembaga, kegiatan, atau mahasiswa"
                     className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
@@ -57,7 +57,7 @@ export default function LandingComp(
             <div className="flex flex-col w-full gap-y-8">
                 {/* Kepanitiaan */}
                 <div className="space-y-2 w-full">
-                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kepanitiaan</h3>
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kepanitiaan</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
                         {data.kepanitiaanTerbaru.length !== 0 && data.kepanitiaanTerbaru.map((kepanitiaan) => (
                             <Link 
@@ -78,7 +78,7 @@ export default function LandingComp(
                 </div>
                 {/* Kegiatan */}
                 <div className="space-y-2 w-full">
-                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kegiatan</h3>
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kegiatan</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
                         {data.kegiatanTerbaru.length !== 0 && data.kegiatanTerbaru.map((kepanitiaan) => (
                             <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
@@ -96,7 +96,7 @@ export default function LandingComp(
                 </div>
                 {/* Kepanitiaan Terbesar */}
                 <div className="space-y-2 w-full">
-                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kepanitiaan Terbesar</h3>
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kepanitiaan Terbesar</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
                         {data.kepanitiaanTerbesar.length !== 0 && data.kepanitiaanTerbesar.map((kepanitiaan) => (
                             <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>

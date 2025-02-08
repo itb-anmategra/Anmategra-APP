@@ -1,12 +1,14 @@
 "use client"
 // Library Import
-import React from 'react'
+import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 // Component Import
 import MahasiswaSidebar from '../../_components/MahasiswaSidebar'
 import MahasiswaCard from '~/app/_components/beranda/MahasiswaCard'
 import LembagaCard from '~/app/_components/beranda/LembagaCard'
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
+import { Input } from '~/components/ui/input'
 // Dummy Asset Import
 import dummyProfile from "public/placeholder/profilepic.png";
 import dummyLembaga from "public/logo-hmif.png";
@@ -17,6 +19,9 @@ import Image from 'next/image'
 import NotFound from "public/notfound.png"
 // Session Import
 import { Session } from 'next-auth'
+// Icon Import
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
+import { cn } from '~/lib/utils'
 
 const PencarianPage = (
     {
@@ -37,20 +42,42 @@ const PencarianPage = (
         }
     }
 ) => {
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    const router = useRouter();
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            void router.push(`/lembaga/pencarian/${searchQuery}`);
+        }
+    };
 
     return (
-        <div className='flex w-full flex-col overflow-hidden pb-16 sm:space-y-3 md:space-y-8'>
-            {session?.user.role === "mahasiswa" && (
-                <div className="mb-20 fixed w-full shadow-sm z-20">
+        <div className='flex w-full flex-col overflow-hidden p-6 pb-16 gap-4'>
+            {session?.user.role === "mahasiswa" ? (
+                <div className='mb-20 fixed w-full shadow-sm z-20'>
                     <MahasiswaSidebar session={session?.user.id ?? ''} />
                 </div>
+            ):(
+                <div className="flex flex-col gap-4">
+                    <h1 className="text-2xl font-semibold text-slate-600">Hasil Pencarian</h1>
+                    <Input
+                        placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+                        className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+                        startAdornment={
+                            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+                        }
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                </div>                
             )}
-            <div className='py-4' />
             <div className="flex flex-col items-center w-full">
                 <div className='w-full space-y-8 max-w-7xl'>
                     {data?.mahasiswa.length !== 0 && (
                         <div className="space-y-2 w-full">
-                            <h5 className="text-2xl font-semibold text-slate-600">
+                            <h5 className="text-xl font-semibold text-slate-600">
                                 Mahasiswa
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -69,7 +96,7 @@ const PencarianPage = (
                     )}
                     {data?.lembaga.length !== 0 && (
                         <div className="space-y-2 w-full">
-                            <h5 className="text-2xl font-semibold text-slate-600">Lembaga</h5>
+                            <h5 className="text-xl font-semibold text-slate-600">Lembaga</h5>
                             <div className="flex w-full flex-col gap-y-4">
                                 {data?.lembaga.map((item) => (
                                     <Link key={item.lembaga.id} href={`/profil-lembaga/${item.lembaga.id}`}>
@@ -86,7 +113,7 @@ const PencarianPage = (
                     )}
                     {data?.kegiatan.length !== 0 && (
                         <div className="space-y-2 w-full">
-                            <h5 className="text-2xl font-semibold text-slate-600">
+                            <h5 className="text-xl font-semibold text-slate-600">
                                 Kegiatan
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
