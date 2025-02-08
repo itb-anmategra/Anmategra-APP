@@ -19,7 +19,7 @@ const LembagaLayout = async ({
     const session = await getServerAuthSession();
   return (
     <div>
-      <Sidebar  session={session}/>
+      <Sidebar session={session}/>
       <div className="ml-[16rem]">
         {children}
       </div>

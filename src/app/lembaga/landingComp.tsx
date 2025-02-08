@@ -32,7 +32,7 @@ export default function LandingComp(
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-        void router.push(`/pencarian/${searchQuery}`);
+        void router.push(`/lembaga/pencarian/${searchQuery}`);
     }
     };
 
@@ -54,61 +54,63 @@ export default function LandingComp(
             </div>
 
             {/* List of Kepanitiaan */}
-
-            <div className="flex flex-col gap-x-2">
-                {/* <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-xl font-semibold">Kepanitiaan Terbaru</h2>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                        Lihat Semua
-                        <ChevronRightIcon />
-                    </Button>
-                </div> */}
-                <h3 className="text-left text-xl font-semibold mb-2">Kepanitiaan</h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
-                    {data.kepanitiaanTerbaru.map((kepanitiaan) => (
-                        <Link 
-                            key={kepanitiaan.name} 
-                            href={`/profil-lembaga/${kepanitiaan.lembaga.id}`}
-                        >
-                            <KepanitiaanCard
-                                kepanitiaan={kepanitiaan}
-                            />
-                        </Link>
-                    ))}
+            <div className="flex flex-col w-full gap-y-8">
+                {/* Kepanitiaan */}
+                <div className="space-y-2 w-full">
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kepanitiaan</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                        {data.kepanitiaanTerbaru.length !== 0 && data.kepanitiaanTerbaru.map((kepanitiaan) => (
+                            <Link 
+                                key={kepanitiaan.name} 
+                                href={`/profil-lembaga/${kepanitiaan.lembaga.id}`}
+                            >
+                                <KepanitiaanCard
+                                    kepanitiaan={kepanitiaan}
+                                />
+                            </Link>
+                        ))}
+                        {!data.kepanitiaanTerbaru || data.kepanitiaanTerbaru.length === 0 && (
+                            <div>
+                                <p className="text-slate-600">Tidak ada kepanitiaan terbaru.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                {/* <div className="mt-10 flex items-center justify-between gap-4">
-                    <h2 className="text-xl font-semibold">Event Terbaru</h2>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                        Lihat Semua
-                        <ChevronRightIcon />
-                    </Button>
-                </div> */}
-                <h3 className="text-left text-xl font-semibold mb-2">Kegiatan</h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
-                    {data.kegiatanTerbaru.map((kepanitiaan) => (
-                        <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
-                            <KepanitiaanCard
-                                kepanitiaan={kepanitiaan}
-                            />
-                        </Link>
-                    ))}
+                {/* Kegiatan */}
+                <div className="space-y-2 w-full">
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kegiatan</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                        {data.kegiatanTerbaru.length !== 0 && data.kegiatanTerbaru.map((kepanitiaan) => (
+                            <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                                <KepanitiaanCard
+                                    kepanitiaan={kepanitiaan}
+                                />
+                            </Link>
+                        ))}
+                        {!data.kegiatanTerbaru || data.kegiatanTerbaru.length === 0 && (
+                            <div>
+                                <p className="text-slate-600">Tidak ada kegiatan terbaru.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                {/* <div className="mt-10 flex items-center justify-between gap-4">
-                    <h2 className="text-xl font-semibold">Event Terbesar</h2>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                        Lihat Semua
-                        <ChevronRightIcon />
-                    </Button>
-                </div> */}
-                <h3 className="text-left text-xl font-semibold mb-2">Kepanitiaan?</h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
-                    {data.kepanitiaanTerbaru.map((kepanitiaan) => (
-                        <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
-                            <KepanitiaanCard
-                                kepanitiaan={kepanitiaan}
-                            />
-                        </Link>
-                    ))}
+                {/* Kepanitiaan Terbesar */}
+                <div className="space-y-2 w-full">
+                    <h3 className="text-left text-xl font-semibold mb-2 text-slate-800">Kepanitiaan Terbesar</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
+                        {data.kepanitiaanTerbesar.length !== 0 && data.kepanitiaanTerbesar.map((kepanitiaan) => (
+                            <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                                <KepanitiaanCard
+                                    kepanitiaan={kepanitiaan}
+                                />
+                            </Link>
+                        ))}
+                        {!data.kepanitiaanTerbesar || data.kepanitiaanTerbesar.length === 0 && (
+                            <div>
+                                <p className="text-slate-600">Tidak ada kepanitiaan terbesar yang dapat ditampilkan.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -15,13 +15,15 @@ import {Kepanitiaan} from "~/types/kepanitiaan";
 // Image Import
 import Image from 'next/image'
 import NotFound from "public/notfound.png"
+// Session Import
+import { Session } from 'next-auth'
 
 const PencarianPage = (
     {
         session,
         data
     }: {
-        session: string | undefined,
+        session: Session | null,
         data: {
             mahasiswa: {
                 userId: string,
@@ -38,9 +40,11 @@ const PencarianPage = (
 
     return (
         <div className='flex w-full flex-col overflow-hidden pb-16 sm:space-y-3 md:space-y-8'>
-            <div className="mb-20 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar session={session ?? ''} />
-            </div>
+            {session?.user.role === "mahasiswa" && (
+                <div className="mb-20 fixed w-full shadow-sm z-20">
+                    <MahasiswaSidebar session={session?.user.id ?? ''} />
+                </div>
+            )}
             <div className='py-4' />
             <div className="flex flex-col items-center w-full">
                 <div className='w-full space-y-8 max-w-7xl'>

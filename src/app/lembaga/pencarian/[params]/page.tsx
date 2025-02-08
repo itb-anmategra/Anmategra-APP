@@ -14,6 +14,6 @@ export default async function SearchPage({ params }: {
   const data = await api.landing.getResults({query: query});
 
   return (
-      <PencarianPage session={sessionId} data={data} />
+      <PencarianPage session={session} data={data} />
   );
 }

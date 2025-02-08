@@ -8,17 +8,24 @@ import {
   CalendarIcon,
   EnvelopeOpenIcon,
   ExclamationTriangleIcon,
-  ExitIcon,
   HomeIcon,
   PersonIcon,
 } from "@radix-ui/react-icons";
+import { LogOut } from 'lucide-react';
 // Components Import
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip"
 // Type Import
 import type { Lembaga } from "~/types/lembaga";
 // Lib Import
 import { cn } from "~/lib/utils";
+// Auth Import
 import {Session} from "next-auth";
 import {signOut} from "next-auth/react";
 
@@ -43,30 +50,6 @@ export const Sidebar = (
         session: Session | null
     }
 ) => {
-  // if (pathname?.startsWith("/halaman-mahasiswa")) {
-  //   return (
-  //     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100 mb-8">
-  //       <div className="w-full max-w-7xl flex justify-between items-center py-4">
-  //         <div>
-  //           <Image 
-  //             src={"/logo-anmategra.png"}
-  //             alt="Logo Anmategra"
-  //             width={150}
-  //             height={50}
-  //           />
-  //         </div>
-  //         <nav>
-  //           <Link href={"/halaman-mahasiswa"}>
-  //             Beranda
-  //           </Link>
-  //           <Link href={"/halaman-mahasiswa/laporan"}>
-  //             Laporan
-  //           </Link>
-  //         </nav>
-  //       </div>
-  //     </div>
-  //   )
-  // }
 
   return (
     <>
@@ -136,7 +119,16 @@ const SidebarProfile = ({
           <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-0">
-          <span className="line-clamp-1 font-semibold">{lembaga.name}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-3">
+                {lembaga.name}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{lembaga.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <span className="line-clamp-1 text-xs text-neutral-700">Lembaga</span>
         </div>
       </div>
@@ -147,8 +139,7 @@ const SidebarProfile = ({
             signOut({callbackUrl: '/'})
         }}
       >
-        <ExitIcon />
-        Logout
+        <LogOut /> Keluar
       </Button>
     </div>
   );
