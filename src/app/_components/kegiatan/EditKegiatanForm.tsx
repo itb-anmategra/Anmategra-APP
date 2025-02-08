@@ -51,18 +51,20 @@ const EventInputSchema = z.object({
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
-const TambahKegiatanForm = (
+const EditKegiatanForm = (
     { 
       session,
       setIsOpen,
       setActivityList,
+      kegiatanId
     }: { 
       session: Session | null 
       setIsOpen: (param: boolean) => void
       setActivityList: (param: Activity[]) => void
+      kegiatanId: string
     }
 ) => {
-  // ✅ useForm hook
+  // Hasil Fetch Data dijadiin default values, use chatgpt biar cepet
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
     mode: "onChange", 
@@ -356,4 +358,4 @@ const TambahKegiatanForm = (
   );
 };
 
-export default TambahKegiatanForm;
+export default EditKegiatanForm;

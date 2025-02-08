@@ -7,8 +7,9 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
+import EditKegiatanForm from "~/app/_components/kegiatan/EditKegiatanForm";
 // Icons Import
-import { ChevronRight, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 // Auth Import
 import { Session } from "next-auth";
@@ -77,7 +78,7 @@ export default function ActivityList(
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogTrigger asChild>
                         <Button
-                            className="bg-[#00B7B7] text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+                            className="bg-[#00B7B7] hover:bg-secondary-600 hover:text-white text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
                             <Plus className="h-4 w-4"/>
                             Tambah Kegiatan Baru
                         </Button>
@@ -86,7 +87,7 @@ export default function ActivityList(
                         <DialogHeader>
                             <DialogTitle>Tambah Kegiatan</DialogTitle>
                         </DialogHeader>
-                        <TambahKegiatanForm session={session} setIsOpen={setIsOpen} />
+                        <TambahKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} />
                     </DialogContent>
                 </Dialog>
             </div>
@@ -127,9 +128,25 @@ export default function ActivityList(
                     {activity.status}
                   </span>
                                 </div>
-                                <Button variant="ghost" size="icon">
-                                    <ChevronRight className="h-4 w-4"/>
-                                </Button>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button 
+                                                className="border-[#00B7B7] hover:border-secondary-600 hover:text-secondary-600 text-secondary-500 px-4 shadow-none flex items-center gap-2"
+                                                variant={"outline"}
+                                            >
+                                                Edit
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>
+                                                    Edit Kegiatan
+                                                </DialogTitle>
+                                            </DialogHeader>
+                                            <EditKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} kegiatanId={activity.id}  />
+                                        </DialogContent>
+                                    </Dialog>
+                                
                             </div>
                         ))}
                     </div>

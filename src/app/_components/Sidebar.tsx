@@ -107,31 +107,33 @@ const SidebarProfile = ({
                         } : {
     lembaga: Lembaga;
 }) => {
-
+  console.log(lembaga)
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <div className="flex items-center gap-4 px-1 py-2">
-        <Avatar>
-          <AvatarImage
-            className="object-contain"
-            src={lembaga.profilePicture ?? ""}
-          />
-          <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col gap-0">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-3">
-                {lembaga.name}
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{lembaga.name}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <span className="line-clamp-1 text-xs text-neutral-700">Lembaga</span>
+      <Link href={`/lembaga/profil-lembaga/${lembaga.id}`}>
+        <div className="flex items-center gap-4 px-1 py-2">
+          <Avatar>
+            <AvatarImage
+              className="object-contain"
+              src={lembaga.profilePicture ?? ""}
+            />
+            <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col gap-0">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-3">
+                  {lembaga.name}
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{lembaga.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <span className="line-clamp-1 text-xs text-neutral-700">Lembaga</span>
+          </div>
         </div>
-      </div>
+      </Link>
       <Button
         variant="destructive"
         className="flex items-center justify-start gap-3 bg-transparent px-3 py-2 text-base text-destructive shadow-none hover:text-destructive-foreground"
