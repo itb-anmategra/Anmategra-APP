@@ -60,16 +60,17 @@ const bidangData: comboboxDataType[] = [
     ];
 
 const TambahAnggotaForm = ({
-                             session,
-    data
+    session,
+    data,
+    setIsOpen
 }: {
   session: Session | null ,
   data: {
     mahasiswa: comboboxDataType[],
     posisi: comboboxDataType[],
     bidang: comboboxDataType[],
-  }
-
+  },
+  setIsOpen: (param: boolean) => void
 }) => {
   const [open, setOpen] = useState(false);
   const [posisiOpen, setPosisiOpen] = useState(false);
@@ -93,7 +94,7 @@ const TambahAnggotaForm = ({
       ...values,
       lembagaId: session?.user.id ?? "",
     };
-
+    setIsOpen(false)
     mutation.mutate(query, {
       onSuccess: () => {
         form.reset();
@@ -140,26 +141,6 @@ const TambahAnggotaForm = ({
                               <Check className={cn("ml-auto", field.value === m.value ? "opacity-100" : "opacity-0")} />
                             </CommandItem>
                           ))}
-                          <CommandItem>
-                            <Input
-                              className="w-full focus-visible:ring-transparent bg-white"
-                              value={customValue}
-                              onChange={(e) => setCustomValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && customValue.trim() !== "") {
-                                  const newMahasiswa = { value: customValue, label: customValue };
-
-                                  if (!mahasiswaList.some((m) => m.value === customValue)) {
-                                    setMahasiswaList([...mahasiswaList, newMahasiswa]);
-                                  }
-
-                                  field.onChange(customValue);
-                                  setCustomValue("");
-                                  setOpen(false)
-                                }
-                              }}
-                            />
-                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>

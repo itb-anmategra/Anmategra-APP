@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { Button } from "~/components/ui/button";
 
 export type Member = {
   id: string;
@@ -65,7 +66,9 @@ const columns: ColumnDef<Member>[] = [
             <span className={`h-2 w-2 rounded-full ${posisiColor}`}></span>
             {row.getValue("posisi")}
           </div>
-          <ChevronRight className="text-gray-400" />
+          <Button variant={"outline"} size={"sm"} className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500">
+            Hapus
+          </Button>
         </div>
       );
     },

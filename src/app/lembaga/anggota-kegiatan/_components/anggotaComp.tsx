@@ -1,4 +1,6 @@
+"use client"
 // Library Import
+import { useState } from "react";
 import Image from "next/image";
 // Auth Import
 import {Session} from "next-auth";
@@ -37,10 +39,12 @@ export default function AnggotaComp(
         }
     }
 ) {
+    const [isOpen, setIsOpen] = useState(false)
+
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
             {/* Content */}
-            <div className="flex-1 space-y-8">
+            <div className="flex-1 space-y-4">
                 {/* Search Bar */}
                 <div className="w-full">
                     <p className="text-2xl mb-4 font-semibold">Anggota</p>
@@ -66,7 +70,7 @@ export default function AnggotaComp(
                 <div>
                     {/* Button Section */}
                     <div className="flex justify-between">
-                    <Dialog>
+                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <DialogTrigger asChild>
                             <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
                                 <Image src={Plus} alt="Tambah Anggota" width={24} height={24} />
@@ -77,7 +81,7 @@ export default function AnggotaComp(
                             <DialogHeader>
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
-                            <TambahAnggotaForm session={session} data={dataAddAnggota}/>
+                            <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
                         </DialogContent>
                     </Dialog>
                     </div>
