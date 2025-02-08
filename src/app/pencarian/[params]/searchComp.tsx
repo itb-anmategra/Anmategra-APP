@@ -53,7 +53,10 @@ const PencarianPage = (
     };
 
     return (
-        <div className='flex w-full flex-col overflow-hidden p-6 pb-16 gap-4'>
+        <div className={cn(
+            'flex w-full flex-col overflow-hidden pt-0 pb-16 gap-4',
+            session?.user.role === "lembaga" && "p-6"
+        )}>
             {session?.user.role === "mahasiswa" ? (
                 <div className='mb-20 fixed w-full shadow-sm z-20'>
                     <MahasiswaSidebar session={session?.user.id ?? ''} />
@@ -73,7 +76,10 @@ const PencarianPage = (
                     />
                 </div>                
             )}
-            <div className="flex flex-col items-center w-full">
+            <div className={cn(
+                'flex flex-col items-center w-full',
+                session?.user.role === "mahasiswa" && "mt-24"
+            )}>
                 <div className='w-full space-y-8 max-w-7xl'>
                     {data?.mahasiswa.length !== 0 && (
                         <div className="space-y-2 w-full">

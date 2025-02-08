@@ -2,13 +2,13 @@
 // Library Import
 import { useEffect, useState } from "react"
 // Components Import
-import {useDebounce} from "~/components/debounceHook";
-import {Button} from "~/components/ui/button"
-import {Input} from "~/components/ui/input"
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
+import { useDebounce } from "~/components/debounceHook";
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
 // Icons Import
-import {ChevronRight, Plus, Search} from "lucide-react"
+import { ChevronRight, Plus } from "lucide-react"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 // Auth Import
 import { Session } from "next-auth";
@@ -91,7 +91,7 @@ export default function ActivityList(
                 </Dialog>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg overflow-hidden">
                 <div className="min-w-full">
                     <div
                         className="grid grid-cols-[80px_1fr_120px_100px_100px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
@@ -138,7 +138,7 @@ export default function ActivityList(
                 {isLoading && <div className="p-4 text-center text-gray-500">Loading activities...</div>}
 
                 {!isLoading && activities.length === 0 && (
-                    <div className="p-8 text-center text-gray-500">No activities found</div>
+                    <div className="p-8 text-center text-gray-500">Aktivitas tidak ditemukan</div>
                 )}
             </div>
         </div>
