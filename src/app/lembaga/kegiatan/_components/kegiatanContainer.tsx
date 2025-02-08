@@ -19,9 +19,15 @@ export interface Activity {
     name: string
     description: string | null
     start_date: string
+    end_date: string | undefined
     participant_count: number | null;
     status: "Coming Soon" | "On going" | "Ended";
-    thumbnail: string | null
+    thumbnail: string | null;
+    oprec_link: string | null;
+    location: string | null;
+    participant_limit: number | null;
+    is_highlighted: boolean;
+    is_organogram: boolean;
 }
 
 export default function ActivityList(
@@ -143,7 +149,7 @@ export default function ActivityList(
                                                     Edit Kegiatan
                                                 </DialogTitle>
                                             </DialogHeader>
-                                            <EditKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} kegiatanId={activity.id}  />
+                                            <EditKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} kegiatan={activity}  />
                                         </DialogContent>
                                     </Dialog>
                                 

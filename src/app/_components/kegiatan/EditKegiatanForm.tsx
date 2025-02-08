@@ -34,7 +34,6 @@ import { useWatch } from "react-hook-form";
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
   name: z.string().min(1, "Nama kegiatan wajib diisi"),
-  // org_id: z.string().optional(),
   description: z.string().min(10, "Deskripsi minimal 10 karakter"),
   image: z.string().url("Harus berupa URL yang valid"),
   start_date: z.string().datetime(),
@@ -56,35 +55,37 @@ const EditKegiatanForm = (
       session,
       setIsOpen,
       setActivityList,
-      kegiatanId
+      kegiatan
     }: { 
       session: Session | null 
       setIsOpen: (param: boolean) => void
       setActivityList: (param: Activity[]) => void
-      kegiatanId: string
+      kegiatan: Activity
     }
 ) => {
+
+
   // Hasil Fetch Data dijadiin default values, use chatgpt biar cepet
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
     mode: "onChange", 
     defaultValues: {
-      name: "",
-      description: "",
-      image: "",
-      start_date: new Date().toISOString(),
-      end_date: undefined,
-      status: "Coming Soon",
-      oprec_link: "https://",
-      location: "",
-      participant_limit: 1,
-      participant_count: 0,
-      is_highlighted: false,
-      is_organogram: false,
+      name: kegiatan.name,
+      description: kegiatan.description ?? "",
+      image: kegiatan.thumbnail ?? "",
+      start_date: kegiatan.start_date,
+      end_date: kegiatan.end_date ?? "",
+      status: kegiatan.status,
+      oprec_link: kegiatan.oprec_link ?? "",
+      location: kegiatan.location ?? "",
+      participant_limit: kegiatan.participant_limit ?? 0,
+      participant_count: kegiatan.participant_count ?? 0,
+      is_highlighted: kegiatan.is_highlighted,
+      is_organogram: kegiatan.is_organogram,
     },
   });
 
-  const mutation = api.event.create.useMutation({
+  const mutation = api.event.update.useMutation({
     onSuccess: (values) => {
       setIsOpen(false)
       // @ts-ignore
@@ -99,6 +100,7 @@ const EditKegiatanForm = (
   const onSubmit = (values: EventInputSchemaType) => {
     const query = {
         ...values,
+        id: kegiatan.id,
         org_id: session?.user?.id,
         is_organogram: values.is_organogram ?? false,
         is_highlighted: values.is_highlighted ?? false,

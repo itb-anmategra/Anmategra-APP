@@ -13,9 +13,15 @@ export default async function Home() {
     name: activity.name,
     description: activity.description,
     start_date: activity.start_date.toLocaleDateString(),
+    end_date: activity.end_date?.toLocaleDateString(),
     participant_count: activity.participant_count,
     status: activity.status,
     thumbnail: activity.image,
+    oprec_link: activity.oprec_link,
+    location: activity.location,
+    participant_limit: activity.participant_limit,
+    is_highlighted: activity.is_highlighted,
+    is_organogram: activity.is_organogram,
   }));
 
   const session = await getServerAuthSession();
