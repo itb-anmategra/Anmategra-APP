@@ -62,7 +62,7 @@ export default function LandingComp(
                         {data.kepanitiaanTerbaru.length !== 0 && data.kepanitiaanTerbaru.map((kepanitiaan) => (
                             <Link 
                                 key={kepanitiaan.name} 
-                                href={`/profil-lembaga/${kepanitiaan.lembaga.id}`}
+                                href={`/lembaga/profil-lembaga/${kepanitiaan.lembaga.id}`}
                             >
                                 <KepanitiaanCard
                                     kepanitiaan={kepanitiaan}
@@ -81,7 +81,7 @@ export default function LandingComp(
                     <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kegiatan</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
                         {data.kegiatanTerbaru.length !== 0 && data.kegiatanTerbaru.map((kepanitiaan) => (
-                            <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                            <Link key={kepanitiaan.name} href={`/lembaga/profil-kegiatan/${kepanitiaan.id}`}>
                                 <KepanitiaanCard
                                     kepanitiaan={kepanitiaan}
                                 />
@@ -99,7 +99,7 @@ export default function LandingComp(
                     <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kepanitiaan Terbesar</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
                         {data.kepanitiaanTerbesar.length !== 0 && data.kepanitiaanTerbesar.map((kepanitiaan) => (
-                            <Link key={kepanitiaan.name} href={`/profil-kegiatan/${kepanitiaan.id}`}>
+                            <Link key={kepanitiaan.name} href={`/lembaga/profil-kegiatan/${kepanitiaan.id}`}>
                                 <KepanitiaanCard
                                     kepanitiaan={kepanitiaan}
                                 />

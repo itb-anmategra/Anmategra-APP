@@ -1,6 +1,7 @@
 "use client"
 // Library Import
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 // Auth Import
 import {Session} from "next-auth";
@@ -41,13 +42,21 @@ export default function AnggotaComp(
 ) {
     const [isOpen, setIsOpen] = useState(false)
 
+    const pathname = usePathname()
+
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
             {/* Content */}
             <div className="flex-1 space-y-4">
                 {/* Search Bar */}
                 <div className="w-full">
-                    <p className="text-2xl mb-4 font-semibold">Anggota</p>
+                    <p className="text-2xl mb-4 font-semibold">
+                        {pathname === "/lembaga/anggota-kegiatan" ? (
+                            <span>Anggota</span>
+                        ):(
+                            <span>Anggota Kegiatan</span>
+                        )}
+                    </p>
                     <div className="flex items-center gap-4">
                         {/* Search Bar */}
                         <div className="relative w-full">
