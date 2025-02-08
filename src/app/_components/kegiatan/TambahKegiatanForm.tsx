@@ -30,6 +30,7 @@ import type {Session} from "next-auth";
 // Type Import
 import { Activity } from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
 import { useWatch } from "react-hook-form";
+import { useRouter } from 'next/navigation';
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
@@ -62,6 +63,7 @@ const TambahKegiatanForm = (
       setActivityList: (param: Activity[]) => void
     }
 ) => {
+  const router = useRouter()
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
@@ -83,10 +85,9 @@ const TambahKegiatanForm = (
   });
 
   const mutation = api.event.create.useMutation({
-    onSuccess: (values) => {
+    onSuccess: () => {
       setIsOpen(false)
-      // @ts-ignore
-      setActivityList((prev) => [...prev, values]);
+      location.reload()
     },
     onError: (error) => {
       console.error("Error creating event:", error);

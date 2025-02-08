@@ -7,7 +7,6 @@ import { api } from "~/trpc/server";
 import {EventHeader} from "~/app/_components/placeholder/event-header";
 import {PenyelenggaraCard} from "~/app/_components/placeholder/penyelenggara-card";
 import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
-import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
 
 const ProfileKegiatan = async (
     {

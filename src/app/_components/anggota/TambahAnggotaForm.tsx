@@ -98,6 +98,7 @@ const TambahAnggotaForm = ({
     mutation.mutate(query, {
       onSuccess: () => {
         form.reset();
+        location.reload()
       },
     });
   };

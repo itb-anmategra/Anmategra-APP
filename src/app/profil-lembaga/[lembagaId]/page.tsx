@@ -72,37 +72,39 @@ const DetailLembagaPage = async (
           </div>
 
           {highlightedEvent && (
-            <div className='space-y-4 pb-12'>
-             <h5 className='text-2xl font-semibold text-slate-600'>Highlighed Event</h5>
-             <Card className='transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center'>
-               <Image 
-                 src={highlightedEvent?.image ?? DummyFotoEvent}
-                 alt='Foto Kegiatan'
-                 className='h-full w-auto'
-                 width={200}
-                 height={100}
-               />
-               <div className='space-y-2'>
-                 <Badge className='space-x-2 rounded-full bg-Blue-Dark py-1'>
-                   <Image 
-                     src={lembagaData?.image ?? LogoHMIFKecil}
-                     alt='Logo HMIF Kecil'
-                     width={20}
-                     height={20}
-                     className='rounded-full object-cover'
-                   />
-                   <p className='text-xs'>{lembagaData?.name}</p>
-                 </Badge>
-                 <p className='text-xl text-Blue-Dark font-semibold'>{highlightedEvent?.name}</p>
-                 <p className='text-neutral-1000'>{highlightedEvent?.description}</p>
-                 <div className="flex items-center gap-2 text-sm text-Regent-Gray">
-                   <CalendarIcon className='h-4 w-4' />
-                     {highlightedEvent?.start_date.toDateString()} -{" "}
-                     {highlightedEvent?.end_date?.toDateString()}
-                 </div>
-               </div>
-             </Card>
-           </div>
+            <Link href={`/profil-kegiatan/${highlightedEvent.id}`}>
+              <div className='space-y-4 pb-12'>
+                <h5 className='text-2xl font-semibold text-slate-600'>Highlighed Event</h5>
+                <Card className='transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center'>
+                  <Image 
+                    src={highlightedEvent?.image ?? DummyFotoEvent}
+                    alt='Foto Kegiatan'
+                    className='h-full w-auto'
+                    width={200}
+                    height={100}
+                  />
+                  <div className='space-y-2'>
+                    <Badge className='space-x-2 rounded-full bg-Blue-Dark py-1'>
+                      <Image 
+                        src={lembagaData?.image ?? LogoHMIFKecil}
+                        alt='Logo HMIF Kecil'
+                        width={20}
+                        height={20}
+                        className='rounded-full object-cover'
+                      />
+                      <p className='text-xs'>{lembagaData?.name}</p>
+                    </Badge>
+                    <p className='text-xl text-Blue-Dark font-semibold'>{highlightedEvent?.name}</p>
+                    <p className='text-neutral-1000'>{highlightedEvent?.description}</p>
+                    <div className="flex items-center gap-2 text-sm text-Regent-Gray">
+                      <CalendarIcon className='h-4 w-4' />
+                        {highlightedEvent?.start_date.toDateString()} -{" "}
+                        {highlightedEvent?.end_date?.toDateString()}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </Link>
           )}
   
           {/* Kepanitiaan Terbaru */}

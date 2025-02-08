@@ -35,8 +35,8 @@ import { useWatch } from "react-hook-form";
 const EventInputSchema = z.object({
   name: z.string().min(1, "Nama kegiatan wajib diisi"),
   description: z.string().min(10, "Deskripsi minimal 10 karakter"),
-  image: z.string().url("Harus berupa URL yang valid"),
-  start_date: z.string().datetime(),
+  image: z.string().url("Harus berupa URL yang valid").optional(),
+  start_date: z.string().datetime().optional(),
   end_date: z.string().datetime().optional(),
   status: z.enum(["Coming Soon", "On going", "Ended"]),
   oprec_link: z.string().url("Harus berupa URL yang valid"),
@@ -73,8 +73,8 @@ const EditKegiatanForm = (
       name: kegiatan.name,
       description: kegiatan.description ?? "",
       image: kegiatan.thumbnail ?? "",
-      start_date: kegiatan.start_date,
-      end_date: kegiatan.end_date ?? "",
+      start_date: kegiatan.start_date ? new Date(kegiatan.start_date).toISOString() : "",
+      end_date: kegiatan.end_date ? new Date(kegiatan.end_date).toISOString() : "",
       status: kegiatan.status,
       oprec_link: kegiatan.oprec_link ?? "",
       location: kegiatan.location ?? "",
@@ -86,10 +86,9 @@ const EditKegiatanForm = (
   });
 
   const mutation = api.event.update.useMutation({
-    onSuccess: (values) => {
+    onSuccess: () => {
       setIsOpen(false)
-      // @ts-ignore
-      setActivityList((prev) => [...prev, values]);
+      location.reload()
     },
     onError: (error) => {
       console.error("Error creating event:", error);
@@ -351,7 +350,7 @@ const EditKegiatanForm = (
         <Button 
           type="submit" 
           className="w-full"
-          disabled={!isValid}
+          // disabled={!isValid}
         >
           Simpan Kegiatan
         </Button>

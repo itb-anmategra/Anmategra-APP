@@ -1,10 +1,10 @@
-import { adminProcedure } from "../../trpc";
+import { adminProcedure, protectedProcedure } from "../../trpc";
 import { z } from "zod";
 import { events } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
-export const updateEvent = adminProcedure
+export const updateEvent = protectedProcedure
 .input(
   z.object({
       id: z.string(),
