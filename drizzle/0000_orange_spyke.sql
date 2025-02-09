@@ -29,12 +29,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."organogram_type" AS ENUM('Posisi', 'Bidang', 'Divisi');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  CREATE TYPE "public"."role" AS ENUM('admin', 'lembaga', 'mahasiswa');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -65,18 +59,10 @@ CREATE TABLE IF NOT EXISTS "anmategra_association_request" (
 	"id" varchar(255) PRIMARY KEY NOT NULL,
 	"event_id" varchar(255),
 	"user_id" varchar(255),
-	"position_id" varchar(255) NOT NULL,
-	"division_id" varchar(255),
-	"bidang_id" varchar(255),
+	"position" varchar(255) NOT NULL,
+	"division" varchar(255) NOT NULL,
 	"status" "association_request_status" DEFAULT 'Pending' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "anmategra_event_organogram" (
-	"eventOrganogram_id" varchar(255) PRIMARY KEY NOT NULL,
-	"event_id" varchar(255),
-	"type" "organogram_type" NOT NULL,
-	"value" varchar(255) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "anmategra_event" (
@@ -85,12 +71,14 @@ CREATE TABLE IF NOT EXISTS "anmategra_event" (
 	"name" varchar(255) NOT NULL,
 	"description" text,
 	"image" varchar(255),
+	"background_image" varchar(255),
 	"start_date" timestamp NOT NULL,
-	"end_date" timestamp NOT NULL,
+	"end_date" timestamp,
 	"status" "event_status" NOT NULL,
 	"oprec_link" varchar(255),
 	"location" varchar(255),
 	"participant_limit" integer,
+	"participant_count" integer,
 	"is_highlighted" boolean DEFAULT false NOT NULL,
 	"is_organogram" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -101,10 +89,17 @@ CREATE TABLE IF NOT EXISTS "anmategra_keanggotaan" (
 	"id" varchar(255) PRIMARY KEY NOT NULL,
 	"event_id" varchar(255),
 	"user_id" varchar(255),
-	"position_id" varchar(255) NOT NULL,
-	"division_id" varchar(255),
-	"bidang_id" varchar(255),
+	"position" varchar(255) NOT NULL,
+	"division" varchar(255) NOT NULL,
 	"description" text
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "anmategra_kehimpunan" (
+	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"user_id" varchar(255) NOT NULL,
+	"lembaga_id" varchar(255) NOT NULL,
+	"division" varchar(255) NOT NULL,
+	"position" varchar(255) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "anmategra_kontak" (
@@ -119,6 +114,7 @@ CREATE TABLE IF NOT EXISTS "anmategra_lembaga" (
 	"name" varchar(255) NOT NULL,
 	"description" text,
 	"founding_date" timestamp with time zone NOT NULL,
+	"ending_date" timestamp with time zone,
 	"type" "lembaga_type",
 	"image" varchar(255),
 	"major" varchar(255),
@@ -145,14 +141,6 @@ CREATE TABLE IF NOT EXISTS "anmategra_notification" (
 	"type" "notification_type" NOT NULL,
 	"read" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "anmategra_post" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(256),
-	"created_by" varchar(255) NOT NULL,
-	"created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "anmategra_session" (
@@ -187,7 +175,7 @@ CREATE TABLE IF NOT EXISTS "anmategra_user" (
 	"email" varchar(255) NOT NULL,
 	"email_verified" timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
 	"image" varchar(255),
-	"role" "role" NOT NULL,
+	"role" "role" DEFAULT 'mahasiswa' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -199,8 +187,13 @@ CREATE TABLE IF NOT EXISTS "anmategra_verification_token" (
 	CONSTRAINT "anmategra_verification_token_identifier_token_pk" PRIMARY KEY("identifier","token")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "anmategra_verified_user" (
+	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"email" varchar(255) NOT NULL
+);
+--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "anmategra_account" ADD CONSTRAINT "anmategra_account_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "anmategra_account" ADD CONSTRAINT "anmategra_account_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -213,30 +206,6 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "anmategra_association_request" ADD CONSTRAINT "anmategra_association_request_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_association_request" ADD CONSTRAINT "anmategra_association_request_position_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("position_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_association_request" ADD CONSTRAINT "anmategra_association_request_division_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("division_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_association_request" ADD CONSTRAINT "anmategra_association_request_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("bidang_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_event_organogram" ADD CONSTRAINT "anmategra_event_organogram_event_id_anmategra_event_id_fk" FOREIGN KEY ("event_id") REFERENCES "public"."anmategra_event"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -260,19 +229,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "anmategra_keanggotaan" ADD CONSTRAINT "anmategra_keanggotaan_position_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("position_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "anmategra_kehimpunan" ADD CONSTRAINT "anmategra_kehimpunan_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "anmategra_keanggotaan" ADD CONSTRAINT "anmategra_keanggotaan_division_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("division_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_keanggotaan" ADD CONSTRAINT "anmategra_keanggotaan_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk" FOREIGN KEY ("bidang_id") REFERENCES "public"."anmategra_event_organogram"("eventOrganogram_id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "anmategra_kehimpunan" ADD CONSTRAINT "anmategra_kehimpunan_lembaga_id_anmategra_lembaga_id_fk" FOREIGN KEY ("lembaga_id") REFERENCES "public"."anmategra_lembaga"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -284,25 +247,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "anmategra_lembaga" ADD CONSTRAINT "anmategra_lembaga_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "anmategra_lembaga" ADD CONSTRAINT "anmategra_lembaga_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "anmategra_mahasiswa" ADD CONSTRAINT "anmategra_mahasiswa_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "anmategra_mahasiswa" ADD CONSTRAINT "anmategra_mahasiswa_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "anmategra_notification" ADD CONSTRAINT "anmategra_notification_user_id_anmategra_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "anmategra_post" ADD CONSTRAINT "anmategra_post_created_by_anmategra_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."anmategra_user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -332,6 +289,4 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "account_user_id_idx" ON "anmategra_account" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "created_by_idx" ON "anmategra_post" USING btree ("created_by");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "name_idx" ON "anmategra_post" USING btree ("name");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "session_user_id_idx" ON "anmategra_session" USING btree ("user_id");

@@ -1,6 +1,6 @@
 import { adminProcedure, protectedProcedure } from "../../trpc";
 import { z } from "zod";
-import { events } from "~/server/db/schema";
+import {events, keanggotaan} from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
@@ -67,4 +67,29 @@ export const updateEvent = protectedProcedure
       message: "An unexpected error occurred during event creation."
     });
   }
+})
+
+export const addNewPanitia = protectedProcedure
+    .input(
+      z.object({
+        event_id: z.string(),
+        user_id: z.string(),
+
+      })
+    )
+.mutation(async ({ctx, input}) => {
+    try {
+        const newPanitia = await ctx.db.insert(keanggotaan).values({
+            event_id: input.event_id,
+            user_id: input.user_id
+        }).returning();
+
+        return newPanitia[0];
+    } catch (error) {
+        console.error("Database Error:", error);
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: "An unexpected error occurred during event creation."
+        });
+    }
 })

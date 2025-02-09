@@ -1,5 +1,5 @@
 {
-  "id": "ce1cabfc-3a15-4d59-806b-9552e2b648ed",
+  "id": "d12380af-02e2-4c90-91de-bdf59e91f272",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -103,7 +103,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -140,23 +140,17 @@
           "primaryKey": false,
           "notNull": false
         },
-        "position_id": {
-          "name": "position_id",
+        "position": {
+          "name": "position",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "division_id": {
-          "name": "division_id",
+        "division": {
+          "name": "division",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
-        },
-        "bidang_id": {
-          "name": "bidang_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "status": {
           "name": "status",
@@ -195,94 +189,6 @@
           "tableTo": "anmategra_user",
           "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "anmategra_association_request_position_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_association_request_position_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_association_request",
-          "tableTo": "anmategra_event_organogram",
-          "columnsFrom": [
-            "position_id"
-          ],
-          "columnsTo": [
-            "eventOrganogram_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "anmategra_association_request_division_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_association_request_division_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_association_request",
-          "tableTo": "anmategra_event_organogram",
-          "columnsFrom": [
-            "division_id"
-          ],
-          "columnsTo": [
-            "eventOrganogram_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "anmategra_association_request_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_association_request_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_association_request",
-          "tableTo": "anmategra_event_organogram",
-          "columnsFrom": [
-            "bidang_id"
-          ],
-          "columnsTo": [
-            "eventOrganogram_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.anmategra_event_organogram": {
-      "name": "anmategra_event_organogram",
-      "schema": "",
-      "columns": {
-        "eventOrganogram_id": {
-          "name": "eventOrganogram_id",
-          "type": "varchar(255)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "organogram_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "value": {
-          "name": "value",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "anmategra_event_organogram_event_id_anmategra_event_id_fk": {
-          "name": "anmategra_event_organogram_event_id_anmategra_event_id_fk",
-          "tableFrom": "anmategra_event_organogram",
-          "tableTo": "anmategra_event",
-          "columnsFrom": [
-            "event_id"
           ],
           "columnsTo": [
             "id"
@@ -328,6 +234,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "background_image": {
+          "name": "background_image",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "start_date": {
           "name": "start_date",
           "type": "timestamp",
@@ -338,7 +250,7 @@
           "name": "end_date",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "status": {
           "name": "status",
@@ -361,6 +273,12 @@
         },
         "participant_limit": {
           "name": "participant_limit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "participant_count": {
+          "name": "participant_count",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -435,23 +353,17 @@
           "primaryKey": false,
           "notNull": false
         },
-        "position_id": {
-          "name": "position_id",
+        "position": {
+          "name": "position",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "division_id": {
-          "name": "division_id",
+        "division": {
+          "name": "division",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
-        },
-        "bidang_id": {
-          "name": "bidang_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "description": {
           "name": "description",
@@ -487,42 +399,70 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.anmategra_kehimpunan": {
+      "name": "anmategra_kehimpunan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
         },
-        "anmategra_keanggotaan_position_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_keanggotaan_position_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_keanggotaan",
-          "tableTo": "anmategra_event_organogram",
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lembaga_id": {
+          "name": "lembaga_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "division": {
+          "name": "division",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "anmategra_kehimpunan_user_id_anmategra_user_id_fk": {
+          "name": "anmategra_kehimpunan_user_id_anmategra_user_id_fk",
+          "tableFrom": "anmategra_kehimpunan",
+          "tableTo": "anmategra_user",
           "columnsFrom": [
-            "position_id"
+            "user_id"
           ],
           "columnsTo": [
-            "eventOrganogram_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "anmategra_keanggotaan_division_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_keanggotaan_division_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_keanggotaan",
-          "tableTo": "anmategra_event_organogram",
+        "anmategra_kehimpunan_lembaga_id_anmategra_lembaga_id_fk": {
+          "name": "anmategra_kehimpunan_lembaga_id_anmategra_lembaga_id_fk",
+          "tableFrom": "anmategra_kehimpunan",
+          "tableTo": "anmategra_lembaga",
           "columnsFrom": [
-            "division_id"
+            "lembaga_id"
           ],
           "columnsTo": [
-            "eventOrganogram_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "anmategra_keanggotaan_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk": {
-          "name": "anmategra_keanggotaan_bidang_id_anmategra_event_organogram_eventOrganogram_id_fk",
-          "tableFrom": "anmategra_keanggotaan",
-          "tableTo": "anmategra_event_organogram",
-          "columnsFrom": [
-            "bidang_id"
-          ],
-          "columnsTo": [
-            "eventOrganogram_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -608,6 +548,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "ending_date": {
+          "name": "ending_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "type": {
           "name": "type",
           "type": "lembaga_type",
@@ -666,7 +612,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -728,7 +674,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -793,93 +739,6 @@
           "tableTo": "anmategra_user",
           "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.anmategra_post": {
-      "name": "anmategra_post",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
-        }
-      },
-      "indexes": {
-        "created_by_idx": {
-          "name": "created_by_idx",
-          "columns": [
-            {
-              "expression": "created_by",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "name_idx": {
-          "name": "name_idx",
-          "columns": [
-            {
-              "expression": "name",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "anmategra_post_created_by_anmategra_user_id_fk": {
-          "name": "anmategra_post_created_by_anmategra_user_id_fk",
-          "tableFrom": "anmategra_post",
-          "tableTo": "anmategra_user",
-          "columnsFrom": [
-            "created_by"
           ],
           "columnsTo": [
             "id"
@@ -1139,7 +998,8 @@
           "type": "role",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'mahasiswa'"
         },
         "created_at": {
           "name": "created_at",
@@ -1196,6 +1056,28 @@
         }
       },
       "uniqueConstraints": {}
+    },
+    "public.anmategra_verified_user": {
+      "name": "anmategra_verified_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {
@@ -1241,15 +1123,6 @@
       "values": [
         "Association Request",
         "System"
-      ]
-    },
-    "public.organogram_type": {
-      "name": "organogram_type",
-      "schema": "public",
-      "values": [
-        "Posisi",
-        "Bidang",
-        "Divisi"
       ]
     },
     "public.role": {

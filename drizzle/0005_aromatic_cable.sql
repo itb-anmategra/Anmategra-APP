@@ -1,1 +1,0 @@
-ALTER TABLE "anmategra_lembaga" ADD COLUMN "ending_date" timestamp with time zone;

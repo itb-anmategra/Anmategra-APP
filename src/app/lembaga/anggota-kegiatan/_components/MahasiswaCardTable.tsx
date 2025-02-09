@@ -29,7 +29,7 @@ export type Member = {
   nim: string;
   divisi: string;
   posisi: string;
-  posisiColor: string; // To map colors for positions
+  posisiColor: string;
 };
 
 const columns: ColumnDef<Member>[] = [

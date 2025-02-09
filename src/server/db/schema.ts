@@ -38,22 +38,6 @@ const timestamps = {
             () => new Date())
 }
 
-export const posts = createTable(
-    "post",
-    {
-        id: serial("id").primaryKey(),
-        name: varchar("name", {length: 256}),
-        createdById: varchar("created_by", {length: 255})
-            .notNull()
-            .references(() => users.id),
-        ...timestamps
-    },
-    (example) => ({
-        createdByIdIdx: index("created_by_idx").on(example.createdById),
-        nameIndex: index("name_idx").on(example.name),
-    })
-);
-
 export const roleEnum = pgEnum('role', ['admin', 'lembaga', 'mahasiswa']);
 
 export const users = createTable("user", {
@@ -269,11 +253,9 @@ export const keanggotaan = createTable('keanggotaan', {
         .references(() => events.id),
     user_id: varchar('user_id', {length: 255})
         .references(() => users.id),
-    position_id: varchar('position_id', {length: 255})
+    position: varchar('position', {length: 255})
         .notNull(),
-    division_id: varchar('division_id', {length: 255})
-        .notNull(),
-    bidang_id: varchar('bidang_id', {length: 255})
+    division: varchar('division', {length: 255})
         .notNull(),
     description: text('description')
 });
@@ -285,11 +267,9 @@ export const associationRequests = createTable('association_request', {
         .references(() => events.id),
     user_id: varchar('user_id', {length: 255})
         .references(() => users.id),
-    position: varchar('position_id', {length: 255})
+    position: varchar('position', {length: 255})
         .notNull(),
-    division: varchar('division_id', {length: 255})
-        .notNull(),
-    bidang: varchar('bidang_id', {length: 255})
+    division: varchar('division', {length: 255})
         .notNull(),
     status: associationRequestStatusEnum('status').notNull().default('Pending'),
     created_at: timestamp('created_at').notNull().defaultNow()

@@ -1,1 +1,0 @@
-ALTER TABLE "anmategra_event" ADD COLUMN "background_image" varchar(255);

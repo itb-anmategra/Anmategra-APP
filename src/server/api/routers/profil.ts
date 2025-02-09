@@ -1,7 +1,7 @@
 import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
 import {db} from "~/server/db";
-import {eventOrganograms, events, keanggotaan, lembaga, mahasiswa, users} from "~/server/db/schema";
+import {events, keanggotaan, lembaga, mahasiswa, users} from "~/server/db/schema";
 import {and, desc, eq} from "drizzle-orm";
 import {Kepanitiaan} from "~/types/kepanitiaan";
 
@@ -153,39 +153,10 @@ export const profileRouter = createTRPCRouter({
                 .innerJoin(users, eq(mahasiswa.userId, users.id))
                 .where(eq(keanggotaan.event_id, input.kegiatanId));
 
-            const updatedParticipants = await Promise.all(participants.map(async (participant) => {
-                const [position, divisi, bidang] = await Promise.all([
-                    participant.position ? db.select({value: eventOrganograms.value})
-                        .from(eventOrganograms)
-                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.position)))
-                        .limit(1)
-                        .then(res => res[0]?.value ?? null) : null,
-
-                    participant.divisi ? db.select({value: eventOrganograms.value})
-                        .from(eventOrganograms)
-                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.divisi)))
-                        .limit(1)
-                        .then(res => res[0]?.value ?? null) : null,
-
-                    participant.bidang ? db.select({value: eventOrganograms.value})
-                        .from(eventOrganograms)
-                        .where(and(eq(eventOrganograms.event_id, input.kegiatanId), eq(eventOrganograms.eventOrganogram_id, participant.bidang)))
-                        .limit(1)
-                        .then(res => res[0]?.value ?? null) : null,
-                ]);
-
-                return {
-                    ...participant,
-                    position,
-                    divisi,
-                    bidang,
-                };
-            }));
-
             return {
                 kegiatan: kegiatan[0],
                 lembaga: lembagaRes[0],
-                participant: updatedParticipants,
-            };
+                participant: participants,
+            }
         }),
 });
