@@ -10,9 +10,17 @@ import LogoHMIFKecil from 'public/placeholder/logo if.png'
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
-import MahasiswaSidebar from "../../../_components/MahasiswaSidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
+import { Button } from '~/components/ui/button'
 // Icons Import
 import { CalendarIcon } from 'lucide-react'
+import { PencilLine } from 'lucide-react';
 // TRPC Import
 import {api} from "~/trpc/server";
 // Auth
@@ -56,9 +64,24 @@ const DetailLembagaPage = async (
             width={200}
             height={100}
           />
-          <div className='space-y-1'>
-            <p className='text-3xl text-slate-600 font-semibold'>{lembagaData?.name}</p>
-            <p className='text-xl text-slate-400'>{lembagaData?.description}</p>
+          <div className='space-y-2'>
+            <div className='space-y-2'>
+              <p className='text-3xl text-slate-600 font-semibold'>{lembagaData?.name}</p>
+              <p className='text-xl text-slate-400'>{lembagaData?.description}</p>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none">Edit Profil <PencilLine /></Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit Profil Lembaga
+                  </DialogTitle>
+                </DialogHeader>
+               
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
