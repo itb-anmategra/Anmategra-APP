@@ -14,6 +14,7 @@ import {Input} from "~/components/ui/input";
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
 import TambahAnggotaForm, {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
+import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
 
 type Keanggotaan = {
     id: string;
@@ -90,7 +91,11 @@ export default function AnggotaComp(
                             <DialogHeader>
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
-                            <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
+                            {pathname === "/lembaga/kegiatan" ? (
+                                <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />                            
+                            ):(
+                                <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
+                            )}
                         </DialogContent>
                     </Dialog>
                     </div>
