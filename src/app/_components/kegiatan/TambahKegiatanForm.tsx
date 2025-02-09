@@ -47,7 +47,7 @@ const EventInputSchema = z.object({
   participant_count: z.number().int().min(0, "Minimal 0 peserta"),
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
-  banner_img: z.string().url("Harus berupa URL yang valid")
+  banner_img: z.string().url("Harus berupa URL yang valid").optional()
 });
 
 // ✅ Type inference dari schema
