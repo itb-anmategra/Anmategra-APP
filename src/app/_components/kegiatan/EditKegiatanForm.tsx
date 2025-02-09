@@ -45,7 +45,7 @@ const EventInputSchema = z.object({
   participant_count: z.number().int().min(0, "Minimal 0 peserta"),
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
-  banner_img: z.string().url("Harus berupa URL yang valid")
+  banner_img: z.string().url("Harus berupa URL yang valid").optional()
 });
 
 // ✅ Type inference dari schema
@@ -65,7 +65,6 @@ const EditKegiatanForm = (
     }
 ) => {
 
-
   // Hasil Fetch Data dijadiin default values, use chatgpt biar cepet
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
@@ -74,8 +73,12 @@ const EditKegiatanForm = (
       name: kegiatan.name,
       description: kegiatan.description ?? "",
       image: kegiatan.thumbnail ?? "",
-      start_date: kegiatan.start_date ? new Date(kegiatan.start_date).toISOString() : "",
-      end_date: kegiatan.end_date ? new Date(kegiatan.end_date).toISOString() : "",
+      start_date: kegiatan.start_date && !isNaN(Date.parse(kegiatan.start_date)) 
+        ? new Date(kegiatan.start_date).toISOString() 
+        : "",
+      end_date: kegiatan.end_date && !isNaN(Date.parse(kegiatan.end_date)) 
+        ? new Date(kegiatan.end_date).toISOString() 
+        : "",
       status: kegiatan.status,
       oprec_link: kegiatan.oprec_link ?? "",
       location: kegiatan.location ?? "",
@@ -375,7 +378,7 @@ const EditKegiatanForm = (
         <Button 
           type="submit" 
           className="w-full"
-          disabled={!isValid}
+          // disabled={!isValid}
         >
           Simpan Kegiatan
         </Button>

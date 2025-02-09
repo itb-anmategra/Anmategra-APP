@@ -126,7 +126,13 @@ export default function ActivityList(
                                 </div>
                                 <div>
                                     <h3 className="font-medium">{activity.name}</h3>
-                                    <p className="text-sm text-gray-500 truncate">{activity.description}</p>
+                                    {activity.description && (
+                                        <p className="text-sm text-gray-500 truncate">
+                                        {activity.description.length > 150 
+                                            ? activity.description.slice(0, 147) + "..." 
+                                            : activity.description}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="text-sm text-gray-500">{activity.start_date}</div>
                                 <div className="text-sm text-gray-500 flex items-center gap-x-2">
