@@ -22,15 +22,15 @@ const ProfileKegiatan = async (
 
     if (error) {
         return (
-            <>
+            <div className="px-6">
                 <div className="mb-4">
                     <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
                 </div>
 
-                        <div className="flex w-full flex-col gap-4 p-6">
+                        <div className="flex w-full flex-col gap-4">
                             <h1 className="text-2xl font-semibold text-neutral-1000">{error}</h1>
                 </div>
-            </>
+            </div>
         )
     }
 

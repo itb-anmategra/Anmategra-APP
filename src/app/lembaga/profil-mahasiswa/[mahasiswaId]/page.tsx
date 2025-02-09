@@ -26,7 +26,7 @@ const DetailMahasiswaPage = async ({params}: {
     if (error) {
         return (
             <>
-                <div className='w-full flex min-h-screen flex-col items-center px-6'>
+                <div className='w-full flex min-h-screen flex-col items-center p-6'>
                     <div className="max-w-7xl w-full flex flex-col">
                         <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
                         <p className='text-slate-400'>Beranda / Mahasiswa</p>

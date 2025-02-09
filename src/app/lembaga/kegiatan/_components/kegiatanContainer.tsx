@@ -91,7 +91,7 @@ export default function ActivityList(
                             Tambah Kegiatan Baru
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="min-w-[800px]">
                         <DialogHeader>
                             <DialogTitle>Tambah Kegiatan</DialogTitle>
                         </DialogHeader>
@@ -152,7 +152,7 @@ export default function ActivityList(
                                                 Edit
                                             </Button>
                                         </DialogTrigger>
-                                        <DialogContent>
+                                        <DialogContent className="min-w-[800px]">
                                             <DialogHeader>
                                                 <DialogTitle>
                                                     Edit Kegiatan

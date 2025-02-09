@@ -2,7 +2,7 @@
 import {api} from "~/trpc/server";
 // Icons Import
 import ActivityList from "~/app/lembaga/kegiatan/_components/kegiatanContainer";
-import {getServerAuthSession} from "~/server/auth";
+import { getServerAuthSession } from "~/server/auth";
 
 export default async function Home() {
 

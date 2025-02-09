@@ -45,6 +45,7 @@ const EventInputSchema = z.object({
   participant_count: z.number().int().min(0, "Minimal 0 peserta"),
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
+  banner_img: z.string().url("Harus berupa URL yang valid")
 });
 
 // ✅ Type inference dari schema
@@ -82,6 +83,7 @@ const EditKegiatanForm = (
       participant_count: kegiatan.participant_count ?? 0,
       is_highlighted: kegiatan.is_highlighted,
       is_organogram: kegiatan.is_organogram,
+      banner_img: "",
     },
   });
 
@@ -212,30 +214,29 @@ const EditKegiatanForm = (
           />
         </div>
 
-        {/* Status Kegiatan */}
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status Kegiatan</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Coming Soon">Segera Dimulai</SelectItem>
-                  <SelectItem value="On going">Sedang Berlangsung</SelectItem>
-                  <SelectItem value="Ended">Selesai</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Layout: Lokasi & Link Pendaftaran */}
+        {/* Layout: Status, Lokasi, dan Link Pendaftaran */}
         <div className="flex space-x-4">
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status Kegiatan</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Coming Soon">Segera Dimulai</SelectItem>
+                    <SelectItem value="On going">Sedang Berlangsung</SelectItem>
+                    <SelectItem value="Ended">Selesai</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="location"
@@ -323,34 +324,58 @@ const EditKegiatanForm = (
           )} />
         </div>
 
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Upload Gambar</FormLabel>
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res) => {
-                  if (res && res.length > 0) {
-                    // @ts-ignore
-                    field.onChange(res[0].url);
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className='flex justify-center items-center gap-x-6'>
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Upload Gambar</FormLabel>
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    if (res && res.length > 0) {
+                      // @ts-ignore
+                      field.onChange(res[0].url);
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    alert(`ERROR! ${error.message}`);
+                  }}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="banner_img"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Upload Banner</FormLabel>
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    if (res && res.length > 0) {
+                      // @ts-ignore
+                      field.onChange(res[0].url);
+                    }
+                  }}
+                  onUploadError={(error: Error) => {
+                    alert(`ERROR! ${error.message}`);
+                  }}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>       
        
         {/* Tombol Submit */}
         <Button 
           type="submit" 
           className="w-full"
-          // disabled={!isValid}
+          disabled={!isValid}
         >
           Simpan Kegiatan
         </Button>

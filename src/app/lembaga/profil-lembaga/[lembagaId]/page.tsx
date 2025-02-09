@@ -30,17 +30,15 @@ const DetailLembagaPage = async (
 
     if (error) {
         return (
-            <>
-              <div className='w-full flex min-h-screen flex-col items-center px-6'>
-                <div className="w-full max-w-7xl flex flex-col">
-                    <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-                    <p className='text-slate-400'>Beranda / Nama Lembaga</p>
-                </div>
-                <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
-                    <h1 className="text-2xl font-semibold text-neutral-1000">{error}</h1>
-                </div>
-              </div>
-            </>
+          <div className='w-full flex min-h-screen flex-col items-center p-6'>
+            <div className="w-full max-w-7xl flex flex-col">
+                <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
+                <p className='text-slate-400'>Beranda / Nama Lembaga</p>
+            </div>
+            <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
+                <h1 className="text-2xl font-semibold text-slate-600">{error}</h1>
+            </div>
+          </div>
         )
     }
 
