@@ -100,7 +100,7 @@ export const addNewPanitia = protectedProcedure
             const requester = ctx.session.user.id
             const requester_org_id = await db
                 .select({
-                    org_id: lembaga.userId
+                    org_id: lembaga.id
                 })
                 .from(lembaga)
                 .where(eq(lembaga.userId, requester))
