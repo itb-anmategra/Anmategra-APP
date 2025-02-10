@@ -62,7 +62,7 @@ const DetailMahasiswaPage = async ({params}: {
                     <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                     {session?.user.id === userId && (
                         <div className='pt-2'>
-                            <EditProfileDialog />
+                            <EditProfileDialog nama={mahasiswaData?.user.name} fotoProfil={mahasiswaData?.user.image} />
                         </div>
                     )}
                 </div>

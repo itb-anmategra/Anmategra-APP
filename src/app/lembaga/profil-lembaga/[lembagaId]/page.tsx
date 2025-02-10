@@ -63,6 +63,7 @@ const DetailLembagaPage = async (
             alt='Foto Lembaga'
             width={200}
             height={100}
+            className='rounded-full'
           />
           <div className='space-y-2'>
             <div className='space-y-2'>

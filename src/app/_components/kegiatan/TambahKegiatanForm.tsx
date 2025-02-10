@@ -36,7 +36,7 @@ import { useRouter } from 'next/navigation';
 const EventInputSchema = z.object({
   name: z.string().min(1, "Nama kegiatan wajib diisi"),
   // org_id: z.string().optional(),
-  description: z.string().min(10, "Deskripsi minimal 10 karakter"),
+  description: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 karakter"),
   image: z.string().url("Harus berupa URL yang valid"),
   start_date: z.string().datetime(),
   end_date: z.string().datetime().optional(),
