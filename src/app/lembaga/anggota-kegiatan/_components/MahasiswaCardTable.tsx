@@ -94,10 +94,10 @@ const columns: ColumnDef<Member>[] = [
                 <DialogDescription>Apakah kamu yakin ingin menghapus anggota ini?</DialogDescription>
               </DialogHeader>
               <div className="w-full flex items-center justify-center gap-x-4">
-                <Button variant={"destructive"}>
+                <Button>
                   Tidak, Batalkan
                 </Button>
-                <Button>
+                <Button variant={"destructive"}>
                   Ya, Hapus
                 </Button>
               </div>
