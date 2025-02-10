@@ -1,5 +1,5 @@
 "use client";
-
+// Library Import
 import * as React from "react";
 import {
   ColumnDef,
@@ -10,8 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronRight } from "lucide-react"; // Import the right arrow icon
-
+// Components Import
 import {
   Table,
   TableBody,
@@ -21,7 +20,16 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
-import {api} from "~/trpc/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
+// TRPC Import
+import { api } from "~/trpc/react";
 
 export type Member = {
   id: string;
@@ -72,11 +80,29 @@ const columns: ColumnDef<Member>[] = [
             <span className={`h-2 w-2 rounded-full ${posisiColor}`}></span>
             {row.getValue("posisi")}
           </div>
-          <Button
-              onClick={() => onDelete(row.original.id)}
-              variant={"outline"} size={"sm"} className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500">
-            Hapus
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                  // onClick={() => onDelete(row.original.id)}
+                  variant={"outline"} size={"sm"} className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500">
+                Hapus
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Hapus Anggota</DialogTitle>
+                <DialogDescription>Apakah kamu yakin ingin menghapus anggota ini?</DialogDescription>
+              </DialogHeader>
+              <div className="w-full flex items-center justify-center gap-x-4">
+                <Button variant={"destructive"}>
+                  Tidak, Batalkan
+                </Button>
+                <Button>
+                  Ya, Hapus
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       );
     },
