@@ -41,7 +41,7 @@ export const KepanitiaanCard = ({
         <div className="flex w-fit items-center gap-2 rounded-full bg-primary-400 px-3 py-1 text-[0.7rem] text-white">
           <Avatar className="size-4 bg-white">
             <AvatarImage
-              className="object-contain"
+              className="object-cover"
               src={kepanitiaan.lembaga.profilePicture ?? "/logo-hmif.png"}
             />
             <AvatarFallback>
