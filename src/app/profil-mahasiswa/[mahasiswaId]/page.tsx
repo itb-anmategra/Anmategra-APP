@@ -61,7 +61,8 @@ const DetailMahasiswaPage = async ({params}: {
                         src={mahasiswaData?.user.image ?? FotoProfil}
                         alt='Foto Mahasiswa'
                         width={200}
-                        height={100}
+                        height={200}
+                        className="rounded-full max-w-[200px] max-h-[200px] object-cover"
                     />
                     <div className='space-y-1'>
                         <p className='text-3xl text-slate-700 font-semibold'>{mahasiswaData?.user.name}</p>
@@ -69,7 +70,11 @@ const DetailMahasiswaPage = async ({params}: {
                         <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                         {session?.user.id === userId && (
                             <div className='pt-2'>
-                                <EditProfileDialog name={mahasiswaData?.user.name} />
+                                <EditProfileDialog 
+                                    // @ts-ignore
+                                    nama={mahasiswaData?.user.name} 
+                                    gambar={mahasiswaData?.user.image}
+                                />
                             </div>
                         )}
                     </div>

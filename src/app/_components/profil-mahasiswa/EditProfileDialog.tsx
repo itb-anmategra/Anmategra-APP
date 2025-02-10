@@ -1,6 +1,6 @@
 'use client'
 // Library
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod'
@@ -22,6 +22,7 @@ import {
     FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { useToast } from "~/hooks/use-toast"
 // Icon Import
 import { Pencil } from 'lucide-react';
 // Upload Thing Import
@@ -29,22 +30,27 @@ import { UploadButton } from '~/utils/uploadthing';
 import {api} from "~/trpc/react";
 
 const mahasiswaProfilSchema = z.object({
-  nama: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 100 karakter"),
-  fotoProfil: z.string().url("Harus berupa URL yang valid"),
+  nama: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 30 karakter"),
+  fotoProfil: z.string().url("Harus berupa URL yang valid").optional(),
 });
 type mahasiswaProfilSchemaType = z.infer<typeof mahasiswaProfilSchema>
 
 const EditProfileDialog = ({
-  name
+  nama,
+  gambar,
 }:{
   name: string | undefined
+  image: string | undefined
 }) => {
-    const mutation = api.users.gantiProfile.useMutation()
+  const { toast } = useToast()
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  const mutation = api.users.gantiProfile.useMutation()
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
-        nama: name,
-        fotoProfil: ""
+        nama: nama,
+        fotoProfil: gambar
     }
   })
 
@@ -54,8 +60,9 @@ const EditProfileDialog = ({
             image: values.fotoProfil
       }, {
           onSuccess: () => {
-              alert("Berhasil mengubah profil")
               form.reset()
+              setIsOpen(false)
+              location.reload()
           },
           onError: (error) => {
               alert("Gagal mengubah profil")
@@ -64,7 +71,7 @@ const EditProfileDialog = ({
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
           <Button className='bg-secondary-400 hover:bg-secondary-500 space-x-6'>
               Edit Profil <Pencil />
