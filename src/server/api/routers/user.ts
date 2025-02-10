@@ -1,6 +1,8 @@
 import {createTRPCRouter, lembagaProcedure, protectedProcedure} from "~/server/api/trpc";
 import {z} from "zod";
 import {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
+import {users} from "~/server/db/schema";
+import {eq} from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
     /*
@@ -61,5 +63,18 @@ export const userRouter = createTRPCRouter({
                 posisi: posisi_list ?? [] as comboboxDataType[],
                 bidang: bidang_list ?? [] as comboboxDataType[],
             };
-        })
+        }),
+
+    gantiProfile: protectedProcedure
+        .input(z.object({
+            name: z.string(),
+            image: z.string(),
+        }))
+        .mutation(async ({ctx, input}) => {
+            const user = await ctx.db.update(users).set({
+                name: input.name,
+                image: input.image,
+            }).where(eq(users.id, ctx.session.user.id)).returning();
+            return user;
+        }),
 })
