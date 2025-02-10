@@ -15,7 +15,6 @@ import { signOut } from "next-auth/react";
 
 const MahasiswaSidebar = ({ session, role }: { session: string, role: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
-
   const router = useRouter();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

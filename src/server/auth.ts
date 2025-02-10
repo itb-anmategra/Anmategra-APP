@@ -27,6 +27,7 @@ declare module "next-auth" {
       id: string;
       image: string;
       role: "admin" | "lembaga" | "mahasiswa";
+      lembagaId?: string;
     } & DefaultSession["user"];
   }
 
@@ -44,6 +45,7 @@ declare module "next-auth/jwt" {
     id: string;
     picture: string;
     role: "admin" | "lembaga" | "mahasiswa";
+    lembagaId?: string;
   }
 }
 
@@ -84,10 +86,11 @@ export const authOptions: NextAuthOptions = {
                 .set({role: "lembaga"})
                 .where(eq(users.id, user.id))
                 .returning();
+            const lembaga_id = crypto.randomUUID();
             await db
                 .insert(lembaga)
                 .values({
-                  id: crypto.randomUUID(),
+                  id: lembaga_id,
                   userId: user.id,
                   name: user.name,
                   image: user.image,
@@ -95,7 +98,11 @@ export const authOptions: NextAuthOptions = {
                 })
                 .returning();
 
-            token.role = "lembaga";
+            token.role = "lembaga"
+            token.lembagaId = lembaga_id;
+          } else {
+            token.role = user.role;
+            token.lembagaId = lembagaExists.id;
           }
         }
 
@@ -109,6 +116,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id;
       session.user.image = token.picture;
       session.user.role = token.role;
+      session.user.lembagaId = token.lembagaId;
       return session
     },
 
