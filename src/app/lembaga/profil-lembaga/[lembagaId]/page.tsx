@@ -44,7 +44,7 @@ const DetailLembagaPage = async (
                 <p className='text-slate-400'>Beranda / Nama Lembaga</p>
             </div>
             <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
-                <h1 className="text-2xl font-semibold text-slate-600">{error}</h1>
+                <h1 className="text-xl font-medium text-slate-600">Lembaga Tidak Ditemukan</h1>
             </div>
           </div>
         )
@@ -79,7 +79,6 @@ const DetailLembagaPage = async (
                     Edit Profil Lembaga
                   </DialogTitle>
                 </DialogHeader>
-               
               </DialogContent>
             </Dialog>
           </div>

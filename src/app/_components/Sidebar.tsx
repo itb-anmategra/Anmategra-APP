@@ -113,7 +113,7 @@ const SidebarProfile = ({
                         } : {
     lembaga: Lembaga;
 }) => {
-  console.log(lembaga)
+  console.log("Lembaga", lembaga)
   return (
     <div className="flex w-full flex-col gap-y-2">
       <Link href={`/lembaga/profil-lembaga/${lembaga.id}`}>
