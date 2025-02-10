@@ -51,6 +51,12 @@ export const Sidebar = (
     }
 ) => {
 
+    const lembaga: Lembaga = {
+        id: session?.user.lembagaId ?? '',
+        name: session?.user.name ?? '',
+        profilePicture: session?.user.image ?? ''
+    }
+
   return (
     <>
       <div className="ml-[16rem]" />
@@ -67,7 +73,7 @@ export const Sidebar = (
             </Link>
             <SidebarItems />
           </div>
-          <SidebarProfile lembaga={{ name: session?.user.name ?? '', profilePicture: session?.user.image ?? ''}} />
+          <SidebarProfile lembaga={lembaga} />
         </nav>
       </div>
     </>
