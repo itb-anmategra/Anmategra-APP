@@ -26,6 +26,7 @@ import { Input } from '~/components/ui/input';
 import { Pencil } from 'lucide-react';
 // Upload Thing Import
 import { UploadButton } from '~/utils/uploadthing';
+import {api} from "~/trpc/react";
 
 const mahasiswaProfilSchema = z.object({
   nama: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 100 karakter"),
@@ -38,6 +39,7 @@ const EditProfileDialog = ({
 }:{
   name: string | undefined
 }) => {
+    const mutation = api.users.gantiProfile.useMutation()
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
@@ -46,14 +48,19 @@ const EditProfileDialog = ({
     }
   })
 
-  function onSubmit(values: mahasiswaProfilSchemaType) {
-      console.log(values)
-      handleSubmit(values)
-  }
-
-  // fungsi ke back end
-  async function handleSubmit(values: mahasiswaProfilSchemaType) {
-
+  async function onSubmit(values: mahasiswaProfilSchemaType) {
+      mutation.mutate({
+            name: values.nama,
+            image: values.fotoProfil
+      }, {
+          onSuccess: () => {
+              alert("Berhasil mengubah profil")
+              form.reset()
+          },
+          onError: (error) => {
+              alert("Gagal mengubah profil")
+          }
+      })
   }
 
   return (
