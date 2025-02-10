@@ -68,7 +68,7 @@ export const userRouter = createTRPCRouter({
     gantiProfile: protectedProcedure
         .input(z.object({
             name: z.string(),
-            image: z.string(),
+            image: z.string().optional(),
         }))
         .mutation(async ({ctx, input}) => {
             const user = await ctx.db.update(users).set({
