@@ -19,11 +19,16 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
       <html lang="en" className={`${GeistSans.variable}`}>
-      <body className="bg-neutral-100 overflow-auto">
-      <TRPCReactProvider>
-          {children}
-      </TRPCReactProvider>
-      </body>
+        <body className="bg-neutral-100 overflow-auto">
+          <div className="hidden lg:block">
+            <TRPCReactProvider>
+                {children}
+            </TRPCReactProvider>
+          </div>
+          <div className="w-full h-screen flex flex-col justify-center items-center lg:hidden">
+            <p className="text-secondary-400 text-xl">Silakan Buka Dalam Desktop View.</p>
+          </div>
+        </body>
       </html>
   );
 }
