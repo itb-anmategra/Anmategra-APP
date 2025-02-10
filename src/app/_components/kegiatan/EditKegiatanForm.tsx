@@ -34,7 +34,7 @@ import { useWatch } from "react-hook-form";
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
   name: z.string().min(1, "Nama kegiatan wajib diisi"),
-  description: z.string().min(10, "Deskripsi minimal 10 karakter"),
+  description: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 karakter"),
   image: z.string().url("Harus berupa URL yang valid").optional(),
   start_date: z.string().datetime().optional(),
   end_date: z.string().datetime().optional(),

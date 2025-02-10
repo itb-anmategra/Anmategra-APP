@@ -11,8 +11,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 const profileLembagaSchema = z.object({
-  nama: z.string(),
-  deskripsi: z.string(),
+  nama: z.string().min(1, "Nama wajib diisi").max(30, "Nama maksimal 30 karakter"),
+  deskripsi: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 krakater"),
   gambar: z.string().url()
 })
 type profileLembagaSchemaType = z.infer<typeof profileLembagaSchema>
