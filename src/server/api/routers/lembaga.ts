@@ -137,16 +137,16 @@ export const lembagaRouter = createTRPCRouter({
     // Add new anggota to lembaga
     addAnggota: protectedProcedure
         .input(z.object({
-            lembagaId: z.string().nonempty(),
             user_id: z.string().nonempty(),
             division: z.string().nonempty(),
             position: z.string().nonempty(),
         }))
         .mutation(async ({ctx, input}) => {
             try {
+                const requester = ctx.session.user.id
                 const lembaga_id = await db.select({
                     id: lembaga.id,
-                }).from(lembaga).where(eq(lembaga.userId, input.lembagaId))
+                }).from(lembaga).where(eq(lembaga.userId, requester))
                     .limit(1);
 
                 if (!lembaga_id || lembaga_id.length === 0 || !lembaga_id[0]) {
@@ -159,7 +159,7 @@ export const lembagaRouter = createTRPCRouter({
                 await db
                     .insert(kehimpunan)
                     .values({
-                        id: input.user_id + '_' + input.lembagaId,
+                        id: input.user_id + '_' + requester,
                         lembagaId: lembaga_id[0].id,
                         userId: input.user_id,
                         division: input.division,

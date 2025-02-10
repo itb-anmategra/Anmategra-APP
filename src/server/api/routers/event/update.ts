@@ -3,13 +3,14 @@ import {z} from "zod";
 import {events, keanggotaan, lembaga} from "~/server/db/schema";
 import {TRPCError} from "@trpc/server";
 import {eq} from "drizzle-orm";
+import {db} from "~/server/db";
+import {whenRef} from "effect/Effect";
 
 export const updateEvent = protectedProcedure
     .input(
         z.object({
             id: z.string(),
             name: z.string(),
-            org_id: z.string(),
             description: z.string(),
             image: z.string(),
             start_date: z.string().datetime(),
@@ -24,10 +25,11 @@ export const updateEvent = protectedProcedure
         })
     )
     .mutation(async ({ctx, input}) => {
-        console.log("Event Update called.")
         try {
+            const requester = ctx.session.user.id
+
             const org_id = await ctx.db.query.lembaga.findFirst({
-                where: eq(lembaga.userId, input.org_id),
+                where: eq(lembaga.userId, requester),
                 columns: {
                     id: true
                 }
@@ -40,9 +42,9 @@ export const updateEvent = protectedProcedure
                 });
             }
 
-            input.org_id = org_id.id;
             const updatedEvent = await ctx.db.update(events)
                 .set({
+                    org_id: org_id.id,
                     ...input,
                     start_date: new Date(input.start_date),
                     end_date: new Date(input.end_date)
@@ -89,14 +91,46 @@ export const addNewPanitia = protectedProcedure
         z.object({
             event_id: z.string(),
             user_id: z.string(),
-
+            position: z.string(),
+            division: z.string(),
         })
     )
     .mutation(async ({ctx, input}) => {
         try {
+            const requester = ctx.session.user.id
+            const requester_org_id = await db
+                .select({
+                    org_id: lembaga.userId
+                })
+                .from(lembaga)
+                .where(eq(lembaga.userId, requester))
+                .limit(1)
+            
+            if (!requester_org_id || !requester_org_id[0] || !requester_org_id[0].org_id){
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                })
+            }
+            
+            const is_requester_is_event_owner = await db
+                .select({
+                    owner_id: events.org_id
+                })
+                .from(events)
+                .where(eq(events.org_id, requester_org_id[0].org_id))
+            
+            if (!is_requester_is_event_owner) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED'
+                })
+            }
+
             const newPanitia = await ctx.db.insert(keanggotaan).values({
-                event_id: input.event_id,
-                user_id: input.user_id
+                id : input.event_id + '_' + input.user_id,
+                event_id : input.event_id,
+                user_id : input.user_id,
+                position : input.position,
+                division : input.division,
             }).returning();
 
             return newPanitia[0];

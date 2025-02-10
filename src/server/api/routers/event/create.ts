@@ -15,7 +15,6 @@ export const createEvent = protectedProcedure
       .input(
         z.object({
           name: z.string(),
-          org_id: z.string(),
           description: z.string(),
           image: z.string(),
           start_date: z.string().datetime(),
@@ -30,15 +29,15 @@ export const createEvent = protectedProcedure
         })
       )
       .mutation(async ({ctx, input}) => {
-        console.log("Event Creation called.")
-
         try {
+            const requester = ctx.session.user.id
+
             const lembaga_user_id = await db
                 .select({
                     id: lembaga.id
                 })
                 .from(lembaga)
-                .where(eq(lembaga.userId, input.org_id))
+                .where(eq(lembaga.userId, requester))
                 .limit(1)
 
             if (!lembaga_user_id || lembaga_user_id.length === 0 || !lembaga_user_id[0]) {
@@ -48,10 +47,10 @@ export const createEvent = protectedProcedure
                 });
             }
 
-            input.org_id = lembaga_user_id[0].id;
 
           const newEvent = await ctx.db.insert(events).values({
             id: generateShortId(),
+            org_id: lembaga_user_id[0].id,
             ...input,
             start_date: new Date(input.start_date),
             end_date: input.end_date ? new Date(input.end_date) : null

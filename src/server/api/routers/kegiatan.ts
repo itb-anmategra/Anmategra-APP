@@ -31,13 +31,6 @@ export const kegiatanRouter = createTRPCRouter({
                 image: true,
               },
             },
-            eventOrganograms: {
-              columns: {
-                eventOrganogram_id: true,
-                type: true,
-                value: true,
-              },
-            },
           },
           columns: {},
         });

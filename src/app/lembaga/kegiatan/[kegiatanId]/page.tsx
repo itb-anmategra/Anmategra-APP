@@ -16,14 +16,11 @@ const DaftarPanitiaKegiatanPage = async (
 ) => {
   const session = await getServerAuthSession();
   const query = (await params).kegiatanId
-  const anggota_data = await api.event.getAllAnggota({event_id: query});
+  const { formatted_anggota, error } = await api.event.getAllAnggota({ event_id: query });
   const addAnggotaProps = await api.users.tambahAnggotaLembagaData({lembagaId: session?.user.id ?? ""});
-
-  console.log(anggota_data)
-  
   return (
       <main>
-          <AnggotaComp session={session} data={anggota_data ?? []} dataAddAnggota={addAnggotaProps}/>
+          <AnggotaComp session={session} data={formatted_anggota ?? []} dataAddAnggota={addAnggotaProps}/>
       </main>
   );
 }

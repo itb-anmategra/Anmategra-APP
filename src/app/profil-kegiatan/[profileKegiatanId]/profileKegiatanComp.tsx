@@ -21,7 +21,6 @@ const ProfileKegiatanComp = (
             image: string | null
             position: string | null
             divisi: string | null
-            bidang: string | null
         }[]
     }
 ) => {

@@ -144,9 +144,8 @@ export const profileRouter = createTRPCRouter({
                     nim: mahasiswa.nim,
                     jurusan: mahasiswa.jurusan,
                     image: users.image,
-                    position: keanggotaan.position_id,
-                    divisi: keanggotaan.division_id,
-                    bidang: keanggotaan.bidang_id,
+                    position: keanggotaan.position,
+                    divisi: keanggotaan.division,
                 })
                 .from(keanggotaan)
                 .innerJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.userId))

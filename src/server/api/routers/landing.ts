@@ -116,6 +116,8 @@ export const landingRouter = createTRPCRouter({
         const isNumeric = /^\d+$/.test(query);
 
         // Inner join User dan Mahasiswa dengan kondisi pencarian
+        // @ts-ignore
+        // @ts-ignore
         const mahasiswaResults = await ctx.db
             .select({
               userId: users.id,
@@ -130,6 +132,7 @@ export const landingRouter = createTRPCRouter({
                 isNumeric
                     ? or(
                         // Jika query numerik: cari di kolom nim (integer) dan name (string)
+                        // @ts-expect-error
                         ilike(sql`${mahasiswa.nim}::text`, `%${query}%`), // Cast integer ke text untuk ilike
                         ilike(users.name, `%${query}%`)
                     )

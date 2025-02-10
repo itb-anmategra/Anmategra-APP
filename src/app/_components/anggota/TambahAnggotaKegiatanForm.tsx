@@ -44,22 +44,6 @@ export type comboboxDataType = {
   label: string;
 }
 
-const posisiData: comboboxDataType[] = [
-    { value: "1", label: "Ketua" },
-    { value: "2", label: "Wakil Ketua" },
-    { value: "3", label: "Sekretaris" },
-    { value: "4", label: "Bendahara" },
-    { value: "5", label: "Anggota" },
-    ];
-
-const bidangData: comboboxDataType[] = [
-    { value: "1", label: "Bidang 1" },
-    { value: "2", label: "Bidang 2" },
-    { value: "3", label: "Bidang 3" },
-    { value: "4", label: "Bidang 4" },
-    { value: "5", label: "Bidang 5" },
-    ];
-
 const TambahAnggotaKegiatanForm = ({
     session,
     data,
@@ -76,7 +60,7 @@ const TambahAnggotaKegiatanForm = ({
   const [open, setOpen] = useState(false);
   const [posisiOpen, setPosisiOpen] = useState(false);
   const [bidangOpen, setBidangOpen] = useState(false);
-  const mutation = api.lembaga.addAnggota.useMutation();
+  const mutation = api.event.addNewPanitia.useMutation();
   const form = useForm<AnggotaSchemaType>({
     resolver: zodResolver(AnggotaSchema),
     defaultValues: {
@@ -96,7 +80,7 @@ const TambahAnggotaKegiatanForm = ({
   const onSubmit = (values: AnggotaSchemaType) => {
     const query = {
       ...values,
-      lembagaId: session?.user.id ?? "",
+      event_id: kegiatanId ?? '',
     };
     setIsOpen(false)
     mutation.mutate(query, {

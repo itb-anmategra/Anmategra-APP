@@ -44,19 +44,21 @@ export const getAllAnggota = protectedProcedure
             const formatted_anggota = anggota.map((anggota) => {
                 return {
                     id: anggota.id,
-                    nama: anggota.nama,
-                    nim: anggota.nim,
-                    divisi: anggota.division,
-                    posisi: anggota.position,
+                    nama: anggota.nama ?? '',
+                    nim: anggota.nim.toString() ?? '',
+                    divisi: anggota.division ?? '',
+                    posisi: anggota.position ?? '',
                     posisiColor: "blue"
                 }
             })
 
-            return formatted_anggota
+            return {
+                formatted_anggota
+            };
         } catch (error) {
             console.error(error);
             return {
-                error: "Gagal mengambil data anggota"
+                error: "Internal Server Error",
             }
         }
     })

@@ -1,4 +1,4 @@
-import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc";
+import {createTRPCRouter, lembagaProcedure, protectedProcedure} from "~/server/api/trpc";
 import {z} from "zod";
 import {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 
@@ -6,7 +6,7 @@ export const userRouter = createTRPCRouter({
     /*
     * Endpoint untuk tambah anggota pada suatu lembaga
      */
-    tambahAnggotaLembagaData: protectedProcedure
+    tambahAnggotaLembagaData: lembagaProcedure
         .input(z.object({lembagaId: z.string()}))
         .query(async ({ctx, input}) => {
             const user_hide_list = await ctx.db.query.kehimpunan.findMany({
