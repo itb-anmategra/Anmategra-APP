@@ -33,11 +33,15 @@ const mahasiswaProfilSchema = z.object({
 });
 type mahasiswaProfilSchemaType = z.infer<typeof mahasiswaProfilSchema>
 
-const EditProfileDialog = () => {
+const EditProfileDialog = ({
+  name
+}:{
+  name: string | undefined
+}) => {
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
-        nama: "",
+        nama: name,
         fotoProfil: ""
     }
   })

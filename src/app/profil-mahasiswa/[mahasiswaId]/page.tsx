@@ -16,7 +16,7 @@ import { api } from "~/trpc/server";
 import { Kepanitiaan } from '~/types/kepanitiaan'
 
 const DetailMahasiswaPage = async ({params}: {
-    params: Promise<{ mahasiswaId: string }>
+    params: Promise<{ mahasiswaId: string }>,
 }) => {
     const userId = (await params).mahasiswaId
     const {mahasiswaData, newestEvent, error} = await api.profil.getMahasiswa({mahasiswaId: userId})
@@ -69,7 +69,7 @@ const DetailMahasiswaPage = async ({params}: {
                         <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                         {session?.user.id === userId && (
                             <div className='pt-2'>
-                                <EditProfileDialog />
+                                <EditProfileDialog name={mahasiswaData?.user.name} />
                             </div>
                         )}
                     </div>
