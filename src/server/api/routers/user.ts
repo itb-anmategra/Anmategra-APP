@@ -65,6 +65,65 @@ export const userRouter = createTRPCRouter({
             };
         }),
 
+    tambahAnggotaKegiatanData: protectedProcedure
+        .input(z.object({kegiatanId: z.string()}))
+        .query(async ({ctx, input}) => {
+
+            const user_hide_list = await ctx.db.query.keanggotaan.findMany({
+                where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
+                columns: {
+                    user_id: true,
+                },
+            });
+
+            const user_lembaga_hide_list = await ctx.db.query.lembaga.findMany({
+                columns: {
+                    userId: true,
+                },
+            });
+
+            const formatted_user_hide_list = user_hide_list.map((item) => item.user_id);
+            const formatted_user_lembaga_hide_list = user_lembaga_hide_list.map((item) => item.userId);
+            const formatted_user_hide_list_final = formatted_user_hide_list.concat(formatted_user_lembaga_hide_list);
+
+            const user_list = await ctx.db.query.users.findMany({
+                where: (users, {notInArray}) => notInArray(users.id, formatted_user_hide_list_final),
+                columns: {
+                    id: true,
+                    name: true,
+                },
+            });
+
+            const formattedUserList = user_list.map((item) => ({
+                value: item.id,
+                label: item.name ?? "",
+            }));
+
+            const list_posisi_bidang = await ctx.db.query.keanggotaan.findMany({
+                where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
+                columns: {
+                    position: true,
+                    division: true,
+                },
+            })
+
+            const posisi_list = list_posisi_bidang.map((item) => ({
+                value: item.position,
+                label: item.position ?? "",
+            }));
+
+            const bidang_list = list_posisi_bidang.map((item) => ({
+                value: item.division,
+                label: item.division ?? "",
+            }));
+
+            return {
+                mahasiswa: formattedUserList ?? [] as comboboxDataType[],
+                posisi: posisi_list ?? [] as comboboxDataType[],
+                bidang: bidang_list ?? [] as comboboxDataType[],
+            }
+        }),
+
     gantiProfile: protectedProcedure
         .input(z.object({
             name: z.string(),

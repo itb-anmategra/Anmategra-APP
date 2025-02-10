@@ -226,8 +226,8 @@ export const events = createTable('event', {
     status: eventStatusEnum('status').notNull(),
     oprec_link: varchar('oprec_link', {length: 255}),
     location: varchar('location', {length: 255}),
-    participant_limit: integer('participant_limit'),
-    participant_count: integer('participant_count'),
+    participant_limit: integer('participant_limit').notNull().default(0),
+    participant_count: integer('participant_count').notNull().default(0),
     is_highlighted: boolean('is_highlighted').notNull().default(false),
     is_organogram: boolean('is_organogram').notNull().default(false),
     created_at: timestamp('created_at').notNull().defaultNow(),
@@ -250,9 +250,11 @@ export const associationRequestStatusEnum = pgEnum('association_request_status',
 export const keanggotaan = createTable('keanggotaan', {
     id: varchar('id', {length: 255}).primaryKey(),
     event_id: varchar('event_id', {length: 255})
-        .references(() => events.id),
+        .references(() => events.id)
+        .notNull(),
     user_id: varchar('user_id', {length: 255})
-        .references(() => users.id),
+        .references(() => users.id)
+        .notNull(),
     position: varchar('position', {length: 255})
         .notNull(),
     division: varchar('division', {length: 255})

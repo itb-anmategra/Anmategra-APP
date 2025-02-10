@@ -1,11 +1,11 @@
 // Library Import
 import React from 'react'
 // Server Auth
-import { getServerAuthSession } from "~/server/auth";
+import {getServerAuthSession} from "~/server/auth";
 // Components Import
 import AnggotaComp from "~/app/lembaga/anggota-kegiatan/_components/anggotaComp";
 // Api Import
-import { api } from "~/trpc/server";
+import {api} from "~/trpc/server";
 
 const DaftarPanitiaKegiatanPage = async (
     {
@@ -14,15 +14,18 @@ const DaftarPanitiaKegiatanPage = async (
         params: Promise<{ kegiatanId: string }>
     }
 ) => {
-  const session = await getServerAuthSession();
-  const query = (await params).kegiatanId
-  const { formatted_anggota, error } = await api.event.getAllAnggota({ event_id: query });
-  const addAnggotaProps = await api.users.tambahAnggotaLembagaData({lembagaId: session?.user.id ?? ""});
-  return (
-      <main>
-          <AnggotaComp session={session} data={formatted_anggota ?? []} dataAddAnggota={addAnggotaProps}/>
-      </main>
-  );
+    const session = await getServerAuthSession();
+    const query = (await params).kegiatanId
+    const formatted_anggota = await api.event.getAllAnggota({event_id: query});
+    const addAnggotaProps = await api.users.tambahAnggotaKegiatanData({kegiatanId: query});
+
+    console.log(formatted_anggota)
+    console.log(addAnggotaProps)
+    return (
+        <main>
+            <AnggotaComp session={session} data={formatted_anggota ?? []} dataAddAnggota={addAnggotaProps}/>
+        </main>
+    );
 }
 
 export default DaftarPanitiaKegiatanPage

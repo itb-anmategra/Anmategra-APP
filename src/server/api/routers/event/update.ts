@@ -2,7 +2,7 @@ import {adminProcedure, protectedProcedure} from "../../trpc";
 import {z} from "zod";
 import {events, keanggotaan, lembaga} from "~/server/db/schema";
 import {TRPCError} from "@trpc/server";
-import {eq} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 import {db} from "~/server/db";
 import {whenRef} from "effect/Effect";
 
@@ -34,7 +34,7 @@ export const updateEvent = protectedProcedure
                     id: true
                 }
             })
-            
+
             if (!org_id) {
                 throw new TRPCError({
                     code: 'NOT_FOUND',
@@ -105,35 +105,54 @@ export const addNewPanitia = protectedProcedure
                 .from(lembaga)
                 .where(eq(lembaga.userId, requester))
                 .limit(1)
-            
-            if (!requester_org_id || !requester_org_id[0] || !requester_org_id[0].org_id){
+
+            if (!requester_org_id) {
+                console.error("Organization not found.")
                 throw new TRPCError({
                     code: 'NOT_FOUND',
                 })
             }
-            
+
+            if (!requester_org_id[0]) {
+                console.error("Organization not found.")
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                })
+            }
+
             const is_requester_is_event_owner = await db
                 .select({
-                    owner_id: events.org_id
+                    owner_id: events.org_id,
+                    participant_count: events.participant_count
                 })
                 .from(events)
-                .where(eq(events.org_id, requester_org_id[0].org_id))
-            
-            if (!is_requester_is_event_owner) {
+                .where(and(eq(events.id, input.event_id), eq(events.org_id, requester_org_id[0].org_id)));
+
+            if (!is_requester_is_event_owner[0]) {
                 throw new TRPCError({
                     code: 'UNAUTHORIZED'
                 })
             }
 
-            const newPanitia = await ctx.db.insert(keanggotaan).values({
-                id : input.event_id + '_' + input.user_id,
-                event_id : input.event_id,
-                user_id : input.user_id,
-                position : input.position,
-                division : input.division,
-            }).returning();
+            await ctx.db.insert(keanggotaan).values({
+                id: input.event_id + '_' + input.user_id,
+                event_id: input.event_id,
+                user_id: input.user_id,
+                position: input.position,
+                division: input.division,
+            });
 
-            return newPanitia[0];
+            await ctx.db.update(events).set(
+                {
+                    participant_count: is_requester_is_event_owner[0].participant_count + 1
+                }
+            )
+                .where(eq(events.id, input.event_id))
+
+            return {
+                success: true,
+                message: "Panitia added successfully.",
+            }
         } catch (error) {
             console.error("Database Error:", error);
             throw new TRPCError({

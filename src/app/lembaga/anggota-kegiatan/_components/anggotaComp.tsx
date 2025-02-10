@@ -16,14 +16,6 @@ import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying 
 import TambahAnggotaForm, {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
 
-type Keanggotaan = {
-    id: string;
-    event_id: string;
-    user_id: string;
-    position_id: string;
-    bidang_id: string;
-    description: string;
-  };
   
 
 export default function AnggotaComp(

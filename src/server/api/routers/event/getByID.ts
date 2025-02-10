@@ -3,6 +3,7 @@ import { z } from "zod";
 import {db} from "~/server/db";
 import {keanggotaan, mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
+import {TRPCError} from "@trpc/server";
 
 export const getEvent = protectedProcedure
     .input(
@@ -52,13 +53,13 @@ export const getAllAnggota = protectedProcedure
                 }
             })
 
-            return {
-                formatted_anggota
-            };
+            return formatted_anggota
+
         } catch (error) {
-            console.error(error);
-            return {
-                error: "Internal Server Error",
-            }
+            console.error(error)
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Internal server error',
+            })
         }
     })
