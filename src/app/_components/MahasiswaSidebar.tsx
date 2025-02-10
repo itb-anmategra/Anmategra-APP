@@ -1,6 +1,6 @@
 "use client"
 // Library Import
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import {useRouter} from "next/navigation";
 import Link from 'next/link'
@@ -13,7 +13,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Next Auth Import
 import { signOut } from "next-auth/react";
 
-const MahasiswaSidebar = ({ session }: { session: string }) => {
+const MahasiswaSidebar = ({ session, role }: { session: string, role: string }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const router = useRouter();
@@ -23,6 +23,12 @@ const MahasiswaSidebar = ({ session }: { session: string }) => {
       void router.push(`/pencarian/${searchQuery}`);
     }
   };
+
+  useEffect(() => {
+    if (role === "lembaga") {
+      router.push("/lembaga")
+    }
+  }, [])
 
   return (
     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
