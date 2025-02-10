@@ -50,7 +50,7 @@ const DetailLembagaPage = async (
   return (
     <>
       <div className='w-full flex justify-between fixed z-20'>
-        <MahasiswaSidebar session={session?.user.id ?? ""}  />
+        <MahasiswaSidebar session={session?.user.id ?? ""} role={session?.user.role ?? ""} />
       </div>
       <div className='w-full flex min-h-screen flex-col items-center pt-14'>
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
@@ -64,6 +64,7 @@ const DetailLembagaPage = async (
               alt='Foto Lembaga'
               width={200}
               height={100}
+              className='rounded-full'
             />
             <div className='space-y-1'>
               <p className='text-3xl text-slate-600 font-semibold'>{lembagaData?.name}</p>
