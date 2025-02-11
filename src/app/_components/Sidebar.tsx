@@ -26,8 +26,9 @@ import type {Lembaga} from "~/types/lembaga";
 // Lib Import
 import {cn} from "~/lib/utils";
 // Auth Import
-import {Session} from "next-auth";
+import {type Session} from "next-auth";
 import {signOut} from "next-auth/react";
+import React from "react";
 
 type SidebarItemType = {
     label: string;
@@ -142,8 +143,8 @@ const SidebarProfile = ({
             <Button
                 variant="destructive"
                 className="flex items-center justify-start gap-3 bg-transparent px-3 py-2 text-base text-destructive shadow-none hover:text-destructive-foreground"
-                onClick={() => {
-                    signOut({callbackUrl: '/'})
+                onClick={async () => {
+                    await signOut({callbackUrl: '/'})
                 }}
             >
                 <LogOut/> Keluar

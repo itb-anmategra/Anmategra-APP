@@ -1,9 +1,8 @@
 "use client";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { SearchBar } from "../search-bar";
 import Image from "next/image";
-import { Report } from "../board/report-card";
-import { ColumnType, getTypeImage } from "../board/report-column";
+import { type Report } from "../board/report-card";
+import { type ColumnType, getTypeImage } from "../board/report-column";
 import PDFIcon from "public/images/laporan/pdf.png";
 
 export interface LaporanDetailProps extends Report {
@@ -53,7 +52,7 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
               <span>{Laporan.attachment?.length} Attachment: </span>
               <div className="inline">
                 {Laporan.attachment.map((attch, index) => (
-                  <div className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white p-4 px-2 py-1">
+                  <div key={index} className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white p-4 px-2 py-1">
                     <Image
                       className="h-5 w-5"
                       src={PDFIcon}

@@ -12,12 +12,11 @@ const LandingPage = async () => {
     const kepanitiaanTerbaru = await api.landing.getRecentKepanitiaan();
     const kegiatanTerbaru = await api.landing.getRecentEvents();
     const session = await getServerAuthSession();
-    const sessionId = session?.user?.id;
 
     return (
         <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
             <div className="mb-12 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar role={session?.user.role ?? ""} session={session?.user.id ?? ""}/>
+                <MahasiswaSidebar session={session}/>
             </div>
             <HeroSection/>
             <div className="space-y-16">

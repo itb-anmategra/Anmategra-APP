@@ -9,14 +9,13 @@ import { KepanitiaanCard } from "../_components/beranda/KepanitiaanCard";
 // Icons Import
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 // Types Import
-import {Kepanitiaan} from "~/types/kepanitiaan";
+import {type Kepanitiaan} from "~/types/kepanitiaan";
 // Auth Import
-import {Session} from "next-auth";
+import {type Session} from "next-auth";
 
 export default function LandingComp(
     {
         data,
-        session
     }: {
         data: {
             kepanitiaanTerbaru: Kepanitiaan[];

@@ -12,8 +12,9 @@ import { LogIn, LogOut, CircleUserRound } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Next Auth Import
 import { signOut } from "next-auth/react";
+import {type Session} from "next-auth";
 
-const MahasiswaSidebar = ({ session, role }: { session: string, role: string }) => {
+const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
@@ -24,10 +25,10 @@ const MahasiswaSidebar = ({ session, role }: { session: string, role: string }) 
   };
 
   useEffect(() => {
-    if (role === "lembaga") {
+    if (session?.user.role === "lembaga") {
       router.push("/lembaga")
     }
-  }, [])
+  },)
 
   return (
     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
@@ -59,7 +60,7 @@ const MahasiswaSidebar = ({ session, role }: { session: string, role: string }) 
         <nav className='flex items-center'>
           {session ? (
             <div className='flex items-center gap-x-2'>
-              <Link href={`/profil-mahasiswa/${session}`}>
+              <Link href={`/profil-mahasiswa/${session.user.id}`}>
                 <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
                   Profil <CircleUserRound />
                 </Button>

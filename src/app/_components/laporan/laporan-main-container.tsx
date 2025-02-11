@@ -3,12 +3,11 @@
 import { useState } from "react";
 // Components Import
 import { KanbanBoard } from "./board/kanban-board";
-import { CurrentDisplay, LaporanHeader } from "./laporan-header";
-import { ColumnProps, ColumnType } from "./board/report-column";
+import { type CurrentDisplay, LaporanHeader } from "./laporan-header";
+import { type ColumnProps, type ColumnType } from "./board/report-column";
 import { ListDisplay } from "./list/list-display";
 import { Input } from "~/components/ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { LaporanDialog } from "./detail/laporan-dialog";
 
@@ -66,7 +65,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       {display === "Board" && !isLaporanEmpty && (
         <KanbanBoard
           kanbanData={Laporan.data}
-          hideColumn={hideStatus}
+          hideColumnAction={hideStatus}
           displayedColumn={status}
         />
       )}
@@ -74,7 +73,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       {display === "List" && !isLaporanEmpty && (
         <ListDisplay
           kanbanData={Laporan.data}
-          hideColumn={hideStatus}
+          hideColumnAction={hideStatus}
           displayedColumn={status}
         />
       )}

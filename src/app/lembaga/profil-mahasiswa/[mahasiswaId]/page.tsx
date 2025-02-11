@@ -6,14 +6,13 @@ import Link from 'next/link';
 import FotoProfil from "public/placeholder/profilepic.png"
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
-import MahasiswaSidebar from "../../../_components/MahasiswaSidebar";
 import EditProfileDialog from '~/app/_components/profil-mahasiswa/EditProfileDialog';
 // Auth
 import { getServerAuthSession } from '~/server/auth';
 // API Import
 import { api } from "~/trpc/server";
 // Types Import
-import { Kepanitiaan } from '~/types/kepanitiaan'
+import { type Kepanitiaan } from '~/types/kepanitiaan'
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>
@@ -62,7 +61,7 @@ const DetailMahasiswaPage = async ({params}: {
                     <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                     {session?.user.id === userId && (
                         <div className='pt-2'>
-                            <EditProfileDialog nama={mahasiswaData?.user.name} fotoProfil={mahasiswaData?.user.image} />
+                            <EditProfileDialog name={mahasiswaData?.user.name} image={mahasiswaData?.user.image} />
                         </div>
                     )}
                 </div>
@@ -73,7 +72,7 @@ const DetailMahasiswaPage = async ({params}: {
                 <h5 className='text-2xl font-semibold text-slate-600'>Kepanitiaan Terbaru</h5>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                     {newestEvent && newestEvent.length !== 0 ? newestEvent.map((item: Kepanitiaan) => (
-                        <Link href={`/profil-kegiatan/${item.id}`}>
+                        <Link key={item.id} href={`/profil-kegiatan/${item.id}`}>
                             <KepanitiaanCard kepanitiaan={item} key={item.name}/>
                         </Link>
                     )) : <p className='text-slate-600'>Belum ada kepanitiaan</p>}

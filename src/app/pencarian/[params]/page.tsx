@@ -10,7 +10,6 @@ export default async function SearchPage({ params }: {
 }) {
   const query = (await params).params
   const session = await getServerAuthSession();
-  const sessionId = session?.user?.id;
   const data = await api.landing.getResults({query: query});
 
   return (

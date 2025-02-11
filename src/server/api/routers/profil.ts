@@ -2,14 +2,14 @@ import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
 import {db} from "~/server/db";
 import {events, keanggotaan, lembaga, mahasiswa, users} from "~/server/db/schema";
-import {and, desc, eq} from "drizzle-orm";
-import {Kepanitiaan} from "~/types/kepanitiaan";
+import {desc, eq} from "drizzle-orm";
+import {type Kepanitiaan} from "~/types/kepanitiaan";
 
 export const profileRouter = createTRPCRouter({
 
     getMahasiswa: publicProcedure
         .input(z.object({mahasiswaId: z.string()}))
-        .query(async ({ctx, input}) => {
+        .query(async ({input}) => {
             const mahasiswaResult = await db
                 .select()
                 .from(mahasiswa)
@@ -106,7 +106,7 @@ export const profileRouter = createTRPCRouter({
 
     getKegiatan: publicProcedure
         .input(z.object({kegiatanId: z.string()}))
-        .query(async ({ctx, input}) => {
+        .query(async ({ input}) => {
             const kegiatan = await db
                 .select()
                 .from(events)

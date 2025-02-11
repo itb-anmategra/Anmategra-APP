@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { type Metadata } from "next";
 import { Sidebar } from "../_components/Sidebar";

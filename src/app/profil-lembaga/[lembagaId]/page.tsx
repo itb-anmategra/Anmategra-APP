@@ -25,14 +25,13 @@ const DetailLembagaPage = async (
 ) => {
     const lembagaId = (await params).lembagaId
     const {lembagaData, newestEvent , highlightedEvent , error} = await api.profil.getLembaga({lembagaId: lembagaId})
-
     const session = await getServerAuthSession();
 
     if (error) {
         return (
             <>
               <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session?.user.id ?? ""}  />
+                <MahasiswaSidebar session={session}  />
               </div>
               <div className='w-full flex min-h-screen flex-col items-center pt-14'>
                 <div className="w-full max-w-7xl flex flex-col">
@@ -50,7 +49,7 @@ const DetailLembagaPage = async (
   return (
     <>
       <div className='w-full flex justify-between fixed z-20'>
-        <MahasiswaSidebar session={session?.user.id ?? ""} role={session?.user.role ?? ""} />
+        <MahasiswaSidebar session={session} />
       </div>
       <div className='w-full flex min-h-screen flex-col items-center pt-14'>
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">

@@ -5,7 +5,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {api} from "~/trpc/react";
-import {Session} from "next-auth";
+import {type Session} from "next-auth";
 import {usePathname} from "next/navigation";
 // Components Import
 import {
@@ -45,7 +45,6 @@ export type comboboxDataType = {
 }
 
 const TambahAnggotaKegiatanForm = ({
-                                       session,
                                        data,
                                        setIsOpen,
                                    }: {
@@ -69,7 +68,7 @@ const TambahAnggotaKegiatanForm = ({
             division: "",
         },
     });
-    const [mahasiswaList, setMahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa)
+    const [mahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa)
     const [posisiList, setPosisiList] = useState<comboboxDataType[]>(data.posisi)
     const [bidangList, setBidangList] = useState<comboboxDataType[]>(data.bidang)
     const [customValue, setCustomValue] = useState("");

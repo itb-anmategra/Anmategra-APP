@@ -1,14 +1,13 @@
 import { eq } from "drizzle-orm";
-import { emit } from "process";
+
 import { z } from "zod";
 
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
 import { getServerAuthSession } from "~/server/auth";
-import { accounts, users, verifiedUsers } from "~/server/db/schema";
+import { users, verifiedUsers } from "~/server/db/schema";
 
 export const adminRouter = createTRPCRouter({
   addVerifiedEmail: protectedProcedure

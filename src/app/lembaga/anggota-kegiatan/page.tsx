@@ -7,7 +7,7 @@ import { api } from "~/trpc/server";
 
 export default async function Home() {
   const session = await getServerAuthSession();
-  const {anggota, error} = await api.lembaga.getAllAnggota({lembagaId: session?.user.id ?? ""});
+  const anggota = await api.lembaga.getAllAnggota({lembagaId: session?.user.id ?? ""});
   const addAnggotaProps = await api.users.tambahAnggotaLembagaData({lembagaId: session?.user.id ?? ""});
   return (
       <main>

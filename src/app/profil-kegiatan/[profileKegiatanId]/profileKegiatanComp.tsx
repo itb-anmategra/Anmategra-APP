@@ -34,16 +34,15 @@ const ProfileKegiatanComp = (
         image: string | null
         position: string | null
         divisi: string | null
-        bidang: string | null
     }[]>([])
 
     React.useEffect(() => {
         setFilteredAnggota(
             anggota.filter((item) => {
-                return item.nama?.toLowerCase().includes(search.toLowerCase()) ?? false
+                return item.nama?.toLowerCase().includes(search.toLowerCase())
             })
         )
-    }, [search])
+    }, [anggota, search], )
 
     return (
         <div>
@@ -78,8 +77,6 @@ const ProfileKegiatanComp = (
                                     <p className="text-sm text-slate-600">{item.position}</p>
                                     <p> | </p>
                                     <p className="text-sm text-slate-600">{item.divisi}</p>
-                                    <p> | </p>
-                                    <p className="text-sm text-slate-600">{item.bidang}</p>
                                 </div>
                             </div>
                         </div>

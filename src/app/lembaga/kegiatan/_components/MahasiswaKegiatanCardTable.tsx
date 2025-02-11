@@ -2,8 +2,8 @@
 // Library Import
 import * as React from "react";
 import {
-    ColumnDef,
-    SortingState,
+    type ColumnDef,
+    type SortingState,
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
@@ -61,9 +61,7 @@ const columns: ColumnDef<Member & { event_id: string }>[] = [
         accessorKey: "posisi",
         header: "Posisi",
         cell: ({row}) => {
-            const colorMap: {
-                [key: string]: string;
-            } = {
+            const colorMap: Record<string, string> = {
                 yellow: "bg-yellow-400",
                 green: "bg-green-400",
                 blue: "bg-blue-400",

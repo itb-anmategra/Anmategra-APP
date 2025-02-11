@@ -8,7 +8,7 @@ export interface Report {
 }
 
 export function ReportCard({ report }: { report: Report }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef} = useDraggable({
     id: report.id,
   });
   return (

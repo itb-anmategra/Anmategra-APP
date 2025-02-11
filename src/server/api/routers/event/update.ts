@@ -1,10 +1,9 @@
-import {adminProcedure, protectedProcedure} from "../../trpc";
+import {protectedProcedure} from "../../trpc";
 import {z} from "zod";
 import {events, keanggotaan, lembaga} from "~/server/db/schema";
 import {TRPCError} from "@trpc/server";
 import {and, eq} from "drizzle-orm";
 import {db} from "~/server/db";
-import {whenRef} from "effect/Effect";
 
 export const updateEvent = protectedProcedure
     .input(
@@ -12,9 +11,9 @@ export const updateEvent = protectedProcedure
             id: z.string(),
             name: z.string(),
             description: z.string(),
-            image: z.string(),
-            start_date: z.string().datetime(),
-            end_date: z.string().datetime(),
+            image: z.string().url().optional(),
+            start_date: z.string().datetime().optional(),
+            end_date: z.string().datetime().optional(),
             status: z.enum(["Coming Soon", "On going", "Ended"]),
             oprec_link: z.string().url(),
             location: z.string(),
@@ -27,7 +26,6 @@ export const updateEvent = protectedProcedure
     .mutation(async ({ctx, input}) => {
         try {
             const requester = ctx.session.user.id
-
             const org_id = await ctx.db.query.lembaga.findFirst({
                 where: eq(lembaga.userId, requester),
                 columns: {
@@ -43,14 +41,14 @@ export const updateEvent = protectedProcedure
             }
 
             const updatedEvent = await ctx.db.update(events)
-                .set({
-                    org_id: org_id.id,
-                    ...input,
-                    start_date: new Date(input.start_date),
-                    end_date: new Date(input.end_date)
-                })
-                .where(eq(events.id, input.id))
-                .returning();
+              .set({
+                org_id: org_id.id,
+                ...input,
+                start_date: input.start_date ? new Date(input.start_date) : undefined,
+                end_date: input.end_date ? new Date(input.end_date) : undefined,
+              })
+              .where(eq(events.id, input.id))
+              .returning();
 
             return updatedEvent[0];
         } catch (error) {

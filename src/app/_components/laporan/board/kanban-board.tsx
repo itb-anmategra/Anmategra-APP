@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   DndContext,
-  DragEndEvent,
+  type DragEndEvent,
   DragOverlay,
   MouseSensor,
   TouchSensor,
@@ -13,13 +13,13 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Droppable } from "./droppable";
-import { ColumnProps, ColumnType, ReportColumn } from "./report-column";
-import { Report } from "./report-card";
+import { type ColumnProps, type ColumnType, ReportColumn } from "./report-column";
+import { type Report } from "./report-card";
 
 export interface KanbanBoardProps {
   kanbanData: ColumnProps[];
   displayedColumn: ColumnType[];
-  hideColumn: (type: ColumnType) => void;
+  hideColumnAction: (type: ColumnType) => void;
 }
 
 /**
@@ -39,7 +39,7 @@ function handleConvertDataToRecord(data: ColumnProps[]) {
 
 export const KanbanBoard = ({
   kanbanData,
-  hideColumn,
+  hideColumnAction,
   displayedColumn,
 }: KanbanBoardProps) => {
   const mouseSensor = useSensor(MouseSensor, {
@@ -113,7 +113,7 @@ export const KanbanBoard = ({
           const column = findColumnByReportId(active.id.toString());
           if (column) {
             const item = reports[column]?.find((item) => item.id === active.id);
-            setActiveReport(item || null);
+            setActiveReport(item ?? null);
           }
         }}
         onDragEnd={onDragEnd}
@@ -126,7 +126,7 @@ export const KanbanBoard = ({
                 key={columnId}
                 title={columnId}
                 reports={reports[columnId]}
-                hideColumn={hideColumn}
+                hideColumn={hideColumnAction}
                 displayedStatus={displayedColumn}
               />
             </Droppable>

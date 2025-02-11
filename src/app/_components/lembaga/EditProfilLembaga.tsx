@@ -10,6 +10,7 @@ import {useForm} from 'react-hook-form'
 import {z} from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {api} from "~/trpc/react";
+import {useToast} from "~/hooks/use-toast";
 
 const profileLembagaSchema = z.object({
     nama: z.string().min(1, "Nama wajib diisi").max(30, "Nama maksimal 30 karakter"),
@@ -20,6 +21,7 @@ type profileLembagaSchemaType = z.infer<typeof profileLembagaSchema>
 
 const EditProfilLembaga = () => {
     const mutation = api.lembaga.editProfil.useMutation()
+    const toast = useToast()
     const form = useForm<profileLembagaSchemaType>({
         resolver: zodResolver(profileLembagaSchema),
         defaultValues: {
@@ -32,10 +34,17 @@ const EditProfilLembaga = () => {
     function onSubmit(values: profileLembagaSchemaType) {
         mutation.mutate(values, {
             onSuccess: () => {
-                alert("Profil berhasil diubah")
+                toast.toast({
+                    variant: "default",
+                    title: "Berhasil mengubah profil"
+                })
             },
             onError: (error) => {
-                alert("Terjadi kesalahan")
+                toast.toast({
+                    variant: "destructive",
+                    title: "Gagal mengubah profil",
+                    description: error.message
+                })
             }
         })
     }
@@ -79,7 +88,7 @@ const EditProfilLembaga = () => {
                                 endpoint="imageUploader"
                                 onClientUploadComplete={(res) => {
                                     if (res && res.length > 0) {
-                                        // @ts-ignore
+                                        // @ts-expect-error because the type of field is not compatible with the type of res
                                         field.onChange(res[0].url);
                                     }
                                 }}

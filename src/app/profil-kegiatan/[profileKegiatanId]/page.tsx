@@ -38,7 +38,7 @@ const ProfileKegiatan = async (
     return (
         <div>
             <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session?.user.id ?? ""}/>
+                <MahasiswaSidebar session={session}/>
             </div>
             <div className='w-full flex min-h-screen flex-col items-center pt-14'>
                 <div className="w-full max-w-7xl bg-slate-50 py-6">

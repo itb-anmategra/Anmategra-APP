@@ -1,12 +1,12 @@
-import Image, { StaticImageData } from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import {
   Accordion,
   AccordionTrigger,
   AccordionContent,
   AccordionItem,
 } from "~/components/ui/accordion";
-import { Report } from "../board/report-card";
-import { ColumnType } from "../board/report-column";
+import { type Report } from "../board/report-card";
+import { type ColumnType } from "../board/report-column";
 
 interface AccordionProps {
   title: ColumnType;
@@ -15,7 +15,7 @@ interface AccordionProps {
   selectedStatus : ColumnType[];
 }
 
-interface DataItem extends Report {}
+type DataItem = Report
 
 export const ListDisplayItem = ({ name, date, category }: DataItem) => {
   return (

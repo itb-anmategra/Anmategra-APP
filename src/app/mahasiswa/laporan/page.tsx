@@ -1,5 +1,5 @@
 // Props Import
-import { ColumnProps } from "~/app/_components/laporan/board/report-column";
+import { type ColumnProps } from "~/app/_components/laporan/board/report-column";
 // Components Import
 import { LaporanMainContainer } from "~/app/_components/laporan/laporan-main-container";
 

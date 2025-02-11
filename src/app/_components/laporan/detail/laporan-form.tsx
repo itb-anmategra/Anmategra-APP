@@ -60,7 +60,7 @@ export const LaporanForm = () => {
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files ?? []);
     const parsedFiles = files.map((file) => ({
       name: file.name,
       size: file.size,
@@ -91,7 +91,6 @@ export const LaporanForm = () => {
         <FormField
           control={form.control}
           name="title"
-          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
@@ -107,7 +106,6 @@ export const LaporanForm = () => {
         <FormField
           control={form.control}
           name="category"
-          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
@@ -139,7 +137,6 @@ export const LaporanForm = () => {
         <FormField
           control={form.control}
           name="description"
-          // @ts-ignore
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
@@ -168,6 +165,7 @@ export const LaporanForm = () => {
               ))}
               {form.watch("attachments")?.map((file: any, index: number) => (
                 <p key={index} className="text-sm text-green-500">
+                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
                   {file.name} - {file.size} bytes
                 </p>
               ))}

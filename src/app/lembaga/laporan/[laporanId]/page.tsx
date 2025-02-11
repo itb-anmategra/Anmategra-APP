@@ -1,8 +1,6 @@
-import { useRouter } from "next/router";
-
 import {
   LaporanCard,
-  LaporanDetailProps,
+  type LaporanDetailProps,
 } from "~/app/_components/laporan/detail/laporan-card";
 import { SearchBar } from "~/app/_components/placeholder/search-bar";
 

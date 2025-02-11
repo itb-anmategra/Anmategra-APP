@@ -13,12 +13,12 @@ import { Input } from '~/components/ui/input'
 import dummyProfile from "public/placeholder/profilepic.png";
 import dummyLembaga from "public/logo-hmif.png";
 // Types Import
-import {Kepanitiaan} from "~/types/kepanitiaan";
+import {type Kepanitiaan} from "~/types/kepanitiaan";
 // Image Import
 import Image from 'next/image'
 import NotFound from "public/notfound.png"
 // Session Import
-import { Session } from 'next-auth'
+import { type Session } from 'next-auth'
 // Icon Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
 import { cn } from '~/lib/utils'
@@ -59,7 +59,7 @@ const PencarianPage = (
         )}>
             {session?.user.role === "mahasiswa" ? (
                 <div className='mb-20 fixed w-full shadow-sm z-20'>
-                    <MahasiswaSidebar session={session?.user.id ?? ''} />
+                    <MahasiswaSidebar session={session} />
                 </div>
             ):(
                 <div className="flex flex-col gap-4">

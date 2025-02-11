@@ -13,7 +13,7 @@ import { getServerAuthSession } from '~/server/auth';
 // API Import
 import { api } from "~/trpc/server";
 // Types Import
-import { Kepanitiaan } from '~/types/kepanitiaan'
+import { type Kepanitiaan } from '~/types/kepanitiaan'
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>,
@@ -27,7 +27,7 @@ const DetailMahasiswaPage = async ({params}: {
         return (
             <>
                 <div className='w-full flex justify-between fixed z-20'>
-                    <MahasiswaSidebar session={session?.user.id ?? ""}  />
+                    <MahasiswaSidebar session={session} />
                 </div>
                 <div className='w-full flex min-h-screen flex-col items-center pt-20'>
                     <div className="max-w-7xl w-full flex flex-col">
@@ -45,7 +45,7 @@ const DetailMahasiswaPage = async ({params}: {
     return (
         <>
             <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session?.user.id ?? ""}  />
+                <MahasiswaSidebar session={session}  />
             </div>
             <div className='w-full flex min-h-screen flex-col items-center pt-14'>
                 <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
@@ -71,9 +71,8 @@ const DetailMahasiswaPage = async ({params}: {
                         {session?.user.id === userId && (
                             <div className='pt-2'>
                                 <EditProfileDialog 
-                                    // @ts-ignore
-                                    nama={mahasiswaData?.user.name} 
-                                    gambar={mahasiswaData?.user.image}
+                                    name={mahasiswaData?.user.name}
+                                    image={mahasiswaData?.user.image}
                                 />
                             </div>
                         )}
@@ -85,7 +84,7 @@ const DetailMahasiswaPage = async ({params}: {
                     <h5 className='text-2xl font-semibold text-slate-600'>Kepanitiaan Terbaru</h5>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                         {newestEvent && newestEvent.length !== 0 ? newestEvent.map((item: Kepanitiaan) => (
-                            <Link href={`/profil-kegiatan/${item.id}`}>
+                            <Link key={item.id} href={`/profil-kegiatan/${item.id}`}>
                                 <KepanitiaanCard kepanitiaan={item} key={item.name}/>
                             </Link>
                         )) : <p className='text-slate-600'>Belum ada kepanitiaan</p>}

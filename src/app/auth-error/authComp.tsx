@@ -5,7 +5,7 @@ import Link from "next/link"
 import {Button} from "~/components/ui/button"
 import Logo from 'public/logo-anmategra.png'
 import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
-import {Session} from "next-auth";
+import {type Session} from "next-auth";
 import {useSearchParams} from "next/navigation";
 
 export default function AuthErrorComp(
@@ -22,7 +22,7 @@ export default function AuthErrorComp(
     return (
         <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
             <div className="mb-12 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar session={session?.user.id ?? ''}/>
+                <MahasiswaSidebar session={session}/>
             </div>
 
             {/* Error Content */}

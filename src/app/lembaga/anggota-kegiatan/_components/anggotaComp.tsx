@@ -4,16 +4,16 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 // Auth Import
-import {Session} from "next-auth";
+import {type Session} from "next-auth";
 // Components Import
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import {MahasiswaCardTable, Member} from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable";
+import {MahasiswaCardTable, type Member} from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable";
 import {Button} from "~/components/ui/button";
 import {Input} from "~/components/ui/input";
 // Icon Import
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
-import TambahAnggotaForm, {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
+import TambahAnggotaForm, {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
 import {MahasiswaKegiatanCardTable} from "~/app/lembaga/kegiatan/_components/MahasiswaKegiatanCardTable";
 

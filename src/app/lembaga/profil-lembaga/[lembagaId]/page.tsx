@@ -23,8 +23,6 @@ import { CalendarIcon } from 'lucide-react'
 import { PencilLine } from 'lucide-react';
 // TRPC Import
 import {api} from "~/trpc/server";
-// Auth
-import { getServerAuthSession } from '~/server/auth';
 
 const DetailLembagaPage = async (
     {params}: {
@@ -33,9 +31,6 @@ const DetailLembagaPage = async (
 ) => {
     const lembagaId = (await params).lembagaId
     const {lembagaData, newestEvent , highlightedEvent , error} = await api.profil.getLembaga({lembagaId: lembagaId})
-
-    const session = await getServerAuthSession();
-
     if (error) {
         return (
           <div className='w-full flex min-h-screen flex-col items-center p-6'>

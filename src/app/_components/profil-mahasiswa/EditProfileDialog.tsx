@@ -39,18 +39,18 @@ const EditProfileDialog = ({
   name,
   image,
 }:{
-  name: string | undefined
-  image: string | undefined
+  name: string | null | undefined,
+  image: string | null | undefined
 }) => {
-  const { toast } = useToast()
+  const toast = useToast()
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const mutation = api.users.gantiProfile.useMutation()
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
-        nama: name,
-        fotoProfil: image
+        nama: name ?? "",
+        fotoProfil: image ?? ""
     }
   })
 
@@ -65,7 +65,11 @@ const EditProfileDialog = ({
               location.reload()
           },
           onError: (error) => {
-              alert("Gagal mengubah profil")
+              toast.toast({
+                    variant: "destructive",
+                    title: "Gagal mengubah profil",
+                    description: error.message,
+              })
           }
       })
   }
@@ -109,10 +113,9 @@ const EditProfileDialog = ({
                               <FormControl>
                                   <UploadButton
                                     endpoint="imageUploader"
-                                    // @ts-ignore
                                     onClientUploadComplete={(res) => {
                                       if (res && res.length > 0) {
-                                        // @ts-ignore
+                                        // @ts-expect-error URL is a valid string
                                         field.onChange(res[0].url);
                                       }
                                     }}

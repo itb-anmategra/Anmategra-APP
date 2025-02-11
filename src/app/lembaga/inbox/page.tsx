@@ -1,65 +1,10 @@
 "use client";
-import { useState } from "react";
-import { Input } from "~/components/ui/input";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
-import { Filter } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
 import Image from "next/image";
 import Link from "next/link";
 
-// Data dummy
-const usersData = [
-  {
-    id: 1,
-    profile: "",
-    name: "Jason Jahja",
-    nim: "13523014",
-    major: "HMIF",
-  },
-  {
-    id: 2,
-    profile: "",
-    name: "Farrel Athalla",
-    nim: "13523014",
-    major: "HMIF",
-  },
-  {
-    id: 3,
-    profile: "",
-    name: "Atqya Haydar",
-    nim: "13523014",
-    major: "HMIF",
-  },
-  {
-    id: 4,
-    profile: "",
-    name: "Sigma",
-    nim: "13523014",
-    major: "HMIF",
-  },
-];
 
 const InboxPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState(usersData);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    const filtered = usersData.filter((user) =>
-      user.name.toLowerCase().includes(term),
-    );
-    setFilteredUsers(filtered);
-  };
-
   return (
     // <main>
     //   <div className="p-6 w-full h-full">

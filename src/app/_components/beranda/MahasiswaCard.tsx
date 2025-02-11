@@ -3,7 +3,7 @@ import React from 'react'
 // Components Import
 import { Card } from '~/components/ui/card'
 // Asset Import
-import Image, { StaticImageData } from 'next/image'
+import Image, { type StaticImageData } from 'next/image'
 
 const MahasiswaCard = ({
   nama,

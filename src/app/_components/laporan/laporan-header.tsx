@@ -8,12 +8,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "~/components/ui/dropdown-menu";
-import { ColumnType } from "./board/report-column";
+import { type ColumnType } from "./board/report-column";
 import Draft from "/public/images/laporan/draft.svg";
 import InProgress from "/public/images/laporan/in-progress.svg";
 import Resolved from "/public/images/laporan/resolved.svg";
-import ListIcon from "/public/images/laporan/display-list.svg";
-import BoardIcon from "/public/images/laporan/board.svg";
 import { LayoutDashboard } from "lucide-react";
 import { AlignJustify } from "lucide-react";
 import { LaporanDialog } from "./detail/laporan-dialog";

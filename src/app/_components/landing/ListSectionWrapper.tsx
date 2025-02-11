@@ -1,6 +1,3 @@
-import { ChevronRightIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
 interface ListSectionWrapperProps extends React.PropsWithChildren {
@@ -12,7 +9,6 @@ interface ListSectionWrapperProps extends React.PropsWithChildren {
 export const ListSectionWrapper = ({
   className,
   title,
-  seeAllLink,
   children,
 }: ListSectionWrapperProps) => {
   return (

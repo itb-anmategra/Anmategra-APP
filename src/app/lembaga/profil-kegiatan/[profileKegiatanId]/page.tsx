@@ -1,6 +1,5 @@
 // Library Import
 import React from 'react'
-import { getServerAuthSession } from "~/server/auth";
 import Link from 'next/link';
 import { api } from "~/trpc/server";
 // Components Import
@@ -15,7 +14,6 @@ const ProfileKegiatan = async (
         params: Promise<{ profileKegiatanId: string }>
     }
 ) => {
-    const session = await getServerAuthSession();
     const query = (await params).profileKegiatanId
     const {kegiatan, lembaga, participant, error} = await api.profil.getKegiatan({kegiatanId: query})
 

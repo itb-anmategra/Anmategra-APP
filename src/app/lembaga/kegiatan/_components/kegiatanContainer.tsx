@@ -1,20 +1,21 @@
 "use client"
 // Library Import
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import Link from "next/link";
 // Components Import
-import { useDebounce } from "~/components/debounceHook";
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import {useDebounce} from "~/components/debounceHook";
+import {Button} from "~/components/ui/button"
+import {Input} from "~/components/ui/input"
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
 import TambahKegiatanForm from "~/app/_components/kegiatan/TambahKegiatanForm";
 import EditKegiatanForm from "~/app/_components/kegiatan/EditKegiatanForm";
 // Icons Import
-import { Plus } from "lucide-react"
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ArrowUpRight } from 'lucide-react';
+import {Plus} from "lucide-react"
+import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
+import {ArrowUpRight} from 'lucide-react';
 // Auth Import
-import { Session } from "next-auth";
+import {type Session} from "next-auth";
+import Image from "next/image";
 
 export interface Activity {
     id: string
@@ -56,7 +57,7 @@ export default function ActivityList(
             setActivities(filteredActivities);
             setIsLoading(false);
         };
-        getActivities();
+        getActivities().then(r => r).catch(e => e);
     }, [debouncedSearchQuery, propActivites]);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,7 +75,7 @@ export default function ActivityList(
                     placeholder="Cari kegiatan"
                     className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
                     startAdornment={
-                        <MagnifyingGlassIcon className="size-4 text-gray-500" />
+                        <MagnifyingGlassIcon className="size-4 text-gray-500"/>
                     }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -95,7 +96,7 @@ export default function ActivityList(
                         <DialogHeader>
                             <DialogTitle>Tambah Kegiatan</DialogTitle>
                         </DialogHeader>
-                        <TambahKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} />
+                        <TambahKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities}/>
                     </DialogContent>
                 </Dialog>
             </div>
@@ -113,24 +114,24 @@ export default function ActivityList(
                     </div>
 
                     <div className="divide-y divide-gray-200">
-                        {activities.map((activity, index) => (
+                        {activities.map((activity) => (
                             <div
                                 key={activity.id}
                                 className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 items-center hover:bg-gray-50 transition-colors"
                             >
                                 <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden">
                                     {activity.thumbnail && (
-                                        <img src={activity.thumbnail || "/placeholder.svg"} alt=""
-                                             className="w-full h-full object-cover"/>
+                                        <Image src={activity.thumbnail || "/placeholder.svg"} alt=""
+                                               className="w-full h-full object-cover" height={64} width={64}/>
                                     )}
                                 </div>
                                 <div>
                                     <h3 className="font-medium">{activity.name}</h3>
                                     {activity.description && (
                                         <p className="text-sm text-gray-500 truncate">
-                                        {activity.description.length > 150 
-                                            ? activity.description.slice(0, 147) + "..." 
-                                            : activity.description}
+                                            {activity.description.length > 150
+                                                ? activity.description.slice(0, 147) + "..."
+                                                : activity.description}
                                         </p>
                                     )}
                                 </div>
@@ -139,7 +140,7 @@ export default function ActivityList(
                                     <p>{activity.participant_count}</p>
                                     <Link href={`/lembaga/kegiatan/${activity.id}`}>
                                         <Button variant={"outline"} className="space-x-2" size={"sm"}>
-                                            Lihat <ArrowUpRight />
+                                            Lihat <ArrowUpRight/>
                                         </Button>
                                     </Link>
                                 </div>
@@ -149,25 +150,26 @@ export default function ActivityList(
                     {activity.status}
                   </span>
                                 </div>
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button 
-                                                className="border-[#00B7B7] hover:border-secondary-600 hover:text-secondary-600 text-secondary-500 px-4 shadow-none flex items-center gap-2"
-                                                variant={"outline"}
-                                            >
-                                                Edit
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="min-w-[800px]">
-                                            <DialogHeader>
-                                                <DialogTitle>
-                                                    Edit Kegiatan
-                                                </DialogTitle>
-                                            </DialogHeader>
-                                            <EditKegiatanForm session={session} setIsOpen={setIsOpen} setActivityList={setActivities} kegiatan={activity}  />
-                                        </DialogContent>
-                                    </Dialog>
-                                
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button
+                                            className="border-[#00B7B7] hover:border-secondary-600 hover:text-secondary-600 text-secondary-500 px-4 shadow-none flex items-center gap-2"
+                                            variant={"outline"}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="min-w-[800px]">
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Edit Kegiatan
+                                            </DialogTitle>
+                                        </DialogHeader>
+                                        <EditKegiatanForm session={session} setIsOpen={setIsOpen}
+                                                          setActivityList={setActivities} kegiatan={activity}/>
+                                    </DialogContent>
+                                </Dialog>
+
                             </div>
                         ))}
                     </div>

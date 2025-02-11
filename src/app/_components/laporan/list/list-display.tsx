@@ -1,4 +1,4 @@
-import { KanbanBoardProps } from "../board/kanban-board";
+import { type KanbanBoardProps } from "../board/kanban-board";
 import { getTypeImage } from "../board/report-column";
 import { AccordionDisplay } from "./accordion-display";
 

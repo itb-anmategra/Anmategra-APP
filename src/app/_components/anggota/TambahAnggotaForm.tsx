@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "~/trpc/react";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 // Components Import
 import {
   Command,
@@ -43,22 +43,6 @@ export type comboboxDataType = {
   label: string;
 }
 
-const posisiData: comboboxDataType[] = [
-    { value: "1", label: "Ketua" },
-    { value: "2", label: "Wakil Ketua" },
-    { value: "3", label: "Sekretaris" },
-    { value: "4", label: "Bendahara" },
-    { value: "5", label: "Anggota" },
-    ];
-
-const bidangData: comboboxDataType[] = [
-    { value: "1", label: "Bidang 1" },
-    { value: "2", label: "Bidang 2" },
-    { value: "3", label: "Bidang 3" },
-    { value: "4", label: "Bidang 4" },
-    { value: "5", label: "Bidang 5" },
-    ];
-
 const TambahAnggotaForm = ({
     session,
     data,
@@ -84,7 +68,7 @@ const TambahAnggotaForm = ({
       division: "",
     },
   });
-  const [mahasiswaList, setMahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa)
+  const [mahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa)
   const [posisiList, setPosisiList] = useState<comboboxDataType[]>(data.posisi)
   const [bidangList, setBidangList] = useState<comboboxDataType[]>(data.bidang)
   const [customValue, setCustomValue] = useState("");

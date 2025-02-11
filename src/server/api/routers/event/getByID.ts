@@ -1,4 +1,4 @@
-import {adminProcedure, protectedProcedure} from "../../trpc";
+import {protectedProcedure} from "../../trpc";
 import { z } from "zod";
 import {db} from "~/server/db";
 import {keanggotaan, mahasiswa, users} from "~/server/db/schema";
@@ -27,7 +27,7 @@ export const getAllAnggota = protectedProcedure
             event_id: z.string()
         })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
         try {
             const anggota = await db
                 .select({

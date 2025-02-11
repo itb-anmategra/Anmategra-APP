@@ -28,7 +28,7 @@ import { CalendarIcon } from 'lucide-react';
 import { UploadButton } from "~/utils/uploadthing";
 import type {Session} from "next-auth";
 // Type Import
-import { Activity } from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
+import { type Activity } from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
 import { useWatch } from "react-hook-form";
 
 // ✅ Schema dengan Zod
@@ -55,7 +55,6 @@ const EditKegiatanForm = (
     { 
       session,
       setIsOpen,
-      setActivityList,
       kegiatan
     }: { 
       session: Session | null 
@@ -109,13 +108,9 @@ const EditKegiatanForm = (
         is_organogram: values.is_organogram ?? false,
         is_highlighted: values.is_highlighted ?? false,
     }
-    // @ts-ignore
     mutation.mutate(query);
   };
-
-  const isValid = form.formState.isValid
-
-  const startDate = useWatch({ control: form.control, name: "start_date" });
+    const startDate = useWatch({ control: form.control, name: "start_date" });
 
     return (
     <Form {...form}>
@@ -338,7 +333,7 @@ const EditKegiatanForm = (
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
                     if (res && res.length > 0) {
-                      // @ts-ignore
+                      // @ts-expect-error - URL is a valid field
                       field.onChange(res[0].url);
                     }
                   }}
@@ -360,7 +355,7 @@ const EditKegiatanForm = (
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
                     if (res && res.length > 0) {
-                      // @ts-ignore
+                      // @ts-expect-error - URL is a valid field
                       field.onChange(res[0].url);
                     }
                   }}

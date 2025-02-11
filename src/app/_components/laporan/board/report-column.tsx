@@ -1,6 +1,5 @@
-import Image, { StaticImageData } from "next/image";
-import { Draggable } from "./draggable";
-import { Report, ReportCard } from "./report-card";
+import Image, { type StaticImageData } from "next/image";
+import { type Report, ReportCard } from "./report-card";
 import DraftIcon from "/public/images/laporan/draft.svg";
 import InProgressIcon from "/public/images/laporan/in-progress.svg";
 import ResolvedIcon from "/public/images/laporan/resolved.svg";
@@ -11,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { LayoutGrid, LayoutGridIcon } from "lucide-react";
 export type ColumnType = "Draft" | "In Progress" | "Resolved";
 
 export interface ColumnProps {

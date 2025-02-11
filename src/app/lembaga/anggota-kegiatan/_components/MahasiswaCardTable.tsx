@@ -2,8 +2,8 @@
 // Library Import
 import * as React from "react";
 import {
-  ColumnDef,
-  SortingState,
+  type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -60,16 +60,15 @@ const columns: ColumnDef<Member>[] = [
     accessorKey: "posisi",
     header: "Posisi",
     cell: ({ row }) => {
-      const colorMap: { [key: string]: string } = {
+      const colorMap: Record<string, string> = {
         yellow: "bg-yellow-400",
         green: "bg-green-400",
         blue: "bg-blue-400",
         navy: "bg-blue-900",
         red: "bg-red-400",
       };
-      const posisiColor = colorMap[row.original.posisiColor] || "bg-gray-400";
+      const posisiColor = colorMap[row.original.posisiColor] ?? "bg-gray-400";
       const mutation = api.lembaga.removeAnggota.useMutation()
-
       const onDelete = (id: string) => {
         mutation.mutate({user_id: id})
       }
@@ -97,7 +96,8 @@ const columns: ColumnDef<Member>[] = [
                 <Button>
                   Tidak, Batalkan
                 </Button>
-                <Button variant={"destructive"}>
+                <Button onClick={() => onDelete(row.original.id)}
+                    variant={"destructive"}>
                   Ya, Hapus
                 </Button>
               </div>

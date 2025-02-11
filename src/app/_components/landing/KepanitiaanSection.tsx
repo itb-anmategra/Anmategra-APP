@@ -1,7 +1,6 @@
-import { KEPANITIAAN_DATA } from "~/lib/constants";
 import { KepanitiaanCard } from "../beranda/KepanitiaanCard";
 import { ListSectionWrapper } from "./ListSectionWrapper";
-import {Kepanitiaan} from "~/types/kepanitiaan";
+import {type Kepanitiaan} from "~/types/kepanitiaan";
 import Link from "next/link";
 
 export const KepanitiaanSection = (
@@ -20,7 +19,7 @@ export const KepanitiaanSection = (
       seeAllLink="#"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {data && data.map((kepanitiaan) => (
+        {data?.map((kepanitiaan) => (
           <Link 
             key={kepanitiaan.name + kepanitiaan.description}  
             href={`profil-lembaga/${kepanitiaan.lembaga.id}`}

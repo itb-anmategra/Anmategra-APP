@@ -1,4 +1,4 @@
-import {adminProcedure, protectedProcedure, publicProcedure} from "../../trpc";
+import { protectedProcedure} from "../../trpc";
 import { z } from "zod";
 import {events, lembaga} from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";

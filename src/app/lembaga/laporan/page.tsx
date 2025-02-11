@@ -1,34 +1,10 @@
 // Props Import
 import Image from "next/image";
 import Link from "next/link";
-import { ColumnProps } from "~/app/_components/laporan/board/report-column";
 // Components Import
-import { LaporanMainContainer } from "~/app/_components/laporan/laporan-main-container";
 import { Button } from "~/components/ui/button";
 
-const DummyData: ColumnProps[] = [
-  {
-    title: "Draft",
-    reports: [
-      { id: "1", name: "Report 1", date: "15/07/2024", category: "Kategori" },
-      { id: "2", name: "Report 2", date: "15/07/2024", category: "Kategori" },
-      { id: "3", name: "Report 3", date: "15/07/2024", category: "Kategori" },
-    ],
-  },
-  {
-    title: "In Progress",
-    reports: [
-      { id: "4", name: "Report 4", date: "15/07/2024", category: "Kategori" },
-      { id: "5", name: "Report 5", date: "15/07/2024", category: "Kategori" },
-    ],
-  },
-  {
-    title: "Resolved",
-    reports: [
-      { id: "6", name: "Report 6", date: "15/07/2024", category: "Kategori" },
-    ],
-  },
-];
+
 const LaporanPage = () => {
   return (
     // <LaporanMainContainer data={DummyData}/>
@@ -61,7 +37,7 @@ const LaporanPage = () => {
             <p className="text-2xl text-gray-400 mb-12">
               Kami sedang membangun sesuatu yang menarik untuk Anda
             </p>
-            <Link href="/lembaga">
+            <Link href="/lembaga/beranda">
               <Button className="bg-[#2B6777] hover:bg-[#2B6777]/90 text-white px-8 py-6 text-lg">
                 Kembali ke Beranda
               </Button>

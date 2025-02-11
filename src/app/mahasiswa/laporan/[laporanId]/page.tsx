@@ -1,11 +1,10 @@
 'use client'
-import Router, { useRouter } from "next/router";
+import Router from "next/router";
 
 import {
   LaporanCard,
-  LaporanDetailProps,
+  type LaporanDetailProps,
 } from "~/app/_components/laporan/detail/laporan-card";
-import { SearchBar } from "~/app/_components/placeholder/search-bar";
 import { Button } from "~/components/ui/button";
 
 export default function ReportDetail() {

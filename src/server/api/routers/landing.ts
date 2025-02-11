@@ -1,5 +1,5 @@
 import {createTRPCRouter, protectedProcedure, publicProcedure,} from "~/server/api/trpc";
-import {Kepanitiaan} from "~/types/kepanitiaan";
+import {type Kepanitiaan} from "~/types/kepanitiaan";
 import {z} from "zod";
 import {mahasiswa, users} from "~/server/db/schema";
 import {eq, ilike, or, sql} from "drizzle-orm";
@@ -116,8 +116,6 @@ export const landingRouter = createTRPCRouter({
         const isNumeric = /^\d+$/.test(query);
 
         // Inner join User dan Mahasiswa dengan kondisi pencarian
-        // @ts-ignore
-        // @ts-ignore
         const mahasiswaResults = await ctx.db
             .select({
               userId: users.id,
@@ -132,7 +130,7 @@ export const landingRouter = createTRPCRouter({
                 isNumeric
                     ? or(
                         // Jika query numerik: cari di kolom nim (integer) dan name (string)
-                        // @ts-expect-error
+                        // @ts-expect-error Mahasiswa.nim adalah integer
                         ilike(sql`${mahasiswa.nim}::text`, `%${query}%`), // Cast integer ke text untuk ilike
                         ilike(users.name, `%${query}%`)
                     )

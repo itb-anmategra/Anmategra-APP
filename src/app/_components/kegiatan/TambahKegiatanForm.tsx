@@ -28,9 +28,8 @@ import { CalendarIcon } from 'lucide-react';
 import { UploadButton } from "~/utils/uploadthing";
 import type {Session} from "next-auth";
 // Type Import
-import { Activity } from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
+import { type Activity } from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
 import { useWatch } from "react-hook-form";
-import { useRouter } from 'next/navigation';
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z.object({
@@ -57,7 +56,6 @@ const TambahKegiatanForm = (
     { 
       session,
       setIsOpen,
-      setActivityList,
     }: { 
       session: Session | null 
       setIsOpen: (param: boolean) => void
@@ -103,7 +101,6 @@ const TambahKegiatanForm = (
         is_organogram: values.is_organogram ?? false,
         is_highlighted: values.is_highlighted ?? false,
     }
-    // @ts-ignore
     mutation.mutate(query);
   };
 
@@ -332,7 +329,7 @@ const TambahKegiatanForm = (
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
                     if (res && res.length > 0) {
-                      // @ts-ignore
+                      // @ts-expect-error - `field` is not assignable to type `string`
                       field.onChange(res[0].url);
                     }
                   }}
@@ -354,7 +351,7 @@ const TambahKegiatanForm = (
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
                     if (res && res.length > 0) {
-                      // @ts-ignore
+                      // @ts-expect-error - `field` is not assignable to type `string`
                       field.onChange(res[0].url);
                     }
                   }}

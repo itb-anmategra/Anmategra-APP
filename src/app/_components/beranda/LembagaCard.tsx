@@ -1,6 +1,6 @@
 // Library Import
 import React from 'react'
-import Image, { StaticImageData } from 'next/image'
+import Image, { type StaticImageData } from 'next/image'
 // Components Import
 import { Card } from '~/components/ui/card'
 
