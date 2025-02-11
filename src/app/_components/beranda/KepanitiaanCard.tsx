@@ -31,7 +31,7 @@ export const KepanitiaanCard = ({
         )}
       >
         <Image
-          src="/logo-hmif.png"
+          src="/images/logo-hmif.png"
           alt={kepanitiaan.lembaga.name}
           className="object-cover object-top"
           fill
@@ -42,7 +42,7 @@ export const KepanitiaanCard = ({
           <Avatar className="size-4 bg-white">
             <AvatarImage
               className="object-cover"
-              src={kepanitiaan.lembaga.profilePicture ?? "/logo-hmif.png"}
+              src={kepanitiaan.lembaga.profilePicture ?? "/images/logo-hmif.png"}
             />
             <AvatarFallback>
               {kepanitiaan.lembaga.name.slice(0, 2)}

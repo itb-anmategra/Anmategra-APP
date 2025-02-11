@@ -7,9 +7,9 @@ import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 // Asset Import
-import Logo from 'public/logo-anmategra.png'
-import Google from 'public/google.webp'
-import Microsoft from 'public/microsoft.webp'
+import Logo from '../../../public/images/logo-anmategra.png'
+import Google from '../../../public/images/google.webp'
+import Microsoft from '../../../public/images/microsoft.webp'
 
 import { signIn } from "next-auth/react";
 

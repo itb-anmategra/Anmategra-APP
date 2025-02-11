@@ -11,12 +11,12 @@ import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
 import { Input } from '~/components/ui/input'
 // Dummy Asset Import
 import dummyProfile from "public/placeholder/profilepic.png";
-import dummyLembaga from "public/logo-hmif.png";
+import dummyLembaga from "../../../../public/images/logo-hmif.png";
 // Types Import
 import {type Kepanitiaan} from "~/types/kepanitiaan";
 // Image Import
 import Image from 'next/image'
-import NotFound from "public/notfound.png"
+import NotFound from "../../../../public/images/notfound.png"
 // Session Import
 import { type Session } from 'next-auth'
 // Icon Import

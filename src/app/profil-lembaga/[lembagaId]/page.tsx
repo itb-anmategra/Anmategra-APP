@@ -3,7 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 // Asset Import
-import DummyFotoLembaga from 'public/logo-hmif.png'
+import DummyFotoLembaga from '../../../../public/images/logo-hmif.png'
 import DummyFotoEvent from 'public/placeholder/kegiatan thumbnail.png'
 import LogoHMIFKecil from 'public/placeholder/logo if.png'
 // Components Import

@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import {Button} from "~/components/ui/button"
-import Logo from 'public/logo-anmategra.png'
+import Logo from '../../../public/images/logo-anmategra.png'
 import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
 import {type Session} from "next-auth";
 import {useSearchParams} from "next/navigation";
