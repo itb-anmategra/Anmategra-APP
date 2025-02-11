@@ -204,4 +204,38 @@ export const lembagaRouter = createTRPCRouter({
                 success: true,
             }
         }),
+
+    editProfil: protectedProcedure
+        .input(z.object({
+            nama: z.string().nonempty(),
+            deskripsi: z.string().nonempty(),
+            gambar: z.string().optional(),
+        }))
+        .mutation(async ({ctx, input}) => {
+            const user_id = ctx.session.user.id;
+            const lembaga_id = await db.select({
+                id: lembaga.id,
+            }).from(lembaga).where(eq(lembaga.userId, user_id))
+                .limit(1);
+
+            if (!lembaga_id || lembaga_id.length === 0 || !lembaga_id[0]) {
+                return {
+                    success: false,
+                    error: "Lembaga not found",
+                };
+            }
+
+            await db
+                .update(lembaga)
+                .set({
+                    name: input.nama,
+                    description: input.deskripsi,
+                    image: input.gambar,
+                })
+                .where(eq(lembaga.id, lembaga_id[0].id));
+
+            return {
+                success: true,
+            };
+        }),
 });

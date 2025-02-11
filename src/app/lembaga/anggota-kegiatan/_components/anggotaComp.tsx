@@ -15,6 +15,7 @@ import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
 import TambahAnggotaForm, {comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
+import {MahasiswaKegiatanCardTable} from "~/app/lembaga/kegiatan/_components/MahasiswaKegiatanCardTable";
 
   
 
@@ -84,9 +85,9 @@ export default function AnggotaComp(
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
                             {pathname === "/lembaga/kegiatan" ? (
-                                <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />                            
-                            ):(
                                 <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
+                            ):(
+                                <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
                             )}
                         </DialogContent>
                     </Dialog>
@@ -95,7 +96,11 @@ export default function AnggotaComp(
                     {/* List Anggota Section */}
                     <div className="mt-6">
                         {/* Integrate MahasiswaCardTable here */}
-                        <MahasiswaCardTable data={data}/>
+                        {pathname === "/lembaga/kegiatan" ? (
+                            <MahasiswaKegiatanCardTable data={data}/>
+                        ):(
+                            <MahasiswaCardTable data={data}/>
+                        )}
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import {
 } from "~/server/api/trpc";
 import {getAllAnggota, getEvent} from "./getByID";
 import { createEvent } from "./create";
-import {addNewPanitia, updateEvent} from "./update";
+import {addNewPanitia, removePanitia, updateEvent} from "./update";
 import { deleteEvent } from "./delete";
 
 export const eventRouter = createTRPCRouter({
@@ -13,4 +13,5 @@ export const eventRouter = createTRPCRouter({
     delete: deleteEvent,
     getAllAnggota: getAllAnggota,
     addNewPanitia: addNewPanitia,
+    removePanitia: removePanitia,
 });

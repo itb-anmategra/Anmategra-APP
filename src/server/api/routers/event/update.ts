@@ -146,13 +146,85 @@ export const addNewPanitia = protectedProcedure
                 {
                     participant_count: is_requester_is_event_owner[0].participant_count + 1
                 }
-            )
-                .where(eq(events.id, input.event_id))
+            ).where(eq(events.id, input.event_id))
 
             return {
                 success: true,
                 message: "Panitia added successfully.",
             }
+        } catch (error) {
+            console.error("Database Error:", error);
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: "An unexpected error occurred during event creation."
+            });
+        }
+    })
+
+export const removePanitia = protectedProcedure
+    .input(
+        z.object({
+            event_id: z.string(),
+            user_id: z.string()
+        })
+    )
+    .mutation(async ({ctx, input}) => {
+        try {
+            const requester = ctx.session.user.id
+            const requester_org_id = await db
+                .select({
+                    org_id: lembaga.id
+                })
+                .from(lembaga)
+                .where(eq(lembaga.userId, requester))
+                .limit(1)
+
+            if (!requester_org_id) {
+                console.error("Organization not found.")
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                })
+            }
+
+            if (!requester_org_id[0]) {
+                console.error("Organization not found.")
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                })
+            }
+
+            const is_requester_is_event_owner = await db
+                .select({
+                    owner_id: events.org_id,
+                    participant_count: events.participant_count
+                })
+                .from(events)
+                .where(and(eq(events.id, input.event_id), eq(events.org_id, requester_org_id[0].org_id)));
+
+            if (!is_requester_is_event_owner[0]) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED'
+                })
+            }
+
+            await ctx.db.delete(keanggotaan).where(
+                and(
+                    eq(keanggotaan.event_id, input.event_id),
+                    eq(keanggotaan.user_id, input.user_id)
+                )
+            )
+
+            await ctx.db.update(events).set(
+                {
+                    participant_count: is_requester_is_event_owner[0].participant_count - 1
+                }
+            ).where(eq(events.id, input.event_id))
+
+            return {
+                success: true,
+                message: "Panitia added successfully.",
+            }
+
         } catch (error) {
             console.error("Database Error:", error);
             throw new TRPCError({
