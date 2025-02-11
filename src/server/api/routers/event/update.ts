@@ -165,7 +165,7 @@ export const removePanitia = protectedProcedure
     .input(
         z.object({
             event_id: z.string(),
-            user_id: z.string()
+            id: z.string()
         })
     )
     .mutation(async ({ctx, input}) => {
@@ -210,7 +210,7 @@ export const removePanitia = protectedProcedure
             await ctx.db.delete(keanggotaan).where(
                 and(
                     eq(keanggotaan.event_id, input.event_id),
-                    eq(keanggotaan.user_id, input.user_id)
+                    eq(keanggotaan.id, input.id)
                 )
             )
 

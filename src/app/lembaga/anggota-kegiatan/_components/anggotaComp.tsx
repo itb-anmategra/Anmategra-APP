@@ -85,9 +85,9 @@ export default function AnggotaComp(
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
                             {pathname === "/lembaga/kegiatan" ? (
-                                <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
-                            ):(
                                 <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
+                            ):(
+                                <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
                             )}
                         </DialogContent>
                     </Dialog>
@@ -97,9 +97,9 @@ export default function AnggotaComp(
                     <div className="mt-6">
                         {/* Integrate MahasiswaCardTable here */}
                         {pathname === "/lembaga/kegiatan" ? (
-                            <MahasiswaKegiatanCardTable data={data}/>
-                        ):(
                             <MahasiswaCardTable data={data}/>
+                        ):(
+                            <MahasiswaKegiatanCardTable data={data}/>
                         )}
                     </div>
                 </div>

@@ -18,9 +18,6 @@ const DaftarPanitiaKegiatanPage = async (
     const query = (await params).kegiatanId
     const formatted_anggota = await api.event.getAllAnggota({event_id: query});
     const addAnggotaProps = await api.users.tambahAnggotaKegiatanData({kegiatanId: query});
-
-    console.log(formatted_anggota)
-    console.log(addAnggotaProps)
     return (
         <main>
             <AnggotaComp session={session} data={formatted_anggota ?? []} dataAddAnggota={addAnggotaProps}/>

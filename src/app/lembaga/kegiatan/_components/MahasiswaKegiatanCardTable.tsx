@@ -74,7 +74,11 @@ const columns: ColumnDef<Member & { event_id: string }>[] = [
             const mutation = api.event.removePanitia.useMutation()
 
             const onDelete = (id: string, event_id: string) => {
-                mutation.mutate({user_id: id, event_id: event_id})
+                mutation.mutate({id: id, event_id: event_id}, {
+                    onSuccess: () => {
+                        mutation.reset()
+                    }
+                })
             }
 
             return (
