@@ -2,7 +2,7 @@ import {type NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
 
 const AUTH_ROUTES = ["/authentication"];
-const STATIC = ["/_next", "/api"];
+const STATIC = ["/_next", "/api", "/images"];
 
 
 export default async function middleware(req: NextRequest) {
