@@ -52,10 +52,10 @@ export default function HeroSection() {
         <div className="container mx-auto px-4 py-20">
           <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-7xl font-medium tracking-tight">
-              Pendataan Mahasiswa
-              <p className="mt-3 bg-gradient-to-b from-[#0B5C8A] to-[#00B7B7] bg-clip-text text-transparent">
+              Pendataan Kemahasiswaan
+              <span className="mt-3 bg-gradient-to-b from-[#0B5C8A] to-[#00B7B7] bg-clip-text text-transparent">
                 Terintegrasi
-              </p>
+              </span>
             </h1>
 
             <p className="my-5 text-balance text-xl">
