@@ -1,9 +1,10 @@
 import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
 import {db} from "~/server/db";
-import {events, keanggotaan, lembaga, mahasiswa, users} from "~/server/db/schema";
+import {events, keanggotaan, kehimpunan, lembaga, mahasiswa, users} from "~/server/db/schema";
 import {desc, eq} from "drizzle-orm";
 import {type Kepanitiaan} from "~/types/kepanitiaan";
+import {TRPCError} from "@trpc/server";
 
 export const profileRouter = createTRPCRouter({
 
@@ -38,9 +39,10 @@ export const profileRouter = createTRPCRouter({
             }));
 
             if (mahasiswaResult.length === 0) {
-                return {
-                    error: "Mahasiswa not found",
-                }
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Kegiatan not found",
+                })
             }
 
             return {
@@ -67,9 +69,10 @@ export const profileRouter = createTRPCRouter({
             });
 
             if (!lembaga) {
-                return {
-                    error: "Lembaga not found",
-                }
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Kegiatan not found",
+                })
             }
 
             const newestEvent = await ctx.db.query.events.findMany({
@@ -96,12 +99,38 @@ export const profileRouter = createTRPCRouter({
                 orderBy: desc(events.start_date),
             });
 
+            const anggota = await db
+                .select({
+                    id: users.id,
+                    nama: users.name,
+                    nim: mahasiswa.nim,
+                    image: users.image,
+                    jurusan: mahasiswa.jurusan,
+                    divisi: kehimpunan.division,
+                    posisi: kehimpunan.position,
+                })
+                .from(kehimpunan)
+                .innerJoin(users, eq(kehimpunan.userId, users.id))
+                .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+                .where(eq(kehimpunan.lembagaId, input.lembagaId));
+
+            const formattedAnggota = anggota.map((anggota) => ({
+                id: anggota.id,
+                nama: anggota.nama ?? 'john doe',
+                nim: anggota.nim.toString(),
+               jurusan: anggota.jurusan,
+               image: anggota.image,
+               divisi: anggota.divisi,
+               posisi: anggota.posisi,
+               posisiColor: "blue",
+            }));
+
             return {
                 lembagaData: lembaga,
                 newestEvent: formattedEvents,
                 highlightedEvent: highlightedEvent[0],
+                anggota: formattedAnggota
             }
-
         }),
 
     getKegiatan: publicProcedure
@@ -114,15 +143,17 @@ export const profileRouter = createTRPCRouter({
                 .limit(1)
 
             if (kegiatan.length === 0 || !kegiatan[0]) {
-                return {
-                    error: "Kegiatan not found",
-                }
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Kegiatan not found",
+                })
             }
 
             if (kegiatan[0].org_id === null) {
-                return {
-                    error: "Lembaga not defined",
-                }
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Kegiatan not found",
+                })
             }
 
             const lembagaRes = await db
@@ -132,9 +163,10 @@ export const profileRouter = createTRPCRouter({
                 .limit(1)
 
             if (lembagaRes.length === 0) {
-                return {
-                    error: "Lembaga not found",
-                }
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Kegiatan not found",
+                })
             }
 
             const participants = await db
@@ -152,10 +184,21 @@ export const profileRouter = createTRPCRouter({
                 .innerJoin(users, eq(mahasiswa.userId, users.id))
                 .where(eq(keanggotaan.event_id, input.kegiatanId));
 
+            const formattedParticipants = participants.map((participant) => ({
+                id: participant.userId,
+                nama: participant.nama ?? 'john doe',
+                nim: participant.nim.toString(),
+                jurusan: participant.jurusan,
+                image: participant.image,
+                posisi: participant.position,
+                divisi: participant.divisi,
+                posisiColor: "blue",
+            }));
+
             return {
                 kegiatan: kegiatan[0],
                 lembaga: lembagaRes[0],
-                participant: participants,
+                participant: formattedParticipants,
             }
         }),
 });

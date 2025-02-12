@@ -1,7 +1,7 @@
 import {createTRPCRouter, lembagaProcedure, protectedProcedure} from "~/server/api/trpc";
 import {z} from "zod";
 import {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
-import {users} from "~/server/db/schema";
+import {mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
@@ -136,15 +136,22 @@ export const userRouter = createTRPCRouter({
         }),
 
     gantiProfile: protectedProcedure
-        .input(z.object({
-            name: z.string(),
-            image: z.string().optional(),
-        }))
-        .mutation(async ({ctx, input}) => {
-            const user = await ctx.db.update(users).set({
-                name: input.name,
+    .input(z.object({
+        image: z.string().optional(),
+        idLine: z.string().min(3).max(30),
+        noWhatsapp: z.string().regex(/^0\d{10,12}$/),
+    }))
+    .mutation(async ({ctx, input}) => {
+        if (input.image) {
+            await ctx.db.update(users).set({
                 image: input.image,
             }).where(eq(users.id, ctx.session.user.id)).returning();
-            return user;
-        }),
+        }
+        await ctx.db.update(mahasiswa).set({
+            lineId: input.idLine,
+            whatsapp: input.noWhatsapp,
+        })
+        .where(eq(mahasiswa.userId, ctx.session.user.id))
+        .returning();
+    }),
 })

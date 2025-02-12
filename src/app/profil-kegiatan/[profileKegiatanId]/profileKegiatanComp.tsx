@@ -16,25 +16,27 @@ const ProfileKegiatanComp = (
         anggota
     }: {
         anggota: {
-            userId: string,
+            id: string,
             nama: string | null,
-            nim: number,
+            nim: string,
             jurusan: string,
             image: string | null
-            position: string | null
+            posisi: string | null
             divisi: string | null
         }[]
     }
 ) => {
 
+    console.log(anggota)
+
     const [search, setSearch] = React.useState<string>('')
     const [filteredAnggota, setFilteredAnggota] = React.useState<{
-        userId: string,
+        id: string,
         nama: string | null,
         nim: number,
         jurusan: string,
         image: string | null
-        position: string | null
+        posisi: string | null
         divisi: string | null
     }[]>([])
 
@@ -64,7 +66,7 @@ const ProfileKegiatanComp = (
             </div>
             <div>
                 {filteredAnggota.length > 0 ? filteredAnggota.map((item) => (
-                    <div key={item.userId}
+                    <div key={item.id}
                             className="flex items-center justify-between py-4 border-b border-neutral-200">
                         <div className="flex items-center gap-x-4">
                             <Image src={item.image ?? '/placeholder/profilepic.png'} alt="Profile Picture"
@@ -76,7 +78,7 @@ const ProfileKegiatanComp = (
                                 <h3 className="text-lg font-semibold text-slate-900">{item.nama}</h3>
                                 <p className="text-sm text-slate-600">{item.nim} - {item.jurusan}</p>
                                 <div className="flex items-center gap-x-2">
-                                    <p className="text-sm text-slate-600">{item.position}</p>
+                                    <p className="text-sm text-slate-600">{item.posisi}</p>
                                     <p> | </p>
                                     <p className="text-sm text-slate-600">{item.divisi}</p>
                                 </div>
@@ -84,7 +86,7 @@ const ProfileKegiatanComp = (
                         </div>
                         <div>
                             <button className="text-sky-600 font-semibold">
-                                <Link href={`/profil-mahasiswa/${item.userId}`}> Lihat Profil</Link>
+                                <Link href={`/profil-mahasiswa/${item.id}`}> Lihat Profil</Link>
                             </button>
                         </div>
                     </div>

@@ -50,6 +50,7 @@ const ProfileKegiatan = async (
                         organizer={lembaga?.name ?? 'null'}
                         backgroundImage={kegiatan?.background_image ?? "/profile-kegiatan-placeholder/kegiatan-header-background.png"}
                         logoImage={kegiatan?.image ?? "/profile-kegiatan-placeholder/oskm-header.png"}
+                        linkDaftar={kegiatan?.oprec_link}
                     />
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-2xl font-semibold text-slate-600">
