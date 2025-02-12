@@ -15,7 +15,7 @@ export const KepanitiaanSection = (
   return (
     <ListSectionWrapper
       className="container mx-auto"
-      title="Kepanitiaan Terbaru"
+      title="Kegiatan Terbesar"
       seeAllLink="#"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

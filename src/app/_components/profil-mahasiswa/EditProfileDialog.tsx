@@ -30,17 +30,21 @@ import { UploadButton } from '~/utils/uploadthing';
 import {api} from "~/trpc/react";
 
 const mahasiswaProfilSchema = z.object({
-  nama: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 30 karakter"),
   fotoProfil: z.string().url("Harus berupa URL yang valid").optional(),
+  idLine: z.string().min(3, "ID Line minimal 3 karakter").max(30, "Nama maksimal 30 karakter"),
+  noWhatsapp: z.string()
+    .regex(/^0\d{10,12}$/, "Nomor WhatsApp harus 11-13 digit dan dimulai dengan 0"),
 });
 type mahasiswaProfilSchemaType = z.infer<typeof mahasiswaProfilSchema>
 
 const EditProfileDialog = ({
-  name,
   image,
+  line,
+  whatsapp
 }:{
-  name: string | null | undefined,
-  image: string | null | undefined
+  image: string | null | undefined;
+  line: string;
+  whatsapp: string;
 }) => {
   const toast = useToast()
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -49,15 +53,17 @@ const EditProfileDialog = ({
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
-        nama: name ?? "",
-        fotoProfil: image ?? ""
+        fotoProfil: image ?? "",
+        idLine: line ?? "",
+        noWhatsapp: whatsapp ?? ""
     }
   })
 
   async function onSubmit(values: mahasiswaProfilSchemaType) {
       mutation.mutate({
-            name: values.nama,
-            image: values.fotoProfil
+            image: values.fotoProfil,
+            idLine: values.idLine,
+            noWhatsapp: values.noWhatsapp
       }, {
           onSuccess: () => {
               form.reset()
@@ -89,20 +95,6 @@ const EditProfileDialog = ({
           </DialogHeader>
           <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                  {/* Nama */}
-                  <FormField
-                      control={form.control}
-                      name="nama"
-                      render={({ field }) => (
-                          <FormItem>
-                              <FormLabel>Nama</FormLabel>
-                              <FormControl>
-                                  <Input placeholder="Masukkan Nama" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                          </FormItem>
-                      )}
-                  />
                   {/* Foto Profil */}
                   <FormField
                       control={form.control}
@@ -128,6 +120,36 @@ const EditProfileDialog = ({
                           </FormItem>
                       )}
                   />
+                  <div className='flex w-full items-center gap-x-4'>
+                    {/* ID Line */}
+                    <FormField
+                      control={form.control}
+                      name="idLine"
+                      render={({ field }) => (
+                          <FormItem className='w-full'>
+                              <FormLabel>ID Line</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="Masukkan ID Line" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                      )}
+                    />
+                    {/* ID Line */}
+                    <FormField
+                      control={form.control}
+                      name="noWhatsapp"
+                      render={({ field }) => (
+                          <FormItem className='w-full'>
+                              <FormLabel>Nomor Whatsapp</FormLabel>
+                              <FormControl>
+                                  <Input placeholder="Masukkan Nomor Whatsapp" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                      )}
+                    />
+                  </div>
                   {/* Submit Button */}
                   <div className='py-2' />
                   <Button type="submit" className='w-full'>

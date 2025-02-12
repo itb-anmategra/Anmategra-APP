@@ -1,9 +1,14 @@
-import { CalendarIcon, PersonIcon } from "@radix-ui/react-icons";
-import dayjs from "dayjs";
+// Library Import
 import Image from "next/image";
+import dayjs from "dayjs";
+// Components Import
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Card } from "~/components/ui/card";
+// Icons Import
+import { CalendarIcon, PersonIcon } from "@radix-ui/react-icons";
+// Utils Import
 import { cn } from "~/lib/utils";
+// Types Import
 import type { Kepanitiaan } from "~/types/kepanitiaan";
 
 interface KepanitiaanCardProps {
@@ -58,7 +63,7 @@ export const KepanitiaanCard = ({
           </span>
           <div className="flex items-center gap-1 text-sm text-Regent-Gray">
             <PersonIcon />
-            {kepanitiaan.quota}
+            {kepanitiaan.quota <= 0 ? "0" : kepanitiaan.quota}
           </div>
         </div>
         <span className="line-clamp-2 text-sm leading-tight xl:line-clamp-3">

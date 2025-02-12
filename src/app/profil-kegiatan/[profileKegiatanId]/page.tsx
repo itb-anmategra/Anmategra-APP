@@ -1,8 +1,8 @@
 // Library Import
 import React from 'react'
-import { getServerAuthSession } from "~/server/auth";
 import Link from 'next/link';
 import { api } from "~/trpc/server";
+import { getServerAuthSession } from "~/server/auth";
 // Components Import
 import {EventHeader} from "~/app/_components/placeholder/event-header";
 import {PenyelenggaraCard} from "~/app/_components/placeholder/penyelenggara-card";
@@ -63,7 +63,7 @@ const ProfileKegiatan = async (
                             logo={lembaga?.image ??"/profile-kegiatan-placeholder/oskm-organizer.png"}
                         />
                     </Link>
-                    <ProfileKegiatanComp anggota={participant ?? []}/>
+                    <ProfileKegiatanComp anggota={participant ?? []} />
                 </div>
             </div>
         </div>

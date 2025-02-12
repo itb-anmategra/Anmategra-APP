@@ -1,13 +1,15 @@
 "use client"
-
 // Library Import
 import React from 'react'
+import Image from "next/image";
+import Link from "next/link";
 // Components Import
 import {Input} from '~/components/ui/input';
 // Icons Import
 import {MagnifyingGlassIcon} from '@radix-ui/react-icons';
-import Image from "next/image";
-import Link from "next/link";
+// Assets Import
+import NoAnggota from "public/images/NoAnggota.png"
+
 
 const ProfileKegiatanComp = (
     {
@@ -86,8 +88,20 @@ const ProfileKegiatanComp = (
                             </button>
                         </div>
                     </div>
-                )) : <p className="text-slate-600">Tidak ada anggota</p>
-                }
+                )) : (
+                    <div className='w-full py-16 flex flex-col items-center gap-y-4'>
+                        <Image 
+                            src={NoAnggota}
+                            alt="Tidak Ada Anggota"
+                            width={128}
+                            height={128}
+                        />
+                        <div className='w-full text-center'>
+                            <h5 className='text-2xl font-semibold text-slate-600 text-center'>Tidak ada anggota</h5>
+                            <p className='text-slate-400 text-center'>Maaf, belum ada anggota yang tercatat untuk kegiatan ini</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

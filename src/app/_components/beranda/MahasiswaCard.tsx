@@ -23,6 +23,7 @@ const MahasiswaCard = ({
         alt='Profile Picture'
         width={100}
         height={100}
+        className='rounded-full max-h-[100px] max-w-[100px] min-h-[100px] min-w-[100px] object-cover'
       />
       <div className='space-y-1'>
         <p className='text-neutral-1000 text-xl'>{nama}</p>

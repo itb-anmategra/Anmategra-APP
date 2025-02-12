@@ -20,8 +20,8 @@ const LandingPage = async () => {
             </div>
             <HeroSection/>
             <div className="space-y-16">
-                <KepanitiaanSection data={kepanitiaanTerbaru}/>
                 <KegiatanSection data={kegiatanTerbaru}/>
+                <KepanitiaanSection data={kepanitiaanTerbaru}/>
             </div>
         </main>
     );

@@ -29,6 +29,8 @@ import {cn} from "~/lib/utils";
 import {type Session} from "next-auth";
 import {signOut} from "next-auth/react";
 import React from "react";
+// Assets Import
+import LogoAnmategra from "/public/images/logo-anmategra.png"
 
 type SidebarItemType = {
     label: string;
@@ -66,7 +68,7 @@ export const Sidebar = (
                     <div className="space-y-6">
                         <Link href={"/"}>
                             <Image
-                                src="/images/logo-anmategra.png"
+                                src={LogoAnmategra}
                                 alt="Logo Anmategra"
                                 width={150}
                                 height={50}
