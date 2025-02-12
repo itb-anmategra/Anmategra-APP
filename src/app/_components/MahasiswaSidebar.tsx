@@ -36,7 +36,7 @@ const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
         <div className='flex items-center gap-x-8'>
           <Link href={"/"}>
             <Image
-              src={"images/logo-anmategra.png"}
+              src={"/images/logo-anmategra.png"}
               alt="Logo Anmategra"
               width={150}
               height={50}

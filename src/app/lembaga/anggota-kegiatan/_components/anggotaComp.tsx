@@ -97,9 +97,9 @@ export default function AnggotaComp(
                     <div className="mt-6">
                         {/* Integrate MahasiswaCardTable here */}
                         {pathname === "/lembaga/kegiatan" ? (
-                            <MahasiswaCardTable data={data}/>
-                        ):(
                             <MahasiswaKegiatanCardTable data={data}/>
+                        ):(
+                            <MahasiswaCardTable data={data}/>
                         )}
                     </div>
                 </div>

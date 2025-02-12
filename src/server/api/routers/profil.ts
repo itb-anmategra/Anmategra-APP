@@ -26,10 +26,10 @@ export const profileRouter = createTRPCRouter({
 
             const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
                 lembaga: {
-                    id: item.event.id,
                     name: item.event.name,
                     profilePicture: item.event.image,
                 },
+                id: item.event.id,
                 name: item.event.name,
                 description: item.event.description,
                 quota: item.event.participant_count ?? 0,
