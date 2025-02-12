@@ -85,7 +85,7 @@ const DetailMahasiswaPage = async ({params}: {
                                     width={20}
                                     height={20}
                                 />
-                                <p>ID Line Mahasiswa</p>
+                                <p>ID Line</p>
                             </div>
                             <div className='flex items-center gap-x-2'>
                                 <Image 
@@ -94,11 +94,11 @@ const DetailMahasiswaPage = async ({params}: {
                                     width={20}
                                     height={20}
                                 />
-                                <p>Nomor Whatsapp Mahasiswa</p>
+                                <p>Nomor Whatsapp</p>
                             </div>
                         </div>
                         {session?.user.id === userId && (
-                            <div className='pt-2'>
+                            <div className='pt-4'>
                                 <EditProfileDialog 
                                     image={mahasiswaData?.user.image}
                                     line={"ID Line Mahasiswa"}
