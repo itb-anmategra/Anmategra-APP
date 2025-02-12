@@ -53,7 +53,7 @@ const EditProfileDialog = ({
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
-        fotoProfil: image ?? "",
+        fotoProfil: image ?? undefined,
         idLine: line ?? "",
         noWhatsapp: whatsapp ?? ""
     }

@@ -148,6 +148,8 @@ export const mahasiswa = createTable(
             .notNull(),
         angkatan: integer("angkatan")
             .notNull(),
+        lineId: varchar("line_id", {length: 255}),
+        whatsapp: varchar("whatsapp", {length: 255}),
         ...timestamps
     }
 )
@@ -195,20 +197,6 @@ export const lembagaRelations = relations(lembaga, ({one, many}) => ({
     }),
     events: many(events)
 }))
-
-export const kontakType = pgEnum("kontak_type", ["id_line", "phone_number", "instagram"]);
-
-export const kontak = createTable(
-    "kontak",
-    {
-        userId: varchar("user_id", {length: 255})
-            .references(() => users.id)
-            .primaryKey()
-            .notNull(),
-        type: kontakType("type"),
-        value: varchar("value", {length: 255})
-    }
-)
 
 export const eventStatusEnum = pgEnum('event_status', ['Coming Soon', 'On going', 'Ended']);
 

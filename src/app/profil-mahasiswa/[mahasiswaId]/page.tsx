@@ -3,7 +3,6 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link';
 // Asset Import
-import FotoProfil from "public/placeholder/profilepic.png"
 import LineIcon from "public/icons/line.png"
 import WhatsappIcon from "public/icons/wa.png"
 // Components Import
@@ -21,7 +20,6 @@ import { getServerAuthSession } from '~/server/auth';
 import { api } from "~/trpc/server";
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan'
-import { mahasiswa } from '~/server/db/schema';
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>,
@@ -66,8 +64,9 @@ const DetailMahasiswaPage = async ({params}: {
                 {/* Profil Mahasiswa */}
                 <div className='w-full flex items-center justify-center gap-x-6 py-12'>
                     <Avatar className="rounded-full size-[200px]">
-                        <AvatarImage 
-                            src={mahasiswaData?.user.image} 
+                        <AvatarImage
+                            // @ts-expect-error karena src ini ada null nya, gatau qiya skill issue
+                            src={mahasiswaData?.user.image}
                             alt="Foto Profil" 
                             className="rounded-full min-w-[200px] min-h-[200px] max-w-[200px] max-h-[200px] object-cover"
                         />
@@ -78,24 +77,28 @@ const DetailMahasiswaPage = async ({params}: {
                         <p className='text-[18px] text-slate-600 font-medium'>{mahasiswaData?.mahasiswa.nim}</p>
                         <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                         <div className="flex items-center justify-start gap-x-6 pt-4">
-                            <div className='flex items-center gap-x-2'>
-                                <Image 
-                                    src={LineIcon}
-                                    alt='Line Messanger Icon'
-                                    width={20}
-                                    height={20}
-                                />
-                                <p>ID Line Mahasiswa</p>
-                            </div>
-                            <div className='flex items-center gap-x-2'>
-                                <Image 
+                            {mahasiswaData?.mahasiswa.lineId ?
+                                <div className='flex items-center gap-x-2'>
+                                    <Image
+                                        src={LineIcon}
+                                        alt='Line Messanger Icon'
+                                        width={20}
+                                        height={20}
+                                    />
+                                <p>{mahasiswaData?.mahasiswa.lineId}</p>
+                            </div> : <>
+                            </>}
+                            {mahasiswaData?.mahasiswa.whatsapp ?
+                                <div className='flex items-center gap-x-2'>
+                                <Image
                                     src={WhatsappIcon}
                                     alt='Whatsapp Messanger Icon'
                                     width={20}
                                     height={20}
                                 />
-                                <p>Nomor Whatsapp Mahasiswa</p>
-                            </div>
+                                <p>{mahasiswaData?.mahasiswa.whatsapp}</p>
+                            </div> : <>
+                            </>}
                         </div>
                         {session?.user.id === userId && (
                             <div className='pt-2'>

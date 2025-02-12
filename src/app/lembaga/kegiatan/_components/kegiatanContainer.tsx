@@ -26,6 +26,7 @@ export interface Activity {
     participant_count: number | null;
     status: "Coming Soon" | "On going" | "Ended";
     thumbnail: string | null;
+    background_image: string | null;
     oprec_link: string | null;
     location: string | null;
     participant_limit: number | null;
