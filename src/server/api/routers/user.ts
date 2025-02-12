@@ -40,8 +40,19 @@ export const userRouter = createTRPCRouter({
                 label: item.name ?? "",
             }));
 
+            const lembaga_id = await ctx.db.query.lembaga.findFirst({
+                where: (lembaga, {eq}) => eq(lembaga.userId, input.lembagaId),
+                columns: {
+                    id: true,
+                },
+            });
+
+            if (!lembaga_id) {
+                throw new Error("Lembaga tidak ditemukan");
+            }
+
             const list_posisi_bidang = await ctx.db.query.kehimpunan.findMany({
-                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
+                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, lembaga_id.id),
                 columns: {
                     position: true,
                     division: true,
