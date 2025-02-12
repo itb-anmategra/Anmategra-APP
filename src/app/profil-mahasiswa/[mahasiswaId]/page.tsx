@@ -20,6 +20,9 @@ import { getServerAuthSession } from '~/server/auth';
 import { api } from "~/trpc/server";
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan'
+import NoKepanitiaan from "public/images/NoKepanitiaan.png"
+import { Button } from '~/components/ui/button';
+import CariKepanitiaanButton from '~/app/_components/profil-mahasiswa/CariKepanitiaanButton';
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>,
@@ -115,14 +118,54 @@ const DetailMahasiswaPage = async ({params}: {
                 {/* Kepanitiaan Terbaru */}
                 <div className='space-y-4 pb-12'>
                     <h5 className='text-2xl font-semibold text-slate-600'>Kepanitiaan Terbaru</h5>
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-                        {newestEvent && newestEvent.length !== 0 ? newestEvent.map((item: Kepanitiaan) => (
-                            <Link key={item.id} href={`/profil-kegiatan/${item.id}`}>
-                                <KepanitiaanCard kepanitiaan={item} key={item.name}/>
-                            </Link>
-                        )) : <p className='text-slate-600'>Belum ada kepanitiaan</p>}
+                    {newestEvent && newestEvent.length !== 1 ? (
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+                            {newestEvent && newestEvent.length !== 0 ? (
+                                newestEvent.map((item: Kepanitiaan) => (
+                                    <Link key={item.id} href={`/profil-kegiatan/${item.id}`}>
+                                        <KepanitiaanCard kepanitiaan={item} key={item.name}/>
+                                    </Link>
+                                ))
+                            ) : <p></p> }
+                        </div>
+                    ) : (
+                        <div className='w-full py-16 flex flex-col items-center gap-y-4'>
+                            
+                            {session?.user.id === userId ? (
+                                <>
+                                    <div className='text-center items-center flex flex-row gap-8'>
+                                        <Image 
+                                            src={NoKepanitiaan}
+                                            alt="Tidak Ada Anggota"
+                                            width={128}
+                                            height={128}
+                                        />
+                                        <div className='max-w-[400px] text-left'>
+                                            <h5 className='text-2xl font-semibold text-slate-600'>Tidak Ada Informasi Kepanitiaan</h5>
+                                            <p className='text-slate-400 mt-2'>Kami tidak dapat menemukan informasi kepanitiaan yang diikuti, silahkan menambahkan jika ada</p>
+                                        </div>
+                                    </div>
+                                    <CariKepanitiaanButton />
+                                </>
+                            ) : (
+                                <>
+                                    <div className='text-center items-center flex flex-row gap-8'>
+                                        <Image 
+                                            src={NoKepanitiaan}
+                                            alt="Tidak Ada Anggota"
+                                            width={128}
+                                            height={128}
+                                        />
+                                        <div className='max-w-[400px] text-left'>
+                                            <h5 className='text-2xl font-semibold text-slate-600'>Tidak Ada Informasi Kepanitiaan</h5>
+                                            <p className='text-slate-400 mt-2'>Kami tidak dapat menemukan informasi kepanitiaan yang diikuti oleh mahasiswa ini</p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ) }
                     </div>
-                </div>
                 </div>
             </div>
         </>
