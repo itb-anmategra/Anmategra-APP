@@ -85,7 +85,7 @@ const EditKegiatanForm = (
       participant_count: kegiatan.participant_count ?? 0,
       is_highlighted: kegiatan.is_highlighted,
       is_organogram: kegiatan.is_organogram,
-      banner_img: "",
+      banner_img: kegiatan.thumbnail ?? "", // Harus diganti jadi banner, harus ada defult values
     },
   });
 
