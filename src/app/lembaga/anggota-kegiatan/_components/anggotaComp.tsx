@@ -35,9 +35,9 @@ export default function AnggotaComp(
     }
 ) {
     const [isOpen, setIsOpen] = useState(false)
-
     const pathname = usePathname()
-
+    const isAnggota = pathname === "/lembaga/anggota-kegiatan"
+    console.log(isAnggota)
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
             {/* Content */}
@@ -45,7 +45,7 @@ export default function AnggotaComp(
                 {/* Search Bar */}
                 <div className="w-full">
                     <p className="text-2xl mb-4 font-semibold">
-                        {pathname === "/lembaga/anggota-kegiatan" ? (
+                        {isAnggota ? (
                             <span>Anggota</span>
                         ):(
                             <span>Anggota Kegiatan</span>
@@ -84,10 +84,10 @@ export default function AnggotaComp(
                             <DialogHeader>
                                 <DialogTitle>Tambah Anggota</DialogTitle>
                             </DialogHeader>
-                            {pathname === "/lembaga/kegiatan" ? (
+                            {isAnggota ? (
                                 <TambahAnggotaForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
                             ):(
-                                <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} />
+                                <TambahAnggotaKegiatanForm session={session} data={dataAddAnggota} setIsOpen={setIsOpen} pathname={pathname} />
                             )}
                         </DialogContent>
                     </Dialog>
@@ -96,10 +96,10 @@ export default function AnggotaComp(
                     {/* List Anggota Section */}
                     <div className="mt-6">
                         {/* Integrate MahasiswaCardTable here */}
-                        {pathname === "/lembaga/kegiatan" ? (
-                            <MahasiswaKegiatanCardTable data={data}/>
-                        ):(
+                        {isAnggota ? (
                             <MahasiswaCardTable data={data}/>
+                        ):(
+                            <MahasiswaKegiatanCardTable data={data} pathname={pathname}/>
                         )}
                     </div>
                 </div>

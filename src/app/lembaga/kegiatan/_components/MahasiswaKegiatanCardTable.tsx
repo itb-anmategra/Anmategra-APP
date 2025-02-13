@@ -75,6 +75,7 @@ const columns: ColumnDef<Member & { event_id: string }>[] = [
                 mutation.mutate({id: id, event_id: event_id}, {
                     onSuccess: () => {
                         mutation.reset()
+                        window.location.reload()
                     }
                 })
             }
@@ -118,13 +119,14 @@ const columns: ColumnDef<Member & { event_id: string }>[] = [
 
 export function MahasiswaKegiatanCardTable(
     {
-        data
+        data,
+        pathname
     }: {
-        data: Member[]
+        data: Member[],
+        pathname: string
     }
 ) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    const pathname = usePathname();
     const event_id = pathname.split("/")[3];
     if (event_id === undefined) {
         throw new Error("Event ID is not defined");
