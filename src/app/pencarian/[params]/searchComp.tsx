@@ -86,7 +86,7 @@ const PencarianPage = (
                             <h5 className="text-xl font-semibold text-slate-600">
                                 Mahasiswa
                             </h5>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
                                 {data?.mahasiswa.map((item) => (
                                     <Link key={item.userId} href={`/lembaga/profil-mahasiswa/${item.userId}`}>
                                         <MahasiswaCard
