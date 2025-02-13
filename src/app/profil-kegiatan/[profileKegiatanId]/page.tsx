@@ -1,8 +1,8 @@
 // Library Import
 import React from 'react'
-import { getServerAuthSession } from "~/server/auth";
 import Link from 'next/link';
 import { api } from "~/trpc/server";
+import { getServerAuthSession } from "~/server/auth";
 // Components Import
 import {EventHeader} from "~/app/_components/placeholder/event-header";
 import {PenyelenggaraCard} from "~/app/_components/placeholder/penyelenggara-card";
@@ -18,22 +18,7 @@ const ProfileKegiatan = async (
 ) => {
     const session = await getServerAuthSession();
     const query = (await params).profileKegiatanId
-    const {kegiatan, lembaga, participant, error} = await api.profil.getKegiatan({kegiatanId: query})
-
-
-    if (error) {
-        return (
-            <>
-                <div className="mb-4">
-                    <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
-                </div>
-
-                        <div className="flex w-full flex-col gap-4 p-6">
-                            <h1 className="text-2xl font-semibold text-neutral-1000">{error}</h1>
-                </div>
-            </>
-        )
-    }
+    const {kegiatan, lembaga, participant} = await api.profil.getKegiatan({kegiatanId: query})
 
     return (
         <div>
@@ -50,6 +35,7 @@ const ProfileKegiatan = async (
                         organizer={lembaga?.name ?? 'null'}
                         backgroundImage={kegiatan?.background_image ?? "/profile-kegiatan-placeholder/kegiatan-header-background.png"}
                         logoImage={kegiatan?.image ?? "/profile-kegiatan-placeholder/oskm-header.png"}
+                        linkDaftar={kegiatan?.oprec_link}
                     />
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-2xl font-semibold text-slate-600">
@@ -63,7 +49,7 @@ const ProfileKegiatan = async (
                             logo={lembaga?.image ??"/profile-kegiatan-placeholder/oskm-organizer.png"}
                         />
                     </Link>
-                    <ProfileKegiatanComp anggota={participant ?? []}/>
+                    <ProfileKegiatanComp anggota={participant ?? []} />
                 </div>
             </div>
         </div>

@@ -12,6 +12,7 @@ export const updateEvent = protectedProcedure
             name: z.string(),
             description: z.string(),
             image: z.string().url().optional(),
+            background_image: z.string().url().optional(),
             start_date: z.string().datetime().optional(),
             end_date: z.string().datetime().optional(),
             status: z.enum(["Coming Soon", "On going", "Ended"]),

@@ -22,6 +22,13 @@
       "when": 1739211366816,
       "tag": "0002_material_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1739354686424,
+      "tag": "0003_white_madrox",
+      "breakpoints": true
     }
   ]
 }

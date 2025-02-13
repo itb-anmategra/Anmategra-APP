@@ -28,7 +28,7 @@ const LogInPage = () => {
             <p>Selamat Datang di <span className='bg-clip-text text-transparent bg-gradient-to-br from-primary-400 to-secondary-400 font-bold'>Anmategra</span></p>
           </CardTitle>
           <CardDescription>
-            Silahkan masuk dengan akun microsoft untuk mahasiswa dan akun google untuk lembaga.
+            Silahkan masuk dengan akun <span className='font-semibold text-gray-500'>microsoft untuk mahasiswa</span> dan <span className='font-semibold text-gray-500'>akun google untuk lembaga</span>.
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-y-2'>

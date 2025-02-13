@@ -60,9 +60,6 @@ const config = {
             },
         ],
     },
-    ignorePatterns: [
-        "src/components/ui/**",
-    ],
 };
 
 module.exports = config;

@@ -9,7 +9,7 @@ import {api} from "~/trpc/server";
 import {getServerAuthSession} from "~/server/auth";
 
 const LandingPage = async () => {
-    const kepanitiaanTerbaru = await api.landing.getRecentKepanitiaan();
+    const kegiatanTerbesar = await api.landing.getTopEvents();
     const kegiatanTerbaru = await api.landing.getRecentEvents();
     const session = await getServerAuthSession();
 
@@ -20,8 +20,8 @@ const LandingPage = async () => {
             </div>
             <HeroSection/>
             <div className="space-y-16">
-                <KepanitiaanSection data={kepanitiaanTerbaru}/>
                 <KegiatanSection data={kegiatanTerbaru}/>
+                <KepanitiaanSection data={kegiatanTerbesar}/>
             </div>
         </main>
     );

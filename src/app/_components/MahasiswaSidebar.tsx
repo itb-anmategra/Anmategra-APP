@@ -13,6 +13,8 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Next Auth Import
 import { signOut } from "next-auth/react";
 import {type Session} from "next-auth";
+// Assets Import
+import LogoAnmategra from "/public/images/logo-anmategra.png"
 
 const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,7 +38,7 @@ const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
         <div className='flex items-center gap-x-8'>
           <Link href={"/"}>
             <Image
-              src={"images/logo-anmategra.png"}
+              src={LogoAnmategra}
               alt="Logo Anmategra"
               width={150}
               height={50}

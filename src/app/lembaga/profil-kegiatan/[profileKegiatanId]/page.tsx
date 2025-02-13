@@ -15,22 +15,7 @@ const ProfileKegiatan = async (
     }
 ) => {
     const query = (await params).profileKegiatanId
-    const {kegiatan, lembaga, participant, error} = await api.profil.getKegiatan({kegiatanId: query})
-
-
-    if (error) {
-        return (
-            <div className="px-6">
-                <div className="mb-4">
-                    <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
-                </div>
-
-                        <div className="flex w-full flex-col gap-4">
-                            <h1 className="text-2xl font-semibold text-neutral-1000">{error}</h1>
-                </div>
-            </div>
-        )
-    }
+    const {kegiatan, lembaga, participant} = await api.profil.getKegiatan({kegiatanId: query})
 
     return (
         <div className='w-full flex min-h-screen flex-col items-center px-6'>

@@ -15,14 +15,14 @@ export const KepanitiaanSection = (
   return (
     <ListSectionWrapper
       className="container mx-auto"
-      title="Kepanitiaan Terbaru"
+      title="Kegiatan Terbesar"
       seeAllLink="#"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {data?.map((kepanitiaan) => (
           <Link 
             key={kepanitiaan.name + kepanitiaan.description}  
-            href={`profil-lembaga/${kepanitiaan.lembaga.id}`}
+            href={`profil-lembaga/${kepanitiaan.id}`}
           >
             <KepanitiaanCard
               kepanitiaan={kepanitiaan}

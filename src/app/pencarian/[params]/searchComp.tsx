@@ -88,7 +88,7 @@ const PencarianPage = (
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {data?.mahasiswa.map((item) => (
-                                    <Link key={item.userId} href={`/profil-mahasiswa/${item.userId}`}>
+                                    <Link key={item.userId} href={`/lembaga/profil-mahasiswa/${item.userId}`}>
                                         <MahasiswaCard
                                             nama={item.nama ?? ''}
                                             NIM={item.nim.toString()}
@@ -105,7 +105,7 @@ const PencarianPage = (
                             <h5 className="text-xl font-semibold text-slate-600">Lembaga</h5>
                             <div className="flex w-full flex-col gap-y-4">
                                 {data?.lembaga.map((item) => (
-                                    <Link key={item.lembaga.id} href={`/profil-lembaga/${item.lembaga.id}`}>
+                                    <Link key={item.lembaga.id} href={`/lembaga/profil-lembaga/${item.lembaga.id}`}>
                                         <LembagaCard
                                             nama={item.name}
                                             kategori={item.lembaga.type ?? ''}
@@ -124,7 +124,7 @@ const PencarianPage = (
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {data?.kegiatan.map((item) => (
-                                    <Link key={item.name} href={`/profil-kegiatan/${item.id}`}>
+                                    <Link key={item.name} href={`/lembaga/profil-kegiatan/${item.id}`}>
                                         <KepanitiaanCard kepanitiaan={item} />
                                     </Link>
                                 ))}

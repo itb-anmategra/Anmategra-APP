@@ -1,7 +1,7 @@
 import {createTRPCRouter, lembagaProcedure, protectedProcedure} from "~/server/api/trpc";
 import {z} from "zod";
 import {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
-import {users} from "~/server/db/schema";
+import {mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
@@ -40,8 +40,19 @@ export const userRouter = createTRPCRouter({
                 label: item.name ?? "",
             }));
 
+            const lembaga_id = await ctx.db.query.lembaga.findFirst({
+                where: (lembaga, {eq}) => eq(lembaga.userId, input.lembagaId),
+                columns: {
+                    id: true,
+                },
+            });
+
+            if (!lembaga_id) {
+                throw new Error("Lembaga tidak ditemukan");
+            }
+
             const list_posisi_bidang = await ctx.db.query.kehimpunan.findMany({
-                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
+                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, lembaga_id.id),
                 columns: {
                     position: true,
                     division: true,
@@ -126,14 +137,21 @@ export const userRouter = createTRPCRouter({
 
     gantiProfile: protectedProcedure
         .input(z.object({
-            name: z.string(),
-            image: z.string().optional(),
+            image: z.string().url().optional(),
+            idLine: z.string().optional().refine((val) => !val || (val.length >= 3 && val.length <= 30)),
+            noWhatsapp: z.string().optional().refine((val) => !val || /^0\d{10,12}$/.test(val))
         }))
         .mutation(async ({ctx, input}) => {
-            const user = await ctx.db.update(users).set({
-                name: input.name,
-                image: input.image,
-            }).where(eq(users.id, ctx.session.user.id)).returning();
-            return user;
+            if (input.image) {
+                await ctx.db.update(users).set({
+                    image: input.image,
+                }).where(eq(users.id, ctx.session.user.id)).returning();
+            }
+            await ctx.db.update(mahasiswa).set({
+                lineId: input.idLine,
+                whatsapp: input.noWhatsapp,
+            })
+                .where(eq(mahasiswa.userId, ctx.session.user.id))
+                .returning();
         }),
 })
