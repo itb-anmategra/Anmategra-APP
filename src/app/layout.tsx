@@ -40,14 +40,14 @@ export default function RootLayout({
                 height={112}
               />
             </div>
-            <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-2">
               <Image 
                 src={Mascot}
                 alt="Mascot"
                 width={240}
                 height={180}
               />
-              <h1 className="text-[#00B7B7] text-4xl font-semibold">Website Only</h1>
+              <h1 className="text-[#00B7B7] text-xl font-bold">Tampilan Tidak Tersedia</h1>
               <h2 className="text-center text-md">
                 Silahkan buka menggunakan <br/><span className="font-bold">pc / desktop</span>
               </h2>
