@@ -7,7 +7,6 @@ import { eq } from "drizzle-orm";
 export const deleteEvent = adminProcedure
 .input(z.object({ id: z.string() }))
 .mutation(async ({ ctx, input }) => {
-  console.log("Event Delete called.")
   try {
     const deletedEvent = await ctx.db.delete(events).where(eq(events.id, input.id)).returning();
     return deletedEvent[0];

@@ -26,14 +26,11 @@ const ProfileKegiatanComp = (
         }[]
     }
 ) => {
-
-    console.log(anggota)
-
     const [search, setSearch] = React.useState<string>('')
     const [filteredAnggota, setFilteredAnggota] = React.useState<{
         id: string,
         nama: string | null,
-        nim: number,
+        nim: string,
         jurusan: string,
         image: string | null
         posisi: string | null

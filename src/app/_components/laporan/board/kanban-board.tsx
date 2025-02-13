@@ -68,7 +68,6 @@ export const KanbanBoard = ({
     if (!over) return;
 
     const sourceColumn = findColumnByReportId(active.id.toString());
-    console.log("Source: " + sourceColumn);
     const destinationColumn = over.id as ColumnType;
 
     if (sourceColumn && destinationColumn) {

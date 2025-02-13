@@ -1,6 +1,5 @@
 // Library Import
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link';
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
@@ -21,25 +20,8 @@ const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>
 }) => {
     const userId = (await params).mahasiswaId
-    const {mahasiswaData, newestEvent, error} = await api.profil.getMahasiswa({mahasiswaId: userId})
-
+    const {mahasiswaData, newestEvent} = await api.profil.getMahasiswa({mahasiswaId: userId})
     const session = await getServerAuthSession();
-    
-    if (error) {
-        return (
-            <>
-                <div className='w-full flex min-h-screen flex-col items-center p-6'>
-                    <div className="max-w-7xl w-full flex flex-col">
-                        <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-                        <p className='text-slate-400'>Beranda / Mahasiswa</p>
-                    </div>
-                    <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
-                        <h1 className="text-2xl font-semibold text-neutral-1000">{error}</h1>
-                    </div>
-                </div>
-            </>
-        )
-    }
 
     return (
         <div className='w-full flex min-h-screen flex-col items-center px-6'>
@@ -54,7 +36,7 @@ const DetailMahasiswaPage = async ({params}: {
             <div className='w-full flex items-center justify-center gap-x-6 py-12'>
                 <Avatar className="rounded-full size-[200px]">
                     <AvatarImage 
-                        src={mahasiswaData?.user.image} 
+                        src={mahasiswaData?.user.image ?? ''}
                         alt="Foto Profil" 
                         className="rounded-full min-w-[200px] min-h-[200px] max-w-[200px] max-h-[200px] object-cover"
                     />
@@ -66,7 +48,7 @@ const DetailMahasiswaPage = async ({params}: {
                     <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
                     {session?.user.id === userId && (
                         <div className='pt-2'>
-                            <EditProfileDialog name={mahasiswaData?.user.name} image={mahasiswaData?.user.image} />
+                            <EditProfileDialog image={mahasiswaData?.user.image}  line={mahasiswaData?.mahasiswa.lineId ?? ''} whatsapp={mahasiswaData?.mahasiswa.whatsapp ?? ''}/>
                         </div>
                     )}
                 </div>

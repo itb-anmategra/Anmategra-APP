@@ -136,22 +136,22 @@ export const userRouter = createTRPCRouter({
         }),
 
     gantiProfile: protectedProcedure
-    .input(z.object({
-        image: z.string().optional(),
-        idLine: z.string().min(3).max(30),
-        noWhatsapp: z.string().regex(/^0\d{10,12}$/),
-    }))
-    .mutation(async ({ctx, input}) => {
-        if (input.image) {
-            await ctx.db.update(users).set({
-                image: input.image,
-            }).where(eq(users.id, ctx.session.user.id)).returning();
-        }
-        await ctx.db.update(mahasiswa).set({
-            lineId: input.idLine,
-            whatsapp: input.noWhatsapp,
-        })
-        .where(eq(mahasiswa.userId, ctx.session.user.id))
-        .returning();
-    }),
+        .input(z.object({
+            image: z.string().url().optional(),
+            idLine: z.string().optional().refine((val) => !val || (val.length >= 3 && val.length <= 30)),
+            noWhatsapp: z.string().optional().refine((val) => !val || /^0\d{10,12}$/.test(val))
+        }))
+        .mutation(async ({ctx, input}) => {
+            if (input.image) {
+                await ctx.db.update(users).set({
+                    image: input.image,
+                }).where(eq(users.id, ctx.session.user.id)).returning();
+            }
+            await ctx.db.update(mahasiswa).set({
+                lineId: input.idLine,
+                whatsapp: input.noWhatsapp,
+            })
+                .where(eq(mahasiswa.userId, ctx.session.user.id))
+                .returning();
+        }),
 })

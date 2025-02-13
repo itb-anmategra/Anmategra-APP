@@ -6,32 +6,32 @@ import { Card } from '~/components/ui/card'
 import Image, { type StaticImageData } from 'next/image'
 
 const MahasiswaCard = ({
-  nama,
-  NIM,
-  jurusan,
-  profilePicture,
-}:{
-  nama: string
-  NIM: string
-  jurusan: string
-  profilePicture: StaticImageData | string
+                           nama,
+                           NIM,
+                           jurusan,
+                           profilePicture,
+                       }: {
+    nama: string
+    NIM: string
+    jurusan: string
+    profilePicture: StaticImageData | string
 }) => {
-  return (
-    <Card className='px-6 py-4 flex items-center justify-start gap-x-6 transition-all hover:shadow-md'>
-      <Image 
-        src={profilePicture}
-        alt='Profile Picture'
-        width={100}
-        height={100}
-        className='rounded-full max-h-[100px] max-w-[100px] min-h-[100px] min-w-[100px] object-cover'
-      />
-      <div className='space-y-1'>
-        <p className='text-neutral-1000 text-xl'>{nama}</p>
-        <p className='text-neutral-700'>{NIM}</p>
-        <p className='text-neutral-700'>{jurusan}</p>
-      </div>
-    </Card>
-  )
+    return (
+        <Card className='w-[400px] h-[150px] px-6 py-4 flex items-center gap-x-4 transition-all hover:shadow-md'>
+            <Image
+                src={profilePicture}
+                alt='Profile Picture'
+                width={80}
+                height={80}
+                className='rounded-full max-h-[100px] max-w-[100px] min-h-[100px] min-w-[100px] object-cover'
+            />
+            <div className='flex-1 overflow-hidden'>
+                <p className='text-neutral-1000 text-lg truncate'>{nama}</p>
+                <p className='text-neutral-700 text-sm truncate'>{NIM}</p>
+                <p className='text-neutral-700 text-sm truncate'>{jurusan}</p>
+            </div>
+        </Card>
+    )
 }
 
 export default MahasiswaCard

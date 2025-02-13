@@ -59,8 +59,6 @@ export const landingRouter = createTRPCRouter({
             },
         });
 
-        console.log("events", events);
-
         const formattedEvents: Kepanitiaan[] = events.map((item) => ({
             lembaga: {
                 name: item.lembaga?.name ?? "",

@@ -17,6 +17,7 @@ import { CalendarIcon } from 'lucide-react'
 import {api} from "~/trpc/server";
 // Auth
 import { getServerAuthSession } from '~/server/auth';
+import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
 
 const DetailLembagaPage = async (
     {params}: {
@@ -24,27 +25,8 @@ const DetailLembagaPage = async (
     }
 ) => {
     const lembagaId = (await params).lembagaId
-    const {lembagaData, newestEvent , highlightedEvent , error} = await api.profil.getLembaga({lembagaId: lembagaId})
+    const {lembagaData, newestEvent , highlightedEvent, anggota} = await api.profil.getLembaga({lembagaId: lembagaId})
     const session = await getServerAuthSession();
-
-    if (error) {
-        return (
-            <>
-              <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session}  />
-              </div>
-              <div className='w-full flex min-h-screen flex-col items-center pt-14'>
-                <div className="w-full max-w-7xl flex flex-col">
-                    <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-                    <p className='text-slate-400'>Beranda / Nama Lembaga</p>
-                </div>
-                <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
-                  <h1 className="text-xl font-medium text-slate-600">Lembaga Tidak Ditemukan</h1>
-                </div>
-              </div>
-            </>
-        )
-    }
 
   return (
     <>
@@ -118,6 +100,9 @@ const DetailLembagaPage = async (
               )) : <p className='text-slate-600'>Belum ada kepanitiaan</p>}
             </div>
           </div>
+
+        {/* Anggota Section */}
+        <ProfileKegiatanComp anggota={anggota ?? []}/>
         </div>
       </div>
     </>
