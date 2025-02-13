@@ -1,14 +1,14 @@
 "use client"
 // Library Import
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, {useState} from 'react'
+import {usePathname, useRouter} from 'next/navigation'
 import Link from 'next/link'
 // Component Import
 import MahasiswaSidebar from '../../_components/MahasiswaSidebar'
 import MahasiswaCard from '~/app/_components/beranda/MahasiswaCard'
 import LembagaCard from '~/app/_components/beranda/LembagaCard'
-import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
-import { Input } from '~/components/ui/input'
+import {KepanitiaanCard} from '~/app/_components/beranda/KepanitiaanCard'
+import {Input} from '~/components/ui/input'
 // Dummy Asset Import
 import dummyProfile from "public/placeholder/profilepic.png";
 import dummyLembaga from "../../../../public/images/logo-hmif.png";
@@ -18,10 +18,10 @@ import {type Kepanitiaan} from "~/types/kepanitiaan";
 import Image from 'next/image'
 import NotFound from "../../../../public/images/notfound.png"
 // Session Import
-import { type Session } from 'next-auth'
+import {type Session} from 'next-auth'
 // Icon Import
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
-import { cn } from '~/lib/utils'
+import {MagnifyingGlassIcon} from '@radix-ui/react-icons'
+import {cn} from '~/lib/utils'
 
 const PencarianPage = (
     {
@@ -32,7 +32,7 @@ const PencarianPage = (
         data: {
             mahasiswa: {
                 userId: string,
-                nama: string    | null,
+                nama: string | null,
                 nim: number,
                 jurusan: string,
                 image: string | null
@@ -43,12 +43,18 @@ const PencarianPage = (
     }
 ) => {
     const [searchQuery, setSearchQuery] = useState('');
-    
     const router = useRouter();
+    const path = usePathname();
+    const isLembaga = path.includes("/lembaga");
+    console.log(data);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            void router.push(`/lembaga/pencarian/${searchQuery}`);
+            if (isLembaga) {
+                void router.push(`/lembaga/pencarian/${searchQuery}`);
+            } else {
+                void router.push(`/pencarian/${searchQuery}`);
+            }
         }
     };
 
@@ -59,28 +65,29 @@ const PencarianPage = (
         )}>
             {session?.user.role === "mahasiswa" ? (
                 <div className='mb-20 fixed w-full shadow-sm z-20'>
-                    <MahasiswaSidebar session={session} />
+                    <MahasiswaSidebar session={session}/>
                 </div>
-            ):(
+            ) : (
                 <div className="flex flex-col gap-4">
                     <h1 className="text-2xl font-semibold text-slate-600">Hasil Pencarian</h1>
                     <Input
                         placeholder="Cari lembaga, kegiatan, atau mahasiswa"
                         className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
                         startAdornment={
-                            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+                            <MagnifyingGlassIcon className="size-4 text-gray-500"/>
                         }
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
-                </div>                
+                </div>
             )}
             <div className={cn(
                 'flex flex-col items-center w-full',
                 session?.user.role === "mahasiswa" && "mt-24"
             )}>
                 <div className='w-full space-y-8 max-w-7xl'>
+
                     {data?.mahasiswa.length !== 0 && (
                         <div className="space-y-2 w-full">
                             <h5 className="text-xl font-semibold text-slate-600">
@@ -88,7 +95,11 @@ const PencarianPage = (
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {data?.mahasiswa.map((item) => (
-                                    <Link key={item.userId} href={`/lembaga/profil-mahasiswa/${item.userId}`}>
+                                    <Link key={item.userId} href={
+                                        isLembaga ?
+                                            "/lembaga/profil-mahasiswa/" + item.userId :
+                                            "/profil-mahasiswa/" + item.userId
+                                    }>
                                         <MahasiswaCard
                                             nama={item.nama ?? ''}
                                             NIM={item.nim.toString()}
@@ -100,6 +111,7 @@ const PencarianPage = (
                             </div>
                         </div>
                     )}
+
                     {data?.lembaga.length !== 0 && (
                         <div className="space-y-2 w-full">
                             <h5 className="text-xl font-semibold text-slate-600">Lembaga</h5>
@@ -117,6 +129,7 @@ const PencarianPage = (
                             </div>
                         </div>
                     )}
+
                     {data?.kegiatan.length !== 0 && (
                         <div className="space-y-2 w-full">
                             <h5 className="text-xl font-semibold text-slate-600">
@@ -125,7 +138,7 @@ const PencarianPage = (
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {data?.kegiatan.map((item) => (
                                     <Link key={item.name} href={`/lembaga/profil-kegiatan/${item.id}`}>
-                                        <KepanitiaanCard kepanitiaan={item} />
+                                        <KepanitiaanCard kepanitiaan={item}/>
                                     </Link>
                                 ))}
                             </div>
@@ -133,15 +146,17 @@ const PencarianPage = (
                     )}
                     {data?.mahasiswa.length === 0 && data?.lembaga.length === 0 && data?.kegiatan.length === 0 && (
                         <div className='w-full flex flex-col justify-center items-center gap-6 p-12 mt-20'>
-                            <Image 
+                            <Image
                                 src={NotFound}
                                 alt='Not Found Icon'
                                 width={128}
                                 height={128}
                             />
                             <div className='space-y-2'>
-                                <p className='text-slate-600 font-semibold text-2xl text-center'>Pencarian Tidak Ditemukan</p>
-                                <p className='text-slate-400 text-center'>Kami tidak dapat menemukan hal yang Anda cari. <br /> Cobalah menggunakan kata kunci lainnya</p>
+                                <p className='text-slate-600 font-semibold text-2xl text-center'>Pencarian Tidak
+                                    Ditemukan</p>
+                                <p className='text-slate-400 text-center'>Kami tidak dapat menemukan hal yang Anda
+                                    cari. <br/> Cobalah menggunakan kata kunci lainnya</p>
                             </div>
                         </div>
                     )}

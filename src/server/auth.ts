@@ -1,3 +1,4 @@
+
 import {DrizzleAdapter} from "@auth/drizzle-adapter";
 import {type DefaultSession, getServerSession, type NextAuthOptions,} from "next-auth";
 import type {DefaultJWT} from "next-auth/jwt";
@@ -78,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         // insert Lembaga table
         else if (account?.provider === "google") {
           const lembagaExists = await db.query.lembaga.findFirst({
-            where: eq(users.id, user.id),
+            where: eq(lembaga.userId, user.id),
           });
           if (!lembagaExists) {
             await db
