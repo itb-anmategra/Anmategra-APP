@@ -36,7 +36,7 @@ export const KepanitiaanCard = ({
             )}
         >
           <Image
-              src="/images/logo-hmif.png"
+              src={""}
               alt={kepanitiaan.lembaga.name}
               className="object-cover object-top"
               fill
