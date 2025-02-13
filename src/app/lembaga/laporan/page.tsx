@@ -37,7 +37,7 @@ const LaporanPage = () => {
             <p className="text-2xl text-gray-400 mb-12">
               Kami sedang membangun sesuatu yang menarik untuk Anda
             </p>
-            <Link href="/lembaga/beranda">
+            <Link href="/lembaga">
               <Button className="bg-[#2B6777] hover:bg-[#2B6777]/90 text-white px-8 py-6 text-lg">
                 Kembali ke Beranda
               </Button>
