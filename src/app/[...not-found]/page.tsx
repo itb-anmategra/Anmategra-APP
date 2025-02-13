@@ -22,7 +22,7 @@ const NotFoundPage = () => {
             <p className="mb-12 text-2xl text-gray-400">
               Kami tidak dapat menemukan halaman yang Anda cari
             </p>
-            <Link href="/mahasiswa">
+            <Link href="/">
               <Button className="bg-[#2B6777] px-8 py-6 text-lg text-white hover:bg-[#2B6777]/90">
                 Kembali ke Beranda
               </Button>
