@@ -79,7 +79,6 @@ export const LaporanForm = () => {
   };
 
   const onSubmit = (data: LaporanFormData) => {
-    console.log("Form Data:", data);
     alert("Form berhasil dibuat")
     window.location.reload(); // Refresh the page after submission
   };

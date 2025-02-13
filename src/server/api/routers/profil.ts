@@ -2,7 +2,7 @@ import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
 import {db} from "~/server/db";
 import {events, keanggotaan, kehimpunan, lembaga, mahasiswa, users} from "~/server/db/schema";
-import {desc, eq} from "drizzle-orm";
+import {and, desc, eq} from "drizzle-orm";
 import {type Kepanitiaan} from "~/types/kepanitiaan";
 import {TRPCError} from "@trpc/server";
 
@@ -83,7 +83,7 @@ export const profileRouter = createTRPCRouter({
             }
 
             const newestEvent = await ctx.db.query.events.findMany({
-                where: (events, {eq}) => eq(events.org_id, input.lembagaId) && eq(events.is_highlighted, false),
+                where: (events, {eq}) => and(eq(events.org_id, input.lembagaId), eq(events.is_highlighted, false)),
                 orderBy: desc(events.start_date),
             });
 
@@ -103,7 +103,7 @@ export const profileRouter = createTRPCRouter({
             }));
 
             const highlightedEvent = await ctx.db.query.events.findMany({
-                where: (events, {eq}) => eq(events.org_id, input.lembagaId) && eq(events.is_highlighted, true),
+                where: (events, {eq}) => and(eq(events.org_id, input.lembagaId), eq(events.is_highlighted, true)),
                 orderBy: desc(events.start_date),
             });
 
