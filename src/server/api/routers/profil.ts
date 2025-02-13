@@ -83,7 +83,7 @@ export const profileRouter = createTRPCRouter({
             }
 
             const newestEvent = await ctx.db.query.events.findMany({
-                where: (events, {eq}) => eq(events.org_id, input.lembagaId) && eq(events.is_highlighted, false),
+                where: (events, {eq}) => and(eq(events.org_id, input.lembagaId), eq(events.is_highlighted, false)),
                 orderBy: desc(events.start_date),
             });
 
