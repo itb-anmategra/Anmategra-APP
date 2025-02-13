@@ -12,13 +12,14 @@ export const PenyelenggaraCard: React.FC<PenyelenggaraCardProps> = ({
   logo,
 }) => {
   return (
-    <div className="flex w-[400px] cursor-pointer items-center gap-4 rounded-2xl border border-[#C4CACE] bg-white px-7 py-5 hover:shadow-md">
-      <div className="relative h-20 w-20 aspect-square overflow-hidden rounded-full border-2 border-gray-300">
+    <div className="flex w-[600px] cursor-pointer items-center gap-4 rounded-2xl border border-[#C4CACE] bg-white px-7 py-5 hover:shadow-md">
+      <div className="w-[80px] h-[80px] overflow-hidden rounded-full">
         <Image
           src={logo}
           alt={`${title} logo`}
-          fill
-          className="rounded-full object-cover"
+          width={80}
+          height={80}
+          className="object-cover h-[80px] w-[80px]"
         />
       </div>
       <div>

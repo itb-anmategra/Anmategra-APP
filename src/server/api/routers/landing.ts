@@ -5,38 +5,6 @@ import {mahasiswa, users} from "~/server/db/schema";
 import {eq, ilike, or, sql} from "drizzle-orm";
 
 export const landingRouter = createTRPCRouter({
-    getRecentKepanitiaan: publicProcedure.query(async ({ctx}) => {
-        const kepanitiaan = await ctx.db.query.lembaga.findMany({
-            where: (lembaga, {eq}) => eq(lembaga.type, "Kepanitiaan"),
-            orderBy: (lembaga, {desc}) => desc(lembaga.foundingDate),
-            limit: 8,
-            columns: {
-                id: true,
-                name: true,
-                description: true,
-                memberCount: true,
-                foundingDate: true,
-                endingDate: true,
-                image: true,
-            },
-        });
-
-        const formattedKepanitiaan: Kepanitiaan[] = kepanitiaan.map((item) => ({
-            lembaga: {
-                name: item.name,
-                profilePicture: item.image,
-            },
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            quota: item.memberCount ?? 0,
-            startDate: new Date(item.foundingDate),
-            endDate: item.endingDate ? new Date(item.endingDate) : null,
-        }));
-
-        return formattedKepanitiaan;
-    }),
-
     getRecentEvents: publicProcedure.query(async ({ctx}) => {
         const oneMonthAgo = new Date();
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
@@ -45,7 +13,11 @@ export const landingRouter = createTRPCRouter({
             where: (events, {gte}) => gte(events.start_date, oneMonthAgo),
             orderBy: (events, {desc}) => desc(events.start_date),
             with: {
-                lembaga: {},
+                lembaga: {
+                    with: {
+                        users: {}
+                    }
+                },
             },
             limit: 8,
             columns: {
@@ -56,17 +28,19 @@ export const landingRouter = createTRPCRouter({
                 start_date: true,
                 end_date: true,
                 participant_count: true,
+                background_image: true,
             },
         });
 
         const formattedEvents: Kepanitiaan[] = events.map((item) => ({
             lembaga: {
                 name: item.lembaga?.name ?? "",
-                profilePicture: item.lembaga?.image ?? "",
+                profilePicture: item.lembaga?.users.image ?? "",
             },
             id: item.id,
             name: item.name,
             description: item.description,
+            image: item.background_image,
             quota: item.participant_count ?? 0,
             startDate: new Date(item.start_date),
             endDate: item.end_date ? new Date(item.end_date) : null,
@@ -82,7 +56,14 @@ export const landingRouter = createTRPCRouter({
             where: (events, {gte}) => gte(events.start_date, sixMonthsAgo),
             orderBy: (events, {desc}) => desc(events.participant_count),
             with: {
-                lembaga: {},
+                lembaga: {
+                    columns: {
+                        name: true,
+                    },
+                    with: {
+                        users: {}
+                    }
+                },
             },
             limit: 8,
             columns: {
@@ -93,18 +74,20 @@ export const landingRouter = createTRPCRouter({
                 start_date: true,
                 end_date: true,
                 participant_count: true,
+                background_image: true,
             },
         });
 
         const formattedEvents: Kepanitiaan[] = events.map((item) => ({
             lembaga: {
                 name: item.lembaga?.name ?? "",
-                profilePicture: item.lembaga?.image ?? "",
+                profilePicture: item.lembaga?.users.image ?? "",
             },
             id: item.id,
             name: item.name,
             description: item.description,
             quota: item.participant_count ?? 0,
+            image: item.background_image,
             startDate: new Date(item.start_date),
             endDate: item.end_date ? new Date(item.end_date) : null,
         }));
@@ -148,6 +131,9 @@ export const landingRouter = createTRPCRouter({
 
             const lembaga = await ctx.db.query.lembaga.findMany({
                 where: (lembaga, {ilike}) => ilike(lembaga.name, `%${query}%`),
+                with: {
+                    users: {},
+                },
                 limit,
             });
 
@@ -155,12 +141,13 @@ export const landingRouter = createTRPCRouter({
                 lembaga: {
                     id: item.id,
                     name: item.name,
-                    profilePicture: item.image,
+                    profilePicture: item.users?.image ?? "",
                 },
                 name: item.name,
                 description: item.description,
                 quota: item.memberCount ?? 0,
                 startDate: new Date(item.foundingDate),
+                image: item.users?.image,
                 endDate: item.endingDate ? new Date(item.endingDate) : null,
             }));
 
@@ -168,7 +155,11 @@ export const landingRouter = createTRPCRouter({
             const event = await ctx.db.query.events.findMany({
                 where: (event, {ilike}) => ilike(event.name, `%${query}%`),
                 with: {
-                    lembaga: {},
+                    lembaga: {
+                        with:{
+                            users: {}
+                        }
+                    },
                 },
                 limit,
             });
@@ -176,11 +167,12 @@ export const landingRouter = createTRPCRouter({
             const formattedKepanitiaan: Kepanitiaan[] = event.map((item) => ({
                 lembaga: {
                     name: item.lembaga?.name ?? "",
-                    profilePicture: item.lembaga?.image ?? "",
+                    profilePicture: item.lembaga?.users.image ?? "",
                 },
                 id: item.id,
                 name: item.name,
                 description: item.description,
+                image: item.background_image,
                 quota: item.participant_count ?? 0,
                 startDate: new Date(item.start_date),
                 endDate: item.end_date ? new Date(item.end_date) : null,

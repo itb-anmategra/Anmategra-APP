@@ -22,7 +22,7 @@ export const KepanitiaanSection = (
         {data?.map((kepanitiaan) => (
           <Link 
             key={kepanitiaan.name + kepanitiaan.description}  
-            href={`profil-lembaga/${kepanitiaan.id}`}
+            href={`profil-kegiatan/${kepanitiaan.id}`}
           >
             <KepanitiaanCard
               kepanitiaan={kepanitiaan}

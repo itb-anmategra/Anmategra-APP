@@ -70,7 +70,12 @@ const columns: ColumnDef<Member>[] = [
       const posisiColor = colorMap[row.original.posisiColor] ?? "bg-gray-400";
       const mutation = api.lembaga.removeAnggota.useMutation()
       const onDelete = (id: string) => {
-        mutation.mutate({user_id: id})
+        mutation.mutate({user_id: id}, {
+            onSuccess: () => {
+                mutation.reset()
+                window.location.reload()
+            },
+        })
       }
 
       return (

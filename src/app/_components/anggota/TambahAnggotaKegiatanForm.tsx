@@ -6,7 +6,6 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {api} from "~/trpc/react";
 import {type Session} from "next-auth";
-import {usePathname} from "next/navigation";
 // Components Import
 import {
     Command,
@@ -47,6 +46,7 @@ export type comboboxDataType = {
 const TambahAnggotaKegiatanForm = ({
                                        data,
                                        setIsOpen,
+                                       pathname
                                    }: {
     session: Session | null,
     data: {
@@ -54,7 +54,8 @@ const TambahAnggotaKegiatanForm = ({
         posisi: comboboxDataType[],
         bidang: comboboxDataType[],
     },
-    setIsOpen: (param: boolean) => void
+    setIsOpen: (param: boolean) => void,
+    pathname: string
 }) => {
     const [open, setOpen] = useState(false);
     const [posisiOpen, setPosisiOpen] = useState(false);
@@ -72,9 +73,7 @@ const TambahAnggotaKegiatanForm = ({
     const [posisiList, setPosisiList] = useState<comboboxDataType[]>(data.posisi)
     const [bidangList, setBidangList] = useState<comboboxDataType[]>(data.bidang)
     const [customValue, setCustomValue] = useState("");
-
-    const pathname = usePathname()
-    const kegiatanId = pathname.split("/").pop(); // Ambil bagian terakhir dari path
+    const kegiatanId = pathname.split("/").pop();
 
     const onSubmit = (values: AnggotaSchemaType) => {
         const query = {
