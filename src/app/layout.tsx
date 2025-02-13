@@ -11,6 +11,7 @@ import Mascot from "public/images/mascot.png";
 import Kabinet from "public/images/kabinet.png";
 // Components Import
 import { Toaster } from "~/components/ui/toaster"
+import Footer from "./_components/Footer";
 // Metadata
 export const metadata: Metadata = {
   title: "Anmategra",
@@ -27,6 +28,7 @@ export default function RootLayout({
           <div className="hidden lg:block">
             <TRPCReactProvider>
                 {children}
+                <Footer />
             </TRPCReactProvider>
           </div>
           <div className="w-full h-screen flex flex-col justify-between lg:hidden">
