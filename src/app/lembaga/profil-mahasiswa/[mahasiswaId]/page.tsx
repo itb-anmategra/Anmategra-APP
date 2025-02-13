@@ -46,7 +46,9 @@ const DetailMahasiswaPage = async ({params}: {
                         alt="Foto Profil"
                         className="rounded-full min-w-[200px] min-h-[200px] max-w-[200px] max-h-[200px] object-cover"
                     />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback className="text-4xl">
+                        {mahasiswaData?.user.name?.split(' ').slice(0, 2).map(word => word[0]).join('')}
+                    </AvatarFallback>
                 </Avatar>
                 <div className='space-y-1'>
                     <p className='text-3xl text-slate-700 font-semibold'>{mahasiswaData?.user.name}</p>

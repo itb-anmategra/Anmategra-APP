@@ -46,7 +46,6 @@ const PencarianPage = (
     const router = useRouter();
     const path = usePathname();
     const isLembaga = path.includes("/lembaga");
-    console.log(data);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
