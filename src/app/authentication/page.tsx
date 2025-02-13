@@ -39,7 +39,7 @@ const LogInPage = () => {
               width={16}
               height={16} 
             /> 
-            <p className='text-slate-600'>Masuk dengan Microsoft</p>
+            <p className='text-slate-600'>Masuk dengan Microsoft  |  @mahasiswa.itb.ac.id</p>
           </Button>
           <Button onClick={() => signIn("google")} variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
             <Image 
@@ -48,7 +48,7 @@ const LogInPage = () => {
               width={14}
               height={14}
             />
-            <p className='text-slate-600'>Masuk dengan Google</p>
+            <p className='text-slate-600'>Masuk dengan Google  |  @km.itb.ac.id</p>
           </Button>
         </CardContent>
       </Card>
