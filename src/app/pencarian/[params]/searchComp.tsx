@@ -122,7 +122,7 @@ const PencarianPage = (
                                             nama={item.name}
                                             kategori={item.lembaga.type ?? ''}
                                             deskripsi={item.description ?? ''}
-                                            lembagaPicture={dummyLembaga}
+                                            lembagaPicture={item.image ?? dummyLembaga}
                                         />
                                     </Link>
                                 ))}
@@ -144,6 +144,7 @@ const PencarianPage = (
                             </div>
                         </div>
                     )}
+
                     {data?.mahasiswa.length === 0 && data?.lembaga.length === 0 && data?.kegiatan.length === 0 && (
                         <div className='w-full flex flex-col justify-center items-center gap-6 p-12 mt-20'>
                             <Image

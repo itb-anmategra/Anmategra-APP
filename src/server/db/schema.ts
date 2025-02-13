@@ -183,7 +183,6 @@ export const lembaga = createTable(
             withTimezone: true
         }),
         type: lembagaTypeEnum("type"),
-        image: varchar("image", {length: 255}),
         major: varchar("major", {length: 255}),
         field: varchar("field", {length: 255}),
         memberCount: integer("member_count"),
