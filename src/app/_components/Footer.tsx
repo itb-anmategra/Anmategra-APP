@@ -47,7 +47,7 @@ const Footer = () => {
             />
           </div>
           <div>
-            <h3 className='text-2xl text-Blue-Dark font-semibold'>Kementerian Riset dan Pengabdian Masyarakat</h3>
+            <h3 className='text-2xl text-Blue-Dark font-semibold my-2'>Kementerian Riset dan Sistematisasi <br/>Sumber Daya Manusia</h3>
             <p className='text-Blue-Dark leading-5'>Kemenkoan Pengembangan Sumber Daya Manusia <br /> Kabinet “Restorasi marwah” KM ITB 2024/2025</p>
           </div>
           <div className='py-2'>
