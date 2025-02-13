@@ -37,7 +37,15 @@ export default function AnggotaComp(
     const [isOpen, setIsOpen] = useState(false)
     const pathname = usePathname()
     const isAnggota = pathname === "/lembaga/anggota-kegiatan"
-    console.log(isAnggota)
+    let tableData;
+    if (!isAnggota) {
+        tableData = data.map((member) => {
+            return {
+                ...member,
+                event_id: pathname.split("/")[3]
+            }
+        })
+    }
     return (
         <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
             {/* Content */}
@@ -99,7 +107,7 @@ export default function AnggotaComp(
                         {isAnggota ? (
                             <MahasiswaCardTable data={data}/>
                         ):(
-                            <MahasiswaKegiatanCardTable data={data} pathname={pathname}/>
+                            <MahasiswaKegiatanCardTable data={tableData}/>
                         )}
                     </div>
                 </div>

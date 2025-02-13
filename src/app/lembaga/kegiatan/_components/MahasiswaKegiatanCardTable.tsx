@@ -32,16 +32,17 @@ import {
 import {api} from "~/trpc/react";
 import {usePathname} from "next/navigation";
 
-export type Member = {
+export type MemberKegiatan = {
     id: string;
     nama: string;
     nim: string;
     divisi: string;
     posisi: string;
     posisiColor: string;
+    event_id: string;
 };
 
-const columns: ColumnDef<Member & { event_id: string }>[] = [
+const columns: ColumnDef<MemberKegiatan>[] = [
     {
         accessorKey: "nama",
         header: "Nama",
@@ -119,21 +120,14 @@ const columns: ColumnDef<Member & { event_id: string }>[] = [
 
 export function MahasiswaKegiatanCardTable(
     {
-        data,
-        pathname
+        data
     }: {
-        data: Member[],
-        pathname: string
+        data: MemberKegiatan[],
     }
 ) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    const event_id = pathname.split("/")[3];
-    if (event_id === undefined) {
-        throw new Error("Event ID is not defined");
-    }
-    const formattedData = data.map((item) => ({...item, event_id: event_id}));
     const table = useReactTable({
-        data: formattedData,
+        data: data,
         columns,
         state: {sorting},
         onSortingChange: setSorting,
