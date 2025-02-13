@@ -61,10 +61,12 @@ function Calendar({
       }}
       components={{
         IconLeft: ({ className, ...props }) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { children, ...restProps } = props;
           return <ChevronLeftIcon className={cn("h-4 w-4", className)} {...restProps} />;
         },
         IconRight: ({ className, ...props }) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { children, ...restProps } = props;
           return <ChevronRightIcon className={cn("h-4 w-4", className)} {...restProps} />;
         },
