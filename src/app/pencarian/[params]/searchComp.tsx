@@ -93,7 +93,7 @@ const PencarianPage = (
                             <h5 className="text-xl font-semibold text-slate-600">
                                 Mahasiswa
                             </h5>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {data?.mahasiswa.map((item) => (
                                     <Link key={item.userId} href={
                                         isLembaga ?
@@ -117,7 +117,11 @@ const PencarianPage = (
                             <h5 className="text-xl font-semibold text-slate-600">Lembaga</h5>
                             <div className="flex w-full flex-col gap-y-4">
                                 {data?.lembaga.map((item) => (
-                                    <Link key={item.lembaga.id} href={`/lembaga/profil-lembaga/${item.lembaga.id}`}>
+                                    <Link key={item.lembaga.id} href={
+                                        isLembaga ?
+                                            `/lembaga/profil-lembaga/${item.lembaga.id}` :
+                                            `/profil-lembaga/${item.lembaga.id}`
+                                        }>
                                         <LembagaCard
                                             nama={item.name}
                                             kategori={item.lembaga.type ?? ''}
@@ -137,7 +141,11 @@ const PencarianPage = (
                             </h5>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {data?.kegiatan.map((item) => (
-                                    <Link key={item.name} href={`/lembaga/profil-kegiatan/${item.id}`}>
+                                    <Link key={item.name} href={
+                                        isLembaga ?
+                                            `/lembaga/profil-kegiatan/${item.id}` :
+                                            `/profil-kegiatan/${item.id}`
+                                        }>
                                         <KepanitiaanCard kepanitiaan={item}/>
                                     </Link>
                                 ))}

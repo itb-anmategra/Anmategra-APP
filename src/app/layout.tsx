@@ -16,7 +16,7 @@ import Footer from "./_components/Footer";
 export const metadata: Metadata = {
   title: "Anmategra",
   description: "Anmategra by KM ITB",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/images/favicon.ico" }],
 };
 
 export default function RootLayout({
