@@ -34,6 +34,7 @@ export const profileRouter = createTRPCRouter({
                 name: item.event.name,
                 description: item.event.description,
                 quota: item.event.participant_count ?? 0,
+                image: item.event.background_image,
                 startDate: new Date(item.event.start_date),
                 endDate: item.event.end_date ? new Date(item.event.end_date) : null,
             }));
@@ -56,11 +57,17 @@ export const profileRouter = createTRPCRouter({
         .query(async ({ctx, input}) => {
             const lembaga = await ctx.db.query.lembaga.findFirst({
                 where: (lembaga, {eq}) => eq(lembaga.id, input.lembagaId),
+                with: {
+                    users: {
+                        columns: {
+                            image: true,
+                        }
+                    },
+                },
                 columns: {
                     id: true,
                     name: true,
                     description: true,
-                    image: true,
                     memberCount: true,
                     foundingDate: true,
                     endingDate: true,
@@ -90,6 +97,7 @@ export const profileRouter = createTRPCRouter({
                 name: item.name,
                 description: item.description,
                 quota: item.participant_count ?? 0,
+                image: item.background_image,
                 startDate: new Date(item.start_date),
                 endDate: item.end_date ? new Date(item.end_date) : null,
             }));
@@ -157,8 +165,18 @@ export const profileRouter = createTRPCRouter({
             }
 
             const lembagaRes = await db
-                .select()
+                .select({
+                    id: lembaga.id,
+                    name: lembaga.name,
+                    description: lembaga.description,
+                    image: users.image,
+                    memberCount: lembaga.memberCount,
+                    foundingDate: lembaga.foundingDate,
+                    endingDate: lembaga.endingDate,
+                    type: lembaga.type,
+                })
                 .from(lembaga)
+                .innerJoin(users, eq(lembaga.userId, users.id))
                 .where(eq(lembaga.id, kegiatan[0].org_id))
                 .limit(1)
 

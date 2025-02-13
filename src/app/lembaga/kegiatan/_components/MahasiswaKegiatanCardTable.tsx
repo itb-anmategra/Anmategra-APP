@@ -30,7 +30,6 @@ import {
 } from "~/components/ui/dialog"
 // TRPC Import
 import {api} from "~/trpc/react";
-import {usePathname} from "next/navigation";
 
 export type MemberKegiatan = {
     id: string;

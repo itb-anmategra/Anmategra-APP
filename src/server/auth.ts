@@ -94,7 +94,6 @@ export const authOptions: NextAuthOptions = {
                   id: lembaga_id,
                   userId: user.id,
                   name: user.name,
-                  image: user.image,
                   foundingDate: new Date(),
                 })
                 .returning();

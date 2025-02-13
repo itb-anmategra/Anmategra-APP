@@ -12,6 +12,9 @@ export const lembagaRouter = createTRPCRouter({
         .query(async ({input}) => {
             const lembaga = await db.query.lembaga.findFirst({
                 where: (lembaga, {eq}) => eq(lembaga.id, input.lembagaId),
+                with: {
+                    users: {}
+                }
             });
 
             if (!lembaga) {
@@ -21,7 +24,7 @@ export const lembagaRouter = createTRPCRouter({
             return {
                 id: lembaga.id,
                 nama: lembaga.name,
-                foto: lembaga.image,
+                foto: lembaga.users.image,
                 deskripsi: lembaga.description,
                 tanggal_berdiri: lembaga.foundingDate,
                 tipe_lembaga: lembaga.type,
@@ -215,6 +218,13 @@ export const lembagaRouter = createTRPCRouter({
         }))
         .mutation(async ({ctx, input}) => {
             const user_id = ctx.session.user.id;
+
+            await db.update(users)
+                .set({
+                    image: input.gambar,
+                })
+                .where(eq(users.id, user_id));
+
             const lembaga_id = await db.select({
                 id: lembaga.id,
             }).from(lembaga).where(eq(lembaga.userId, user_id))
@@ -232,7 +242,6 @@ export const lembagaRouter = createTRPCRouter({
                 .set({
                     name: input.nama,
                     description: input.deskripsi,
-                    image: input.gambar,
                 })
                 .where(eq(lembaga.id, lembaga_id[0].id));
 

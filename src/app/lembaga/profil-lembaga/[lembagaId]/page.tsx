@@ -42,7 +42,7 @@ const DetailLembagaPage = async (
         </div>
         <div className='w-full flex items-center justify-center gap-x-6 py-12'>
           <Image 
-            src={lembagaData?.image ?? DummyFotoLembaga}
+            src={lembagaData?.users.image ?? DummyFotoLembaga}
             alt='Foto Lembaga'
             width={200}
             height={100}
@@ -83,7 +83,7 @@ const DetailLembagaPage = async (
                 <div className='space-y-2'>
                   <Badge className='space-x-2 rounded-full bg-Blue-Dark py-1'>
                     <Image 
-                      src={lembagaData?.image ?? LogoHMIFKecil}
+                      src={lembagaData?.users.image ?? LogoHMIFKecil}
                       alt='Logo HMIF Kecil'
                       width={20}
                       height={20}
