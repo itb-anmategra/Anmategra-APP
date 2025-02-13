@@ -22,6 +22,7 @@ export default async function Home() {
     participant_limit: activity.participant_limit,
     is_highlighted: activity.is_highlighted,
     is_organogram: activity.is_organogram,
+    background_image: activity.background_image,
   }));
 
   const session = await getServerAuthSession();
