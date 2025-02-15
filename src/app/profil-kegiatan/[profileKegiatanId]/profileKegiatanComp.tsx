@@ -40,10 +40,13 @@ const ProfileKegiatanComp = (
     React.useEffect(() => {
         setFilteredAnggota(
             anggota.filter((item) => {
-                return item.nama?.toLowerCase().includes(search.toLowerCase())
+                const nameMatch = item.nama?.toLowerCase().includes(search.toLowerCase());
+                const posisiMatch = item.posisi?.toLowerCase().includes(search.toLowerCase());
+                const divisiMatch = item.divisi?.toLowerCase().includes(search.toLowerCase());
+                return nameMatch ?? posisiMatch ?? divisiMatch;
             })
-        )
-    }, [anggota, search], )
+        );
+    }, [anggota, search]);
 
     return (
         <div>
