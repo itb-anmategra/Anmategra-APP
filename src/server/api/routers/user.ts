@@ -59,14 +59,16 @@ export const userRouter = createTRPCRouter({
                 },
             })
 
-            const posisi_list = list_posisi_bidang.map((item) => ({
-                value: item.position,
-                label: item.position ?? "",
+            const uniquePosisi = Array.from(new Set(list_posisi_bidang.map(item => item.position)));
+            const posisi_list = uniquePosisi.map(position => ({
+                value: position,
+                label: position ?? "",
             }));
 
-            const bidang_list = list_posisi_bidang.map((item) => ({
-                value: item.division,
-                label: item.division ?? "",
+            const uniqueBidang = Array.from(new Set(list_posisi_bidang.map(item => item.division)));
+            const bidang_list = uniqueBidang.map(division => ({
+                value: division,
+                label: division ?? "",
             }));
 
             return {
@@ -118,14 +120,16 @@ export const userRouter = createTRPCRouter({
                 },
             })
 
-            const posisi_list = list_posisi_bidang.map((item) => ({
-                value: item.position,
-                label: item.position ?? "",
+            const uniquePosisi = Array.from(new Set(list_posisi_bidang.map(item => item.position)));
+            const posisi_list = uniquePosisi.map(position => ({
+                value: position,
+                label: position ?? "",
             }));
 
-            const bidang_list = list_posisi_bidang.map((item) => ({
-                value: item.division,
-                label: item.division ?? "",
+            const uniqueBidang = Array.from(new Set(list_posisi_bidang.map(item => item.division)));
+            const bidang_list = uniqueBidang.map(division => ({
+                value: division,
+                label: division ?? "",
             }));
 
             return {
