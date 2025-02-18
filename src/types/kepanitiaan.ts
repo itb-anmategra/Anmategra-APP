@@ -8,4 +8,6 @@ export interface Kepanitiaan {
   quota: number;
   startDate: Date;
   endDate: Date | null;
+  position?: string;
+  division?: string;
 }

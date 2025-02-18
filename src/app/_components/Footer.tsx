@@ -20,7 +20,7 @@ const Footer = () => {
   }
 
   return (
-    <div className='w-full h-full px-16 py-8 flex flex-col items-center justify-start border-t-2 border-slate-100 bg-white'>
+    <div className='w-full h-full mt-auto px-16 py-8 flex flex-col items-center justify-start border-t-2 border-slate-100 bg-white'>
       <div className='h-full w-full flex items-start justify-between gap-x-8'>
         <div className='w-full flex flex-col gap-y-2 flex-[2]'>
           <div className='w-full h-full flex items-center gap-x-2'>

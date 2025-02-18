@@ -37,6 +37,8 @@ export const profileRouter = createTRPCRouter({
                 image: item.event.background_image,
                 startDate: new Date(item.event.start_date),
                 endDate: item.event.end_date ? new Date(item.event.end_date) : null,
+                position: item.keanggotaan.position,
+                division: item.keanggotaan.division,
             }));
 
             if (mahasiswaResult.length === 0) {
