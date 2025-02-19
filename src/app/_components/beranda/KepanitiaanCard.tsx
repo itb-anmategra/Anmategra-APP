@@ -54,28 +54,30 @@ export const KepanitiaanCard = ({
                             {kepanitiaan.lembaga.name.slice(0, 2)}
                         </AvatarFallback>
                     </Avatar>
-                    <span className="line-clamp-1 font-semibold">
-            {kepanitiaan.lembaga.name}
-          </span>
+                    <span className="line-clamp-1 font-semibold">{kepanitiaan.lembaga.name}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-          <span className="line-clamp-2 text-lg font-semibold leading-tight text-primary-400">
-            {kepanitiaan.name}
-          </span>
+                    <span className="line-clamp-2 text-lg font-semibold leading-tight text-primary-400">
+                        {kepanitiaan.name}
+                    </span>
                     <div className="flex items-center gap-1 text-sm text-Regent-Gray">
-                        <PersonIcon/>
-                        {kepanitiaan.quota <= 0 ? "0" : kepanitiaan.quota}
+                        <PersonIcon/>{kepanitiaan.quota <= 0 ? "0" : kepanitiaan.quota}
                     </div>
                 </div>
-                <span className="line-clamp-2 text-sm leading-tight xl:line-clamp-3">
-          {kepanitiaan.description}
-        </span>
+                <p className="line-clamp-2 text-sm leading-tight xl:line-clamp-3">
+                    {kepanitiaan.description}
+                </p>
+                <p className="line-clamp-1 text-sm font-medium text-primary-400">
+                    {kepanitiaan.position && kepanitiaan.division && (
+                        <span className="font-semibold">{kepanitiaan.position}  | {kepanitiaan.division}</span>
+                    )}
+                </p>
                 <div className="absolute bottom-4 mt-auto flex items-center gap-1 text-sm text-Regent-Gray">
                     <CalendarIcon/>
                     <span className="line-clamp-1">
-            {dayjs(kepanitiaan.startDate).format("MMM YYYY")} -{" "}
+                        {dayjs(kepanitiaan.startDate).format("MMM YYYY")} -{" "}
                         {kepanitiaan.endDate ? dayjs(kepanitiaan.endDate).format("MMM YYYY") : "Sekarang"}
-          </span>
+                    </span>
                 </div>
             </div>
         </Card>

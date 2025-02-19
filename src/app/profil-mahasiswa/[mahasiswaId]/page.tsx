@@ -27,7 +27,9 @@ const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>,
 }) => {
     const userId = (await params).mahasiswaId
-    const {mahasiswaData, newestEvent} = await api.profil.getMahasiswa({mahasiswaId: userId})
+    const {mahasiswaData, newestEvent} = await api.profil.getMahasiswa({mahasiswaId: userId}) 
+    console.log(newestEvent)
+    // newwestEvent tolong return posisi mahasiswanya, terus masukkin ke kepanitiaan card
     const session = await getServerAuthSession();
     return (
         <>
@@ -101,6 +103,7 @@ const DetailMahasiswaPage = async ({params}: {
                         {newestEvent && newestEvent.length !== 0 ? (
                             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                                 {newestEvent.map((item: Kepanitiaan) => (
+                                    // masukkin posisi ke sini
                                     <Link key={item.id} href={`/profil-kegiatan/${item.id}`}>
                                         <KepanitiaanCard kepanitiaan={item} key={item.name}/>
                                     </Link>

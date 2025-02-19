@@ -25,11 +25,11 @@ export default function RootLayout({
   return (
       <html lang="en" className={`${GeistSans.variable}`}>
         <body className="bg-neutral-100 overflow-auto">
-          <div className="hidden lg:block">
-            <TRPCReactProvider>
-                {children}
-                <Footer />
-            </TRPCReactProvider>
+          <div className="min-h-screen flex flex-col">
+            <div className="hidden lg:block flex-1">
+              <TRPCReactProvider>{children}</TRPCReactProvider>
+            </div>
+            <Footer />
           </div>
           <div className="w-full h-screen flex flex-col justify-between lg:hidden">
             <div className="flex items-center justify-center py-12">

@@ -20,7 +20,7 @@ export const createEvent = protectedProcedure
             start_date: z.string().datetime(),
             end_date: z.string().datetime().optional(),
             status: z.enum(["Coming Soon", "On going", "Ended"]),
-            oprec_link: z.string().url("Harus berupa URL yang valid"),
+            oprec_link: z.string().url("Harus berupa URL yang valid").optional(),
             location: z.string().min(3, "Lokasi minimal 3 karakter"),
             participant_limit: z.number().int().min(1, "Minimal 1 peserta"),
             participant_count: z.number().int().min(0, "Minimal 0 peserta"),
