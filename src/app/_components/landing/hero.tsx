@@ -59,7 +59,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="my-5 text-balance text-xl">
-              Cari kegiatan, lembaga, atau mahasiswa yang Anda inginkan sekarang
+              Cari kegiatan, lembaga, atau anggota KM ITB yang Anda inginkan sekarang
             </p>
 
             <div className="mb-14 mt-3 w-[450px] max-w-2xl">
