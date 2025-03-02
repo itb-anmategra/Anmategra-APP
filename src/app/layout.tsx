@@ -25,8 +25,8 @@ export default function RootLayout({
   return (
       <html lang="en" className={`${GeistSans.variable}`}>
         <body className="bg-neutral-100 overflow-auto">
-          <div className="min-h-screen flex flex-col">
-            <div className="hidden lg:block flex-1">
+          <div className="min-h-screen flex flex-col hidden lg:block">
+            <div className="flex-1">
               <TRPCReactProvider>{children}</TRPCReactProvider>
             </div>
             <Footer />
