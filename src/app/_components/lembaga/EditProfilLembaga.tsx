@@ -19,15 +19,29 @@ const profileLembagaSchema = z.object({
 })
 type profileLembagaSchemaType = z.infer<typeof profileLembagaSchema>
 
-const EditProfilLembaga = () => {
+const EditProfilLembaga = (
+    {
+        lembagaData
+    }:
+    {
+        lembagaData: {
+            id: string,
+            name: string,
+            description: string | null,
+            users: {
+                image: string | null
+            }
+        }
+    }
+) => {
     const mutation = api.lembaga.editProfil.useMutation()
     const toast = useToast()
     const form = useForm<profileLembagaSchemaType>({
         resolver: zodResolver(profileLembagaSchema),
         defaultValues: {
-            nama: "",
-            deskripsi: "",
-            gambar: ""
+            nama: lembagaData.name ?? "",
+            deskripsi: lembagaData.description ?? "",
+            gambar: lembagaData.users.image ?? ""
         }
     })
 
@@ -38,6 +52,7 @@ const EditProfilLembaga = () => {
                     variant: "default",
                     title: "Berhasil mengubah profil"
                 })
+                window.location.reload()
             },
             onError: (error) => {
                 toast.toast({

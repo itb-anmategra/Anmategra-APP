@@ -14,9 +14,9 @@ export const updateEvent = protectedProcedure
             image: z.string().url().optional(),
             background_image: z.string().url().optional(),
             start_date: z.string().datetime().optional(),
-            end_date: z.string().datetime().optional(),
+            end_date: z.string().datetime().nullable().optional(),
             status: z.enum(["Coming Soon", "On going", "Ended"]),
-            oprec_link: z.string().url(),
+            oprec_link: z.string().url().or(z.literal("")).optional(),
             location: z.string(),
             participant_limit: z.number().int(),
             participant_count: z.number().int(),
@@ -41,6 +41,23 @@ export const updateEvent = protectedProcedure
                 });
             }
 
+            const eventToUpdate = await ctx.db.query.events.findFirst({
+                where: and(
+                    eq(events.id, input.id),
+                    eq(events.org_id, org_id.id)
+                ),
+                columns: {
+                    id: true
+                }
+            });
+
+            if (!eventToUpdate) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: "Event not found."
+                });
+            }
+
             const updatedEvent = await ctx.db.update(events)
               .set({
                 org_id: org_id.id,
@@ -48,7 +65,7 @@ export const updateEvent = protectedProcedure
                 start_date: input.start_date ? new Date(input.start_date) : undefined,
                 end_date: input.end_date ? new Date(input.end_date) : undefined,
               })
-              .where(eq(events.id, input.id))
+              .where(eq(events.id, eventToUpdate.id))
               .returning();
 
             return updatedEvent[0];

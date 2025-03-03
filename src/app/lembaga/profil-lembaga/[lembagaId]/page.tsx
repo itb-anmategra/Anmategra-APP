@@ -24,14 +24,18 @@ import { PencilLine } from 'lucide-react';
 // TRPC Import
 import {api} from "~/trpc/server";
 import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
+import EditProfilLembaga from "~/app/_components/lembaga/EditProfilLembaga";
+import {getServerAuthSession} from "~/server/auth";
 
 const DetailLembagaPage = async (
     {params}: {
         params: Promise<{ lembagaId: string }>
     }
 ) => {
+  const session = await getServerAuthSession()
     const lembagaId = (await params).lembagaId
     const {lembagaData, newestEvent , highlightedEvent , anggota} = await api.profil.getLembaga({lembagaId: lembagaId})
+  const is_user_owner = lembagaData?.users.id === session?.user?.id
 
   return (
     <div className='w-full flex min-h-screen flex-col items-center px-6'>
@@ -53,18 +57,22 @@ const DetailLembagaPage = async (
               <p className='text-3xl text-slate-600 font-semibold'>{lembagaData?.name}</p>
               <p className='text-xl text-slate-400'>{lembagaData?.description}</p>
             </div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none">Edit Profil <PencilLine /></Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    Edit Profil Lembaga
-                  </DialogTitle>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
+            {is_user_owner &&
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none">Edit
+                      Profile <PencilLine/></Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Edit Profil Lembaga
+                      </DialogTitle>
+                    </DialogHeader>
+                    <EditProfilLembaga lembagaData={lembagaData}/>
+                  </DialogContent>
+                </Dialog>
+            }
           </div>
         </div>
 

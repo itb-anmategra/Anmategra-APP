@@ -37,9 +37,9 @@ const EventInputSchema = z.object({
     description: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 karakter"),
     image: z.string().url("Harus berupa URL yang valid").optional(),
     start_date: z.string().datetime().optional(),
-    end_date: z.string().datetime().optional(),
+    end_date: z.string().datetime().nullable().optional(),
     status: z.enum(["Coming Soon", "On going", "Ended"]),
-    oprec_link: z.string().url("Harus berupa URL yang valid"),
+    oprec_link: z.string().url("Harus berupa URL yang valid").or(z.literal("")).optional(),
     location: z.string().min(3, "Lokasi minimal 3 karakter"),
     participant_limit: z.number().int().min(1, "Minimal 1 peserta"),
     participant_count: z.number().int().min(0, "Minimal 0 peserta"),
@@ -77,7 +77,7 @@ const EditKegiatanForm = (
                 : "",
             end_date: kegiatan.end_date && !isNaN(Date.parse(kegiatan.end_date))
                 ? new Date(kegiatan.end_date).toISOString()
-                : "",
+                : null,
             status: kegiatan.status,
             oprec_link: kegiatan.oprec_link ?? "",
             location: kegiatan.location ?? "",

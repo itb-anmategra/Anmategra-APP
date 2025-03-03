@@ -115,8 +115,8 @@ const TambahAnggotaForm = ({
                                                 <CommandGroup>
                                                     {mahasiswaList.map((m) => (
                                                         <CommandItem
-                                                            key={m.value}
-                                                            value={m.value}
+                                                            key={m.label}
+                                                            value={m.label}
                                                             onSelect={() => {
                                                                 field.onChange(m.value);
                                                                 setOpen(false);
@@ -124,7 +124,7 @@ const TambahAnggotaForm = ({
                                                         >
                                                             {m.label}
                                                             <Check
-                                                                className={cn("ml-auto", field.value === m.value ? "opacity-100" : "opacity-0")}/>
+                                                                className={cn("ml-auto", field.value === m.label ? "opacity-100" : "opacity-0")}/>
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>

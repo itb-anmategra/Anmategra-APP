@@ -62,6 +62,7 @@ export const profileRouter = createTRPCRouter({
                 with: {
                     users: {
                         columns: {
+                            id: true,
                             image: true,
                         }
                     },

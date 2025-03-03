@@ -212,9 +212,9 @@ export const lembagaRouter = createTRPCRouter({
 
     editProfil: protectedProcedure
         .input(z.object({
-            nama: z.string().nonempty(),
-            deskripsi: z.string().nonempty(),
-            gambar: z.string().optional(),
+            nama: z.string().min(1, "Nama wajib diisi").max(30, "Nama maksimal 30 karakter"),
+            deskripsi: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 krakater"),
+            gambar: z.string().url(),
         }))
         .mutation(async ({ctx, input}) => {
             const user_id = ctx.session.user.id;
