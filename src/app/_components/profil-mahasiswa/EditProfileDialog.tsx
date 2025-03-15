@@ -7,13 +7,6 @@ import {z} from 'zod'
 // Components Import
 import {Button} from '~/components/ui/button';
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "~/components/ui/dialog"
-import {
     Form,
     FormControl,
     FormField,
@@ -90,7 +83,7 @@ const EditProfileDialog = ({
         <div>
             {!isEdit && (
                 <Button 
-                    className='bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-28'
+                    className='bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-0'
                     onClick={() => setIsEdit(true)}
                 >
                     Edit Profil <Pencil/>
@@ -106,7 +99,7 @@ const EditProfileDialog = ({
                                     name="fotoProfil"
                                     render={({ field }) => (
                                         <FormItem className="w-full flex flex-col items-start">
-                                            <FormLabel>Foto Profil</FormLabel>
+                                            <FormLabel className='translate-y-1'>Foto Profil</FormLabel>
                                             <FormControl className="w-full">
                                                 <UploadButton
                                                     endpoint="imageUploader"
