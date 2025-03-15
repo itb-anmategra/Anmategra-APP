@@ -61,7 +61,7 @@ const DetailMahasiswaPage = async ({params}: {
                             <p className='text-3xl text-slate-700 font-semibold'>{mahasiswaData?.user.name}</p>
                             <p className='text-[18px] text-slate-600 font-medium'>{mahasiswaData?.mahasiswa.nim}</p>
                             <p className='text-[18px] text-slate-500'>{mahasiswaData?.mahasiswa.jurusan} &#39;{mahasiswaData?.mahasiswa.angkatan}</p>
-                            <div className="flex items-center justify-start gap-x-6 pt-4">
+                            <div className="flex items-center justify-start gap-x-10 pt-4">
                                 {mahasiswaData?.mahasiswa.lineId ?
                                     <div className='flex items-center gap-x-2'>
                                         <Image
@@ -86,7 +86,7 @@ const DetailMahasiswaPage = async ({params}: {
                                     </>}
                             </div>
                             {session?.user.id === userId && (
-                                <div className='pt-4'>
+                                <div className='pt-2'>
                                     <EditProfileDialog
                                         image={mahasiswaData?.user.image}
                                         line={mahasiswaData?.mahasiswa.lineId ?? ''}

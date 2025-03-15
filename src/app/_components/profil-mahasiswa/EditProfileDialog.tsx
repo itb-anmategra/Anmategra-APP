@@ -24,7 +24,7 @@ import {
 import {Input} from '~/components/ui/input';
 import {useToast} from "~/hooks/use-toast"
 // Icon Import
-import {Pencil} from 'lucide-react';
+import {Pencil, PencilLine} from 'lucide-react';
 // Upload Thing Import
 import {UploadButton} from '~/utils/uploadthing';
 import {api} from "~/trpc/react";
@@ -53,6 +53,7 @@ const EditProfileDialog = ({
 }) => {
     const toast = useToast()
     const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [isEdit, setIsEdit] = useState(false)
 
     const mutation = api.users.gantiProfile.useMutation()
     const form = useForm<mahasiswaProfilSchemaType>({
@@ -86,26 +87,24 @@ const EditProfileDialog = ({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button className='bg-secondary-400 hover:bg-secondary-500 space-x-6'>
+        <div>
+            {!isEdit && (
+                <Button 
+                    className='bg-secondary-400 hover:bg-secondary-500 space-x-6'
+                    onClick={() => setIsEdit(true)}
+                >
                     Edit Profil <Pencil/>
                 </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        Edit Profil
-                    </DialogTitle>
-                </DialogHeader>
+            )}
+            {isEdit && (
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 min-w-[500px]">
                         {/* Foto Profil */}
                         <FormField
                             control={form.control}
                             name="fotoProfil"
                             render={({field}) => (
-                                <FormItem>
+                                <FormItem className='flex flex-col items-start justify-start'>
                                     <FormLabel>Foto Profil</FormLabel>
                                     <FormControl>
                                         <UploadButton
@@ -118,6 +117,9 @@ const EditProfileDialog = ({
                                             }}
                                             onUploadError={(error: Error) => {
                                                 alert(`ERROR! ${error.message}`);
+                                            }}
+                                            appearance={{
+                                                button: "bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md",
                                             }}
                                         />
                                     </FormControl>
@@ -157,13 +159,22 @@ const EditProfileDialog = ({
                         </div>
                         {/* Submit Button */}
                         <div className='py-2'/>
-                        <Button type="submit" className='w-full'>
-                            Submit
-                        </Button>
+                        <div className='w-full gap-x-4 flex justify-end items-end'>
+                            <Button 
+                                variant={"outline"} 
+                                className='border-Blue-Dark text-Blue-Dark'
+                                onClick={() => setIsEdit(false)}
+                            >
+                                Batal Edit
+                            </Button>
+                            <Button type="submit" className='bg-Blue-Dark text-white'>
+                                Simpan <PencilLine/>
+                            </Button>
+                        </div>
                     </form>
                 </Form>
-            </DialogContent>
-        </Dialog>
+            )}
+        </div>
     )
 }
 
