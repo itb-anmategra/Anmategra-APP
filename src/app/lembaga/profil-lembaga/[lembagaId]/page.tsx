@@ -44,7 +44,7 @@ const DetailLembagaPage = async (
           <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
           <p className='text-slate-400'>Beranda / Nama Lembaga</p>
         </div>
-        <div className='w-full flex items-center justify-center gap-x-6 py-12'>
+        <div className='w-full flex items-center justify-center gap-x-10 py-12 transition-all duration-500 ease-in-out min-w-[500px]'>
           <Image 
             src={lembagaData?.users.image ?? DummyFotoLembaga}
             alt='Foto Lembaga'
@@ -52,26 +52,13 @@ const DetailLembagaPage = async (
             height={100}
             className='rounded-full'
           />
-          <div className='space-y-2'>
+          <div className='space-y-4'>
             <div className='space-y-2'>
               <p className='text-3xl text-slate-600 font-semibold'>{lembagaData?.name}</p>
               <p className='text-xl text-slate-400'>{lembagaData?.description}</p>
             </div>
             {is_user_owner &&
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none">Edit
-                      Profile <PencilLine/></Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        Edit Profil Lembaga
-                      </DialogTitle>
-                    </DialogHeader>
-                    <EditProfilLembaga lembagaData={lembagaData}/>
-                  </DialogContent>
-                </Dialog>
+              <EditProfilLembaga lembagaData={lembagaData}/>
             }
           </div>
         </div>
