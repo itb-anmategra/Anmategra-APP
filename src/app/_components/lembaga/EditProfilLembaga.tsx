@@ -132,7 +132,10 @@ const EditProfilLembaga = (
                                 </FormItem>
                             )}
                         />
-                        <div className='w-full flex items-end justify-end'>
+                        <div className='w-full flex items-end justify-end gap-x-4 pt-4'>
+                            <Button variant={"outline"} className='border-Blue-Dark text-Blue-Dark' onClick={() => setIsEdit(false)}>
+                                Batal Edit
+                            </Button>
                             <Button type='submit' className='bg-Blue-Dark hover:bg-Blue-Dark/80 text-white'>
                                 Simpan <PencilLine/>
                             </Button>
