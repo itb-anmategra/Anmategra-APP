@@ -85,16 +85,18 @@ const DetailMahasiswaPage = async ({params}: {
                                     </div> : <>
                                     </>}
                             </div>
-                            {session?.user.id === userId && (
-                                <div className='pt-2'>
-                                    <EditProfileDialog
-                                        image={mahasiswaData?.user.image}
-                                        line={mahasiswaData?.mahasiswa.lineId ?? ''}
-                                        whatsapp={mahasiswaData?.mahasiswa.whatsapp ?? ''}
-                                    />
-                                </div>
-                            )}
                         </div>
+                    </div>
+                    <div className='flex items-center justify-center'>
+                        {session?.user.id === userId && (
+                            <div className='w-full flex items-end justify-end max-w-3xl'>
+                                <EditProfileDialog
+                                    image={mahasiswaData?.user.image}
+                                    line={mahasiswaData?.mahasiswa.lineId ?? ''}
+                                    whatsapp={mahasiswaData?.mahasiswa.whatsapp ?? ''}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Kepanitiaan Terbaru */}

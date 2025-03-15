@@ -90,89 +90,89 @@ const EditProfileDialog = ({
         <div>
             {!isEdit && (
                 <Button 
-                    className='bg-secondary-400 hover:bg-secondary-500 space-x-6'
+                    className='bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-28'
                     onClick={() => setIsEdit(true)}
                 >
                     Edit Profil <Pencil/>
                 </Button>
             )}
             {isEdit && (
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 min-w-[500px]">
-                        {/* Foto Profil */}
-                        <FormField
-                            control={form.control}
-                            name="fotoProfil"
-                            render={({field}) => (
-                                <FormItem className='flex flex-col items-start justify-start'>
-                                    <FormLabel>Foto Profil</FormLabel>
-                                    <FormControl>
-                                        <UploadButton
-                                            endpoint="imageUploader"
-                                            onClientUploadComplete={(res) => {
-                                                if (res && res.length > 0) {
-                                                    // @ts-expect-error URL is a valid string
-                                                    field.onChange(res[0].url);
-                                                }
-                                            }}
-                                            onUploadError={(error: Error) => {
-                                                alert(`ERROR! ${error.message}`);
-                                            }}
-                                            appearance={{
-                                                button: "bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md",
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <div className='flex w-full items-center gap-x-4'>
-                            {/* ID Line */}
-                            <FormField
-                                control={form.control}
-                                name="idLine"
-                                render={({field}) => (
-                                    <FormItem className='w-full'>
-                                        <FormLabel>ID Line</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Masukkan ID Line" {...field} />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            {/* ID Line */}
-                            <FormField
-                                control={form.control}
-                                name="noWhatsapp"
-                                render={({field}) => (
-                                    <FormItem className='w-full'>
-                                        <FormLabel>Nomor Whatsapp</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Masukkan Nomor Whatsapp" {...field} />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        {/* Submit Button */}
-                        <div className='py-2'/>
-                        <div className='w-full gap-x-4 flex justify-end items-end'>
-                            <Button 
-                                variant={"outline"} 
-                                className='border-Blue-Dark text-Blue-Dark'
-                                onClick={() => setIsEdit(false)}
-                            >
-                                Batal Edit
-                            </Button>
-                            <Button type="submit" className='bg-Blue-Dark text-white'>
-                                Simpan <PencilLine/>
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                <div className='-translate-y-12 min-w-[700px] w-full'>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-full flex flex-col gap-x-4">
+                            <div className='w-full flex gap-x-4'>
+                                <FormField
+                                    control={form.control}
+                                    name="fotoProfil"
+                                    render={({ field }) => (
+                                        <FormItem className="w-full flex flex-col items-start">
+                                            <FormLabel>Foto Profil</FormLabel>
+                                            <FormControl className="w-full">
+                                                <UploadButton
+                                                    endpoint="imageUploader"
+                                                    onClientUploadComplete={(res) => {
+                                                        if (res && res.length > 0) {
+                                                            // @ts-expect-error URL is a valid string
+                                                            field.onChange(res[0].url);
+                                                        }
+                                                    }}
+                                                    onUploadError={(error: Error) => {
+                                                        alert(`ERROR! ${error.message}`);
+                                                    }}
+                                                    appearance={{
+                                                        button: "w-full bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md h-9 translate-y-2",
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="idLine"
+                                    render={({field}) => (
+                                        <FormItem className='w-full'>
+                                            <FormLabel>ID Line</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Masukkan ID Line" {...field} />
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                                {/* ID Line */}
+                                <FormField
+                                    control={form.control}
+                                    name="noWhatsapp"
+                                    render={({field}) => (
+                                        <FormItem className='w-full'>
+                                            <FormLabel>Nomor Whatsapp</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Masukkan Nomor Whatsapp" {...field} />
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            {/* Submit Button */}
+                            <div className='py-2'/>
+                            <div className='w-full gap-x-4 flex justify-end items-end'>
+                                <Button 
+                                    variant={"outline"} 
+                                    className='border-Blue-Dark text-Blue-Dark'
+                                    onClick={() => setIsEdit(false)}
+                                >
+                                    Batal Edit
+                                </Button>
+                                <Button type="submit" className='bg-Blue-Dark text-white'>
+                                    Simpan <PencilLine/>
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </div>
             )}
         </div>
     )
