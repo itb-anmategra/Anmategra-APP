@@ -134,7 +134,7 @@ const EditProfilLembaga = (
                         />
                         <div className='w-full flex items-end justify-end'>
                             <Button type='submit' className='bg-Blue-Dark hover:bg-Blue-Dark/80 text-white'>
-                                Edit Profil <PencilLine/>
+                                Simpan <PencilLine/>
                             </Button>
                         </div>
                     </form>
