@@ -133,7 +133,7 @@
   },
   {
     "kode": 161,
-    "jurusan": "Tahap Tahun Pertama SITH"
+    "jurusan": "Tahap Tahun Pertama SITH-S"
   },
   {
     "kode": 162,
@@ -149,7 +149,7 @@
   },
   {
     "kode": 165,
-    "jurusan": "Tahap Tahun Pertama STEI"
+    "jurusan": "Tahap Tahun Pertama STEI-R"
   },
   {
     "kode": 166,
@@ -206,6 +206,18 @@
   {
     "kode": 190,
     "jurusan": "Manajemen"
+  },
+  {
+    "kode": 196,
+    "jurusan": "Tahap Tahun Pertama STEI-K"
+  },
+  {
+    "kode": 197,
+    "jurusan": "Tahap Tahun Pertama SBM"
+  },
+  {
+    "kode": 198,
+    "jurusan": "Tahap Tahun Pertama SITH-R"
   },
   {
     "kode": 199,

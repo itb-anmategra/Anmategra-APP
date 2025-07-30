@@ -28,7 +28,7 @@ const DetailMahasiswaPage = async ({params}: {
 }) => {
     const userId = (await params).mahasiswaId
     const {mahasiswaData, newestEvent} = await api.profil.getMahasiswa({mahasiswaId: userId}) 
-    console.log(newestEvent)
+    // console.log(newestEvent)
     // newwestEvent tolong return posisi mahasiswanya, terus masukkin ke kepanitiaan card
     const session = await getServerAuthSession();
     return (
