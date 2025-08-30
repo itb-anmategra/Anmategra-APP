@@ -3,13 +3,15 @@ import {z} from "zod";
 import {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 import {mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
+import { GetTambahAnggotaLembagaOptionsInputSchema, GetTambahAnggotaLembagaOptionsOutputSchema } from "../types/user.type";
 
 export const userRouter = createTRPCRouter({
     /*
-    * Endpoint untuk tambah anggota pada suatu lembaga
-     */
-    tambahAnggotaLembagaData: lembagaProcedure
-        .input(z.object({lembagaId: z.string()}))
+    * Endpoint untuk mengambil data pilihan untuk tambah anggota pada suatu lembaga
+    */
+    getTambahAnggotaLembagaOptions: lembagaProcedure
+        .input(GetTambahAnggotaLembagaOptionsInputSchema)
+        .output(GetTambahAnggotaLembagaOptionsOutputSchema)
         .query(async ({ctx, input}) => {
             const user_hide_list = await ctx.db.query.kehimpunan.findMany({
                 columns: {
@@ -40,19 +42,8 @@ export const userRouter = createTRPCRouter({
                 label: item.name ?? "",
             }));
 
-            const lembaga_id = await ctx.db.query.lembaga.findFirst({
-                where: (lembaga, {eq}) => eq(lembaga.userId, input.lembagaId),
-                columns: {
-                    id: true,
-                },
-            });
-
-            if (!lembaga_id) {
-                throw new Error("Lembaga tidak ditemukan");
-            }
-
             const list_posisi_bidang = await ctx.db.query.kehimpunan.findMany({
-                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, lembaga_id.id),
+                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
                 columns: {
                     position: true,
                     division: true,
