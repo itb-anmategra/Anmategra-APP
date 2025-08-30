@@ -20,3 +20,9 @@ export const GetTambahAnggotaLembagaOptionsOutputSchema = z.object({
 export const GetTambahAnggotaKegiatanOptionsInputSchema = z.object({kegiatanId: z.string()});
 
 export const GetTambahAnggotaKegiatanOptionsOutputSchema = GetTambahAnggotaLembagaOptionsOutputSchema;
+
+export const EditProfilMahasiswaInputSchema = z.object({
+    image: z.string().url().optional(),
+    idLine: z.string().optional().refine((val) => !val || (val.length >= 3 && val.length <= 30)),
+    noWhatsapp: z.string().optional().refine((val) => !val || /^0\d{10,12}$/.test(val))
+});

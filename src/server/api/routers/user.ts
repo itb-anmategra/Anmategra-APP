@@ -3,7 +3,7 @@ import {z} from "zod";
 import {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
 import {mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
-import { GetTambahAnggotaKegiatanOptionsInputSchema, GetTambahAnggotaKegiatanOptionsOutputSchema, GetTambahAnggotaLembagaOptionsInputSchema, GetTambahAnggotaLembagaOptionsOutputSchema } from "../types/user.type";
+import { EditProfilMahasiswaInputSchema, GetTambahAnggotaKegiatanOptionsInputSchema, GetTambahAnggotaKegiatanOptionsOutputSchema, GetTambahAnggotaLembagaOptionsInputSchema, GetTambahAnggotaLembagaOptionsOutputSchema } from "../types/user.type";
 
 export const userRouter = createTRPCRouter({
     /*
@@ -60,7 +60,9 @@ export const userRouter = createTRPCRouter({
                 bidang: bidang_list ?? [] as comboboxDataType[],
             };
         }),
-
+    /*
+    * Endpoint untuk mengambil data pilihan untuk tambah anggota pada suatu kegiatan
+    */
     getTambahAnggotaKegiatanOptions: protectedProcedure
         .input(GetTambahAnggotaKegiatanOptionsInputSchema)
         .output(GetTambahAnggotaKegiatanOptionsOutputSchema)
@@ -115,23 +117,21 @@ export const userRouter = createTRPCRouter({
             }
         }),
 
-    gantiProfile: protectedProcedure
-        .input(z.object({
-            image: z.string().url().optional(),
-            idLine: z.string().optional().refine((val) => !val || (val.length >= 3 && val.length <= 30)),
-            noWhatsapp: z.string().optional().refine((val) => !val || /^0\d{10,12}$/.test(val))
-        }))
+    /*
+    * Endpoint untuk edit profil mahasiswa
+    */
+    editProfilMahasiswa: protectedProcedure
+        .input(EditProfilMahasiswaInputSchema)
+        .output(z.void())
         .mutation(async ({ctx, input}) => {
             if (input.image) {
                 await ctx.db.update(users).set({
                     image: input.image,
-                }).where(eq(users.id, ctx.session.user.id)).returning();
+                }).where(eq(users.id, ctx.session.user.id));
             }
             await ctx.db.update(mahasiswa).set({
                 lineId: input.idLine,
                 whatsapp: input.noWhatsapp,
-            })
-                .where(eq(mahasiswa.userId, ctx.session.user.id))
-                .returning();
+            }).where(eq(mahasiswa.userId, ctx.session.user.id));
         }),
 })
