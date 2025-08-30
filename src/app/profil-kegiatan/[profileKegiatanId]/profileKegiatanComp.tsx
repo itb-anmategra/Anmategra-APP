@@ -8,7 +8,7 @@ import {Input} from '~/components/ui/input';
 // Icons Import
 import {MagnifyingGlassIcon} from '@radix-ui/react-icons';
 // Assets Import
-import NoAnggota from "public/images/NoAnggota.png"
+import NoAnggota from "public/images/miscellaneous/not-found-anggota.png"
 
 
 const ProfileKegiatanComp = (

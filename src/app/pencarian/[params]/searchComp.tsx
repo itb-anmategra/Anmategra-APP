@@ -10,13 +10,13 @@ import LembagaCard from '~/app/_components/beranda/LembagaCard'
 import {KepanitiaanCard} from '~/app/_components/beranda/KepanitiaanCard'
 import {Input} from '~/components/ui/input'
 // Dummy Asset Import
-import dummyProfile from "public/placeholder/profilepic.png";
-import dummyLembaga from "../../../../public/images/logo-hmif.png";
+import dummyProfile from "public/placeholder/profile-pic.png";
+import dummyLembaga from "public/images/logo/hmif-logo.png";
 // Types Import
 import {type Kepanitiaan} from "~/types/kepanitiaan";
 // Image Import
 import Image from 'next/image'
-import NotFound from "../../../../public/images/notfound.png"
+import NotFound from "public/images/miscellaneous/not-found-general.png"
 // Session Import
 import {type Session} from 'next-auth'
 // Icon Import

@@ -6,9 +6,9 @@ import {type Metadata} from "next";
 import {TRPCReactProvider} from "~/trpc/react";
 import Image from "next/image";
 // Image Import
-import LogoAnmategra from "public/images/logo-anmategra.png";
-import Mascot from "public/images/mascot.png";
-import Kabinet from "public/images/kabinet.png";
+import LogoAnmategra from "public/images/logo/anmategra-logo-full.png";
+import Mascot from "public/images/logo/mascot.png";
+import Kabinet from "public/images/logo/kabinet-logo-full.png";
 // Components Import
 import { Toaster } from "~/components/ui/toaster"
 import Footer from "./_components/Footer";

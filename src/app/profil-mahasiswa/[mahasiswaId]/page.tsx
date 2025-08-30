@@ -3,8 +3,8 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link';
 // Asset Import
-import LineIcon from "public/icons/line.png"
-import WhatsappIcon from "public/icons/wa.png"
+import LineIcon from "public/icons/line-icon-2.png"
+import WhatsappIcon from "public/icons/wa-icon.png"
 // Components Import
 import {KepanitiaanCard} from '~/app/_components/beranda/KepanitiaanCard'
 import MahasiswaSidebar from "../../_components/MahasiswaSidebar";

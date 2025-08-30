@@ -5,12 +5,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 // Assets Import
-import KMLogo from 'public/images/KMITBLogo.png'
-import PSDMLogo from 'public/images/PSDMLogo.png'
-import AnmategraLogo from 'public/images/AnmategraLogo.png'
-import InstagramLogo from 'public/images/InstagramLogo.png'
-import LineLogo from 'public/images/LineLogo.png'
-import TwitterLogo from 'public/images/TwitterLogo.png'
+import KMLogo from 'public/images/logo/km-itb-logo.png'
+import PSDMLogo from 'public/images/logo/psdm-logo.png'
+import AnmategraLogo from 'public/images/logo/anmategra-logo.png'
+import InstagramLogo from 'public/images/general-icons/instagram-icon.png'
+import LineLogo from 'public/images/general-icons/line-icon.png'
+import TwitterLogo from 'public/images/general-icons/twitter-icon.png'
 
 const Footer = () => {
   const pathname = usePathname()
