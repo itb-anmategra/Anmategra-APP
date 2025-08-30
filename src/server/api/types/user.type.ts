@@ -16,3 +16,7 @@ export const GetTambahAnggotaLembagaOptionsOutputSchema = z.object({
         label: z.string(),
     })),
 });
+
+export const GetTambahAnggotaKegiatanOptionsInputSchema = z.object({kegiatanId: z.string()});
+
+export const GetTambahAnggotaKegiatanOptionsOutputSchema = GetTambahAnggotaLembagaOptionsOutputSchema;
