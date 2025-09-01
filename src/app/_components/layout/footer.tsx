@@ -8,9 +8,9 @@ import { usePathname } from 'next/navigation'
 import KMLogo from 'public/images/logo/km-itb-logo.png'
 import PSDMLogo from 'public/images/logo/psdm-logo.png'
 import AnmategraLogo from 'public/images/logo/anmategra-logo.png'
-import InstagramLogo from 'public/images/general-icons/instagram-icon.png'
-import LineLogo from 'public/images/general-icons/line-icon.png'
-import TwitterLogo from 'public/images/general-icons/twitter-icon.png'
+import InstagramLogo from 'public/icons/instagram-icon.png'
+import LineLogo from 'public/icons/line-icon.png'
+import TwitterLogo from 'public/icons/twitter-icon.png'
 
 const Footer = () => {
   const pathname = usePathname()
