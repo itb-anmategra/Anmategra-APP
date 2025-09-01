@@ -13,34 +13,44 @@ export const userRouter = createTRPCRouter({
         .input(GetTambahAnggotaLembagaOptionsInputSchema)
         .output(GetTambahAnggotaLembagaOptionsOutputSchema)
         .query(async ({ctx, input}) => {
-            const mahasiswa_hide_list = await ctx.db.query.mahasiswa.findMany({
-                columns: {
-                    userId: true,
-                },
-            });
-
+            const [mahasiswa_hide_list, lembaga_list] = await Promise.all([
+                ctx.db.query.kehimpunan.findMany({
+                    where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
+                    columns: {
+                        userId: true,
+                    },
+                }),
+                ctx.db.query.lembaga.findMany({
+                    columns: {
+                        userId: true,
+                    },
+                }),
+            ]);
             const mahasiswa_hide_list_id = mahasiswa_hide_list.map((item) => item.userId);
-            
-            const mahasiswa_list = await ctx.db.query.users.findMany({
-                where: (users, {notInArray}) => notInArray(users.id, mahasiswa_hide_list_id),
-                columns: {
-                    id: true,
-                    name: true,
-                },
-            }); 
+            const lembaga_list_id = lembaga_list.map((item) => item.userId);
+            const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
+
+            const [mahasiswa_list, list_posisi_bidang] = await Promise.all([
+                ctx.db.query.users.findMany({
+                    where: (users, {notInArray}) => notInArray(users.id, hide_list_id),
+                    columns: {
+                        id: true,
+                        name: true,
+                    },
+                }),
+                ctx.db.query.kehimpunan.findMany({
+                    where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
+                    columns: {
+                        position: true,
+                        division: true,
+                    },
+                }),
+            ]);
 
             const formattedMahasiswaList = mahasiswa_list.map((item) => ({
                 value: item.id,
                 label: item.name ?? "",
             }));
-
-            const list_posisi_bidang = await ctx.db.query.kehimpunan.findMany({
-                where: (kehimpunan, {eq}) => eq(kehimpunan.lembagaId, input.lembagaId),
-                columns: {
-                    position: true,
-                    division: true,
-                },
-            })
 
             const uniquePosisi = Array.from(new Set(list_posisi_bidang.map(item => item.position)));
             const posisi_list = uniquePosisi.map(position => ({
@@ -67,36 +77,44 @@ export const userRouter = createTRPCRouter({
         .input(GetTambahAnggotaKegiatanOptionsInputSchema)
         .output(GetTambahAnggotaKegiatanOptionsOutputSchema)
         .query(async ({ctx, input}) => {
-
-            const mahasiswa_hide_list = await ctx.db.query.keanggotaan.findMany({
-                where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
-                columns: {
-                    user_id: true,
-                },
-            });
-
+            const [mahasiswa_hide_list, lembaga_list] = await Promise.all([
+                ctx.db.query.keanggotaan.findMany({
+                    where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
+                    columns: {
+                        user_id: true,
+                    },
+                }),
+                ctx.db.query.lembaga.findMany({
+                    columns: {
+                        userId: true,
+                    },
+                }),
+            ]);
             const mahasiswa_hide_list_id = mahasiswa_hide_list.map((item) => item.user_id);
+            const lembaga_list_id = lembaga_list.map((item) => item.userId);
+            const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
 
-            const mahasiswa_list = await ctx.db.query.users.findMany({
-                where: (users, {notInArray}) => notInArray(users.id, mahasiswa_hide_list_id),
-                columns: {
-                    id: true,
-                    name: true,
-                },
-            });
+            const [mahasiswa_list, list_posisi_bidang] = await Promise.all([
+                ctx.db.query.users.findMany({
+                    where: (users, {notInArray}) => notInArray(users.id, hide_list_id),
+                    columns: {
+                        id: true,
+                        name: true,
+                    },
+                }),
+                ctx.db.query.keanggotaan.findMany({
+                    where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
+                    columns: {
+                        position: true,
+                        division: true,
+                    },
+                }),
+            ]);
 
             const formattedMahasiswaList = mahasiswa_list.map((item) => ({
                 value: item.id,
                 label: item.name ?? "",
             }));
-
-            const list_posisi_bidang = await ctx.db.query.keanggotaan.findMany({
-                where: (keanggotaan, {eq}) => eq(keanggotaan.event_id, input.kegiatanId),
-                columns: {
-                    position: true,
-                    division: true,
-                },
-            })
 
             const uniquePosisi = Array.from(new Set(list_posisi_bidang.map(item => item.position)));
             const posisi_list = uniquePosisi.map(position => ({
