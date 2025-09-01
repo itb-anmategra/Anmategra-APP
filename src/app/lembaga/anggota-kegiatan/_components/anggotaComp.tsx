@@ -13,8 +13,8 @@ import {Input} from "~/components/ui/input";
 // Icon Import
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
-import TambahAnggotaForm, {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
-import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
+import TambahAnggotaForm, {type comboboxDataType} from "~/app/_components/form/anggota-kegiatan/tambah-anggota-form";
+import TambahAnggotaKegiatanForm from "~/app/_components/form/anggota-kegiatan/tambah-anggota-kegiatan-form";
 import {MahasiswaKegiatanCardTable} from "~/app/lembaga/kegiatan/_components/MahasiswaKegiatanCardTable";
 
   

@@ -4,10 +4,10 @@ import React, {useState} from 'react'
 import {usePathname, useRouter} from 'next/navigation'
 import Link from 'next/link'
 // Component Import
-import MahasiswaSidebar from '../../_components/MahasiswaSidebar'
-import MahasiswaCard from '~/app/_components/beranda/MahasiswaCard'
-import LembagaCard from '~/app/_components/beranda/LembagaCard'
-import {KepanitiaanCard} from '~/app/_components/beranda/KepanitiaanCard'
+import Navbar from '../../_components/layout/navbar'
+import MahasiswaCard from '~/app/_components/card/mahasiswa-card'
+import LembagaCard from '~/app/_components/card/lembaga-card'
+import {KepanitiaanCard} from '~/app/_components/card/kepanitiaan-card'
 import {Input} from '~/components/ui/input'
 // Dummy Asset Import
 import dummyProfile from "public/placeholder/profile-pic.png";
@@ -64,7 +64,7 @@ const PencarianPage = (
         )}>
             {session?.user.role === "mahasiswa" ? (
                 <div className='mb-20 fixed w-full shadow-sm z-20'>
-                    <MahasiswaSidebar session={session}/>
+                    <Navbar session={session}/>
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">

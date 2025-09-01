@@ -21,7 +21,7 @@ const profileLembagaSchema = z.object({
 })
 type profileLembagaSchemaType = z.infer<typeof profileLembagaSchema>
 
-const EditProfilLembaga = (
+const EditProfileLembaga = (
     {
         lembagaData
     }:
@@ -147,4 +147,4 @@ const EditProfilLembaga = (
     )
 }
 
-export default EditProfilLembaga
+export default EditProfileLembaga

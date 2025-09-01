@@ -9,7 +9,7 @@ import LogoHMIFKecil from 'public/placeholder/logo-hmif.png'
 // Components Import
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
-import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
+import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card'
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,7 @@ import { PencilLine } from 'lucide-react';
 // TRPC Import
 import {api} from "~/trpc/server";
 import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
-import EditProfilLembaga from "~/app/_components/lembaga/EditProfilLembaga";
+import EditProfileLembaga from "~/app/lembaga/profil-lembaga/_components/edit-profile-lembaga";
 import {getServerAuthSession} from "~/server/auth";
 
 const DetailLembagaPage = async (
@@ -58,7 +58,7 @@ const DetailLembagaPage = async (
               <p className='text-xl text-slate-400'>{lembagaData?.description}</p>
             </div>
             {is_user_owner &&
-              <EditProfilLembaga lembagaData={lembagaData}/>
+              <EditProfileLembaga lembagaData={lembagaData}/>
             }
           </div>
         </div>

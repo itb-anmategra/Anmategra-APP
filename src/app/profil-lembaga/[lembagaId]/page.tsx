@@ -9,8 +9,8 @@ import LogoHMIFKecil from 'public/placeholder/logo-hmif.png'
 // Components Import
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
-import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
-import MahasiswaSidebar from "../../_components/MahasiswaSidebar";
+import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card'
+import Navbar from "../../_components/layout/navbar";
 // Icons Import
 import { CalendarIcon } from 'lucide-react'
 // TRPC Import
@@ -31,7 +31,7 @@ const DetailLembagaPage = async (
   return (
     <>
       <div className='w-full flex justify-between fixed z-20'>
-        <MahasiswaSidebar session={session} />
+        <Navbar session={session} />
       </div>
       <div className='w-full flex min-h-screen flex-col items-center pt-14'>
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">

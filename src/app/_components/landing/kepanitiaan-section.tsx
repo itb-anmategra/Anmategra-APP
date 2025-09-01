@@ -1,5 +1,5 @@
-import { KepanitiaanCard } from "../beranda/KepanitiaanCard";
-import { ListSectionWrapper } from "./ListSectionWrapper";
+import { KepanitiaanCard } from "../card/kepanitiaan-card";
+import { ListSectionWrapper } from "./list-section-wrapper";
 import {type Kepanitiaan} from "~/types/kepanitiaan";
 import Link from "next/link";
 

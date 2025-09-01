@@ -1,6 +1,6 @@
 import {createTRPCRouter, lembagaProcedure, protectedProcedure} from "~/server/api/trpc";
 import {z} from "zod";
-import {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
+import {type comboboxDataType} from "~/app/_components/form/anggota-kegiatan/tambah-anggota-form";
 import {mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
 

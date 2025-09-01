@@ -1,8 +1,8 @@
 // Component Import
 import HeroSection from "./_components/landing/hero";
-import {KegiatanSection} from "./_components/landing/KegiatanSection";
-import {KepanitiaanSection} from "./_components/landing/KepanitiaanSection";
-import MahasiswaSidebar from "./_components/MahasiswaSidebar";
+import {KegiatanSection} from "./_components/landing/kegiatan-section";
+import {KepanitiaanSection} from "./_components/landing/kepanitiaan-section";
+import Navbar from "./_components/layout/navbar";
 // TRPC Import
 import {api} from "~/trpc/server";
 // Auth Import
@@ -16,7 +16,7 @@ const LandingPage = async () => {
     return (
         <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
             <div className="mb-12 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar session={session}/>
+                <Navbar session={session}/>
             </div>
             <HeroSection/>
             <div className="space-y-16">

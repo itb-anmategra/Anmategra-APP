@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 // Components Import
 import { Input } from "~/components/ui/input";
-import { KepanitiaanCard } from "../_components/beranda/KepanitiaanCard";
+import { KepanitiaanCard } from "../_components/card/kepanitiaan-card";
 // Icons Import
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 // Types Import

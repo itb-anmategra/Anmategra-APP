@@ -11,7 +11,7 @@ import Mascot from "public/images/logo/mascot.png";
 import Kabinet from "public/images/logo/kabinet-logo-full.png";
 // Components Import
 import { Toaster } from "~/components/ui/toaster"
-import Footer from "./_components/Footer";
+import Footer from "./_components/layout/footer";
 // Metadata
 export const metadata: Metadata = {
   title: "Anmategra",

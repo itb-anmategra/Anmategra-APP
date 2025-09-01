@@ -1,4 +1,4 @@
-// import MahasiswaSidebar from '../../_components/MahasiswaSidebar'
+// import Navbar from '../../_components/layout/Nnavbar'
 import { Button } from '~/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -6,7 +6,7 @@ import Image from 'next/image'
 export default function ComingSoon() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <MahasiswaSidebar /> */}
+      {/* <Navbar /> */}
       
       <main className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="relative w-full max-w-4xl">

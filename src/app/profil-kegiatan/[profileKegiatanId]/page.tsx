@@ -7,7 +7,7 @@ import { getServerAuthSession } from "~/server/auth";
 import {EventHeader} from "~/app/_components/placeholder/event-header";
 import {PenyelenggaraCard} from "~/app/_components/placeholder/penyelenggara-card";
 import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
-import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
+import Navbar from "~/app/_components/layout/navbar";
 
 const ProfileKegiatan = async (
     {
@@ -23,7 +23,7 @@ const ProfileKegiatan = async (
     return (
         <div>
             <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session}/>
+                <Navbar session={session}/>
             </div>
             <div className='w-full flex min-h-screen flex-col items-center pt-14'>
                 <div className="w-full max-w-7xl bg-slate-50 py-6">

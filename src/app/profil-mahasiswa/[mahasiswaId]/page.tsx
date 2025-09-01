@@ -6,9 +6,9 @@ import Link from 'next/link';
 import LineIcon from "public/icons/line-icon-2.png"
 import WhatsappIcon from "public/icons/wa-icon.png"
 // Components Import
-import {KepanitiaanCard} from '~/app/_components/beranda/KepanitiaanCard'
-import MahasiswaSidebar from "../../_components/MahasiswaSidebar";
-import EditProfileDialog from '~/app/_components/profil-mahasiswa/EditProfileDialog';
+import {KepanitiaanCard} from '~/app/_components/card/kepanitiaan-card'
+import Navbar from "../../_components/layout/navbar";
+import EditProfileDialog from '~/app/_components/profil-mahasiswa/edit-profile-dialog';
 import {
     Avatar,
     AvatarFallback,
@@ -21,7 +21,7 @@ import {api} from "~/trpc/server";
 // Types Import
 import {type Kepanitiaan} from '~/types/kepanitiaan'
 import NoKepanitiaan from "public/images/NoKepanitiaan.png"
-import CariKepanitiaanButton from '~/app/_components/profil-mahasiswa/CariKepanitiaanButton';
+import CariKepanitiaanButton from '~/app/_components/profil-mahasiswa/cari-kepanitiaan-button';
 
 const DetailMahasiswaPage = async ({params}: {
     params: Promise<{ mahasiswaId: string }>,
@@ -34,7 +34,7 @@ const DetailMahasiswaPage = async ({params}: {
     return (
         <>
             <div className='w-full flex justify-between fixed z-20'>
-                <MahasiswaSidebar session={session}/>
+                <Navbar session={session}/>
             </div>
             <div className='w-full flex min-h-screen flex-col items-center pt-14'>
                 <div className="max-w-7xl flex w-full flex-col gap-4 py-6">

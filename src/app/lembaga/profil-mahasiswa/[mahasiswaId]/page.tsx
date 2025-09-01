@@ -6,8 +6,8 @@ import Image from 'next/image'
 import LineIcon from "public/icons/line-icon-2.png"
 import WhatsappIcon from "public/icons/wa.png"
 // Components Import
-import { KepanitiaanCard } from '~/app/_components/beranda/KepanitiaanCard'
-import EditProfileDialog from '~/app/_components/profil-mahasiswa/EditProfileDialog';
+import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card'
+import EditProfileDialog from '~/app/_components/profil-mahasiswa/edit-profile-dialog';
 import {
     Avatar,
     AvatarFallback,
