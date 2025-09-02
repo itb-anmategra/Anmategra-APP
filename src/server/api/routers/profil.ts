@@ -1,29 +1,31 @@
 import {z} from "zod";
 import {createTRPCRouter, publicProcedure,} from "~/server/api/trpc";
-import {db} from "~/server/db";
 import {events, keanggotaan, kehimpunan, lembaga, mahasiswa, users} from "~/server/db/schema";
 import {and, desc, eq} from "drizzle-orm";
 import {type Kepanitiaan} from "~/types/kepanitiaan";
 import {TRPCError} from "@trpc/server";
+import { GetMahasiswaInputSchema, GetMahasiswaOutputSchema } from "../types/profil.type";
 
 export const profileRouter = createTRPCRouter({
 
     getMahasiswa: publicProcedure
-        .input(z.object({mahasiswaId: z.string()}))
-        .query(async ({input}) => {
-            const mahasiswaResult = await db
-                .select()
-                .from(mahasiswa)
-                .innerJoin(users, eq(mahasiswa.userId, users.id))
-                .where(eq(users.id, input.mahasiswaId))
-                .limit(1)
-
-            const newestEvent = await db
-                .select()
-                .from(events)
-                .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
-                .where(eq(keanggotaan.user_id, input.mahasiswaId))
-                .orderBy(desc(events.start_date))
+        .input(GetMahasiswaInputSchema)
+        .output(GetMahasiswaOutputSchema)
+        .query(async ({ctx, input}) => {
+            const [mahasiswaResult, newestEvent] = await Promise.all([
+                ctx.db
+                    .select()
+                    .from(mahasiswa)
+                    .innerJoin(users, eq(mahasiswa.userId, users.id))
+                    .where(eq(users.id, input.mahasiswaId))
+                    .limit(1),
+                ctx.db
+                    .select()
+                    .from(events)
+                    .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
+                    .where(eq(keanggotaan.user_id, input.mahasiswaId))
+                    .orderBy(desc(events.start_date))
+            ]);
 
             const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
                 lembaga: {
@@ -41,10 +43,10 @@ export const profileRouter = createTRPCRouter({
                 division: item.keanggotaan.division,
             }));
 
-            if (mahasiswaResult.length === 0) {
+            if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
                 throw new TRPCError({
                     code: "NOT_FOUND",
-                    message: "Kegiatan not found",
+                    message: "Mahasiswa not found",
                 })
             }
 
@@ -110,7 +112,7 @@ export const profileRouter = createTRPCRouter({
                 orderBy: desc(events.start_date),
             });
 
-            const anggota = await db
+            const anggota = await ctx.db
                 .select({
                     id: users.id,
                     nama: users.name,
@@ -146,8 +148,8 @@ export const profileRouter = createTRPCRouter({
 
     getKegiatan: publicProcedure
         .input(z.object({kegiatanId: z.string()}))
-        .query(async ({ input}) => {
-            const kegiatan = await db
+        .query(async ({ctx, input}) => {
+            const kegiatan = await ctx.db
                 .select()
                 .from(events)
                 .where(eq(events.id, input.kegiatanId))
@@ -167,7 +169,7 @@ export const profileRouter = createTRPCRouter({
                 })
             }
 
-            const lembagaRes = await db
+            const lembagaRes = await ctx.db
                 .select({
                     id: lembaga.id,
                     name: lembaga.name,
@@ -190,7 +192,7 @@ export const profileRouter = createTRPCRouter({
                 })
             }
 
-            const participants = await db
+            const participants = await ctx.db
                 .select({
                     userId: mahasiswa.userId,
                     nama: users.name,
