@@ -1,7 +1,7 @@
 "use server"
 
 import React from 'react';
-import LandingComp from "~/app/lembaga/landingComp";
+import LandingComp from "~/app/lembaga/landing-content";
 import {api} from "~/trpc/server";
 import {getServerAuthSession} from "~/server/auth";
 

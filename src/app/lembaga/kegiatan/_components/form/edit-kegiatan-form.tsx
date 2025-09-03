@@ -28,7 +28,7 @@ import {CalendarIcon} from 'lucide-react';
 import {UploadButton} from "~/utils/uploadthing";
 import type {Session} from "next-auth";
 // Type Import
-import {type Activity} from '~/app/lembaga/kegiatan/_components/kegiatanContainer';
+import {type Activity} from '~/app/lembaga/kegiatan/_components/kegiatan-container';
 import {useWatch} from "react-hook-form";
 
 // ✅ Schema dengan Zod

@@ -6,7 +6,7 @@ import { getServerAuthSession } from "~/server/auth";
 // Components Import
 import {EventHeader} from "~/app/_components/placeholder/event-header";
 import {PenyelenggaraCard} from "~/app/_components/placeholder/penyelenggara-card";
-import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profile-kegiatan-comp";
+import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profil-kegiatan-comp";
 import Navbar from "~/app/_components/layout/navbar";
 
 const ProfileKegiatan = async (

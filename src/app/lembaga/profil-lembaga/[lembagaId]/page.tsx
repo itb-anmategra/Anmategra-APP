@@ -23,8 +23,8 @@ import { CalendarIcon } from 'lucide-react'
 import { PencilLine } from 'lucide-react';
 // TRPC Import
 import {api} from "~/trpc/server";
-import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profile-kegiatan-comp";
-import EditProfileLembaga from "~/app/lembaga/profil-lembaga/_components/edit-profile-lembaga";
+import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profil-kegiatan-comp";
+import EditProfileLembaga from "~/app/lembaga/profil-lembaga/_components/edit-profil-lembaga";
 import {getServerAuthSession} from "~/server/auth";
 
 const DetailLembagaPage = async (

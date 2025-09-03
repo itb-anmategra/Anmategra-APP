@@ -3,7 +3,7 @@ import React from 'react'
 // Server Auth
 import {getServerAuthSession} from "~/server/auth";
 // Components Import
-import AnggotaComp from "~/app/lembaga/anggota-kegiatan/_components/anggotaComp";
+import AnggotaComp from "~/app/lembaga/anggota-kegiatan/_components/anggota-content";
 // Api Import
 import {api} from "~/trpc/server";
 

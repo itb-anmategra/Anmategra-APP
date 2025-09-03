@@ -7,8 +7,8 @@ import {useDebounce} from "~/components/debounceHook";
 import {Button} from "~/components/ui/button"
 import {Input} from "~/components/ui/input"
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "~/components/ui/dialog";
-import TambahKegiatanForm from "~/app/_components/form/kegiatan/tambah-kegiatan-form";
-import EditKegiatanForm from "~/app/_components/form/kegiatan/edit-kegiatan-form";
+import TambahKegiatanForm from "~/app/lembaga/kegiatan/_components/form/tambah-kegiatan-form";
+import EditKegiatanForm from "~/app/lembaga/kegiatan/_components/form/edit-kegiatan-form";
 // Icons Import
 import {Plus} from "lucide-react"
 import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
