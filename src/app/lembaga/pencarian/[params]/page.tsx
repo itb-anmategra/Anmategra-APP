@@ -1,7 +1,7 @@
 "use server"
 
 import React from 'react';
-import PencarianPage from "~/app/pencarian/[params]/searchComp";
+import PencarianPage from "~/app/_components/pencarian/search-comp";
 import {getServerAuthSession} from "~/server/auth";
 import {api} from "~/trpc/server";
 

@@ -4,7 +4,7 @@ import React, {useState} from 'react'
 import {usePathname, useRouter} from 'next/navigation'
 import Link from 'next/link'
 // Component Import
-import Navbar from '../../_components/layout/navbar'
+import Navbar from '../layout/navbar'
 import MahasiswaCard from '~/app/_components/card/mahasiswa-card'
 import LembagaCard from '~/app/_components/card/lembaga-card'
 import {KepanitiaanCard} from '~/app/_components/card/kepanitiaan-card'

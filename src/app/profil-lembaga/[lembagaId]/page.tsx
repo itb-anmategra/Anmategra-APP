@@ -17,7 +17,7 @@ import { CalendarIcon } from 'lucide-react'
 import {api} from "~/trpc/server";
 // Auth
 import { getServerAuthSession } from '~/server/auth';
-import ProfileKegiatanComp from "~/app/profil-kegiatan/[profileKegiatanId]/profileKegiatanComp";
+import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profile-kegiatan-comp";
 
 const DetailLembagaPage = async (
     {params}: {
