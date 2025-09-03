@@ -33,8 +33,8 @@ const ProfileKegiatan = async (
                     <EventHeader
                         title={kegiatan?.name ?? 'null'}
                         organizer={lembaga?.name ?? 'null'}
-                        backgroundImage={kegiatan?.background_image ?? "/profile-kegiatan-placeholder/kegiatan-header-background.png"}
-                        logoImage={kegiatan?.image ?? "/profile-kegiatan-placeholder/oskm-header.png"}
+                        backgroundImage={kegiatan?.background_image ?? "/placeholder/profile-kegiatan-placeholder/kegiatan-header-background.png"}
+                        logoImage={kegiatan?.image ?? "/placeholder/profile-kegiatan-placeholder/oskm-header.png"}
                         linkDaftar={kegiatan?.oprec_link}
                     />
                     <div className="mb-4 flex items-center justify-between">
@@ -46,7 +46,7 @@ const ProfileKegiatan = async (
                         <PenyelenggaraCard
                             title={lembaga?.name ?? 'Tidak ada nama'}
                             category={lembaga?.type ?? 'Tidak ada kategori'}
-                            logo={lembaga?.image ??"/profile-kegiatan-placeholder/oskm-organizer.png"}
+                            logo={lembaga?.image ??"/placeholder/profile-kegiatan-placeholder/oskm-organizer.png"}
                         />
                     </Link>
                     <ProfileKegiatanComp anggota={participant ?? []} />

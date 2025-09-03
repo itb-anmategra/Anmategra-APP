@@ -20,7 +20,7 @@ import {getServerAuthSession} from '~/server/auth';
 import {api} from "~/trpc/server";
 // Types Import
 import {type Kepanitiaan} from '~/types/kepanitiaan'
-import NoKepanitiaan from "public/images/NoKepanitiaan.png"
+import NoKepanitiaan from "public/images/miscellaneous/not-found-kepanitiaan.png"
 import CariKepanitiaanButton from '~/app/_components/profil-mahasiswa/cari-kepanitiaan-button';
 
 const DetailMahasiswaPage = async ({params}: {

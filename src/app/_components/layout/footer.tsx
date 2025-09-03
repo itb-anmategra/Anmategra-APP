@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 // Assets Import
-import KMLogo from 'public/images/logo/km-itb-logo.png'
+import KMLogo from 'public/images/logo/kmitb-logo.png'
 import PSDMLogo from 'public/images/logo/psdm-logo.png'
 import AnmategraLogo from 'public/images/logo/anmategra-logo.png'
 import InstagramLogo from 'public/icons/instagram-icon.png'

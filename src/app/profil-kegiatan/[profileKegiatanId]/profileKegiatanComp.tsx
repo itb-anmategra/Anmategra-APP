@@ -69,7 +69,7 @@ const ProfileKegiatanComp = (
                     <div key={item.id}
                             className="flex items-center justify-between py-4 border-b border-neutral-200">
                         <div className="flex items-center gap-x-4">
-                            <Image src={item.image ?? '/placeholder/profilepic.png'} alt="Profile Picture"
+                            <Image src={item.image ?? '/placeholder/profile-pic.png'} alt="Profile Picture"
                                     className="w-12 h-12 rounded-full"
                                     width={48}
                                     height={48}

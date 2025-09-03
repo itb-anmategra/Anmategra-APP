@@ -20,8 +20,8 @@ export default function KegiatanCard({
   endDate = "Mei 2024",
   organization = "Lembaga ITB",
   participantCount = 50,
-  lembagaImageUrl = "/placeholder/logo if.png",
-  kegiatanImageUrl = "/placeholder/kegiatan thumbnail.png",
+  lembagaImageUrl = "/placeholder/logo-hmif.png",
+  kegiatanImageUrl = "/placeholder/kegiatan-thumbnail.png",
 }: KegiatanCardProps) {
   return (
     <Card className="flex flex-col overflow-hidden rounded-3xl border border-black/10 shadow-none md:flex-row">

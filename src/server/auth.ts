@@ -128,7 +128,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         token.id = user.id;
-        token.picture = user.image ?? "/placeholder/profilepic.png";
+        token.picture = user.image ?? "/placeholder/profile-pic.png";
       }
       return token;
     },

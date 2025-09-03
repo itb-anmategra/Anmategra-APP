@@ -12,7 +12,7 @@ export default function ProfilMahasiswa({
   nim = "NIM",
   jurusan = "Jurusan",
   angkatan = "Angkatan",
-  profileImageUrl = "/placeholder/profilepic.png",
+  profileImageUrl = "/placeholder/profile-pic.png",
 }: StudentProfileProps) {
   return (
     <div className="flex items-center justify-center gap-6 bg-white p-6">
