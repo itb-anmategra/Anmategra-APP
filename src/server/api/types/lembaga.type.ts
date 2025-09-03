@@ -60,7 +60,7 @@ export const AddAnggotaLembagaInputSchema = z.object({
     user_id: z.string().nonempty(),
     division: z.string().nonempty(),
     position: z.string().nonempty(),
-})
+});
 
 export const AddAnggotaLembagaOutputSchema = z.object({
     success: z.boolean(),
@@ -79,7 +79,7 @@ export const EditProfilLembagaInputSchema = z.object({
     nama: z.string().min(1, "Nama wajib diisi").max(30, "Nama maksimal 30 karakter"),
     deskripsi: z.string().min(10, "Deskripsi minimal 10 karakter").max(100, "Deskripsi maksimal 100 krakater").optional(),
     gambar: z.string().url().optional(),
-})
+});
 
 export const EditProfilLembagaOutputSchema = z.object({
     success: z.boolean(),

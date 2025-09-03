@@ -1,9 +1,9 @@
 import {protectedProcedure} from "../../trpc";
 import { z } from "zod";
-import {db} from "~/server/db";
 import {keanggotaan, mahasiswa, users} from "~/server/db/schema";
 import {eq} from "drizzle-orm";
 import {TRPCError} from "@trpc/server";
+import { GetAllAnggotaKegiatanInputSchema, GetAllAnggotaKegiatanOutputSchema } from "../../types/event.type";
 
 export const getEvent = protectedProcedure
     .input(
@@ -22,14 +22,11 @@ export const getEvent = protectedProcedure
     })
 
 export const getAllAnggota = protectedProcedure
-    .input(
-        z.object({
-            event_id: z.string()
-        })
-    )
-    .query(async ({ input }) => {
+    .input(GetAllAnggotaKegiatanInputSchema)
+    .output(GetAllAnggotaKegiatanOutputSchema)
+    .query(async ({ ctx, input }) => {
         try {
-            const anggota = await db
+            const anggota = await ctx.db
                 .select({
                     id: keanggotaan.id,
                     nama: users.name,
