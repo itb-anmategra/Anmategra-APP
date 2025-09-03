@@ -48,7 +48,7 @@ const EditProfileDialog = ({
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [isEdit, setIsEdit] = useState(false)
 
-    const mutation = api.users.gantiProfile.useMutation()
+    const mutation = api.users.editProfilMahasiswa.useMutation()
     const form = useForm<mahasiswaProfilSchemaType>({
         resolver: zodResolver(mahasiswaProfilSchema),
         defaultValues: {
