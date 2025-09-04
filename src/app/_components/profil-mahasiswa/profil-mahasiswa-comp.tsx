@@ -1,4 +1,5 @@
-import Image from "next/image";
+import Image from 'next/image';
+
 interface StudentProfileProps {
   nama: string;
   nim: string;
@@ -8,11 +9,11 @@ interface StudentProfileProps {
 }
 
 export default function ProfilMahasiswa({
-  nama = "Nama Mahasiswa",
-  nim = "NIM",
-  jurusan = "Jurusan",
-  angkatan = "Angkatan",
-  profileImageUrl = "/placeholder/profile-pic.png",
+  nama = 'Nama Mahasiswa',
+  nim = 'NIM',
+  jurusan = 'Jurusan',
+  angkatan = 'Angkatan',
+  profileImageUrl = '/images/placeholder/profile-pic.png',
 }: StudentProfileProps) {
   return (
     <div className="flex items-center justify-center gap-6 bg-white p-6">
