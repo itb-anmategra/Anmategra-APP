@@ -19,7 +19,7 @@ import {MahasiswaKegiatanCardTable} from "~/app/lembaga/anggota-kegiatan/_compon
 
   
 
-export default function AnggotaComp(
+export default function AnggotaContent(
     {
         session,
         data,

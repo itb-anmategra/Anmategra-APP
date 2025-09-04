@@ -10,17 +10,10 @@ import LogoHMIFKecil from 'public/placeholder/logo-hmif.png'
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog"
-import { Button } from '~/components/ui/button'
+
 // Icons Import
 import { CalendarIcon } from 'lucide-react'
-import { PencilLine } from 'lucide-react';
+
 // TRPC Import
 import {api} from "~/trpc/server";
 import ProfileKegiatanComp from "~/app/_components/profil-kegiatan/profil-kegiatan-comp";

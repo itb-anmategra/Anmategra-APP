@@ -23,7 +23,7 @@ import {type Session} from 'next-auth'
 import {MagnifyingGlassIcon} from '@radix-ui/react-icons'
 import {cn} from '~/lib/utils'
 
-const PencarianPage = (
+const PencarianContent = (
     {
         session,
         data
@@ -174,4 +174,4 @@ const PencarianPage = (
     )
 }
 
-export default PencarianPage
+export default PencarianContent;

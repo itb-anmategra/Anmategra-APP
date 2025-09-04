@@ -13,7 +13,7 @@ import {type Kepanitiaan} from "~/types/kepanitiaan";
 // Auth Import
 import {type Session} from "next-auth";
 
-export default function LandingComp(
+export default function LandingContent(
     {
         data,
     }: {

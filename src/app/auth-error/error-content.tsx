@@ -8,7 +8,7 @@ import Navbar from "~/app/_components/layout/navbar";
 import {type Session} from "next-auth";
 import {useSearchParams} from "next/navigation";
 
-export default function AuthErrorComp(
+export default function AuthErrorContent(
     {
         session,
     }: {
