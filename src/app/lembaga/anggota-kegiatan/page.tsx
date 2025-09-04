@@ -1,7 +1,7 @@
 // Server Auth
 import { getServerAuthSession } from "~/server/auth";
 // Components Import
-import AnggotaComp from "~/app/lembaga/anggota-kegiatan/_components/anggotaComp";
+import AnggotaContent from "~/app/lembaga/anggota-kegiatan/_components/anggota-content";
 // Api Import
 import { api } from "~/trpc/server";
 
@@ -11,7 +11,7 @@ export default async function Home() {
   const addAnggotaProps = await api.users.getTambahAnggotaLembagaOptions({lembagaId: session?.user.lembagaId ?? ""});
   return (
       <main>
-          <AnggotaComp session={session} data={anggota ?? []} dataAddAnggota={addAnggotaProps}/>
+          <AnggotaContent session={session} data={anggota ?? []} dataAddAnggota={addAnggotaProps}/>
       </main>
   );
 }

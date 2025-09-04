@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { Users } from "lucide-react";
+import { Users } from 'lucide-react';
+import Image from 'next/image';
 
 interface EventCardProps {
   title: string;
@@ -25,7 +25,7 @@ export function EventCard({
         <div className="mb-2 flex items-center gap-2">
           <div className="flex items-center gap-1 rounded bg-[#0EA5E9] px-2 py-1 text-xs text-white">
             <Image
-              src="/placeholder/pepega.png"
+              src="/images/placeholder/pepega.png"
               alt="ITB"
               width={16}
               height={16}

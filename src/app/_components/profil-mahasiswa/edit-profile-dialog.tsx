@@ -45,7 +45,7 @@ const EditProfileDialog = ({
     whatsapp: string;
 }) => {
     const toast = useToast()
-    const [isOpen, setIsOpen] = useState<boolean>(false)
+    // const [isOpen, setIsOpen] = useState<boolean>(false)
     const [isEdit, setIsEdit] = useState(false)
 
     const mutation = api.users.editProfilMahasiswa.useMutation()

@@ -7,19 +7,19 @@ import Image from "next/image";
 import {type Session} from "next-auth";
 // Components Import
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import {MahasiswaCardTable, type Member} from "~/app/lembaga/anggota-kegiatan/_components/MahasiswaCardTable";
+import {MahasiswaCardTable, type Member} from "~/app/lembaga/anggota-kegiatan/_components/table/mahasiswa-card-table";
 import {Button} from "~/components/ui/button";
 import {Input} from "~/components/ui/input";
 // Icon Import
 import Plus from "~/../public/icons/plus.svg";
 import SearchIcon from "~/../public/icons/search.svg"; // Import the magnifying glass icon
-import TambahAnggotaForm, {type comboboxDataType} from "~/app/_components/anggota/TambahAnggotaForm";
-import TambahAnggotaKegiatanForm from "~/app/_components/anggota/TambahAnggotaKegiatanForm";
-import {MahasiswaKegiatanCardTable} from "~/app/lembaga/kegiatan/_components/MahasiswaKegiatanCardTable";
+import TambahAnggotaForm, {type comboboxDataType} from "~/app/_components/form/anggota-kegiatan/tambah-anggota-form";
+import TambahAnggotaKegiatanForm from "~/app/_components/form/anggota-kegiatan/tambah-anggota-kegiatan-form";
+import {MahasiswaKegiatanCardTable} from "~/app/lembaga/anggota-kegiatan/_components/table/mahasiswa-kegiatan-card-table";
 
   
 
-export default function AnggotaComp(
+export default function AnggotaContent(
     {
         session,
         data,

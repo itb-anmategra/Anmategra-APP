@@ -1,7 +1,7 @@
 // Library Impoty
 import {api} from "~/trpc/server";
 // Icons Import
-import ActivityList from "~/app/lembaga/kegiatan/_components/kegiatanContainer";
+import ActivityList from "~/app/lembaga/kegiatan/_components/kegiatan-container";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function Home() {

@@ -3,12 +3,12 @@
 import Image from "next/image"
 import Link from "next/link"
 import {Button} from "~/components/ui/button"
-import Logo from '../../../public/images/logo-anmategra.png'
-import MahasiswaSidebar from "~/app/_components/MahasiswaSidebar";
+import Logo from '../../../public/images/logo/anmategra-logo-full.png'
+import Navbar from "~/app/_components/layout/navbar";
 import {type Session} from "next-auth";
 import {useSearchParams} from "next/navigation";
 
-export default function AuthErrorComp(
+export default function AuthErrorContent(
     {
         session,
     }: {
@@ -22,7 +22,7 @@ export default function AuthErrorComp(
     return (
         <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
             <div className="mb-12 fixed w-full shadow-sm z-20">
-                <MahasiswaSidebar session={session}/>
+                <Navbar session={session}/>
             </div>
 
             {/* Error Content */}

@@ -30,7 +30,7 @@ import {type Session} from "next-auth";
 import {signOut} from "next-auth/react";
 import React from "react";
 // Assets Import
-import LogoAnmategra from "/public/images/logo-anmategra.png"
+import LogoAnmategra from "/public/images/logo/anmategra-logo-full.png"
 
 type SidebarItemType = {
     label: string;

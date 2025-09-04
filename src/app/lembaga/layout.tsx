@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 
 import { type Metadata } from "next";
-import { Sidebar } from "../_components/Sidebar";
+import { Sidebar } from "../_components/layout/sidebar";
 import {getServerAuthSession} from "~/server/auth";
 
 // Metadata

@@ -14,9 +14,9 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { signOut } from "next-auth/react";
 import {type Session} from "next-auth";
 // Assets Import
-import LogoAnmategra from "/public/images/logo-anmategra.png"
+import LogoAnmategra from "/public/images/logo/anmategra-logo-full.png"
 
-const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
+const Navbar = ({ session }: { session: Session | null }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
@@ -85,4 +85,4 @@ const MahasiswaSidebar = ({ session }: { session: Session | null }) => {
   );
 };
 
-export default MahasiswaSidebar;
+export default Navbar;

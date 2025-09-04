@@ -1,13 +1,13 @@
-import { Home, Calendar, Users, Inbox, FileText, LogOut } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { Calendar, FileText, Home, Inbox, LogOut, Users } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export function Sidebar() {
   return (
     <div className="fixed flex h-screen w-[240px] flex-col border-r bg-white">
       <div className="p-4">
         <Image
-          src="/placeholder/pepega.png"
+          src="/images/placeholder/pepega.png"
           alt="anmategra"
           width={150}
           height={40}
@@ -58,7 +58,7 @@ export function Sidebar() {
       <div className="border-t p-4">
         <div className="mb-4 flex items-center gap-3">
           <Image
-            src="/placeholder/pepega.png"
+            src="/images/placeholder/pepega.png"
             alt="anmategra"
             width={40}
             height={40}

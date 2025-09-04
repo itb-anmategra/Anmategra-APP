@@ -1,16 +1,16 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { eq } from 'drizzle-orm';
 import {
   type DefaultSession,
-  getServerSession,
   type NextAuthOptions,
-} from "next-auth";
-import type { DefaultJWT } from "next-auth/jwt";
-import { type Adapter } from "next-auth/adapters";
-import Google from "next-auth/providers/google";
-import AzureADProvider from "next-auth/providers/azure-ad";
-import { eq } from "drizzle-orm";
-import { env } from "~/env";
-import { db } from "~/server/db";
+  getServerSession,
+} from 'next-auth';
+import { type Adapter } from 'next-auth/adapters';
+import type { DefaultJWT } from 'next-auth/jwt';
+import AzureADProvider from 'next-auth/providers/azure-ad';
+import Google from 'next-auth/providers/google';
+import { env } from '~/env';
+import { db } from '~/server/db';
 import {
   accounts,
   lembaga,
@@ -18,8 +18,9 @@ import {
   sessions,
   users,
   verificationTokens,
-} from "~/server/db/schema";
-import daftarProdi from "./db/kode-program-studi.json";
+} from '~/server/db/schema';
+
+import daftarProdi from './db/kode-program-studi.json';
 
 interface Prodi {
   kode: number;
@@ -32,14 +33,14 @@ interface Prodi {
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
       image: string;
-      role: "admin" | "lembaga" | "mahasiswa";
+      role: 'admin' | 'lembaga' | 'mahasiswa';
       lembagaId?: string;
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 
   interface User {
@@ -47,15 +48,15 @@ declare module "next-auth" {
     name: string;
     email: string;
     image?: string;
-    role: "admin" | "lembaga" | "mahasiswa";
+    role: 'admin' | 'lembaga' | 'mahasiswa';
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     id: string;
     picture: string;
-    role: "admin" | "lembaga" | "mahasiswa";
+    role: 'admin' | 'lembaga' | 'mahasiswa';
     lembagaId?: string;
   }
 }
@@ -83,12 +84,12 @@ export const authOptions: NextAuthOptions = {
         // jwt only returns user on sign in, otherwise it's undefined
 
         // insert mahasiswa table
-        if (account?.provider === "azure-ad") {
-          const nim = user.email.split("@")[0];
+        if (account?.provider === 'azure-ad') {
+          const nim = user.email.split('@')[0];
           const kodeProdi = parseInt(nim!.substring(0, 3));
           const jurusan =
             daftarProdi.find((item: Prodi) => item.kode === kodeProdi)
-              ?.jurusan ?? "TPB";
+              ?.jurusan ?? 'TPB';
 
           // asumsi cuma ada angkatan 2000-an
           const angkatan = parseInt(nim!.substring(3, 5)) + 2000;
@@ -98,14 +99,14 @@ export const authOptions: NextAuthOptions = {
         }
 
         // insert Lembaga table
-        else if (account?.provider === "google") {
+        else if (account?.provider === 'google') {
           const lembagaExists = await db.query.lembaga.findFirst({
             where: eq(lembaga.userId, user.id),
           });
           if (!lembagaExists) {
             await db
               .update(users)
-              .set({ role: "lembaga" })
+              .set({ role: 'lembaga' })
               .where(eq(users.id, user.id))
               .returning();
             const lembaga_id = crypto.randomUUID();
@@ -119,7 +120,7 @@ export const authOptions: NextAuthOptions = {
               })
               .returning();
 
-            token.role = "lembaga";
+            token.role = 'lembaga';
             token.lembagaId = lembaga_id;
           } else {
             token.role = user.role;
@@ -128,7 +129,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         token.id = user.id;
-        token.picture = user.image ?? "/placeholder/profilepic.png";
+        token.picture = user.image ?? '/images/placeholder/profile-pic.png';
       }
       return token;
     },
@@ -143,19 +144,19 @@ export const authOptions: NextAuthOptions = {
 
     signIn: async ({ user, account }) => {
       // signin lembaga
-      if (account?.provider === "google") {
-        const isValidLembaga = user.email?.endsWith("@km.itb.ac.id");
+      if (account?.provider === 'google') {
+        const isValidLembaga = user.email?.endsWith('@km.itb.ac.id');
         const isVerified = await isEmailInVerifiedUsers(user.email);
 
         return isValidLembaga || isVerified;
       }
 
       // signin mahasiswa
-      else if (account?.provider === "azure-ad") {
+      else if (account?.provider === 'azure-ad') {
         // cek email mahasiswa
-        if (user.email?.endsWith("@mahasiswa.itb.ac.id")) {
+        if (user.email?.endsWith('@mahasiswa.itb.ac.id')) {
           // cek nim valid
-          const nim = user.email.split("@")[0];
+          const nim = user.email.split('@')[0];
           if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
 
           // cari jurusan
@@ -175,7 +176,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -184,7 +185,7 @@ export const authOptions: NextAuthOptions = {
     verificationTokensTable: verificationTokens,
   }) as Adapter,
   pages: {
-    error: "/auth-error",
+    error: '/auth-error',
   },
   providers: [
     Google({
@@ -203,7 +204,7 @@ export const authOptions: NextAuthOptions = {
           name: profile.name,
           email: profile.preferred_username ?? profile.email,
           image: undefined,
-          role: "mahasiswa" as const,
+          role: 'mahasiswa' as const,
         };
       },
     }),

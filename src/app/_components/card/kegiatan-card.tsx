@@ -1,6 +1,6 @@
-import { Badge } from "~/components/ui/badge";
-import { Card } from "~/components/ui/card";
-import Image from "next/image";
+import Image from 'next/image';
+import { Badge } from '~/components/ui/badge';
+import { Card } from '~/components/ui/card';
 
 interface KegiatanCardProps {
   title: string;
@@ -14,14 +14,14 @@ interface KegiatanCardProps {
 }
 
 export default function KegiatanCard({
-  title = "Judul",
-  description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-  startDate = "Jan 2024",
-  endDate = "Mei 2024",
-  organization = "Lembaga ITB",
+  title = 'Judul',
+  description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
+  startDate = 'Jan 2024',
+  endDate = 'Mei 2024',
+  organization = 'Lembaga ITB',
   participantCount = 50,
-  lembagaImageUrl = "/placeholder/logo if.png",
-  kegiatanImageUrl = "/placeholder/kegiatan thumbnail.png",
+  lembagaImageUrl = '/images/placeholder/logo-hmif.png',
+  kegiatanImageUrl = '/images/placeholder/kegiatan-thumbnail.png',
 }: KegiatanCardProps) {
   return (
     <Card className="flex flex-col overflow-hidden rounded-3xl border border-black/10 shadow-none md:flex-row">

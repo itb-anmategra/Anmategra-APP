@@ -10,7 +10,7 @@ const NotFoundPage = () => {
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-16 md:flex-row">
           <div className="align-center flex h-96 w-48 shrink-0 items-center justify-center">
             <Image
-              src="/images/notfound/disks.png"
+              src="/images/miscellaneous/disks.png"
               alt="Coming Soon decoration"
               width={192}
               height={384}
