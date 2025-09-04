@@ -1,6 +1,6 @@
-import { InferSelectModel } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 import { z } from "zod";
-import { users, mahasiswa, events } from "~/server/db/schema";
+import type { users, mahasiswa, events } from "~/server/db/schema";
 import type { Kepanitiaan } from "~/types/kepanitiaan";
 
 type User = InferSelectModel<typeof users>;

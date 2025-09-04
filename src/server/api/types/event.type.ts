@@ -1,6 +1,6 @@
-import { InferSelectModel } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 import { z } from "zod";
-import { events } from "~/server/db/schema";
+import type { events } from "~/server/db/schema";
 
 type Event = InferSelectModel<typeof events>;
 

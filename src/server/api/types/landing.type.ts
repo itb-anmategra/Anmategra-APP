@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Kepanitiaan } from "~/types/kepanitiaan";
+import type { Kepanitiaan } from "~/types/kepanitiaan";
 
 export const GetRecentEventsOutputSchema = z.array(z.custom<Kepanitiaan>());
 

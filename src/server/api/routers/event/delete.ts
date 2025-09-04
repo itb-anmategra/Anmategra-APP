@@ -1,5 +1,4 @@
 import { adminProcedure } from "../../trpc";
-import { z } from "zod";
 import { events } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
