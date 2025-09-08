@@ -1,20 +1,22 @@
-"use client"
+'use client';
+
 // Library Import
-import React, { useEffect, useState } from 'react'
-import Image from 'next/image'
-import {useRouter} from "next/navigation";
-import Link from 'next/link'
-// Components Import
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-// Icon Import
-import { LogIn, LogOut, CircleUserRound } from 'lucide-react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+// Icon Import
+import { CircleUserRound, LogIn, LogOut } from 'lucide-react';
+import { type Session } from 'next-auth';
 // Next Auth Import
-import { signOut } from "next-auth/react";
-import {type Session} from "next-auth";
+import { signOut } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+// Components Import
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+
 // Assets Import
-import LogoAnmategra from "/public/images/logo/anmategra-logo-full.png"
+import LogoAnmategra from '/public/images/logo/anmategra-logo-full.png';
 
 const Navbar = ({ session }: { session: Session | null }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,16 +29,16 @@ const Navbar = ({ session }: { session: Session | null }) => {
   };
 
   useEffect(() => {
-    if (session?.user.role === "lembaga") {
-      router.push("/lembaga")
+    if (session?.user.role === 'lembaga') {
+      router.push('/lembaga');
     }
-  },)
+  });
 
   return (
     <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
       <div className="w-full max-w-7xl flex justify-between items-center py-4">
-        <div className='flex items-center gap-x-8'>
-          <Link href={"/"}>
+        <div className="flex items-center gap-x-8">
+          <Link href={'/'}>
             <Image
               src={LogoAnmategra}
               alt="Logo Anmategra"
@@ -59,22 +61,25 @@ const Navbar = ({ session }: { session: Session | null }) => {
             />
           </div>
         )}
-        <nav className='flex items-center'>
+        <nav className="flex items-center">
           {session ? (
-            <div className='flex items-center gap-x-2'>
-              <Link href={`/profil-mahasiswa/${session.user.id}`}>
-                <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+            <div className="flex items-center gap-x-2">
+              <Link href={`/profile-mahasiswa/${session.user.id}`}>
+                <Button className="bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500">
                   Profil <CircleUserRound />
                 </Button>
               </Link>
-              <Button onClick={() => void signOut()}
-                  variant={"outline"} className='space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all'>
+              <Button
+                onClick={() => void signOut()}
+                variant={'outline'}
+                className="space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all"
+              >
                 Keluar <LogOut />
               </Button>
             </div>
           ) : (
-            <Link href={"/authentication"}>
-              <Button className='bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500'>
+            <Link href={'/authentication'}>
+              <Button className="bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500">
                 Masuk <LogIn />
               </Button>
             </Link>

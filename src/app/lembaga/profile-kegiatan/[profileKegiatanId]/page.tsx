@@ -4,7 +4,7 @@ import React from 'react';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
-import ProfileKegiatanComp from '~/app/_components/profil-kegiatan/profil-kegiatan-comp';
+import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { api } from '~/trpc/server';
 
 const ProfileKegiatan = async ({
@@ -40,7 +40,7 @@ const ProfileKegiatan = async ({
             Penyelenggara
           </h2>
         </div>
-        <Link href={`/lembaga/profil-lembaga/${lembaga?.id}`}>
+        <Link href={`/lembaga/profile-lembaga/${lembaga?.id}`}>
           <PenyelenggaraCard
             title={lembaga?.name ?? 'Tidak ada nama'}
             category={lembaga?.type ?? 'Tidak ada kategori'}

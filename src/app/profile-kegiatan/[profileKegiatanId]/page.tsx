@@ -5,7 +5,7 @@ import Navbar from '~/app/_components/layout/navbar';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
-import ProfileKegiatanComp from '~/app/_components/profil-kegiatan/profil-kegiatan-comp';
+import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 
@@ -48,7 +48,7 @@ const ProfileKegiatan = async ({
               Penyelenggara
             </h2>
           </div>
-          <Link href={`/profil-lembaga/${lembaga?.id}`}>
+          <Link href={`/profile-lembaga/${lembaga?.id}`}>
             <PenyelenggaraCard
               title={lembaga?.name ?? 'Tidak ada nama'}
               category={lembaga?.type ?? 'Tidak ada kategori'}
