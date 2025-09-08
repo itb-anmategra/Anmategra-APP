@@ -9,8 +9,8 @@ import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
 import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
 import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
-import ProfileKegiatanComp from '~/app/_components/profil-kegiatan/profil-kegiatan-comp';
-import EditProfileLembaga from '~/app/lembaga/profil-lembaga/_components/edit-profil-lembaga';
+import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
+import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
 import { Badge } from '~/components/ui/badge';
 // Components Import
 import { Card } from '~/components/ui/card';
@@ -58,7 +58,7 @@ const DetailLembagaPage = async ({
         </div>
 
         {highlightedEvent && (
-          <Link href={`/lembaga/profil-kegiatan/${highlightedEvent.id}`}>
+          <Link href={`/lembaga/profile-kegiatan/${highlightedEvent.id}`}>
             <div className="space-y-4 pb-12">
               <h5 className="text-2xl font-semibold text-slate-600">
                 Highlighed Event
@@ -108,7 +108,7 @@ const DetailLembagaPage = async ({
             {newestEvent && newestEvent.length !== 0 ? (
               newestEvent.map((item) => (
                 <Link
-                  href={`/lembaga/profil-kegiatan/${item.id}`}
+                  href={`/lembaga/profile-kegiatan/${item.id}`}
                   key={item.id}
                 >
                   <KepanitiaanCard kepanitiaan={item} />

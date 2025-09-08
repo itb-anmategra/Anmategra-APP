@@ -103,8 +103,8 @@ const PencarianContent = ({
                     key={item.userId}
                     href={
                       isLembaga
-                        ? '/lembaga/profil-mahasiswa/' + item.userId
-                        : '/profil-mahasiswa/' + item.userId
+                        ? '/lembaga/profile-mahasiswa/' + item.userId
+                        : '/profile-mahasiswa/' + item.userId
                     }
                   >
                     <MahasiswaCard
@@ -128,8 +128,8 @@ const PencarianContent = ({
                     key={item.lembaga.id}
                     href={
                       isLembaga
-                        ? `/lembaga/profil-lembaga/${item.lembaga.id}`
-                        : `/profil-lembaga/${item.lembaga.id}`
+                        ? `/lembaga/profile-lembaga/${item.lembaga.id}`
+                        : `/profile-lembaga/${item.lembaga.id}`
                     }
                   >
                     <LembagaCard
@@ -153,8 +153,8 @@ const PencarianContent = ({
                     key={item.name}
                     href={
                       isLembaga
-                        ? `/lembaga/profil-kegiatan/${item.id}`
-                        : `/profil-kegiatan/${item.id}`
+                        ? `/lembaga/profile-kegiatan/${item.id}`
+                        : `/profile-kegiatan/${item.id}`
                     }
                   >
                     <KepanitiaanCard kepanitiaan={item} />
