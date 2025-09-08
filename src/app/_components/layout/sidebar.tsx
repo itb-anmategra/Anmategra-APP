@@ -43,7 +43,7 @@ type SidebarItemType = {
 const SIDEBAR_ITEMS: SidebarItemType[] = [
   { label: 'Beranda', href: '/lembaga', icon: <HomeIcon /> },
   { label: 'Kegiatan', href: '/lembaga/kegiatan', icon: <CalendarIcon /> },
-  { label: 'Anggota', href: '/lembaga/anggota-kegiatan', icon: <PersonIcon /> },
+  { label: 'Anggota', href: '/lembaga/anggota', icon: <PersonIcon /> },
   { label: 'Inbox', href: '/lembaga/inbox', icon: <EnvelopeOpenIcon /> },
   {
     label: 'Laporan',
