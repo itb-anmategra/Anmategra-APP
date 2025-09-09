@@ -227,8 +227,7 @@ export const events = createTable('event', {
     participant_count: integer('participant_count').notNull().default(0),
     is_highlighted: boolean('is_highlighted').notNull().default(false),
     is_organogram: boolean('is_organogram').notNull().default(false),
-    created_at: timestamp('created_at').notNull().defaultNow(),
-    updated_at: timestamp('updated_at').notNull().defaultNow()
+    ...timestamps
 });
 
 export const eventsRelations = relations(events, ({many, one}) => ({
@@ -273,7 +272,7 @@ export const associationRequests = createTable('association_request', {
     division: varchar('division', {length: 255})
         .notNull(),
     status: associationRequestStatusEnum('status').notNull().default('Pending'),
-    created_at: timestamp('created_at').notNull().defaultNow()
+    ...timestamps
 });
 
 // Association Request Lembaga
@@ -288,7 +287,7 @@ export const associationRequestsLembaga = createTable('association_request_lemba
     division: varchar('division', {length: 255})
         .notNull(),
     status: associationRequestStatusEnum('status').notNull().default('Pending'),
-    created_at: timestamp('created_at').notNull().defaultNow()
+    ...timestamps
 });
 
 // Relations for Keanggotaan
@@ -341,8 +340,7 @@ export const support = createTable('support', {
     topic: varchar('topic', {length: 255}).notNull(),
     description: text('description').notNull(),
     status: supportStatusEnum('status').notNull(),
-    created_at: timestamp('created_at').notNull().defaultNow(),
-    updated_at: timestamp('updated_at').notNull().defaultNow()
+    ...timestamps
 });
 
 // Support Reply Table
@@ -353,8 +351,7 @@ export const supportReplies = createTable('support_reply', {
     support_id: varchar('support_id', {length: 255})
         .references(() => support.id),
     text: text('text').notNull(),
-    created_at: timestamp('created_at').notNull().defaultNow(),
-    updated_at: timestamp('updated_at').notNull().defaultNow()
+    ...timestamps
 });
 
 // Notification Table
@@ -366,7 +363,7 @@ export const notifications = createTable('notification', {
     content: text('content').notNull(),
     type: notificationTypeEnum('type').notNull(),
     read: boolean('read').notNull().default(false),
-    created_at: timestamp('created_at').notNull().defaultNow()
+    ...timestamps
 });
 
 // Relations for Support
