@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import ComingSoonLeft from "public/images/placeholder/coming-soon1.png"
+import ComingSoonRight from "public/images/placeholder/coming-soon2.png"
 import { Button } from "~/components/ui/button";
 import { Session } from "next-auth";
 
@@ -12,16 +14,16 @@ export default function ComingSoonContent({ session }: { session?: Session | nul
             <div>
               <div className="absolute left-0 top-[115px] opacity-20 -translate-y-1/2">
                 <Image 
-                  src="/images/placeholder/coming-soon1.png"
-                  alt="Coming Soon decoration"
+                  src={ComingSoonLeft}
+                  alt="Coming Soon decoration - left"
                   width={192}
                   height={384}
                 />
               </div>
               <div className="absolute right-0 top-[115px] opacity-20 -translate-y-1/2">
                 <Image 
-                  src="/images/placeholder/coming-soon2.png"
-                  alt="Coming Soon decoration"
+                  src={ComingSoonRight}
+                  alt="Coming Soon decoration - right"
                   width={192}
                   height={384}
                 />
@@ -31,16 +33,16 @@ export default function ComingSoonContent({ session }: { session?: Session | nul
             <div>
               <div className="absolute left-0 top-[100px] opacity-20 -translate-y-1/2">
                 <Image 
-                  src="/images/placeholder/coming-soon1.png"
-                  alt="Coming Soon decoration"
+                  src={ComingSoonLeft}
+                  alt="Coming Soon decoration - left"
                   width={192}
                   height={384}
                 />
               </div>
               <div className="absolute right-0 top-[100px] opacity-20 -translate-y-1/2">
                 <Image 
-                  src="/images/placeholder/coming-soon2.png"
-                  alt="Coming Soon decoration"
+                  src={ComingSoonRight}
+                  alt="Coming Soon decoration - right"
                   width={192}
                   height={384}
                 />
