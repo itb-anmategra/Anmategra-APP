@@ -8,6 +8,7 @@ import {
     primaryKey,
     text,
     timestamp,
+    uniqueIndex,
     varchar
 } from "drizzle-orm/pg-core";
 import {type AdapterAccount} from "next-auth/adapters";
@@ -35,7 +36,7 @@ const timestamps = {
         .default(sql`CURRENT_TIMESTAMP`)
         .$onUpdate(
             () => new Date())
-}
+};
 
 export const roleEnum = pgEnum('role', ['admin', 'lembaga', 'mahasiswa']);
 
@@ -59,6 +60,7 @@ export const usersRelations = relations(users, ({many}) => ({
     accounts: many(accounts),
     keanggotaan: many(keanggotaan),
     associationRequests: many(associationRequests),
+    associationRequestsLembaga: many(associationRequestsLembaga),
     support: many(support),
     supportReplies: many(supportReplies),
     notifications: many(notifications),
@@ -152,13 +154,18 @@ export const mahasiswa = createTable(
         whatsapp: varchar("whatsapp", {length: 255}),
         ...timestamps
     }
-)
+);
 
-export const mahasiswaRelations = relations(mahasiswa, ({one}) => ({
+export const mahasiswaRelations = relations(mahasiswa, ({one, many}) => ({
     users: one(users, {
         fields: [mahasiswa.userId], references: [users.id]
-    })
-}))
+    }),
+    
+    bestStaffKegiatan: many(bestStaffKegiatan),
+    bestStaffLembaga: many(bestStaffLembaga),
+    nilaiProfilKegiatan: many(nilaiProfilKegiatan),
+    nilaiProfilLembaga: many(nilaiProfilLembaga),
+}));
 
 export const lembagaTypeEnum = pgEnum("lembaga_type", ["Himpunan", "UKM", "Kepanitiaan"]);
 
@@ -188,14 +195,18 @@ export const lembaga = createTable(
         memberCount: integer("member_count"),
         ...timestamps
     }
-)
+);
 
 export const lembagaRelations = relations(lembaga, ({one, many}) => ({
     users: one(users, {
         fields: [lembaga.userId], references: [users.id]
     }),
-    events: many(events)
-}))
+    events: many(events),
+    kehimpunan: many(kehimpunan),  
+    associationRequestsLembaga: many(associationRequestsLembaga),
+    bestStaffLembaga: many(bestStaffLembaga),
+    profilLembaga: many(profilLembaga),
+}));
 
 export const eventStatusEnum = pgEnum('event_status', ['Coming Soon', 'On going', 'Ended']);
 
@@ -227,6 +238,8 @@ export const eventsRelations = relations(events, ({many, one}) => ({
     }),
     keanggotaan: many(keanggotaan),
     associationRequests: many(associationRequests),
+    bestStaffKegiatan: many(bestStaffKegiatan),
+    profilKegiatan: many(profilKegiatan),
 }));
 
 // Enum for association request status
@@ -263,6 +276,21 @@ export const associationRequests = createTable('association_request', {
     created_at: timestamp('created_at').notNull().defaultNow()
 });
 
+// Association Request Lembaga
+export const associationRequestsLembaga = createTable('association_request_lembaga', {
+    id: varchar('id', {length: 255}).primaryKey(),
+    lembagaId: varchar('lembaga_id', {length: 255})
+        .references(() => lembaga.id),
+    user_id: varchar('user_id', {length: 255})
+        .references(() => users.id),
+    position: varchar('position', {length: 255})
+        .notNull(),
+    division: varchar('division', {length: 255})
+        .notNull(),
+    status: associationRequestStatusEnum('status').notNull().default('Pending'),
+    created_at: timestamp('created_at').notNull().defaultNow()
+});
+
 // Relations for Keanggotaan
 export const keanggotaanRelations = relations(keanggotaan, ({one}) => ({
     event: one(events, {
@@ -283,6 +311,17 @@ export const associationRequestRelations = relations(associationRequests, ({one}
     }),
     user: one(users, {
         fields: [associationRequests.user_id],
+        references: [users.id]
+    }),
+}));
+
+export const associationRequestLembagaRelations = relations(associationRequestsLembaga, ({one}) => ({
+    lembaga: one(lembaga, {
+        fields: [associationRequestsLembaga.lembagaId],
+        references: [lembaga.id]
+    }),
+    user: one(users, {
+        fields: [associationRequestsLembaga.user_id],
         references: [users.id]
     }),
 }));
@@ -366,7 +405,7 @@ export const verifiedUsers = createTable("verified_user", {
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
     email: varchar("email", {length: 255}).notNull(),
-})
+});
 
 // Kehimpunan Table
 export const kehimpunan = createTable("kehimpunan", {
@@ -382,4 +421,213 @@ export const kehimpunan = createTable("kehimpunan", {
         .references(() => lembaga.id),
     division: varchar("division", {length: 255}).notNull(),
     position: varchar("position", {length: 255}).notNull(),
-})
+});
+
+// Best Staff
+export const bestStaffKegiatan = createTable('best_staff_kegiatan', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    eventId: varchar('event_id', {length: 255})
+        .references(() => events.id, {onDelete: 'cascade'})
+        .notNull(),
+    mahasiswaId: varchar('mahasiswa_id', {length: 255})
+        .references(() => mahasiswa.userId, {onDelete: 'cascade'})
+        .notNull(),
+    division: varchar('division', {length: 255})
+        .notNull(),
+    startDate: timestamp('start_date', {
+        mode: "date",
+        withTimezone: true
+    }).notNull(),
+    endDate: timestamp('end_date', {
+        mode: "date",
+        withTimezone: true
+    }).notNull(),
+});
+
+export const bestStaffLembaga = createTable('best_staff_lembaga', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    lembagaId: varchar('lembaga_id', {length: 255})
+        .references(() => lembaga.id, {onDelete: 'cascade'})
+        .notNull(),
+    mahasiswaId: varchar('mahasiswa_id', {length: 255})
+        .references(() => mahasiswa.userId, {onDelete: 'cascade'})
+        .notNull(),
+    division: varchar('division', {length: 255})
+        .notNull(),
+    startDate: timestamp('start_date', {
+        mode: "date",
+        withTimezone: true
+    }).notNull(),
+    endDate: timestamp('end_date', {
+        mode: "date",
+        withTimezone: true
+    }).notNull(),
+});
+
+export const bestStaffKegiatanRelations = relations(bestStaffKegiatan, ({one}) => ({
+    event: one(events, {
+        fields: [bestStaffKegiatan.eventId],
+        references: [events.id]
+    }),
+    mahasiswa: one(mahasiswa, {
+        fields: [bestStaffKegiatan.mahasiswaId],
+        references: [mahasiswa.userId]
+    }),
+}));
+
+export const bestStaffLembagaRelations = relations(bestStaffLembaga, ({one}) => ({
+    lembaga: one(lembaga, {
+        fields: [bestStaffLembaga.lembagaId],
+        references: [lembaga.id]
+    }),
+    mahasiswa: one(mahasiswa, {
+        fields: [bestStaffLembaga.mahasiswaId],
+        references: [mahasiswa.userId]
+    }),
+}));
+
+// Profil
+export const profilKM = createTable('profil_km', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    description: text('description').notNull(),
+});
+
+export const profilKegiatan = createTable('profil_kegiatan', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    eventId: varchar('event_id', {length: 255})
+        .references(() => events.id, {onDelete: 'cascade'})
+        .notNull(),
+    name: varchar('name', {length: 255}).notNull(),
+    description: text('description').notNull(),
+});
+
+export const profilLembaga = createTable('profil_lembaga', {
+    id: varchar('id', {length: 255})
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+    lembagaId: varchar('lembaga_id', {length: 255})
+    .references(() => lembaga.id, {onDelete: 'cascade'})
+    .notNull(),
+    name: varchar('name', {length: 255}).notNull(),
+    description: text('description').notNull(),
+});
+
+export const pemetaanProfilKegiatan = createTable('pemetaan_profil_kegiatan', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    profilKegiatanId: varchar('profil_kegiatan_id', {length: 255})
+        .references(() => profilKegiatan.id, {onDelete: 'cascade'})
+        .notNull(),
+    profilKMId: varchar('profil_km_id', {length: 255})
+        .references(() => profilKM.id, {onDelete: 'cascade'})
+        .notNull(),
+});
+
+export const pemetaanProfilLembaga = createTable('pemetaan_profil_lembaga', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    profilLembagaId: varchar('profil_lembaga_id', {length: 255})
+        .references(() => profilLembaga.id, {onDelete: 'cascade'})
+        .notNull(),
+    profilKMId: varchar('profil_km_id', {length: 255})
+        .references(() => profilKM.id, {onDelete: 'cascade'})
+        .notNull(),
+});
+
+export const nilaiProfilKegiatan = createTable('nilai_profil_kegiatan', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    profilId: varchar('profil_id', {length: 255})
+        .references(() => profilKegiatan.id, {onDelete: 'cascade'})
+        .notNull(),
+    mahasiswaId: varchar('mahasiswa_id', {length: 255})
+        .references(() => mahasiswa.userId, {onDelete: 'cascade'})
+        .notNull(),
+    nilai: integer('nilai'),
+}, (table) => {
+    return {
+        uniqueNilai: uniqueIndex('unique_nilai_idx').on(table.profilId, table.mahasiswaId),
+    };
+});
+
+export const nilaiProfilLembaga = createTable('nilai_profil_lembaga', {
+    id: varchar('id', {length: 255})
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    profilId: varchar('profil_id', {length: 255})
+        .references(() => profilLembaga.id, {onDelete: 'cascade'})
+        .notNull(),
+    mahasiswaId: varchar('mahasiswa_id', {length: 255})
+        .references(() => mahasiswa.userId, {onDelete: 'cascade'})
+        .notNull(),
+    nilai: integer('nilai'),
+}, (table) => {
+    return {
+        uniqueNilai: uniqueIndex('unique_nilai_idx').on(table.profilId, table.mahasiswaId),
+    };
+});
+
+export const profilKMRelations = relations(profilKM, ({many}) => ({
+    profilKegiatan: many(profilKegiatan),
+    profilLembaga: many(profilLembaga),
+}));
+
+export const profilKegiatanRelations = relations(profilKegiatan, ({one, many}) => ({
+    pemetaanProfilKegiatan: many(pemetaanProfilKegiatan),
+    event: one(events, {
+        fields: [profilKegiatan.eventId],
+        references: [events.id]
+    }),
+    nilaiProfilKegiatan: many(nilaiProfilKegiatan),
+}));
+
+export const profilLembagaRelations = relations(profilLembaga, ({one, many}) => ({
+    pemetaanProfilLembaga: many(pemetaanProfilLembaga),
+    lembaga: one(lembaga, {
+        fields: [profilLembaga.lembagaId],
+        references: [lembaga.id]
+    }),
+    nilaiProfilLembaga: many(nilaiProfilLembaga),
+}));
+
+export const nilaiProfilKegiatanRelations = relations(nilaiProfilKegiatan, ({one}) => ({
+    profilKegiatan: one(profilKegiatan, {
+        fields: [nilaiProfilKegiatan.profilId],
+        references: [profilKegiatan.id]
+    }),
+    mahasiswa: one(mahasiswa, {
+        fields: [nilaiProfilKegiatan.mahasiswaId],
+        references: [mahasiswa.userId]
+    })
+}));
+
+export const nilaiProfilLembagaRelations = relations(nilaiProfilLembaga, ({one}) => ({
+    profilLembaga: one(profilLembaga, {
+        fields: [nilaiProfilLembaga.profilId],  
+        references: [profilLembaga.id]
+    }),
+    mahasiswa: one(mahasiswa, {
+        fields: [nilaiProfilLembaga.mahasiswaId],
+        references: [mahasiswa.userId]
+    })
+}));
