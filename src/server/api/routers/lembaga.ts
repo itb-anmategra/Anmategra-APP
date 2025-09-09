@@ -3,6 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import {
   createCallerFactory,
   createTRPCRouter,
+  lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
 import {
@@ -251,16 +252,15 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
+  // TODO: nanti ubah ke lembagaProcedure
   acceptRequestAssociation: protectedProcedure
     .input(AcceptRequestAssociationInputSchema)
     .output(AcceptRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const user_id = ctx.session.user.id;
-
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
+        // if (!ctx.session.user.lembagaId) {
+        //   throw new TRPCError({ code: 'UNAUTHORIZED' });
+        // }
 
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
@@ -269,13 +269,14 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              eq(events.org_id, ctx.session.user.lembagaId),
+              // eq(events.org_id, ctx.session.user.lembagaId),
             ),
           )
           .where(
             and(
               eq(associationRequests.event_id, input.event_id),
               eq(associationRequests.user_id, input.user_id),
+              eq(associationRequests.status, 'Pending'),
             ),
           )
           .limit(1);
@@ -286,6 +287,40 @@ export const lembagaRouter = createTRPCRouter({
             message: 'Association request not found.',
           });
         }
+
+        const eventToUpdate = await ctx.db.query.events.findFirst({
+          where: and(
+            eq(events.id, input.event_id),
+            // eq(events.org_id, ctx.session.user.lembagaId)
+          ),
+          columns: {
+            id: true,
+            participant_count: true,
+          },
+        });
+
+        if (!eventToUpdate) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+          });
+        }
+
+        await ctx.db.transaction(async (tx) => {
+          await tx.insert(keanggotaan).values({
+            id: input.event_id + '_' + input.user_id,
+            event_id: input.event_id,
+            user_id: input.user_id,
+            position: input.position,
+            division: input.division,
+          });
+
+          await tx
+            .update(events)
+            .set({
+              participant_count: eventToUpdate.participant_count + 1,
+            })
+            .where(eq(events.id, eventToUpdate.id));
+        });
 
         await ctx.db
           .update(associationRequests)
@@ -299,19 +334,8 @@ export const lembagaRouter = createTRPCRouter({
             ),
           );
 
-        // panggil prosedur untuk add anggota ke kegiatan/event
-        const createCaller = createCallerFactory(eventRouter);
-        const eventCaller = createCaller(ctx);
-
-        const res = await eventCaller.addNewPanitia({
-          event_id: input.event_id,
-          user_id: input.user_id,
-          division: input.division,
-          position: input.position,
-        });
-
         return {
-          success: res.success,
+          success: true,
         };
       } catch (error) {
         console.error('Database Error:', error);
@@ -321,16 +345,15 @@ export const lembagaRouter = createTRPCRouter({
       }
     }),
 
+  // TODO: nanti ubah ke lembagaProcedure
   declineRequestAssociation: protectedProcedure
     .input(DeclineRequestAssociationInputSchema)
     .output(DeclineRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const user_id = ctx.session.user.id;
-
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
+        // if (!ctx.session.user.lembagaId) {
+        //   throw new TRPCError({ code: 'UNAUTHORIZED' });
+        // }
 
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
@@ -339,13 +362,14 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              eq(events.org_id, ctx.session.user.lembagaId),
+              // eq(events.org_id, ctx.session.user.lembagaId),
             ),
           )
           .where(
             and(
               eq(associationRequests.event_id, input.event_id),
               eq(associationRequests.user_id, input.user_id),
+              eq(associationRequests.status, 'Pending'),
             ),
           )
           .limit(1);
