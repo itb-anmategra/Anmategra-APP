@@ -7,48 +7,27 @@ import { Session } from "next-auth";
 
 export default function ComingSoonContent({ session }: { session?: Session | null }) {
   return (
-    <div className="min-h-screen bg-gray-50 z-5">
+    <div className="min-h-screen bg-gray-50 z-10">
       <div className="w-full min-h-screen flex flex-col items-center justify-center">
-        <div className="relative w-full h-full">
-          {session?.user.role === 'lembaga' ? (
-            <div>
-              <div className="absolute left-0 top-[115px] opacity-20 -translate-y-1/2">
-                <Image 
-                  src={ComingSoonLeft}
-                  alt="Coming Soon decoration - left"
-                  width={192}
-                  height={384}
-                />
-              </div>
-              <div className="absolute right-0 top-[115px] opacity-20 -translate-y-1/2">
-                <Image 
-                  src={ComingSoonRight}
-                  alt="Coming Soon decoration - right"
-                  width={192}
-                  height={384}
-                />
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div className="absolute left-0 top-[100px] opacity-20 -translate-y-1/2">
-                <Image 
-                  src={ComingSoonLeft}
-                  alt="Coming Soon decoration - left"
-                  width={192}
-                  height={384}
-                />
-              </div>
-              <div className="absolute right-0 top-[100px] opacity-20 -translate-y-1/2">
-                <Image 
-                  src={ComingSoonRight}
-                  alt="Coming Soon decoration - right"
-                  width={192}
-                  height={384}
-                />
-              </div>
-            </div>
-          )}
+        <div className="relative w-full min-h-screen flex justify-center items-center text-center">
+          <div className="absolute left-0 top-5 opacity-20">
+            <Image 
+              src={ComingSoonLeft}
+              alt="Coming Soon decoration - left"
+              width={192}
+              height={384}
+              className="object-contain"
+            />
+          </div>
+          <div className="absolute right-0 top-5 opacity-20">
+            <Image 
+              src={ComingSoonRight}
+              alt="Coming Soon decoration - right"
+              width={192}
+              height={384}
+              className="object-contain"
+            />
+          </div>
           <div className="text-center relative z-10"> 
             <h1 className="text-6xl font-bold text-[#2B6777] mb-6">
                 Coming Soon
