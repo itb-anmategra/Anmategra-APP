@@ -1,17 +1,6 @@
 import ComingSoonContent from '~/app/_components/coming-soon/coming-soon-content';
 import { getServerAuthSession } from "~/server/auth";
 
-import dummyProfile from 'public/images/placeholder/profile-pic.png';
-import BestStaffCard from '../../_components/card/best-staff-card';
-
-const dummyData = {
-  nama: 'John Doe',
-  NIM: '111234567',
-  jurusan: 'Sastra Mesin',
-  profilePhoto: dummyProfile,
-  divisi: 'UI/UX'
-}
-
 export default async function InboxPage() {
   const session = await getServerAuthSession();
   return (
@@ -79,15 +68,6 @@ export default async function InboxPage() {
     //   </div>
     // </main>
 
-    // <ComingSoonContent session={session} />
-    <div className='flex flex-col items-center justify-center w-full h-fit'>
-      <BestStaffCard
-        nama={dummyData.nama}
-        NIM={dummyData.NIM}
-        jurusan={dummyData.jurusan}
-        profilePicture={dummyData.profilePhoto}
-        divisi={dummyData.divisi}
-      />
-    </div>
+    <ComingSoonContent session={session} />
   )
 }
