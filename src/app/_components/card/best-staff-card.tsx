@@ -39,7 +39,7 @@ export default function BestStaffCard({
               height={36}
             />
           </div>
-          <div className="flex flex-col items-center justify-center top-[27px] gap-y-[9px]">
+          <div className="flex flex-col items-center justify-center gap-y-[9px]">
             <Image 
               src={profilePicture}
               alt="Profile Picture"
