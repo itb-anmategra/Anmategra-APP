@@ -29,7 +29,9 @@ export default function RootLayout({
             <div className="flex-1">
               <TRPCReactProvider>{children}</TRPCReactProvider>
             </div>
-            <Footer />
+            <div className="sticky z-[100]">
+              <Footer />
+            </div>
           </div>
           <div className="w-full h-screen flex flex-col justify-between lg:hidden">
             <div className="flex items-center justify-center py-12">
