@@ -1,9 +1,9 @@
 import React from 'react';
 
-import ProfileTable from '../../_components/table/event-profile-table';
-import { eventProfileProp } from './constant';
+import ProfilTable from '../../_components/table/event-profil-table';
+import { eventProfilProp } from './constant';
 
-const ProfileEvent = () => {
+const ProfilEvent = () => {
   return (
     <div className="flex flex-col gap-y-6 pt-16 px-9 md:px-11">
       <div className="gap-y-2">
@@ -12,9 +12,9 @@ const ProfileEvent = () => {
         </h1>
         <p>BreadCrumbs</p>
       </div>
-      <ProfileTable profileData={eventProfileProp} />
+      <ProfilTable profilData={eventProfilProp} />
     </div>
   );
 };
 
-export default ProfileEvent;
+export default ProfilEvent;

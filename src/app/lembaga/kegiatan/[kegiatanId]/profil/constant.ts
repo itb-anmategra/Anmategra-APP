@@ -1,72 +1,72 @@
-interface EventProfile {
-  profileId: number;
-  profileDescription: string;
+interface EventProfil {
+  profilId: number;
+  profilDescription: string;
 }
 
-interface ProfileGroup {
-  kmProfile: string;
-  eventProfile: EventProfile[];
+interface ProfilGroup {
+  kmProfil: string;
+  eventProfil: EventProfil[];
 }
 
-const eventProfile1: EventProfile = {
-  profileId: 1,
-  profileDescription:
+const eventProfil1: EventProfil = {
+  profilId: 1,
+  profilDescription:
     'Wisokto menekankan pengembangan kemampuan berpikir tingkat tinggi dan penerapannya dalam kegiatan yang nyata serta bermanfaat.',
 };
-const eventProfile2: EventProfile = {
-  profileId: 2,
-  profileDescription:
+const eventProfil2: EventProfil = {
+  profilId: 2,
+  profilDescription:
     'Wisokto mengutamakan kemampuan analitis yang terintegrasi dengan implementasi program sehari-hari.',
 };
-const eventProfile3: EventProfile = {
-  profileId: 3,
-  profileDescription:
+const eventProfil3: EventProfil = {
+  profilId: 3,
+  profilDescription:
     'Wisokto mengutamakan kemampuan analitis yang terintegrasi dengan implementasi program sehari-hari.',
 };
-const eventProfile4: EventProfile = {
-  profileId: 4,
-  profileDescription:
+const eventProfil4: EventProfil = {
+  profilId: 4,
+  profilDescription:
     'Wisokto mengutamakan kemampuan analitis yang terintegrasi dengan implementasi program sehari-hari.',
 };
-const eventProfile5: EventProfile = {
-  profileId: 5,
-  profileDescription:
+const eventProfil5: EventProfil = {
+  profilId: 5,
+  profilDescription:
     'Wisokto mengutamakan kemampuan analitis yang terintegrasi dengan implementasi program sehari-hari.',
 };
 
-const kmProfileData = [
+const kmProfilData = [
   'Memiliki kemampuan berpikir tingkat tinggi dan mampu mengimplementasikannya dalam kehidupan sehari-hari',
   'Memiliki kemampuan sebagai pembelajar seumur hidup',
   'Memiliki kemampuan untuk berkolaborasi secara efektif dalam lingkungan masyarakat akademik maupun masyarakat umum',
   'Memiliki kesadaran akan tanggung jawab sosial serta mampu menerapkan pendekatan multidisiplin dan interdisiplin dalam memecahkan berbagai masalah terkait keprofesian dan masyarakat yang luas',
 ];
 
-const eventProfileProp: ProfileGroup[] = [
+const eventProfilProp: ProfilGroup[] = [
   {
-    kmProfile: kmProfileData[0]!,
-    eventProfile: [eventProfile1, eventProfile2],
+    kmProfil: kmProfilData[0]!,
+    eventProfil: [eventProfil1, eventProfil2],
   },
   {
-    kmProfile: kmProfileData[1]!,
-    eventProfile: [eventProfile3],
+    kmProfil: kmProfilData[1]!,
+    eventProfil: [eventProfil3],
   },
   {
-    kmProfile: kmProfileData[2]!,
-    eventProfile: [eventProfile4],
+    kmProfil: kmProfilData[2]!,
+    eventProfil: [eventProfil4],
   },
   {
-    kmProfile: kmProfileData[3]!,
-    eventProfile: [eventProfile5],
+    kmProfil: kmProfilData[3]!,
+    eventProfil: [eventProfil5],
   },
 ];
 
-interface ProfileRowProps {
-  profileGroup: ProfileGroup;
+interface ProfilRowProps {
+  profilGroup: ProfilGroup;
 }
 
-interface ProfileTableProps {
-  profileData: ProfileGroup[];
+interface ProfilTableProps {
+  profilData: ProfilGroup[];
 }
 
-export { eventProfileProp };
-export type { ProfileGroup, ProfileRowProps, ProfileTableProps };
+export { eventProfilProp };
+export type { ProfilGroup, ProfilRowProps, ProfilTableProps };

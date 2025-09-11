@@ -6,10 +6,10 @@ import {
   TableRow,
 } from '~/components/ui/table';
 
-import { type ProfileTableProps } from '../../[kegiatanId]/profil/constant';
-import ProfileRow from './event-profile-row';
+import { type ProfilTableProps } from '../../[kegiatanId]/profil/constant';
+import ProfilRow from './event-profil-row';
 
-const ProfileTable = ({ profileData }: ProfileTableProps) => {
+const ProfilTable = ({ profilData }: ProfilTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -26,12 +26,12 @@ const ProfileTable = ({ profileData }: ProfileTableProps) => {
         </TableRow>
       </TableHeader>
       <TableBody className="font-normal text-neutral-700 text-lg leading-8">
-        {profileData.map((profileGroup, index) => (
-          <ProfileRow key={index} profileGroup={profileGroup} />
+        {profilData.map((profilGroup, index) => (
+          <ProfilRow key={index} profilGroup={profilGroup} />
         ))}
       </TableBody>
     </Table>
   );
 };
 
-export default ProfileTable;
+export default ProfilTable;
