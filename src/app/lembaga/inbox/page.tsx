@@ -67,7 +67,6 @@ export default async function InboxPage() {
     //     </div>
     //   </div>
     // </main>
-
     <ComingSoonContent session={session} />
   )
 }
