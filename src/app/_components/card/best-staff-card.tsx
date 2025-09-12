@@ -1,7 +1,5 @@
 import Image, { type StaticImageData } from "next/image";
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
-import YellowStar from 'public/icons/star-yellow.png';
-
 import { Card } from "~/components/ui/card";
 
 // const dummyData = {
@@ -11,6 +9,14 @@ import { Card } from "~/components/ui/card";
 //   profilePhoto: dummyProfile,
 //   divisi: 'UI/UX'
 // }
+
+const YellowStarIcon = (props) => {
+  return (
+    <svg width="36" height="33" viewBox="0 0 36 33" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M18 0L22.0413 12.4377H35.119L24.5389 20.1246L28.5801 32.5623L18 24.8754L7.41987 32.5623L11.4611 20.1246L0.880983 12.4377H13.9587L18 0Z" fill="#F5CB69"/>
+    </svg>
+  )
+}
 
 interface BestStaffCardProps {
   nama: string;
@@ -32,12 +38,7 @@ export default function BestStaffCard({
       <div className="w-full h-full flex">
         <div className="relative w-full h-full flex flex-col items-center justify-center">
           <div className="absolute top-[17px] left-[192px]">
-            <Image 
-              src={YellowStar} 
-              alt="Star Icon" 
-              width={36}
-              height={36}
-            />
+            <YellowStarIcon />
           </div>
           <div className="flex flex-col items-center justify-center gap-y-[9px]">
             <Image 
