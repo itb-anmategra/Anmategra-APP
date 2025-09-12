@@ -24,7 +24,7 @@ export default function ProfilMenu({
         <MoreVertical size={16} />
       </Button>
       {menu && menu.row === -1 && menu.col === colIdx && (
-        <div className="absolute left-0 mt-2 bg-white border rounded-2xl shadow z-10">
+        <div className="absolute left-0 top-full bg-white border rounded-2xl shadow z-10">
           <Button
             className="block px-4 py-2 w-full text-left hover:bg-gray-100"
             variant="ghost"
