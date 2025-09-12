@@ -146,7 +146,7 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ user, account }) => {
       // signin lembaga
       if (account?.provider === 'google') {
-        const isValidLembaga = user.email?.endsWith('@km.itb.ac.id');
+        const isValidLembaga = user.email?.endsWith('@std.stei.itb.ac.id');
         const isVerified = await isEmailInVerifiedUsers(user.email);
 
         return isValidLembaga || isVerified;
@@ -179,6 +179,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
