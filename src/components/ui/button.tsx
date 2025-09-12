@@ -14,6 +14,12 @@ const buttonVariants = cva(
           'bg-[#00B7B7] text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] rounded-xl',
         warning:
           'bg-[#F16350] text-white hover:bg-[#FF9B8D] active:bg-[#FCDEDA] rounded-xl',
+        primaryv2:
+          'bg-transparent border-2 border-[#2B6282] text-[#2B6282]  rounded-xl hover:bg-[#2B6282] hover:text-white active:bg-[#2B6282] active:text-white',
+        secondaryv2:
+          'bg-transparent border-2 border-[#29BC5B] text-[#29BC5B]  rounded-xl hover:bg-[#29BC5B] hover:text-white active:bg-[#29BC5B] active:text-white',
+        warningv2:
+          'bg-transparent border-2 border-[#F16350] text-[#F16350]  rounded-xl hover:bg-[#F16350] hover:text-white active:bg-[#F16350] active:text-white',
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
