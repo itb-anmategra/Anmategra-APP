@@ -21,7 +21,7 @@ interface FormProfilKegiatanProps {
 
 export default function FormProfilKegiatan({
   profil = 'Profil 5',
-  Tambah = false,
+  Tambah = true,
   className = '',
 }: FormProfilKegiatanProps) {
   return (
