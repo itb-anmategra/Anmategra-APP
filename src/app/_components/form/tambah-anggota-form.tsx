@@ -405,7 +405,7 @@ const TambahAnggotaForm = ({
         <Button
           type="submit"
           className="w-full bg-[#00B7B7] hover:bg-[#00B7B7]/85 text-white text-base font-semibold
-                     rounded-[10px] shadow-none items-center h-12"
+                     rounded-[10px] border border-[#636A6D] shadow-none items-center h-12"
         >
           Simpan Anggota
         </Button>
