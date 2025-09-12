@@ -8,7 +8,6 @@ import HeroSection from './_components/landing/hero';
 import { KegiatanSection } from './_components/landing/kegiatan-section';
 import { KepanitiaanSection } from './_components/landing/kepanitiaan-section';
 import Navbar from './_components/layout/navbar';
-import Staff from './lembaga/kegiatan/[kegiatanId]/_components/BestStaff';
 
 const LandingPage = async () => {
   const kegiatanTerbesar = await api.landing.getTopEvents();
@@ -21,7 +20,6 @@ const LandingPage = async () => {
         <Navbar session={session} />
       </div>
       <HeroSection />
-      <Staff />
       <div className="space-y-16">
         <KegiatanSection data={kegiatanTerbaru} />
         <KepanitiaanSection data={kegiatanTerbesar} />
