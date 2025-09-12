@@ -40,6 +40,13 @@ const BestStaff = () => {
 
   const years = ['2024', '2025'];
 
+  const selectTriggerBase =
+    'h-[40px] rounded-lg [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]';
+  const selectContentBase =
+    'border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0';
+  const selectItemBase =
+    'py-2.5 px-3 border-b last:border-0 border-[#636A6D] rounded-none text-xs text-[#636A6D] hover:bg-gray-100';
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
@@ -53,17 +60,17 @@ const BestStaff = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
-          {/* <Image
-            src="/icons/star.png" 
+          <Image
+            src="/images/icon/Confetti.png"
             alt="confetti"
             width={24}
             height={24}
-          /> */}
+          />
           Pilih Best Staff
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10">
+      <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10 [&>button[aria-label='Close']]:hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl sm:text-[32px] font-bold">
             Pilih Best Staff
@@ -75,12 +82,16 @@ const BestStaff = () => {
 
         <div className="flex w-full gap-4 mb-6 items-center">
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[2] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
+            <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentBase}>
               {months.map((m) => (
-                <SelectItem key={m.value} value={m.value}>
+                <SelectItem
+                  key={m.value}
+                  value={m.value}
+                  className={selectItemBase}
+                >
                   {m.label}
                 </SelectItem>
               ))}
@@ -88,27 +99,31 @@ const BestStaff = () => {
           </Select>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[1] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
+            <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentBase}>
               {years.map((y) => (
-                <SelectItem key={y} value={y}>
+                <SelectItem key={y} value={y} className={selectItemBase}>
                   {y}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <span className="self-center">s.d.</span>
+          <span className="self-center text-xs">s.d.</span>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[2] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
+            <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentBase}>
               {months.map((m) => (
-                <SelectItem key={m.value} value={m.value}>
+                <SelectItem
+                  key={m.value}
+                  value={m.value}
+                  className={selectItemBase}
+                >
                   {m.label}
                 </SelectItem>
               ))}
@@ -116,12 +131,12 @@ const BestStaff = () => {
           </Select>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[1] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
+            <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentBase}>
               {years.map((y) => (
-                <SelectItem key={y} value={y}>
+                <SelectItem key={y} value={y} className={selectItemBase}>
                   {y}
                 </SelectItem>
               ))}
@@ -130,13 +145,11 @@ const BestStaff = () => {
         </div>
 
         <div className="w-full max-w-[500px] h-[300px] sm:h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
-          {/* Header */}
           <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
             <div className="w-[120px] sm:w-[140px]">Divisi</div>
             <div className="flex-1">Best Staff</div>
           </div>
 
-          {/* Rows */}
           {divisions.map((divisi, i) => (
             <div key={i} className="flex items-center gap-12">
               <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
@@ -151,15 +164,15 @@ const BestStaff = () => {
                     }))
                   }
                 >
-                  <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D]">
+                  <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
                     <SelectValue placeholder="Pilih anggota" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0">
                     {divisi.candidates.map((staff, j) => (
                       <SelectItem
                         key={j}
                         value={staff}
-                        className="py-1.5 border-[#C4CACE]"
+                        className="py-1.5 px-3 border-b last:border-0 border-[#C4CACE] rounded-none text-xs text-[#636A6D] hover:bg-gray-100"
                       >
                         {staff}
                       </SelectItem>
@@ -171,7 +184,6 @@ const BestStaff = () => {
           ))}
         </div>
 
-        {/* Button */}
         <div className="flex justify-center gap-4">
           <Button
             onClick={handleSubmit}
