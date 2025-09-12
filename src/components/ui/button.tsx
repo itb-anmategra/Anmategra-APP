@@ -8,18 +8,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'bg-[#00B7B7] text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] rounded-xl',
-        confirm:
+        primary:
           'bg-[#2B6282] text-white hover:bg-[#66AACA] active:bg-[#CAE1ED] rounded-xl',
-        cancel:
+        secondary:
+          'bg-[#00B7B7] text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] rounded-xl',
+        warning:
           'bg-[#F16350] text-white hover:bg-[#FF9B8D] active:bg-[#FCDEDA] rounded-xl',
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
           'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
-        secondary:
-          'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
       },
@@ -31,7 +29,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'primary',
       size: 'default',
     },
   },
