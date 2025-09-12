@@ -25,6 +25,10 @@ const BestStaff = () => {
     { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
     { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
     { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
+    { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
+    { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
+    { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
+    { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
   ];
 
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
@@ -56,7 +60,7 @@ const BestStaff = () => {
 
         <div className="flex w-full gap-4 mb-6 items-center">
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[2]">
+            <SelectTrigger className="h-[40px] rounded-lg flex-[2] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
             <SelectContent>
@@ -67,7 +71,7 @@ const BestStaff = () => {
           </Select>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[1] ">
+            <SelectTrigger className="h-[40px] rounded-lg flex-[1] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
@@ -79,7 +83,7 @@ const BestStaff = () => {
           <span className="self-center">s.d.</span>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[2]">
+            <SelectTrigger className="h-[40px] rounded-lg flex-[2] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
             <SelectContent>
@@ -90,7 +94,7 @@ const BestStaff = () => {
           </Select>
 
           <Select>
-            <SelectTrigger className="h-[40px] rounded-lg flex-[1]   ">
+            <SelectTrigger className="h-[40px] rounded-lg flex-[1] [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]">
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
@@ -102,14 +106,14 @@ const BestStaff = () => {
 
         <div className="w-full max-w-[500px] h-[300px] sm:h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
           {/* Header */}
-          <div className="flex gap-[15px] sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
+          <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
             <div className="w-[120px] sm:w-[140px]">Divisi</div>
             <div className="flex-1">Best Staff</div>
           </div>
 
           {/* Rows */}
           {divisions.map((divisi, i) => (
-            <div key={i} className="flex items-center gap-[15px]">
+            <div key={i} className="flex items-center gap-12">
               <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
                 {divisi.name}
               </div>
@@ -122,7 +126,7 @@ const BestStaff = () => {
                     }))
                   }
                 >
-                  <SelectTrigger className="w-full h-[40px] rounded-lg">
+                  <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D]">
                     <SelectValue placeholder="Pilih anggota" />
                   </SelectTrigger>
                   <SelectContent>
@@ -139,7 +143,7 @@ const BestStaff = () => {
         </div>
 
         {/* Button */}
-        <div className="flex justify-center mt-6 gap-4">
+        <div className="flex justify-center gap-4">
           <Button
             onClick={handleSubmit}
             className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-sky-800 transition"
