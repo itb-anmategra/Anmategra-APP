@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import {
@@ -31,6 +32,14 @@ const BestStaff = () => {
     { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
   ];
 
+  const months = [
+    { value: 'jan', label: 'Januari' },
+    { value: 'feb', label: 'Februari' },
+    { value: 'mar', label: 'Maret' },
+  ];
+
+  const years = ['2024', '2025'];
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
@@ -43,7 +52,13 @@ const BestStaff = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-[#2B6282] hover:bg-sky-800 text-white">
+        <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
+          {/* <Image
+            src="/icons/star.png" 
+            alt="confetti"
+            width={24}
+            height={24}
+          /> */}
           Pilih Best Staff
         </Button>
       </DialogTrigger>
@@ -64,9 +79,11 @@ const BestStaff = () => {
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="jan">Januari</SelectItem>
-              <SelectItem value="feb">Februari</SelectItem>
-              <SelectItem value="mar">Maret</SelectItem>
+              {months.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  {m.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -75,8 +92,11 @@ const BestStaff = () => {
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2025">2025</SelectItem>
+              {years.map((y) => (
+                <SelectItem key={y} value={y}>
+                  {y}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -87,9 +107,11 @@ const BestStaff = () => {
               <SelectValue placeholder="Bulan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="jan">Januari</SelectItem>
-              <SelectItem value="feb">Februari</SelectItem>
-              <SelectItem value="mar">Maret</SelectItem>
+              {months.map((m) => (
+                <SelectItem key={m.value} value={m.value}>
+                  {m.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -98,8 +120,11 @@ const BestStaff = () => {
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2025">2025</SelectItem>
+              {years.map((y) => (
+                <SelectItem key={y} value={y}>
+                  {y}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -131,7 +156,11 @@ const BestStaff = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {divisi.candidates.map((staff, j) => (
-                      <SelectItem key={j} value={staff}>
+                      <SelectItem
+                        key={j}
+                        value={staff}
+                        className="py-1.5 border-[#C4CACE]"
+                      >
                         {staff}
                       </SelectItem>
                     ))}
@@ -146,7 +175,7 @@ const BestStaff = () => {
         <div className="flex justify-center gap-4">
           <Button
             onClick={handleSubmit}
-            className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-sky-800 transition"
+            className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-[#265673] transition"
           >
             SIMPAN
           </Button>
