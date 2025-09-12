@@ -1,6 +1,16 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
+import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -10,127 +20,135 @@ import {
 } from '~/components/ui/select';
 
 const BestStaff = () => {
-  const [isOpen, setIsOpen] = useState(true);
-
   const divisions = [
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
-    'Nama Divisi',
+    { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
+    { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
+    { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
+    { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
   ];
 
+  const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
+    {},
+  );
+
+  const handleSubmit = () => {
+    console.log('Pilihan Best Staff:', selectedStaff);
+    alert(JSON.stringify(selectedStaff, null, 2));
+  };
+
   return (
-    <>
-      {isOpen && (
-        <div className="inset-0 flex items-center justify-center">
-          <div className="bg-white rounded-[20px] w-full max-w-2xl p-4 sm:p-6 lg:p-10 shadow-lg relative">
-            {/* Header */}
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-2xl sm:text-[32px] font-bold">
-                  Pilih Best Staff
-                </h2>
-                <p className="text-sm font-medium">Periode Penilaian</p>
-              </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-black text-sm font-bold hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="bg-[#2B6282] hover:bg-sky-800 text-white">
+          Pilih Best Staff
+        </Button>
+      </DialogTrigger>
 
-            {/* Periode */}
-            <div className="flex gap-4 mb-6 items-center">
-              <Select>
-                <SelectTrigger className="w-[140px] sm:w-[167px] h-[40px] rounded-lg">
-                  <SelectValue placeholder="Bulan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="jan">Januari</SelectItem>
-                  <SelectItem value="feb">Februari</SelectItem>
-                  <SelectItem value="mar">Maret</SelectItem>
-                </SelectContent>
-              </Select>
+      <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10">
+        <DialogHeader>
+          <DialogTitle className="text-2xl sm:text-[32px] font-bold">
+            Pilih Best Staff
+          </DialogTitle>
+          <DialogDescription className="text-sm font-medium text-black">
+            Periode Penilaian
+          </DialogDescription>
+        </DialogHeader>
 
-              <Select>
-                <SelectTrigger className="w-[120px] sm:w-[167px] h-[40px] rounded-lg">
-                  <SelectValue placeholder="Tahun" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2025">2025</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="flex w-full gap-4 mb-6 items-center">
+          <Select>
+            <SelectTrigger className="h-[40px] rounded-lg flex-[2]">
+              <SelectValue placeholder="Bulan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="jan">Januari</SelectItem>
+              <SelectItem value="feb">Februari</SelectItem>
+              <SelectItem value="mar">Maret</SelectItem>
+            </SelectContent>
+          </Select>
 
-              <span className="self-center">s.d.</span>
+          <Select>
+            <SelectTrigger className="h-[40px] rounded-lg flex-[1] ">
+              <SelectValue placeholder="Tahun" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
+            </SelectContent>
+          </Select>
 
-              <Select>
-                <SelectTrigger className="w-[140px] sm:w-[167px] h-[40px] rounded-lg">
-                  <SelectValue placeholder="Bulan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="jan">Januari</SelectItem>
-                  <SelectItem value="feb">Februari</SelectItem>
-                  <SelectItem value="mar">Maret</SelectItem>
-                </SelectContent>
-              </Select>
+          <span className="self-center">s.d.</span>
 
-              <Select>
-                <SelectTrigger className="w-[120px] sm:w-[167px] h-[40px] rounded-lg">
-                  <SelectValue placeholder="Tahun" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2025">2025</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <Select>
+            <SelectTrigger className="h-[40px] rounded-lg flex-[2]">
+              <SelectValue placeholder="Bulan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="jan">Januari</SelectItem>
+              <SelectItem value="feb">Februari</SelectItem>
+              <SelectItem value="mar">Maret</SelectItem>
+            </SelectContent>
+          </Select>
 
-            {/* Table */}
-            <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[140px_1fr] gap-[15px] mb-8 w-full max-w-[500px] h-[300px] sm:h-[420px] mx-auto overflow-y-auto pr-2">
-              <div className="font-semibold text-sm sticky top-0 bg-white z-10 py-2">
-                Divisi
-              </div>
-              <div className="font-semibold text-sm sticky top-0 bg-white z-10 py-2">
-                Best Staff
-              </div>
-
-              {divisions.map((divisi, i) => (
-                <Fragment key={i}>
-                  <div className="font-normal leading-[40px] text-sm text-[#636A6D]">
-                    {divisi}
-                  </div>
-                  <div>
-                    <Select>
-                      <SelectTrigger className="w-full h-[40px] rounded-lg">
-                        <SelectValue placeholder="Pilih anggota" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="staff1">Staff 1</SelectItem>
-                        <SelectItem value="staff2">Staff 2</SelectItem>
-                        <SelectItem value="staff3">Staff 3</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </Fragment>
-              ))}
-            </div>
-
-            {/* Button */}
-            <div className="flex justify-center">
-              <button className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-sky-800 transition">
-                SIMPAN
-              </button>
-            </div>
-          </div>
+          <Select>
+            <SelectTrigger className="h-[40px] rounded-lg flex-[1]   ">
+              <SelectValue placeholder="Tahun" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      )}
-    </>
+
+        <div className="w-full max-w-[500px] h-[300px] sm:h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
+          {/* Header */}
+          <div className="flex gap-[15px] sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
+            <div className="w-[120px] sm:w-[140px]">Divisi</div>
+            <div className="flex-1">Best Staff</div>
+          </div>
+
+          {/* Rows */}
+          {divisions.map((divisi, i) => (
+            <div key={i} className="flex items-center gap-[15px]">
+              <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
+                {divisi.name}
+              </div>
+              <div className="flex-1">
+                <Select
+                  onValueChange={(val) =>
+                    setSelectedStaff((prev) => ({
+                      ...prev,
+                      [divisi.name]: val,
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full h-[40px] rounded-lg">
+                    <SelectValue placeholder="Pilih anggota" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {divisi.candidates.map((staff, j) => (
+                      <SelectItem key={j} value={staff}>
+                        {staff}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Button */}
+        <div className="flex justify-center mt-6 gap-4">
+          <Button
+            onClick={handleSubmit}
+            className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-sky-800 transition"
+          >
+            SIMPAN
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
