@@ -20,7 +20,13 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 
-import { type Division, type Month, divisions, months, years } from './staffData';
+import {
+  type Division,
+  type Month,
+  divisions,
+  months,
+  years,
+} from './staffData';
 
 type BestStaffProps = {
   divisions: Division[];
@@ -49,12 +55,12 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
-          {/* <Image
-            src="/images/icon/Confetti.png"
+          <Image
+            src="/images/icon/image 22.svg"
             alt="confetti"
             width={24}
             height={24}
-          /> */}
+          />
           Pilih Best Staff
         </Button>
       </DialogTrigger>
