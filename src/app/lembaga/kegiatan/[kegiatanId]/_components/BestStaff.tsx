@@ -180,12 +180,14 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
         </div>
 
         <div className="flex justify-center gap-4">
-          <Button
-            onClick={handleSubmit}
-            className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-[#265673] transition"
-          >
-            SIMPAN
-          </Button>
+          <DialogClose asChild>
+            <Button
+              onClick={handleSubmit}
+              className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-[#265673] transition"
+            >
+              SIMPAN
+            </Button>
+          </DialogClose>
         </div>
       </DialogContent>
     </Dialog>
