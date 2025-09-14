@@ -16,9 +16,9 @@ export const divisions: Division[] = [
 ];
 
 export const months: Month[] = [
-  { value: 'jan', label: 'Januari' },
-  { value: 'feb', label: 'Februari' },
-  { value: 'mar', label: 'Maret' },
+  { value: '01', label: 'Januari' },
+  { value: '02', label: 'Februari' },
+  { value: '03', label: 'Maret' },
 ];
 
 export const years: string[] = ['2024', '2025'];

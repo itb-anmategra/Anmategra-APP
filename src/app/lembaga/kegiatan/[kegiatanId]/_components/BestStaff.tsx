@@ -36,19 +36,82 @@ type BestStaffProps = {
 
 const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
   const selectTriggerBase =
-    'h-[40px] rounded-lg [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]';
+    'h-[40px] rounded-lg border border-[#636A6D] text-xs [&>[data-placeholder]]:text-[#9DA4A8]';
   const selectContentBase =
     'border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0';
   const selectItemBase =
     'py-2.5 px-3 border-b last:border-0 border-[#636A6D] rounded-none text-xs text-[#636A6D] hover:bg-gray-100';
 
+  {
+    /* Validasi Data */
+  }
+  const [startMonth, setStartMonth] = useState<string | null>(null);
+  const [startYear, setStartYear] = useState<string | null>(null);
+  const [endMonth, setEndMonth] = useState<string | null>(null);
+  const [endYear, setEndYear] = useState<string | null>(null);
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
 
-  const handleSubmit = () => {
-    console.log('Pilihan Best Staff:', selectedStaff);
-    alert(JSON.stringify(selectedStaff, null, 2));
+  {
+    /* Validasi */
+  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if ((startMonth && !startYear) || (!startMonth && startYear)) {
+      alert('Bulan dan Tahun Awal harus dipilih berpasangan.');
+      return;
+    }
+    if ((endMonth && !endYear) || (!endMonth && endYear)) {
+      alert('Bulan dan Tahun Akhir harus dipilih berpasangan.');
+      return;
+    }
+
+    if (!startMonth || !startYear || !endMonth || !endYear) {
+      alert('Bulan & Tahun Awal serta Bulan & Tahun Akhir wajib diisi.');
+      return;
+    }
+
+    const sYear = parseInt(startYear, 10);
+    const eYear = parseInt(endYear, 10);
+    const sMonth = parseInt(startMonth, 10);
+    const eMonth = parseInt(endMonth, 10);
+
+    if (isNaN(sYear) || isNaN(eYear) || isNaN(sMonth) || isNaN(eMonth)) {
+      alert('Bulan & Tahun harus berupa angka valid.');
+      return;
+    }
+
+    const startTotal = sYear * 12 + (sMonth - 1);
+    const endTotal = eYear * 12 + (eMonth - 1);
+
+    if (endTotal < startTotal) {
+      alert('Periode akhir harus sama atau setelah periode awal.');
+      return;
+    }
+
+    const emptyDivisi = divisions.filter((d) => !selectedStaff[d.name]?.trim());
+    if (emptyDivisi.length > 0) {
+      alert(
+        `Masih ada divisi yang belum dipilih: ${emptyDivisi
+          .map((d) => d.name)
+          .join(', ')}`,
+      );
+      return;
+    }
+
+    const result = {
+      periode: {
+        start: { month: startMonth, year: startYear },
+        end: { month: endMonth, year: endYear },
+      },
+      staff: selectedStaff,
+    };
+
+    console.log('Data Best Staff:', result);
+    alert(JSON.stringify(result, null, 2));
   };
 
   return (
@@ -65,8 +128,7 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-[724px] max-h-[90vh] flex flex-col rounded-[20px] p-6 sm:p-10 [&>button[aria-label='Close']]:hidden">
-        {/* Header */}
+      <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10 [&>button[aria-label='Close']]:hidden max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl sm:text-[32px] font-bold">
             Pilih Best Staff
@@ -76,116 +138,114 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-2 pt-2">
-          {/* Periode */}
-          <div className="flex w-full gap-4 mb-6 items-center">
-            <Select>
-              <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
-                <SelectValue placeholder="Bulan" />
-              </SelectTrigger>
-              <SelectContent className={selectContentBase}>
-                {months.map((m) => (
-                  <SelectItem
-                    key={m.value}
-                    value={m.value}
-                    className={selectItemBase}
-                  >
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Periode */}
+        <div className="flex w-full gap-4 mb-6 items-center">
+          <Select onValueChange={(val) => setStartMonth(val)}>
+            <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
+              <SelectValue placeholder="Bulan" />
+            </SelectTrigger>
+            <SelectContent className={selectContentBase}>
+              {months.map((m) => (
+                <SelectItem
+                  key={m.value}
+                  value={m.value}
+                  className={selectItemBase}
+                >
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            <Select>
-              <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
-                <SelectValue placeholder="Tahun" />
-              </SelectTrigger>
-              <SelectContent className={selectContentBase}>
-                {years.map((y) => (
-                  <SelectItem key={y} value={y} className={selectItemBase}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Select onValueChange={(val) => setStartYear(val)}>
+            <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
+              <SelectValue placeholder="Tahun" />
+            </SelectTrigger>
+            <SelectContent className={selectContentBase}>
+              {years.map((y) => (
+                <SelectItem key={y} value={y} className={selectItemBase}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            <span className="self-center text-xs">s.d.</span>
+          <span className="self-center text-xs">s.d.</span>
 
-            <Select>
-              <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
-                <SelectValue placeholder="Bulan" />
-              </SelectTrigger>
-              <SelectContent className={selectContentBase}>
-                {months.map((m) => (
-                  <SelectItem
-                    key={m.value}
-                    value={m.value}
-                    className={selectItemBase}
-                  >
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Select onValueChange={(val) => setEndMonth(val)}>
+            <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
+              <SelectValue placeholder="Bulan" />
+            </SelectTrigger>
+            <SelectContent className={selectContentBase}>
+              {months.map((m) => (
+                <SelectItem
+                  key={m.value}
+                  value={m.value}
+                  className={selectItemBase}
+                >
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            <Select>
-              <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
-                <SelectValue placeholder="Tahun" />
-              </SelectTrigger>
-              <SelectContent className={selectContentBase}>
-                {years.map((y) => (
-                  <SelectItem key={y} value={y} className={selectItemBase}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Daftar Divisi */}
-          <div className="w-full max-w-[500px] mx-auto space-y-3">
-            <div className="flex gap-12 bg-white z-10 py-2 font-semibold text-sm">
-              <div className="w-[120px] sm:w-[140px]">Divisi</div>
-              <div className="flex-1">Best Staff</div>
-            </div>
-
-            {divisions.map((divisi, i) => (
-              <div key={i} className="flex items-center gap-12">
-                <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
-                  {divisi.name}
-                </div>
-                <div className="flex-1">
-                  <Select
-                    onValueChange={(val) =>
-                      setSelectedStaff((prev) => ({
-                        ...prev,
-                        [divisi.name]: val,
-                      }))
-                    }
-                  >
-                    <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
-                      <SelectValue placeholder="Pilih anggota" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0">
-                      {divisi.candidates.map((staff, j) => (
-                        <SelectItem
-                          key={j}
-                          value={staff}
-                          className="py-1.5 px-3 border-b last:border-0 border-[#C4CACE] rounded-none text-xs text-[#636A6D] hover:bg-gray-100"
-                        >
-                          {staff}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Select onValueChange={(val) => setEndYear(val)}>
+            <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
+              <SelectValue placeholder="Tahun" />
+            </SelectTrigger>
+            <SelectContent className={selectContentBase}>
+              {years.map((y) => (
+                <SelectItem key={y} value={y} className={selectItemBase}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-center gap-4 pt-4">
+        {/* Tabel Divisi */}
+        <div className="w-full max-w-[500px] max-h-[300px] sm:max-h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
+          <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm border-b">
+            <div className="w-[120px] sm:w-[140px]">Divisi</div>
+            <div className="flex-1">Best Staff</div>
+          </div>
+
+          {divisions.map((divisi, i) => (
+            <div key={i} className="flex items-center gap-12">
+              <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
+                {divisi.name}
+              </div>
+              <div className="flex-1">
+                <Select
+                  onValueChange={(val) =>
+                    setSelectedStaff((prev) => ({
+                      ...prev,
+                      [divisi.name]: val,
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
+                    <SelectValue placeholder="Pilih anggota" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0">
+                    {divisi.candidates.map((staff, j) => (
+                      <SelectItem
+                        key={j}
+                        value={staff}
+                        className="py-1.5 px-3 border-b last:border-0 border-[#C4CACE] rounded-none text-xs text-[#636A6D] hover:bg-gray-100"
+                      >
+                        {staff}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Submit */}
+        <div className="flex justify-center gap-4 mt-6">
           <DialogClose asChild>
             <Button
               onClick={handleSubmit}
