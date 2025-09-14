@@ -13,6 +13,18 @@ export const divisions: Division[] = [
   { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
   { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
   { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
+  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
+  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
+  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
+  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
+  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
+  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
+  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
+  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
+  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
+  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
+  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
+  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
 ];
 
 export const months: Month[] = [

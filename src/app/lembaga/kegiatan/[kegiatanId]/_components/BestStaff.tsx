@@ -36,7 +36,7 @@ type BestStaffProps = {
 
 const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
   const selectTriggerBase =
-    'h-[40px] rounded-lg border border-[#636A6D] text-xs [&>[data-placeholder]]:text-[#9DA4A8]';
+    'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
     'border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0';
   const selectItemBase =
@@ -54,9 +54,6 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
     {},
   );
 
-  {
-    /* Validasi */
-  }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -139,7 +136,7 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
         </DialogHeader>
 
         {/* Periode */}
-        <div className="flex w-full gap-4 mb-6 items-center">
+        <div className="flex w-full gap-4 mb-2 items-center">
           <Select onValueChange={(val) => setStartMonth(val)}>
             <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
               <SelectValue placeholder="Bulan" />
@@ -205,7 +202,7 @@ const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
 
         {/* Tabel Divisi */}
         <div className="w-full max-w-[500px] max-h-[300px] sm:max-h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
-          <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm border-b">
+          <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
             <div className="w-[120px] sm:w-[140px]">Divisi</div>
             <div className="flex-1">Best Staff</div>
           </div>
