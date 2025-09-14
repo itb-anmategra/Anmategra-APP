@@ -20,26 +20,15 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 
-const BestStaff = () => {
-  const divisions = [
-    { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-    { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-    { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-    { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-    { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-    { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-    { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-    { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-  ];
+import { type Division, type Month, divisions, months, years } from './staffData';
 
-  const months = [
-    { value: 'jan', label: 'Januari' },
-    { value: 'feb', label: 'Februari' },
-    { value: 'mar', label: 'Maret' },
-  ];
+type BestStaffProps = {
+  divisions: Division[];
+  months: Month[];
+  years: string[];
+};
 
-  const years = ['2024', '2025'];
-
+const BestStaff = ({ divisions, months, years }: BestStaffProps) => {
   const selectTriggerBase =
     'h-[40px] rounded-lg [&>span]:text-[#9DA4A8] [&>span]:text-xs border border-[#636A6D]';
   const selectContentBase =
@@ -60,12 +49,12 @@ const BestStaff = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
-          <Image
+          {/* <Image
             src="/images/icon/Confetti.png"
             alt="confetti"
             width={24}
             height={24}
-          />
+          /> */}
           Pilih Best Staff
         </Button>
       </DialogTrigger>
