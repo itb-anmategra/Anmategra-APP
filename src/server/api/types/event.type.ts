@@ -64,6 +64,12 @@ export const RemovePanitiaKegiatanInputSchema = z.object({
 export const RemovePanitiaKegiatanOutputSchema =
   AddNewPanitiaKegiatanOutputSchema;
 
+export const EditPanitiaKegiatanInputSchema = AddNewPanitiaKegiatanInputSchema;
+
+export const EditPanitiaKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 const PanitiaKegiatanSchema = z.object({
   id: z.string(),
   nama: z.string(),

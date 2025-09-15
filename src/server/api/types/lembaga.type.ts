@@ -33,6 +33,17 @@ export const GetAllAnggotaLembagaInputSchema = z.object({
 
 export const GetAllAnggotaLembagaOutputSchema = z.array(AnggotaLembagaSchema);
 
+const AssociationSchema = z.object({
+  event_id: z.string(),
+  event_name: z.string(),
+  user_id: z.string(),
+  mahasiswa_name: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+export const GetAllRequestAssociationOutputSchema = z.array(AssociationSchema);
+
 export const GetLembagaHighlightedEventInputSchema = z.object({
   lembagaId: z.string().nonempty(),
 });
@@ -100,12 +111,12 @@ export const EditProfilLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
 
-export const getBestStaffOptionsInputSchema = z.object({
+export const GetBestStaffOptionsInputSchema = z.object({
   event_id: z.string().nonempty(),
   division: z.string().nonempty(),
 });
 
-export const getBestStaffOptionsOutputSchema = z.object({
+export const GetBestStaffOptionsOutputSchema = z.object({
   staff_options: z.array(
     z.object({
       user_id: z.string(),
@@ -113,3 +124,4 @@ export const getBestStaffOptionsOutputSchema = z.object({
     }),
   ),
 });
+
