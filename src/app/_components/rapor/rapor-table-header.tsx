@@ -29,7 +29,11 @@ export default function RaporTableHeader({
         {profilHeaders.map((header, colIdx) => (
           <TableHead key={colIdx} className="relative w-[120px]">
             <div className="flex items-center">
-              {header.label}
+              <span title={header.label}>
+                {header.label.length > 20
+                  ? header.label.slice(0, 20) + '…'
+                  : header.label}
+              </span>
               <ProfilMenu
                 colIdx={colIdx}
                 menu={menu}

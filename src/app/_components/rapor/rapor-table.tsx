@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, TableBody } from '~/components/ui/table';
+import { useToast } from '~/hooks/use-toast';
 
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
@@ -26,6 +27,8 @@ export default function RaporTable({
   profil: profilList = [],
   selectOptions,
 }: TableProps) {
+  const { toast } = useToast();
+
   const [data, setData] = useState<Anggota[]>(anggotaList);
   const [profilHeaders, setProfilHeaders] = useState<ProfilData[]>(profilList);
   const [menu, setMenu] = useState<{ row: number; col: number } | null>(null);
@@ -40,6 +43,9 @@ export default function RaporTable({
   const [deskripsi, setDeskripsi] = useState('');
   const [pemetaan, setPemetaan] = useState('');
   console.log('status: ', pemetaan);
+
+  // Error state for form validation
+  const [profilError, setProfilError] = useState<string | null>(null);
 
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteColIdx, setDeleteColIdx] = useState<number | null>(null);
@@ -102,6 +108,15 @@ export default function RaporTable({
   };
 
   const handleSimpanTambah = () => {
+    if (!profil.trim() || !pemetaan.trim()) {
+      toast({
+        title: 'Gagal menyimpan',
+        description: 'Nama profil dan pemetaan tidak boleh kosong',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setProfilHeaders((prev) => [
       ...prev,
       {
@@ -120,6 +135,15 @@ export default function RaporTable({
   };
 
   const handleSimpanEdit = () => {
+    if (!profil.trim() || !pemetaan.trim()) {
+      toast({
+        title: 'Gagal menyimpan',
+        description: 'Nama profil dan pemetaan tidak boleh kosong',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (editColIdx === null) return;
     setProfilHeaders((prev) =>
       prev.map((header, idx) =>

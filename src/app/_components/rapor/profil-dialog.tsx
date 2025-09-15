@@ -79,7 +79,7 @@ export default function ProfilDialog({
             <Label htmlFor="deskripsi">Deskripsi Profil</Label>
             <Textarea
               id="deskripsi"
-              placeholder="Jelasan tentang profil ini ..."
+              placeholder="Jelaskan tentang profil ini ..."
               value={deskripsi}
               onChange={(e) => setDeskripsi(e.target.value)}
               className="min-h-[96px] max-h-[200px] resize-y text-[#636A6D]"
