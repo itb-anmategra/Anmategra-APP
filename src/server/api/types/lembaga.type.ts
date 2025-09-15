@@ -110,3 +110,18 @@ export const EditProfilLembagaInputSchema = z.object({
 export const EditProfilLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
+
+export const GetBestStaffOptionsInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+});
+
+export const GetBestStaffOptionsOutputSchema = z.object({
+  staff_options: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+

@@ -1,14 +1,17 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
+
 import {
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
   publicProcedure,
 } from '~/server/api/trpc';
+
 import {
   associationRequests,
   events,
+  keanggotaan,
   kehimpunan,
   lembaga,
   mahasiswa,
@@ -31,6 +34,8 @@ import {
   GetLembagaHighlightedEventOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  getBestStaffOptionsInputSchema,
+  getBestStaffOptionsOutputSchema,
 } from '../types/lembaga.type';
 
 export const lembagaRouter = createTRPCRouter({
@@ -103,7 +108,7 @@ export const lembagaRouter = createTRPCRouter({
       }
     }),
 
-  // //Fetech all associated events with lembaga
+  // Fetch all associated events with lembaga
   getAllRequestAssociation: lembagaProcedure
     .output(GetAllRequestAssociationOutputSchema)
     .query(async ({ ctx }) => {
@@ -264,6 +269,36 @@ export const lembagaRouter = createTRPCRouter({
 
       return {
         success: true,
+      };
+    }),
+
+  getBestStaffOptions: protectedProcedure
+    .input(getBestStaffOptionsInputSchema)
+    .output(getBestStaffOptionsOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const staffOptions = await ctx.db
+        .select({
+          user_id: users.id,
+          name: users.name,
+        })
+        .from(keanggotaan)
+        .innerJoin(users, eq(keanggotaan.user_id, users.id))
+        .where(
+          and(
+            eq(keanggotaan.event_id, input.event_id),
+            eq(keanggotaan.division, input.division),
+          ),
+        );
+
+      return {
+        staff_options: staffOptions.map((staff) => ({
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
+        })),
       };
     }),
 });
