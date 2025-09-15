@@ -252,15 +252,14 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  // TODO: nanti ubah ke lembagaProcedure
-  acceptRequestAssociation: protectedProcedure
+  acceptRequestAssociation: lembagaProcedure
     .input(AcceptRequestAssociationInputSchema)
     .output(AcceptRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        // if (!ctx.session.user.lembagaId) {
-        //   throw new TRPCError({ code: 'UNAUTHORIZED' });
-        // }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
 
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
@@ -269,7 +268,7 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              // eq(events.org_id, ctx.session.user.lembagaId),
+              eq(events.org_id, ctx.session.user.lembagaId),
             ),
           )
           .where(
@@ -291,7 +290,7 @@ export const lembagaRouter = createTRPCRouter({
         const eventToUpdate = await ctx.db.query.events.findFirst({
           where: and(
             eq(events.id, input.event_id),
-            // eq(events.org_id, ctx.session.user.lembagaId)
+            eq(events.org_id, ctx.session.user.lembagaId),
           ),
           columns: {
             id: true,
@@ -320,19 +319,19 @@ export const lembagaRouter = createTRPCRouter({
               participant_count: eventToUpdate.participant_count + 1,
             })
             .where(eq(events.id, eventToUpdate.id));
-        });
 
-        await ctx.db
-          .update(associationRequests)
-          .set({
-            status: 'Accepted',
-          })
-          .where(
-            and(
-              eq(associationRequests.event_id, input.event_id),
-              eq(associationRequests.user_id, input.user_id),
-            ),
-          );
+          await tx
+            .update(associationRequests)
+            .set({
+              status: 'Accepted',
+            })
+            .where(
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, input.user_id),
+              ),
+            );
+        });
 
         return {
           success: true,
@@ -345,15 +344,14 @@ export const lembagaRouter = createTRPCRouter({
       }
     }),
 
-  // TODO: nanti ubah ke lembagaProcedure
-  declineRequestAssociation: protectedProcedure
+  declineRequestAssociation: lembagaProcedure
     .input(DeclineRequestAssociationInputSchema)
     .output(DeclineRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        // if (!ctx.session.user.lembagaId) {
-        //   throw new TRPCError({ code: 'UNAUTHORIZED' });
-        // }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
 
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
@@ -362,7 +360,7 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              // eq(events.org_id, ctx.session.user.lembagaId),
+              eq(events.org_id, ctx.session.user.lembagaId),
             ),
           )
           .where(
