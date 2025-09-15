@@ -1,10 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import {
-  createCallerFactory,
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
+  publicProcedure,
 } from '~/server/api/trpc';
 import {
   associationRequests,
@@ -19,14 +19,17 @@ import {
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationOutputSchema,
-  AddAnggotaLembagaInputSchema,
-  AddAnggotaLembagaOutputSchema,
   DeclineRequestAssociationInputSchema,
   DeclineRequestAssociationOutputSchema,
+  AddAnggotaLembagaInputSchema,
+  AddAnggotaLembagaOutputSchema,
   EditProfilLembagaInputSchema,
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllRequestAssociationOutputSchema,
+  GetBestStaffOptionsInputSchema,
+  GetBestStaffOptionsOutputSchema,
   GetInfoLembagaInputSchema,
   GetInfoLembagaOutputSchema,
   GetLembagaEventsInputSchema,
@@ -36,7 +39,6 @@ import {
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
-import { eventRouter } from './event';
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -106,6 +108,26 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Database Error',
         });
       }
+    }),
+
+  // Fetch all associated events with lembaga
+  getAllRequestAssociation: lembagaProcedure
+    .output(GetAllRequestAssociationOutputSchema)
+    .query(async ({ ctx }) => {
+      const requests = await ctx.db
+        .select({
+          event_id: associationRequests.event_id,
+          event_name: events.name,
+          user_id: associationRequests.user_id,
+          mahasiswa_name: users.name,
+          division: associationRequests.division,
+          position: associationRequests.position,
+        })
+        .from(associationRequests)
+        .innerJoin(users, eq(associationRequests.user_id, users.id))
+        .innerJoin(events, eq(associationRequests.event_id, events.id))
+        .where(eq(events.org_id, ctx.session?.user?.lembagaId ?? ''));
+      return requests;
     }),
 
   // Fetch highlighted/pinned event
@@ -423,5 +445,34 @@ export const lembagaRouter = createTRPCRouter({
           success: false,
         };
       }
+      
+  getBestStaffOptions: protectedProcedure
+    .input(GetBestStaffOptionsInputSchema)
+    .output(GetBestStaffOptionsOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const staffOptions = await ctx.db
+        .select({
+          user_id: users.id,
+          name: users.name,
+        })
+        .from(keanggotaan)
+        .innerJoin(users, eq(keanggotaan.user_id, users.id))
+        .where(
+          and(
+            eq(keanggotaan.event_id, input.event_id),
+            eq(keanggotaan.division, input.division),
+          ),
+        );
+
+      return {
+        staff_options: staffOptions.map((staff) => ({
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
+        })),
+      };
     }),
 });

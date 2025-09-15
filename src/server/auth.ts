@@ -18,6 +18,7 @@ import {
   sessions,
   users,
   verificationTokens,
+  verifiedUsers,
 } from '~/server/db/schema';
 
 import daftarProdi from './db/kode-program-studi.json';
@@ -222,7 +223,7 @@ export const authOptions: NextAuthOptions = {
 
 const isEmailInVerifiedUsers = async (email: string) => {
   const user = await db.query.verifiedUsers.findFirst({
-    where: eq(users.email, email),
+    where: eq(verifiedUsers.email, email),
   });
 
   return user !== undefined;
