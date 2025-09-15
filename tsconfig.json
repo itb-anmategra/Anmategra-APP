@@ -37,7 +37,7 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.js",
-    ".next/types/**/*.ts"
-, "src/app/_components/form/form-nilai-profil.tsx"  ],
+    ".next/types/**/*.ts"  
+  ],
   "exclude": ["node_modules", "src/components/ui"]
 }
