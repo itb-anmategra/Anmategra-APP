@@ -111,6 +111,28 @@ export const EditProfilLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const AcceptRequestAssociationInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AcceptRequestAssociationOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const DeclineRequestAssociationInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const DeclineRequestAssociationOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 export const GetBestStaffOptionsInputSchema = z.object({
   event_id: z.string().nonempty(),
   division: z.string().nonempty(),

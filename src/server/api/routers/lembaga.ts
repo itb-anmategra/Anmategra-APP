@@ -17,6 +17,10 @@ import {
 } from '~/server/db/schema';
 
 import {
+  AcceptRequestAssociationInputSchema,
+  AcceptRequestAssociationOutputSchema,
+  DeclineRequestAssociationInputSchema,
+  DeclineRequestAssociationOutputSchema,
   AddAnggotaLembagaInputSchema,
   AddAnggotaLembagaOutputSchema,
   EditProfilLembagaInputSchema,
@@ -270,6 +274,178 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
+  acceptRequestAssociation: lembagaProcedure
+    .input(AcceptRequestAssociationInputSchema)
+    .output(AcceptRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if(!ctx.session.user){
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        const isExistAndAuthorized = await ctx.db
+          .select({ id: associationRequests.id })
+          .from(associationRequests)
+          .innerJoin(
+            events,
+            and(
+              eq(associationRequests.event_id, events.id),
+              eq(events.org_id, ctx.session.user.lembagaId),
+            ),
+          )
+          .where(
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, input.user_id),
+              eq(associationRequests.status, 'Pending'),
+            ),
+          )
+          .limit(1);
+
+        if (isExistAndAuthorized.length === 0) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Association request not found.',
+          });
+        }
+
+        const isUserAlreadyParticipant = await ctx.db
+          .select({ id: keanggotaan.id })
+          .from(keanggotaan)
+          .where(
+            and(
+              eq(keanggotaan.event_id, input.event_id),
+              eq(keanggotaan.user_id, input.user_id),
+            ),
+          )
+          .limit(1);
+        if (isUserAlreadyParticipant.length > 0) {
+          return {
+            success:false,
+            error: 'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.'
+          }
+        }
+
+        const eventToUpdate = await ctx.db.query.events.findFirst({
+          where: and(
+            eq(events.id, input.event_id),
+            eq(events.org_id, ctx.session.user.lembagaId),
+          ),
+          columns: {
+            id: true,
+            participant_count: true,
+          },
+        });
+
+        if (!eventToUpdate) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+          });
+        }
+
+        await ctx.db.transaction(async (tx) => {
+          await tx.insert(keanggotaan).values({
+            id: input.event_id + '_' + input.user_id,
+            event_id: input.event_id,
+            user_id: input.user_id,
+            position: input.position,
+            division: input.division,
+          });
+
+          await tx
+            .update(events)
+            .set({
+              participant_count: eventToUpdate.participant_count + 1,
+            })
+            .where(eq(events.id, eventToUpdate.id));
+
+          await tx
+            .update(associationRequests)
+            .set({
+              status: 'Accepted',
+            })
+            .where(
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, input.user_id),
+              ),
+            );
+        });
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+        };
+      }
+    }),
+
+  declineRequestAssociation: lembagaProcedure
+    .input(DeclineRequestAssociationInputSchema)
+    .output(DeclineRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if(!ctx.session.user){
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        const isExistAndAuthorized = await ctx.db
+          .select({ id: associationRequests.id })
+          .from(associationRequests)
+          .innerJoin(
+            events,
+            and(
+              eq(associationRequests.event_id, events.id),
+              eq(events.org_id, ctx.session.user.lembagaId),
+            ),
+          )
+          .where(
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, input.user_id),
+              eq(associationRequests.status, 'Pending'),
+            ),
+          )
+          .limit(1);
+
+        if (isExistAndAuthorized.length === 0) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Association request not found.',
+          });
+        }
+
+        await ctx.db
+          .update(associationRequests)
+          .set({
+            status: 'Declined',
+          })
+          .where(
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, input.user_id),
+            ),
+          );
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+        };
+      }
+      
   getBestStaffOptions: protectedProcedure
     .input(GetBestStaffOptionsInputSchema)
     .output(GetBestStaffOptionsOutputSchema)
