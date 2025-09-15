@@ -39,15 +39,17 @@ export default function AnggotaContent({
   data: Member[];
   dataAddAnggota: {
     mahasiswa: comboboxDataType[];
+    nim: comboboxDataType[];
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
   const isAnggota = pathname === '/lembaga/anggota';
   let tableData;
-  if (!isAnggota) {
+  if (!isAnggota && pathname) {
     tableData = data.map((member) => {
       return {
         ...member,
@@ -86,7 +88,13 @@ export default function AnggotaContent({
         <div>
           {/* Button Section */}
           <div className="flex justify-between">
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog
+              open={isOpen}
+              onOpenChange={(open) => {
+                setIsOpen(open);
+                if (!open) setManualMode(false);
+              }}
+            >
               <DialogTrigger asChild>
                 <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
                   <Image
@@ -98,15 +106,19 @@ export default function AnggotaContent({
                   Tambah Anggota Baru
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="w-full max-w-xl">
                 <DialogHeader>
-                  <DialogTitle>Tambah Anggota</DialogTitle>
+                  <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
+                    {manualMode ? 'Tambah Anggota Manual' : 'Tambah Anggota'}
+                  </DialogTitle>
                 </DialogHeader>
                 {isAnggota ? (
                   <TambahAnggotaForm
                     session={session}
                     data={dataAddAnggota}
                     setIsOpen={setIsOpen}
+                    manualMode={manualMode}
+                    setManualMode={setManualMode}
                   />
                 ) : (
                   <TambahAnggotaKegiatanForm
