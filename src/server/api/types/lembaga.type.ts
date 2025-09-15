@@ -101,7 +101,7 @@ export const EditProfilLembagaOutputSchema = z.object({
 });
 
 export const getBestStaffOptionsInputSchema = z.object({
-  eventId: z.string().nonempty(),
+  event_id: z.string().nonempty(),
   division: z.string().nonempty(),
 });
 

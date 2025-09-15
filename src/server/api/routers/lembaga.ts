@@ -254,21 +254,22 @@ export const lembagaRouter = createTRPCRouter({
 
       const staffOptions = await ctx.db
         .select({
-          id: users.id,
-          nama: users.name,
+          user_id: users.id,
+          name: users.name,
         })
         .from(keanggotaan)
+        .innerJoin(users, eq(keanggotaan.user_id, users.id))
         .where(
           and(
-            eq(keanggotaan.event_id, input.eventId),
+            eq(keanggotaan.event_id, input.event_id),
             eq(keanggotaan.division, input.division),
           ),
         );
 
       return {
         staff_options: staffOptions.map((staff) => ({
-          user_id: staff.id,
-          name: staff.nama,
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
         })),
       };
     }),
