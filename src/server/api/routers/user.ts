@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import {
@@ -6,7 +6,7 @@ import {
   lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
-import { mahasiswa, users } from '~/server/db/schema';
+import { associationRequests, mahasiswa, users } from '~/server/db/schema';
 
 import {
   EditProfilMahasiswaInputSchema,
@@ -14,6 +14,8 @@ import {
   GetTambahAnggotaKegiatanOptionsOutputSchema,
   GetTambahAnggotaLembagaOptionsInputSchema,
   GetTambahAnggotaLembagaOptionsOutputSchema,
+  RequestAssociationInputSchema,
+  RequestAssociationOutputSchema,
 } from '../types/user.type';
 
 export const userRouter = createTRPCRouter({
@@ -184,5 +186,45 @@ export const userRouter = createTRPCRouter({
           whatsapp: input.noWhatsapp,
         })
         .where(eq(mahasiswa.userId, ctx.session.user.id));
+    }),
+
+  /*
+   * Endpoint untuk request association ke suatu lembaga
+   */
+
+  requestAssociation: protectedProcedure
+    .input(RequestAssociationInputSchema)
+    .output(RequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequests.findFirst({
+            where: (associationRequests, { eq, and }) =>
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, ctx.session.user.id),
+              ),
+          });
+        if (existingRequest) {
+          return {
+            success: false,
+            message: 'Anda sudah pernah membuat permintaan untuk event ini',
+          };
+        }
+        await ctx.db.insert(associationRequests).values({
+          id: crypto.randomUUID(),
+          event_id: input.event_id,
+          user_id: ctx.session.user.id,
+          division: input.division,
+          position: input.position,
+          status: 'Pending', // Pending Status
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error('Error creating association request:', error);
+        return { success: false };
+      }
     }),
 });
