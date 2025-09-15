@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 
-type Profile = { id: number; value: number };
+type Profile = { id: number; value: number | null };
 
 // Contoh beberapa data
 const dummyProfiles: Profile[] = [
@@ -27,7 +27,7 @@ const dummyProfiles: Profile[] = [
 // Komponen FormProfil
 interface FormProfilProps {
   profiles: Profile[];
-  onChange: (id: number, value: number) => void;
+  onChange: (id: number, value: number | null) => void;
 }
 
 const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
@@ -41,9 +41,13 @@ const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
           <div className="rounded-[12px] flex items-center border border-[#C4CACE] bg-white px-4 py-1 w-[92px] h-[50px]">
             <input
               type="number"
-              step="0.1"
-              value={p.value}
-              onChange={(e) => onChange(p.id, Number(e.target.value))}
+              value={p.value ?? ''}
+              onChange={(e) => {
+                // Menghilangkan leading 0
+                const val = e.target.value;
+                const numeric = val === '' ? null : Number(val);
+                onChange(p.id, numeric);
+              }}
               className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
                          font-[400] text-[18px] leading-[32px] text-[#636A6D] w-full outline-none text-center"
               min={0}
@@ -68,15 +72,35 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
     initialProfiles ?? dummyProfiles,
   );
 
-  const handleProfileChange = (id: number, value: number) => {
-    const sanitized = isNaN(value) ? 0 : Math.min(Math.max(value, 0), 100);
+  const handleProfileChange = (id: number, value: number | null) => {
+    const sanitized = value === null ? null : Math.min(Math.max(value, 0), 100);
     setProfiles(
       profiles.map((p) => (p.id === id ? { ...p, value: sanitized } : p)),
     );
   };
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const handleSaveProfile = () => {
+    // Validasi input
+    for (const p of profiles) {
+      if (p.value === null || isNaN(p.value) || p.value < 0 || p.value > 100) {
+        setErrorMessage(
+          'Pastikan semua profil terisi dan memiliki nilai antara 0-100',
+        );
+        return; // tetap buka dialog
+      }
+    }
+
+    // Jika valid, simpan data & tutup dialog
+    setErrorMessage('');
+    setOpen(false);
+  };
+
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="w-[133px] h-[50px] flex items-center justify-center bg-[#00B7B7] rounded-[16px] hover:bg-[#51c8c4]">
           <Pencil size={40} className="!w-5 !h-5" />
@@ -104,15 +128,20 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
 
           <FormProfil profiles={profiles} onChange={handleProfileChange} />
 
-          <DialogClose asChild>
-            <Button
-              className="font-[700] text-[14px] leading-[16px] bg-[#2B6282] text-white 
+          {errorMessage && (
+            <div className="text-red-600 text-[14px] mt-2 text-center">
+              {errorMessage}
+            </div>
+          )}
+
+          <Button
+            onClick={handleSaveProfile}
+            className="font-[700] text-[14px] leading-[16px] bg-[#2B6282] text-white 
                          rounded-[12px] border-[2px] border-[#2B6282] hover:bg-[#1c4f6c] 
                          h-[40px] w-[196px] flex items-center justify-center mx-auto mt-3"
-            >
-              SIMPAN PERUBAHAN
-            </Button>
-          </DialogClose>
+          >
+            SIMPAN PERUBAHAN
+          </Button>
         </Card>
       </DialogContent>
     </Dialog>
