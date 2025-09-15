@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import {
@@ -198,6 +198,20 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Input Sukses
       try {
+        const existingRequest =
+          await ctx.db.query.associationRequests.findFirst({
+            where: (associationRequests, { eq, and }) =>
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, ctx.session.user.id),
+              ),
+          });
+        if (existingRequest) {
+          return {
+            success: false,
+            message: 'Anda sudah pernah membuat permintaan untuk event ini',
+          };
+        }
         await ctx.db.insert(associationRequests).values({
           id: crypto.randomUUID(),
           event_id: input.event_id,
