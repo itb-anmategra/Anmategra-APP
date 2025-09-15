@@ -42,7 +42,6 @@ export default function RaporTable({
   const [profil, setProfil] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [pemetaan, setPemetaan] = useState('');
-  console.log('status: ', pemetaan);
 
   // Error state for form validation
   const [profilError, setProfilError] = useState<string | null>(null);
