@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '~/components/ui/button';
 import {
@@ -38,12 +38,13 @@ export default function FormProfilKegiatan({
   const [mappings, setMappings] = React.useState<Record<number, string>>({});
   const [profilInput, setProfilInput] = React.useState('');
   const [deskripsi, setDeskripsi] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const addSelect = () => setSelects([...selects, selects.length]);
 
   const handleSave = () => {
     if (!profilInput.trim() || !deskripsi.trim()) {
-      alert('Profil dan Deskripsi tidak boleh kosong!');
+      setErrorMessage('Profil dan Deskripsi tidak boleh kosong!');
       return;
     }
 
@@ -51,12 +52,12 @@ export default function FormProfilKegiatan({
       (id) => !mappings[id] || mappings[id].trim() === '',
     );
     if (adaKosong) {
-      alert('Semua Pemetaan Profil KM ITB harus dipilih!');
+      setErrorMessage('Semua Pemetaan Profil KM ITB harus dipilih!');
       return;
     }
 
     // Code dibawah dapat disesuaikan
-    console.log('Data disimpan:', { profilInput, deskripsi, mappings });
+    // console.log('Data disimpan:', { profilInput, deskripsi, mappings });
     onClose?.();
   };
 
@@ -128,6 +129,10 @@ export default function FormProfilKegiatan({
             ))}
           </div>
         </div>
+
+        {errorMessage && (
+          <p className="text-red-600 font-semibold">{errorMessage}</p>
+        )}
 
         <div className="flex justify-center gap-4 pt-4">
           <Button
