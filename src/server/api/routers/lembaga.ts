@@ -1,13 +1,11 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
-
 import {
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
   publicProcedure,
 } from '~/server/api/trpc';
-
 import {
   associationRequests,
   events,
@@ -26,6 +24,8 @@ import {
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
+  GetBestStaffOptionsInputSchema,
+  GetBestStaffOptionsOutputSchema,
   GetInfoLembagaInputSchema,
   GetInfoLembagaOutputSchema,
   GetLembagaEventsInputSchema,
@@ -34,8 +34,6 @@ import {
   GetLembagaHighlightedEventOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
-  getBestStaffOptionsInputSchema,
-  getBestStaffOptionsOutputSchema,
 } from '../types/lembaga.type';
 
 export const lembagaRouter = createTRPCRouter({
@@ -273,8 +271,8 @@ export const lembagaRouter = createTRPCRouter({
     }),
 
   getBestStaffOptions: protectedProcedure
-    .input(getBestStaffOptionsInputSchema)
-    .output(getBestStaffOptionsOutputSchema)
+    .input(GetBestStaffOptionsInputSchema)
+    .output(GetBestStaffOptionsOutputSchema)
     .query(async ({ ctx, input }) => {
       if (!ctx.session.user.lembagaId) {
         throw new TRPCError({ code: 'UNAUTHORIZED' });
