@@ -257,8 +257,11 @@ export const lembagaRouter = createTRPCRouter({
     .output(AcceptRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user.lembagaId) {
+        if(!ctx.session.user){
           throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
         }
 
         const isExistAndAuthorized = await ctx.db
@@ -285,6 +288,23 @@ export const lembagaRouter = createTRPCRouter({
             code: 'NOT_FOUND',
             message: 'Association request not found.',
           });
+        }
+
+        const isUserAlreadyParticipant = await ctx.db
+          .select({ id: keanggotaan.id })
+          .from(keanggotaan)
+          .where(
+            and(
+              eq(keanggotaan.event_id, input.event_id),
+              eq(keanggotaan.user_id, input.user_id),
+            ),
+          )
+          .limit(1);
+        if (isUserAlreadyParticipant.length > 0) {
+          return {
+            success:false,
+            error: 'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.'
+          }
         }
 
         const eventToUpdate = await ctx.db.query.events.findFirst({
@@ -349,8 +369,11 @@ export const lembagaRouter = createTRPCRouter({
     .output(DeclineRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user.lembagaId) {
+        if(!ctx.session.user){
           throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
         }
 
         const isExistAndAuthorized = await ctx.db
