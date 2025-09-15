@@ -21,17 +21,17 @@ import { Textarea } from '~/components/ui/textarea';
 
 interface FormProfilKegiatanProps {
   profil?: string;
-  Tambah?: boolean;
-  className?: string;
-  open?: boolean;
+  isTambah?: boolean;
+  customClassName?: string;
+  isOpen?: boolean;
   onClose?: () => void;
 }
 
 export default function FormProfilKegiatan({
   profil = 'Profil 5',
-  Tambah = true,
-  className = '',
-  open = true,
+  isTambah = true,
+  customClassName = '',
+  isOpen = true,
   onClose,
 }: FormProfilKegiatanProps) {
   const [selects, setSelects] = React.useState<number[]>([0]);
@@ -65,13 +65,13 @@ export default function FormProfilKegiatan({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose?.()}>
+    <Dialog open={isOpen} onOpenChange={(o) => !o && onClose?.()}>
       <DialogContent
-        className={`h-auto max-h-screen overflow-auto max-w-none w-[907px] rounded-[26.1px] bg-white border-[0.82px] border-[#C4CACE] px-9 py-6 flex flex-col gap-[21px] text-[#141718] ${className}`}
+        className={`h-auto max-h-screen overflow-auto max-w-none w-[907px] rounded-[26.1px] bg-white border-[0.82px] border-[#C4CACE] px-9 py-6 flex flex-col gap-[21px] text-[#141718] ${customClassName}`}
       >
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="text-2xl font-semibold">
-            {Tambah ? 'Tambah Profil Kegiatan' : 'Edit Profil Kegiatan'}
+            {isTambah ? 'Tambah Profil Kegiatan' : 'Edit Profil Kegiatan'}
           </DialogTitle>
         </DialogHeader>
 
