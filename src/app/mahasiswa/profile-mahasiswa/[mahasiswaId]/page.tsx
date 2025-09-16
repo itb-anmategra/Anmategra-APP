@@ -24,7 +24,7 @@ const DetailMahasiswaPage = async ({
   params: Promise<{ mahasiswaId: string }>;
 }) => {
   const userId = (await params).mahasiswaId;
-  const { mahasiswaData, newestEvent } = await api.profil.getMahasiswa({
+  const { mahasiswaData, newestEvent } = await api.profile.getMahasiswa({
     mahasiswaId: userId,
   });
   // console.log(newestEvent)
@@ -119,7 +119,10 @@ const DetailMahasiswaPage = async ({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {newestEvent.map((item: Kepanitiaan) => (
                   // masukkin posisi ke sini
-                  <Link key={item.id} href={`/mahasiswa/profile-kegiatan/${item.id}`}>
+                  <Link
+                    key={item.id}
+                    href={`/mahasiswa/profile-kegiatan/${item.id}`}
+                  >
                     <KepanitiaanCard kepanitiaan={item} key={item.name} />
                   </Link>
                 ))}

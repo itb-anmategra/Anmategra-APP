@@ -26,7 +26,7 @@ const DetailLembagaPage = async ({
   const session = await getServerAuthSession();
   const lembagaId = (await params).lembagaId;
   const { lembagaData, newestEvent, highlightedEvent, anggota } =
-    await api.profil.getLembaga({ lembagaId: lembagaId });
+    await api.profile.getLembaga({ lembagaId: lembagaId });
   const is_user_owner = lembagaData?.users.id === session?.user?.id;
 
   return (

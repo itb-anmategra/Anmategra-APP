@@ -19,10 +19,10 @@ import {
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationOutputSchema,
-  DeclineRequestAssociationInputSchema,
-  DeclineRequestAssociationOutputSchema,
   AddAnggotaLembagaInputSchema,
   AddAnggotaLembagaOutputSchema,
+  DeclineRequestAssociationInputSchema,
+  DeclineRequestAssociationOutputSchema,
   EditProfilLembagaInputSchema,
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
@@ -127,7 +127,15 @@ export const lembagaRouter = createTRPCRouter({
         .innerJoin(users, eq(associationRequests.user_id, users.id))
         .innerJoin(events, eq(associationRequests.event_id, events.id))
         .where(eq(events.org_id, ctx.session?.user?.lembagaId ?? ''));
-      return requests;
+
+      return requests.map((req) => ({
+        event_id: req.event_id ?? '',
+        event_name: req.event_name ?? '',
+        user_id: req.user_id ?? '',
+        mahasiswa_name: req.mahasiswa_name ?? '',
+        division: req.division ?? '',
+        position: req.position ?? '',
+      }));
     }),
 
   // Fetch highlighted/pinned event
@@ -279,7 +287,7 @@ export const lembagaRouter = createTRPCRouter({
     .output(AcceptRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if(!ctx.session.user){
+        if (!ctx.session.user) {
           throw new TRPCError({ code: 'UNAUTHORIZED' });
         }
         if (!ctx.session.user.lembagaId) {
@@ -324,9 +332,10 @@ export const lembagaRouter = createTRPCRouter({
           .limit(1);
         if (isUserAlreadyParticipant.length > 0) {
           return {
-            success:false,
-            error: 'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.'
-          }
+            success: false,
+            error:
+              'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.',
+          };
         }
 
         const eventToUpdate = await ctx.db.query.events.findFirst({
@@ -391,7 +400,7 @@ export const lembagaRouter = createTRPCRouter({
     .output(DeclineRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if(!ctx.session.user){
+        if (!ctx.session.user) {
           throw new TRPCError({ code: 'UNAUTHORIZED' });
         }
         if (!ctx.session.user.lembagaId) {
@@ -445,7 +454,8 @@ export const lembagaRouter = createTRPCRouter({
           success: false,
         };
       }
-      
+    }),
+
   getBestStaffOptions: protectedProcedure
     .input(GetBestStaffOptionsInputSchema)
     .output(GetBestStaffOptionsOutputSchema)

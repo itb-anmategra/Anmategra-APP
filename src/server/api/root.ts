@@ -1,11 +1,11 @@
-import {createCallerFactory, createTRPCRouter} from "~/server/api/trpc";
-import {landingRouter} from "./routers/landing";
-import { lembagaRouter } from "./routers/lembaga";
-import {eventRouter} from "./routers/event";
-import {kegiatanRouter} from "./routers/kegiatan";
-import {userRouter} from "./routers/user";
-import {profileRouter} from "~/server/api/routers/profil";
+import { profileRouter } from '~/server/api/routers/profile';
+import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
 
+import { eventRouter } from './routers/event';
+import { kegiatanRouter } from './routers/kegiatan';
+import { landingRouter } from './routers/landing';
+import { lembagaRouter } from './routers/lembaga';
+import { userRouter } from './routers/user';
 
 /**
  * This is the primary router for your server.
@@ -18,7 +18,7 @@ export const appRouter = createTRPCRouter({
   lembaga: lembagaRouter,
   event: eventRouter,
   kegiatan: kegiatanRouter,
-  profil: profileRouter,
+  profile: profileRouter,
   users: userRouter,
 });
 
