@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import TrashCan from 'public/icons/trash.svg';
 import React, { useEffect, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
@@ -78,8 +79,8 @@ const CsvForm = () => {
               <Image
                 src={
                   isHovered
-                    ? '/images/add-csv-hover.svg'
-                    : '/images/add-csv.svg'
+                    ? '/images/miscellaneous/add-csv-hover.svg'
+                    : '/images/miscellaneous/add-csv.svg'
                 }
                 alt="Upload Icon"
                 width={60}
@@ -180,7 +181,7 @@ const CsvForm = () => {
             <div className="group flex flex-col justify-start w-full h-[400px]">
               <div className="flex items-center gap-4 border border-[#C4CACE] rounded-[8px] p-[20px_16px]">
                 <Image
-                  src="/images/csv.svg"
+                  src="/images/miscellaneous/csv.svg"
                   alt="File icon"
                   width={40}
                   height={40}
@@ -194,7 +195,7 @@ const CsvForm = () => {
                     </p>
 
                     <Image
-                      src="/images/trash.svg"
+                      src={TrashCan}
                       alt="Delete"
                       width={20}
                       height={20}
