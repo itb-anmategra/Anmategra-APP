@@ -18,8 +18,6 @@ import { api } from '~/trpc/server';
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
-import Navbar from '../../_components/layout/navbar';
-
 const DetailMahasiswaPage = async ({
   params,
 }: {
@@ -34,9 +32,6 @@ const DetailMahasiswaPage = async ({
   const session = await getServerAuthSession();
   return (
     <>
-      <div className="w-full flex justify-between fixed z-20">
-        <Navbar session={session} />
-      </div>
       <div className="w-full flex min-h-screen flex-col items-center pt-14">
         <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
           {/* Title and Search */}
@@ -124,7 +119,7 @@ const DetailMahasiswaPage = async ({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {newestEvent.map((item: Kepanitiaan) => (
                   // masukkin posisi ke sini
-                  <Link key={item.id} href={`/profile-kegiatan/${item.id}`}>
+                  <Link key={item.id} href={`/mahasiswa/profile-kegiatan/${item.id}`}>
                     <KepanitiaanCard kepanitiaan={item} key={item.name} />
                   </Link>
                 ))}

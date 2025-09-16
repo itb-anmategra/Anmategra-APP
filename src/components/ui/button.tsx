@@ -4,24 +4,24 @@ import * as React from 'react';
 import { cn } from '~/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[12px] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        primary:
-          'bg-[#2B6282] text-white hover:bg-[#66AACA] active:bg-[#CAE1ED] rounded-xl',
-        secondary:
-          'bg-[#00B7B7] text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] rounded-xl',
+        dark_blue:
+          'bg-[#2B6282] text-white hover:bg-[#265673] active:bg-[#2B6282]',
+        light_blue:
+          'bg-[#00B7B7] text-white hover:bg-[#00A5A5] active:bg-[#00B7B7]',
         warning:
-          'bg-[#F16350] text-white hover:bg-[#FF9B8D] active:bg-[#FCDEDA] rounded-xl',
-        primaryv2:
-          'bg-transparent border-2 border-[#2B6282] text-[#2B6282]  rounded-xl hover:bg-[#2B6282] hover:text-white active:bg-[#2B6282] active:text-white',
-        secondaryv2:
-          'bg-transparent border-2 border-[#29BC5B] text-[#29BC5B]  rounded-xl hover:bg-[#29BC5B] hover:text-white active:bg-[#29BC5B] active:text-white',
-        warningv2:
-          'bg-transparent border-2 border-[#F16350] text-[#F16350]  rounded-xl hover:bg-[#F16350] hover:text-white active:bg-[#F16350] active:text-white',
-        destructive:
-          'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+          'bg-[#F16350] text-white hover:bg-[#FF9B8D] active:bg-[#F16350]',
+        dark_blue_outline:
+          'bg-transparent border-2 border-[#2B6282] text-[#2B6282] hover:bg-[#2B6282] hover:text-white active:bg-[#2B6282] active:text-white',
+        green_outline:
+          'bg-transparent border-2 border-[#29BC5B] text-[#29BC5B] hover:bg-[#29BC5B] hover:text-white active:bg-[#29BC5B] active:text-white',
+        warning_outline:
+          'bg-transparent border-2 border-[#F16350] text-[#F16350] hover:bg-[#F16350] hover:text-white active:bg-[#F16350] active:text-white',
+        // destructive:
+        //   'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
           'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
@@ -35,7 +35,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'primary',
+      variant: 'dark_blue',
       size: 'default',
     },
   },

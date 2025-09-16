@@ -136,7 +136,7 @@ export default function FormProfilKegiatan({
 
         <div className="flex justify-center gap-4 pt-4">
           <Button
-            variant="destructive"
+            variant="warning"
             className="w-[120px] h-[40px] bg-[#F16350] rounded-xl px-6 py-3 font-bold text-[14px]"
             onClick={onClose}
           >

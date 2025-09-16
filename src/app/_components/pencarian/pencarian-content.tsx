@@ -22,9 +22,6 @@ import { cn } from '~/lib/utils';
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
-// Component Import
-import Navbar from '../layout/navbar';
-
 const PencarianContent = ({
   session,
   data,
@@ -52,7 +49,7 @@ const PencarianContent = ({
       if (isLembaga) {
         void router.push(`/lembaga/pencarian/${searchQuery}`);
       } else {
-        void router.push(`/pencarian/${searchQuery}`);
+        void router.push(`/mahasiswa/pencarian/${searchQuery}`);
       }
     }
   };
@@ -64,11 +61,6 @@ const PencarianContent = ({
         session?.user.role === 'lembaga' && 'p-6',
       )}
     >
-      {session?.user.role === 'mahasiswa' ? (
-        <div className="mb-20 fixed w-full shadow-sm z-20">
-          <Navbar session={session} />
-        </div>
-      ) : (
         <div className="flex flex-col gap-4">
           <h1 className="text-2xl font-semibold text-slate-600">
             Hasil Pencarian
@@ -84,7 +76,6 @@ const PencarianContent = ({
             onKeyDown={handleKeyDown}
           />
         </div>
-      )}
       <div
         className={cn(
           'flex flex-col items-center w-full',
@@ -104,7 +95,7 @@ const PencarianContent = ({
                     href={
                       isLembaga
                         ? '/lembaga/profile-mahasiswa/' + item.userId
-                        : '/profile-mahasiswa/' + item.userId
+                        : '/mahasiswa/profile-mahasiswa/' + item.userId
                     }
                   >
                     <MahasiswaCard
@@ -129,7 +120,7 @@ const PencarianContent = ({
                     href={
                       isLembaga
                         ? `/lembaga/profile-lembaga/${item.lembaga.id}`
-                        : `/profile-lembaga/${item.lembaga.id}`
+                        : `/mahasiswa/profile-lembaga/${item.lembaga.id}`
                     }
                   >
                     <LembagaCard
@@ -154,7 +145,7 @@ const PencarianContent = ({
                     href={
                       isLembaga
                         ? `/lembaga/profile-kegiatan/${item.id}`
-                        : `/profile-kegiatan/${item.id}`
+                        : `/mahasiswa/profile-kegiatan/${item.id}`
                     }
                   >
                     <KepanitiaanCard kepanitiaan={item} />

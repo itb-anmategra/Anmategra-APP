@@ -101,7 +101,7 @@ const ProfileKegiatanComp = ({
               </div>
               <div>
                 <button className="text-sky-600 font-semibold">
-                  <Link href={`/profile-mahasiswa/${item.id}`}>
+                  <Link href={`/mahasiswa/profile-mahasiswa/${item.id}`}>
                     {' '}
                     Lihat Profil
                   </Link>

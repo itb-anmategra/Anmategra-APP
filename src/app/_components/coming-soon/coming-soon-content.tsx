@@ -37,13 +37,13 @@ export default function ComingSoonContent({ session }: { session?: Session | nul
             </p>
             {session?.user.role === 'lembaga' ? (
               <Link href="/lembaga">
-                <Button className="bg-[#2B6777] hover:bg-[#2B6777]/90 text-white px-8 py-6 text-lg">
+                <Button variant="dark_blue" className="px-8 py-6 text-lg">
                   Kembali ke Beranda
                 </Button>
               </Link>
             ) : (
               <Link href="/">
-                <Button className="bg-[#2B6777] hover:bg-[#2B6777]/90 text-white px-8 py-6 text-lg">
+                <Button variant="dark_blue" className="px-8 py-6 text-lg">
                   Kembali ke Beranda
                 </Button>
               </Link>

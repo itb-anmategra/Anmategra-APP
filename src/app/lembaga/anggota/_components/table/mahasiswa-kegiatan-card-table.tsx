@@ -114,7 +114,7 @@ const columns: ColumnDef<MemberKegiatan>[] = [
                   onClick={() =>
                     onDelete(row.original.id, row.original.event_id)
                   }
-                  variant={'destructive'}
+                  variant={'warning'}
                 >
                   Ya, Hapus
                 </Button>
