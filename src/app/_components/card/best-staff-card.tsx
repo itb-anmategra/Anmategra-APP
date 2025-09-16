@@ -42,7 +42,7 @@ export default async function BestStaffCard({
       href={
         isLembaga
           ? `/lembaga/profile-mahasiswa/${id_mahasiswa}`
-          : `/profile-mahasiswa/${id_mahasiswa}`
+          : `/mahasiswa/profile-mahasiswa/${id_mahasiswa}`
       }
       className="no-underline"
     >

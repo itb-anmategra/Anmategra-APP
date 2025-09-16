@@ -15,7 +15,7 @@ export default function HeroSection() {
   
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      void router.push(`/pencarian/${searchQuery}`);
+      void router.push(`/mahasiswa/pencarian/${searchQuery}`);
     }
   };
   

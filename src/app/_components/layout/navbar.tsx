@@ -24,7 +24,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      void router.push(`/pencarian/${searchQuery}`);
+      void router.push(`/mahasiswa/pencarian/${searchQuery}`);
     }
   };
 
@@ -64,7 +64,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
         <nav className="flex items-center">
           {session ? (
             <div className="flex items-center gap-x-2">
-              <Link href={`/profile-mahasiswa/${session.user.id}`}>
+              <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
                 <Button className="bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500">
                   Profil <CircleUserRound />
                 </Button>

@@ -140,7 +140,7 @@ const SidebarProfile = ({ lembaga }: { lembaga: Lembaga }) => {
         </div>
       </Link>
       <Button
-        variant="destructive"
+        variant="warning"
         className="flex items-center justify-start gap-3 bg-transparent px-3 py-2 text-base text-destructive shadow-none hover:text-destructive-foreground"
         onClick={async () => {
           await signOut({ callbackUrl: '/' });

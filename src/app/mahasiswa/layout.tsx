@@ -6,8 +6,10 @@ const HalamanMahasiswaLayout = async ({ children }: { children: ReactNode }) => 
     const session = await getServerAuthSession()
   return (
     <div className='w-full flex flex-col items-center'>
-      <div className='w-full max-w-7xl'>
+      <div className="fixed w-full shadow-sm z-20">
         <Navbar session={session} />
+      </div>
+      <div className='w-full max-w-7xl'>
         {children}
       </div>
     </div>

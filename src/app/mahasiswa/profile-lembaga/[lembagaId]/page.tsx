@@ -13,12 +13,8 @@ import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegia
 import { Badge } from '~/components/ui/badge';
 // Components Import
 import { Card } from '~/components/ui/card';
-// Auth
-import { getServerAuthSession } from '~/server/auth';
 // TRPC Import
 import { api } from '~/trpc/server';
-
-import Navbar from '../../_components/layout/navbar';
 
 const DetailLembagaPage = async ({
   params,
@@ -28,13 +24,9 @@ const DetailLembagaPage = async ({
   const lembagaId = (await params).lembagaId;
   const { lembagaData, newestEvent, highlightedEvent, anggota } =
     await api.profil.getLembaga({ lembagaId: lembagaId });
-  const session = await getServerAuthSession();
 
   return (
     <>
-      <div className="w-full flex justify-between fixed z-20">
-        <Navbar session={session} />
-      </div>
       <div className="w-full flex min-h-screen flex-col items-center pt-14">
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
@@ -60,7 +52,7 @@ const DetailLembagaPage = async ({
           </div>
 
           {highlightedEvent && (
-            <Link href={`/profile-kegiatan/${highlightedEvent.id}`}>
+            <Link href={`/mahasiswa/profile-kegiatan/${highlightedEvent.id}`}>
               <div className="space-y-4 pb-12">
                 <h5 className="text-2xl font-semibold text-slate-600">
                   Highlighed Event
@@ -109,7 +101,7 @@ const DetailLembagaPage = async ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {newestEvent && newestEvent.length !== 0 ? (
                 newestEvent.map((item) => (
-                  <Link href={`/profile-kegiatan/${item.id}`} key={item.id}>
+                  <Link href={`/mahasiswa/profile-kegiatan/${item.id}`} key={item.id}>
                     <KepanitiaanCard kepanitiaan={item} />
                   </Link>
                 ))

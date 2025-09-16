@@ -58,7 +58,7 @@ const CsvForm = () => {
 
       return () => clearInterval(interval);
     }
-  }, [uploadState.status]);
+  }, [uploadState]);
 
   const renderContent = () => {
     switch (uploadState.status) {
@@ -110,7 +110,8 @@ const CsvForm = () => {
                       fileInput.click();
                     }
                   }}
-                  className="bg-[#00A5A5] pt-[7px] pb-[7px] h-[35px] w-[130px] text-white rounded-[10px] cursor-pointer text-[12px] font-semibold"
+                  variant="light_blue"
+                  className="pt-[7px] pb-[7px] text-[12px] font-semibold"
                 >
                   + Unggah dokumen
                 </Button>
@@ -161,7 +162,8 @@ const CsvForm = () => {
 
               <Button
                 onClick={() => setUploadState({ status: 'initial' })}
-                className="mt-2.5 px-5 py-1 bg-transparent border border-[#141718] text-[#141718] rounded-[10px] text-[14px] font-semibold cursor-pointer"
+                variant="warning_outline"
+                className="mt-2.5 text-[14px] font-semibold"
               >
                 Cancel
               </Button>
@@ -237,7 +239,7 @@ const CsvForm = () => {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-[#00A5A5] h-[30px] w-[100px] text-white rounded-[10px] cursor-pointer text-[12px] font-semibold">
+        <Button variant="light_blue" className="text-[12px] font-semibold">
           Upload CSV
         </Button>
       </DialogTrigger>
@@ -258,14 +260,16 @@ const CsvForm = () => {
               <div className="flex flex-row justify-center gap-4 mt-3">
                 <Button
                   onClick={handleCancelDelete}
-                  className="bg-[#F16350] text-white w-[100px] h-[35px] text-[12px] font-semibold border-none px-5 py-[3px] rounded-[10px] cursor-pointer"
+                  variant="warning"
+                  className="text-[12px] font-semibold"
                 >
                   BATAL
                 </Button>
 
                 <Button
                   onClick={handleConfirmDelete}
-                  className="bg-[#2B6282] text-white w-[100px] h-[35px] text-[12px] font-semibold border-none px-5 py-[3px] rounded-[10px] cursor-pointer"
+                  variant="dark_blue"
+                  className="text-[12px] font-semibold"
                 >
                   YAKIN
                 </Button>

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import PartyPopper from 'public/icons/party-popper.svg';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import {
@@ -293,7 +294,7 @@ const BestStaff = () => {
       <DialogTrigger asChild>
         <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
           <Image
-            src="/images/icon/image 22.svg"
+            src={PartyPopper}
             alt="confetti"
             width={24}
             height={24}

@@ -15,7 +15,7 @@ export const KegiatanSection = ({ data }: { data: Kepanitiaan[] }) => {
         {data?.map((kepanitiaan) => (
           <Link
             key={kepanitiaan.name + kepanitiaan.description}
-            href={`/profile-kegiatan/${kepanitiaan.id}`}
+            href={`/mahasiswa/profile-kegiatan/${kepanitiaan.id}`}
           >
             <KepanitiaanCard kepanitiaan={kepanitiaan} orientation="vertical" />
           </Link>

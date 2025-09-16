@@ -1,7 +1,7 @@
 "use server"
 
 import React from 'react';
-import PencarianPage from "~/app/_components/pencarian/pencarian-content";
+import PencarianContent from "~/app/_components/pencarian/pencarian-content";
 import {getServerAuthSession} from "~/server/auth";
 import {api} from "~/trpc/server";
 
@@ -13,6 +13,6 @@ export default async function SearchPage({ params }: {
   const data = await api.landing.getResults({query: query});
 
   return (
-      <PencarianPage session={session} data={data} />
+      <PencarianContent session={session} data={data} />
   );
 }

@@ -1,12 +1,10 @@
 // Library Import
 import Link from 'next/link';
 import React from 'react';
-import Navbar from '~/app/_components/layout/navbar';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
-import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 
 const ProfileKegiatan = async ({
@@ -14,7 +12,6 @@ const ProfileKegiatan = async ({
 }: {
   params: Promise<{ profileKegiatanId: string }>;
 }) => {
-  const session = await getServerAuthSession();
   const query = (await params).profileKegiatanId;
   const { kegiatan, lembaga, participant } = await api.profil.getKegiatan({
     kegiatanId: query,
@@ -22,9 +19,6 @@ const ProfileKegiatan = async ({
 
   return (
     <div>
-      <div className="w-full flex justify-between fixed z-20">
-        <Navbar session={session} />
-      </div>
       <div className="w-full flex min-h-screen flex-col items-center pt-14">
         <div className="w-full max-w-7xl bg-slate-50 py-6">
           <div className="mb-4">
@@ -48,7 +42,7 @@ const ProfileKegiatan = async ({
               Penyelenggara
             </h2>
           </div>
-          <Link href={`/profile-lembaga/${lembaga?.id}`}>
+          <Link href={`/mahasiswa/profile-lembaga/${lembaga?.id}`}>
             <PenyelenggaraCard
               title={lembaga?.name ?? 'Tidak ada nama'}
               category={lembaga?.type ?? 'Tidak ada kategori'}

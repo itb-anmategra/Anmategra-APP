@@ -110,7 +110,7 @@ const columns: ColumnDef<Member>[] = [
                 <Button>Tidak, Batalkan</Button>
                 <Button
                   onClick={() => onDelete(row.original.id)}
-                  variant={'destructive'}
+                  variant={'warning'}
                 >
                   Ya, Hapus
                 </Button>

@@ -27,9 +27,9 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (AUTH_ROUTES.includes(req.nextUrl.pathname) && token) {
-    if (token.role === 'mahasiswa') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    // if (token.role === 'mahasiswa') {
+    //   return NextResponse.redirect(new URL('/', req.url));
+    // }
     return NextResponse.redirect(new URL(`/${token.role}`, req.url));
   }
 
@@ -38,9 +38,9 @@ export default async function middleware(req: NextRequest) {
     token &&
     token?.role !== 'admin'
   ) {
-    if (token.role === 'mahasiswa') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    // if (token.role === 'mahasiswa') {
+    //   return NextResponse.redirect(new URL('/', req.url));
+    // }
     return NextResponse.redirect(new URL(`/${token.role}`, req.url));
   }
 
@@ -49,9 +49,9 @@ export default async function middleware(req: NextRequest) {
     token &&
     token?.role !== 'lembaga'
   ) {
-    if (token.role === 'mahasiswa') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    // if (token.role === 'mahasiswa') {
+    //   return NextResponse.redirect(new URL('/', req.url));
+    // }
     return NextResponse.redirect(new URL(`/${token.role}`, req.url));
   }
 
