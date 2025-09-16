@@ -13,7 +13,7 @@ const ProfileKegiatan = async ({
   params: Promise<{ profileKegiatanId: string }>;
 }) => {
   const query = (await params).profileKegiatanId;
-  const { kegiatan, lembaga, participant } = await api.profil.getKegiatan({
+  const { kegiatan, lembaga, participant } = await api.profile.getKegiatan({
     kegiatanId: query,
   });
 

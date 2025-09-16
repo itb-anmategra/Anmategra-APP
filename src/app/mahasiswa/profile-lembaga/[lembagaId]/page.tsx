@@ -23,7 +23,7 @@ const DetailLembagaPage = async ({
 }) => {
   const lembagaId = (await params).lembagaId;
   const { lembagaData, newestEvent, highlightedEvent, anggota } =
-    await api.profil.getLembaga({ lembagaId: lembagaId });
+    await api.profile.getLembaga({ lembagaId: lembagaId });
 
   return (
     <>
@@ -101,7 +101,10 @@ const DetailLembagaPage = async ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {newestEvent && newestEvent.length !== 0 ? (
                 newestEvent.map((item) => (
-                  <Link href={`/mahasiswa/profile-kegiatan/${item.id}`} key={item.id}>
+                  <Link
+                    href={`/mahasiswa/profile-kegiatan/${item.id}`}
+                    key={item.id}
+                  >
                     <KepanitiaanCard kepanitiaan={item} />
                   </Link>
                 ))
