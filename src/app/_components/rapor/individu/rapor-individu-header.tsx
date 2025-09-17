@@ -1,9 +1,11 @@
 import Image, { type StaticImageData } from "next/image";
 import {Avatar, AvatarFallback, AvatarImage} from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
+
 import LineIcon from 'public/icons/line-icon-2.png';
 import WAIcon from 'public/icons/wa-icon.png';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
+import FormNilaiProfil from "../../form/form-nilai-profil";
 
 interface RaporIndividuHeaderProps {
   profilePictureLembaga: string | null;
@@ -26,8 +28,8 @@ export default function RaporIndividuHeader({
   profilePictureIndividu = dummyProfile,
   individuName = "Bennaya Jonathan Raja Partogi Siagian",
   individuNIM = "12345678",
-  individuJurusan = "Teknik Informatika",
-  individuDivisi = "Divisi Pengembangan Sumber Daya Manusia",
+  individuJurusan = "Sistem dan Teknologi Informasi",
+  individuDivisi = "UI/UX",
   individuPosisi = "Staff",
   individuLine = "bennaya.jonathan",
   individuWA = "081234567890",
@@ -55,8 +57,8 @@ export default function RaporIndividuHeader({
       </div>
       
       <div className="flex flex-row items-start justify-start w-full">
-        <div className="max-w-[866px] flex flex-row items-center justify-start gap-10">
-          <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hidden ml-[27px] border">
+        <div className="max-w-[866px] flex flex-row items-center justify-start gap-10 mx-[27px]">
+          <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hidden">
             <Image 
               src={profilePictureIndividu ?? dummyProfile}
               alt="Profile Picture"
@@ -137,10 +139,8 @@ export default function RaporIndividuHeader({
           </div>
         </div>
 
-        <div>
-          <Button variant="light_blue" className="ml-5">
-            Unduh Rapor
-          </Button>
+        <div className="ml-5">
+          <FormNilaiProfil />
         </div>
       </div>
     </div>
