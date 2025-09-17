@@ -58,7 +58,7 @@ export default function RaporIndividuHeader({
       
       <div className="flex flex-row items-start justify-start w-full">
         <div className="max-w-[866px] flex flex-row items-center justify-start gap-10 mx-[27px]">
-          <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hiddenpush">
+          <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hidden">
             <Image 
               src={profilePictureIndividu ?? dummyProfile}
               alt="Profile Picture"
