@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
 import LineIcon from 'public/icons/line-icon-2.png';
-import WhatsappIcon from 'public/icons/wa.png';
+import WhatsappIcon from 'public/icons/wa-icon.png';
 import React from 'react';
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
