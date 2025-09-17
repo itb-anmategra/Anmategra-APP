@@ -1,6 +1,4 @@
 import ComingSoonContent from '~/app/_components/coming-soon/coming-soon-content';
-import NilaiProfilCard from '~/app/_components/rapor/individu/nilai-profil-card';
-import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function InboxPage() {
@@ -69,11 +67,6 @@ export default async function InboxPage() {
     //     </div>
     //   </div>
     // </main>
-    // <ComingSoonContent session={session} />
-    <div>
-      <RaporIndividuHeader />
-
-      <NilaiProfilCard />
-    </div>
+    <ComingSoonContent session={session} />
   )
 }
