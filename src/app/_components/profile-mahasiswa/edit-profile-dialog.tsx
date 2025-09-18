@@ -25,6 +25,7 @@ import { UploadButton } from '~/utils/uploadthing';
 
 const mahasiswaProfilSchema = z.object({
   fotoProfil: z.string().url('Harus berupa URL yang valid').optional(),
+  nim: z.string(),
   idLine: z
     .string()
     .optional()
@@ -43,10 +44,12 @@ type mahasiswaProfilSchemaType = z.infer<typeof mahasiswaProfilSchema>;
 
 const EditProfileDialog = ({
   image,
+  nim,
   line,
   whatsapp,
 }: {
   image: string | null | undefined;
+  nim: string;
   line: string;
   whatsapp: string;
 }) => {
@@ -61,6 +64,7 @@ const EditProfileDialog = ({
       fotoProfil: image ?? undefined,
       idLine: line ?? '',
       noWhatsapp: whatsapp ?? '',
+      nim: nim ?? 0,
     },
   });
 
@@ -137,6 +141,25 @@ const EditProfileDialog = ({
                             button:
                               'w-full bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md h-9 translate-y-2',
                           }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="nim"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>NIM</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="NIM"
+                          {...field}
+                          readOnly
+                          disabled
+                          className="cursor-not-allowed"
                         />
                       </FormControl>
                       <FormMessage />
