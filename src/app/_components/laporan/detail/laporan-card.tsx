@@ -1,9 +1,11 @@
-"use client";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import Image from "next/image";
-import { type Report } from "../board/report-card";
-import { type ColumnType, getTypeImage } from "../board/report-column";
-import PDFIcon from "public/images/laporan/pdf.png";
+'use client';
+
+import Image from 'next/image';
+import PDFIcon from 'public/images/laporan/pdf.png';
+import { Card, CardContent, CardHeader } from '~/components/ui/card';
+
+import { type Report } from '../board/report-card';
+import { type ColumnType, getTypeImage } from '../board/report-column';
 
 export interface LaporanDetailProps extends Report {
   status: ColumnType;
@@ -23,16 +25,16 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
         {
           <div className="flex w-full justify-between text-black">
             <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-semibold">{Laporan.name}</h1>
-              <h3 className="text-[#636A6D]">{Laporan.date}</h3>
-              <span className="border-gray-[#636A6D] rounded-full border px-4 py-2 text-sm text-[#636A6D]">
+              <h1 className="text-3xl font-semibold">{Laporan.name}</h1>
+              <h3 className="text-base text-[#636A6D]">{Laporan.date}</h3>
+              <span className="border-gray-[#636A6D] rounded-full border px-4 py-2 text-sm text-[#636A6D] justify-content-center w-fit">
                 {Laporan.category}
               </span>
             </div>
-            <div className="flex h-fit flex-row items-center gap-2 text-sm font-semibold">
+            <div className="flex h-fit flex-row items-center gap-2 text-base font-semibold">
               <Image
                 src={getTypeImage(Laporan.status)}
-                alt={Laporan.status + " Icon"}
+                alt={Laporan.status + ' Icon'}
               />
               <h4>{Laporan.status}</h4>
             </div>
@@ -41,22 +43,20 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         <>
-          <textarea
-            readOnly
-            className="h-fit resize-none focus:ring-0 focus-visible:ring-0"
-          >
-            {Laporan.content}
-          </textarea>
+          <div className="h-fit text-justify">{Laporan.content}</div>
           {Laporan.attachment && Laporan?.attachment.length > 0 && (
             <div className="flex flex-col gap-2">
               <span>{Laporan.attachment?.length} Attachment: </span>
               <div className="inline">
                 {Laporan.attachment.map((attch, index) => (
-                  <div key={index} className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white p-4 px-2 py-1">
+                  <div
+                    key={index}
+                    className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white p-4 px-2 py-1"
+                  >
                     <Image
                       className="h-5 w-5"
                       src={PDFIcon}
-                      alt={"Attachment Icon"}
+                      alt={'Attachment Icon'}
                     />
                     <h1 className="text-sm">{attch.name}</h1>
                   </div>
@@ -66,7 +66,6 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
           )}
         </>
       </CardContent>
-    </Card> 
-    
+    </Card>
   );
 };
