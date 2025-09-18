@@ -14,7 +14,9 @@ import {
 
 import { type ColumnType } from './board/report-column';
 import { LaporanDialog } from './detail/laporan-dialog';
+import DisplayBoard from '/public/icons/board-icon.svg';
 import Display from '/public/icons/display.svg';
+import DisplayList from '/public/icons/list-icon.svg';
 import Status from '/public/icons/status.svg';
 import Draft from '/public/images/laporan/draft.svg';
 import InProgress from '/public/images/laporan/in-progress.svg';
@@ -39,7 +41,7 @@ export const LaporanHeader = ({
 }: LaporanHeaderProps) => {
   return (
     <header className="flex items-center justify-between">
-      <h1 className="text-2xl font-semibold">Laporan</h1>
+      <h1 className="text-[28px] font-semibold">Laporan</h1>
       <div className="flex space-x-2 text-lg font-semibold">
         {/* Dropdown for Display Management */}
         <DropdownMenu>
@@ -60,14 +62,18 @@ export const LaporanHeader = ({
               className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold"
               onClick={() => setCurrentDisplay('List')}
             >
-              <LayoutDashboard className="h-4 w-4" />
+              <Image src={DisplayList} alt="Display-list" className="h-4 w-4" />
               <p className="text-sm">List</p>
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold hover:bg-gray-200"
               onClick={() => setCurrentDisplay('Board')}
             >
-              <AlignJustify className="h-4 w-4" />
+              <Image
+                src={DisplayBoard}
+                alt="Display-list"
+                className="h-4 w-4"
+              />
               <p className="text-sm text-neutral-900">Board</p>
             </DropdownMenuItem>
           </DropdownMenuContent>

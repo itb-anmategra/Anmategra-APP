@@ -1,27 +1,29 @@
-"use client";
+'use client';
+
 // Library Import
-import { useState } from "react";
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Input } from '~/components/ui/input';
+
 // Components Import
-import { KanbanBoard } from "./board/kanban-board";
-import { type CurrentDisplay, LaporanHeader } from "./laporan-header";
-import { type ColumnProps, type ColumnType } from "./board/report-column";
-import { ListDisplay } from "./list/list-display";
-import { Input } from "~/components/ui/input";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Plus } from "lucide-react";
-import { LaporanDialog } from "./detail/laporan-dialog";
+import { KanbanBoard } from './board/kanban-board';
+import { type ColumnProps, type ColumnType } from './board/report-column';
+import { LaporanDialog } from './detail/laporan-dialog';
+import { type CurrentDisplay, LaporanHeader } from './laporan-header';
+import { ListDisplay } from './list/list-display';
 
 interface LaporanProps {
   data: ColumnProps[];
 }
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
-  const [display, setCurrentDisplay] = useState<CurrentDisplay>("Board");
+  const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
 
   const [status, setStatus] = useState<ColumnType[]>([
-    "Draft",
-    "In Progress",
-    "Resolved",
+    'Draft',
+    'In Progress',
+    'Resolved',
   ]);
 
   const toggleStatus = (column: ColumnType) => {
@@ -54,7 +56,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       {!isLaporanEmpty && (
         <Input
           placeholder="Cari laporan"
-          className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+          className="rounded-2xl py-5 bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
           startAdornment={
             <MagnifyingGlassIcon className="size-4 text-gray-500" />
           }
@@ -62,7 +64,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       )}
 
       {/* Board Display */}
-      {display === "Board" && !isLaporanEmpty && (
+      {display === 'Board' && !isLaporanEmpty && (
         <KanbanBoard
           kanbanData={Laporan.data}
           hideColumnAction={hideStatus}
@@ -70,7 +72,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
         />
       )}
       {/* List Display */}
-      {display === "List" && !isLaporanEmpty && (
+      {display === 'List' && !isLaporanEmpty && (
         <ListDisplay
           kanbanData={Laporan.data}
           hideColumnAction={hideStatus}
