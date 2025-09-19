@@ -39,7 +39,6 @@ export default function RaporIndividuHeader({
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(nilaiProfils);
   const handleUpdateNilaiProfilChange = (updatedProfiles: NilaiProfilCardType[]) => {
     setNilaiProfilData(updatedProfiles);
-    console.log("Updated Nilai Profil:", updatedProfiles);
   }
 
   return (
@@ -84,28 +83,28 @@ export default function RaporIndividuHeader({
 
             <div className="flex flex-row gap-[50px] items-start justify-start mb-[18px]">
               <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-">NIM</div>
+                <div className="text-[18px] text-neutral-500">NIM</div>
                 <div className="text-[18px] text-neutral-800">
                   {individuNIM}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-">Jurusan</div>
+                <div className="text-[18px] text-neutral-500">Jurusan</div>
                 <div className="text-[18px] text-neutral-800">
                   {individuJurusan}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-">Divisi</div>
+                <div className="text-[18px] text-neutral-500">Divisi</div>
                 <div className="text-[18px] text-neutral-800">
                   {individuDivisi}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-">Posisi</div>
+                <div className="text-[18px] text-neutral-500">Posisi</div>
                 <div className="text-[18px] text-neutral-800">
                   {individuPosisi}
                 </div>

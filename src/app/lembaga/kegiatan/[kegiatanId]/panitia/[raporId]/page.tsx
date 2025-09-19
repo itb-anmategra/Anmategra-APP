@@ -5,12 +5,37 @@ import ProfilKegiatanSection from "~/app/_components/rapor/individu/profil-kegia
 import PemetaanProfilSection from "~/app/_components/rapor/individu/pemetaan-profil-section";
 import { ProfilGroup } from "~/app/lembaga/kegiatan/[kegiatanId]/profil/constant";
 
-// data dari API
-export type dataProfil = {
+// dua type di bawah ini sebagai catatan ketika integrasi nanti
+// format data dari API untuk display pada bagian tabel profil kegiatan
+// dan pemetaan profil kegiatan dengan profil KM ITB
+type dataProfil = {
   id: string;
   name: string;
   description: string;
   profil_km_id: string[];
+}
+
+// format data dari API untuk display pada header rapor individu, perlu fetch
+// foto lembaga dan foto individu dulu untuk melengkapi props
+type dataProfilIndividu = {
+  user_id: string,
+  name: string,
+  nim: string,
+  jurusan: string,
+  lineId: string,
+  whatsapp: string,
+  division: string,
+  position: string,
+  nilai: [
+    {
+      profil_id: string,
+      nilai: number,
+    },
+    {
+      profil_id: string,
+      nilai: number,
+    },
+  ],
 }
 
 export type HeaderDataProps = {
@@ -28,14 +53,14 @@ export type HeaderDataProps = {
   nilaiProfils?: NilaiProfilCardType[];
 }
 
-export type NilaiProfilType = {
+export type ProfilDeskripsiType = {
   idProfil: string;
   namaProfil: string;
   deskripsiProfil: string;
 }
 
 export type ProfilKegiatanSectionProps = {
-  nilaiProfilData?: NilaiProfilType[];
+  nilaiProfilData?: ProfilDeskripsiType[];
 }
 
 export type PemetaanProfilSectionProps = {
