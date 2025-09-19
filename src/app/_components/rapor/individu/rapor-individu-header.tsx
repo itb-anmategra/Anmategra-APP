@@ -1,39 +1,25 @@
 import Image, { type StaticImageData } from "next/image";
 import {Avatar, AvatarFallback, AvatarImage} from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
 
 import LineIcon from 'public/icons/line-icon-2.png';
 import WAIcon from 'public/icons/wa-icon.png';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import FormNilaiProfil from "../../form/form-nilai-profil";
-
-interface RaporIndividuHeaderProps {
-  profilePictureLembaga: string | null;
-  lembagaName: string;
-  kegiatanName?: string;
-  profilePictureIndividu: StaticImageData | string;
-  individuName: string;
-  individuNIM: string;
-  individuJurusan: string;
-  individuDivisi: string;
-  individuPosisi: string;
-  individuLine: string;
-  individuWA: string;
-}
+import { HeaderDataProps } from "~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page";
 
 export default function RaporIndividuHeader({
-  profilePictureLembaga = null,
+  profilePictureLembaga = "/images/logo/hmif-logo.png",
   lembagaName = "HMIF ITB",
   kegiatanName = "WISUDA OKTOBER 2024",
-  profilePictureIndividu = dummyProfile,
-  individuName = "Bennaya Jonathan Raja Partogi Siagian",
+  profilePictureIndividu = "/images/placeholder/profile-pic.png",
+  individuName = "John Doe",
   individuNIM = "12345678",
-  individuJurusan = "Sistem dan Teknologi Informasi",
+  individuJurusan = "Sastra Mesin",
   individuDivisi = "UI/UX",
   individuPosisi = "Staff",
-  individuLine = "bennaya.jonathan",
+  individuLine = "john_doe",
   individuWA = "081234567890",
-} : RaporIndividuHeaderProps) {
+} : HeaderDataProps) {
   return (
     <div className="flex flex-col items-start justify-center gap-8">
       <div className="flex flex-row items-center justify-start w-full mt-1 gap-4">

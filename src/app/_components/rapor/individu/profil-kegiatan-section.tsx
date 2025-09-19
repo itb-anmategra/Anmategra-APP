@@ -1,15 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
+import { type NilaiProfilType, type ProfilKegiatanSectionProps } from "~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page"
 
-type NilaiProfilData = {
-  namaProfil: string;
-  deskripsiProfil: string;
-}
-
-interface ProfilKegiatanSectionProps {
-  nilaiProfilData: NilaiProfilData[];
-}
-
-const dummyData: NilaiProfilData[] = [
+const dummyData: NilaiProfilType[] = [
   { namaProfil: "Bertanggung Jawab", deskripsiProfil: "Selalu menyelesaikan tugas tepat waktu dan dapat diandalkan dalam setiap situasi." },
   { namaProfil: "Kerjasama Tim", deskripsiProfil: "Mampu bekerja sama dengan baik dalam tim, mendukung anggota lain, dan berkontribusi pada tujuan bersama." },
   { namaProfil: "Inisiatif", deskripsiProfil: "Proaktif dalam mengambil tindakan tanpa perlu diarahkan, serta selalu mencari cara untuk meningkatkan proses kerja." },
