@@ -41,7 +41,7 @@ export const LaporanHeader = ({
 }: LaporanHeaderProps) => {
   return (
     <header className="flex items-center justify-between">
-      <h1 className="text-[28px] font-semibold">Laporan</h1>
+      <h1 className="text-[32px] font-semibold">Laporan</h1>
       <div className="flex space-x-2 text-lg font-semibold">
         {/* Dropdown for Display Management */}
         <DropdownMenu>
