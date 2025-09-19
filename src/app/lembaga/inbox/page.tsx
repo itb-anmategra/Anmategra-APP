@@ -1,5 +1,7 @@
 import ComingSoonContent from '~/app/_components/coming-soon/coming-soon-content';
-import { getServerAuthSession } from "~/server/auth";
+import { getServerAuthSession } from '~/server/auth';
+
+import InboxContent from './_components/inbox-content';
 
 export default async function InboxPage() {
   const session = await getServerAuthSession();
@@ -67,6 +69,7 @@ export default async function InboxPage() {
     //     </div>
     //   </div>
     // </main>
-    <ComingSoonContent session={session} />
-  )
+    // <ComingSoonContent session={session} />
+    <InboxContent />
+  );
 }
