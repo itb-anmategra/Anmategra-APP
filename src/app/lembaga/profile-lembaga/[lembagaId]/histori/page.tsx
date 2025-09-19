@@ -1,77 +1,11 @@
 import { ChevronRight, Icon, Pencil } from 'lucide-react';
-import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import React from 'react';
 import BestStaffCard from '~/app/_components/card/best-staff-card';
 import BestStaff from '~/app/lembaga/kegiatan/[kegiatanId]/_components/best-staff-form';
 import { Button } from '~/components/ui/button';
 
+import { dummyDate, dummyMahasiswaList } from './_components/dummy-histori';
 import { HistoriBreadCrumb } from './_components/histori-breadcrumb';
-
-const dummyDate = [
-  {
-    startDate: 'Januari',
-    endDate: 'Februari',
-  },
-  {
-    startDate: 'Maret',
-    endDate: 'April',
-  },
-  {
-    startDate: 'Mei',
-    endDate: 'Juni',
-  },
-  {
-    startDate: 'Juli',
-    endDate: 'Agustus',
-  },
-  {
-    startDate: 'September',
-    endDate: 'Oktober',
-  },
-];
-
-const dummyMahasiswaList = [
-  {
-    nama: 'John Doe',
-    NIM: '111234567',
-    jurusan: 'Sastra Mesin',
-    profilePhoto: dummyProfile,
-    divisi: 'UI/UX',
-    id: '1',
-  },
-  {
-    nama: 'Jane Smith',
-    NIM: '111234568',
-    jurusan: 'Teknik Informatika',
-    profilePhoto: dummyProfile,
-    divisi: 'Frontend',
-    id: '2',
-  },
-  {
-    nama: 'Michael Johnson',
-    NIM: '111234569',
-    jurusan: 'Sistem Informasi',
-    profilePhoto: dummyProfile,
-    divisi: 'Backend',
-    id: '3',
-  },
-  {
-    nama: 'Emily Davis',
-    NIM: '111234570',
-    jurusan: 'Manajemen',
-    profilePhoto: dummyProfile,
-    divisi: 'Humas',
-    id: '4',
-  },
-  {
-    nama: 'Daniel Lee',
-    NIM: '111234571',
-    jurusan: 'Teknik Elektro',
-    profilePhoto: dummyProfile,
-    divisi: 'Mobile Dev',
-    id: '5',
-  },
-];
 
 const HistoriBestStaffPage = () => {
   const namaLembaga = 'HMIF ITB';
