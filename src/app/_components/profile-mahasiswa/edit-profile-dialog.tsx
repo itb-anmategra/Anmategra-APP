@@ -150,7 +150,7 @@ const EditProfileDialog = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-52 h-52 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
+                          <div className="relative w-64 h-64 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
                             {/* Display the image */}
                             {field.value ? (
                               <Image

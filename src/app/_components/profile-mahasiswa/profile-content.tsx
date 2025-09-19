@@ -104,9 +104,19 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             </div>
           </div>
         )}
-        <div className="flex items-center justify-center w-full">
+        <div
+          className={cn(
+            'flex items-center justify-center w-full',
+            isEdit ? '' : '',
+          )}
+        >
           {session?.user.id === userId && (
-            <div className="w-full flex max-w-[600px] h-[56px]">
+            <div
+              className={cn(
+                'w-full flex',
+                isEdit ? 'max-w-none' : 'max-w-[600px] h-[56px]',
+              )}
+            >
               <EditProfileDialog
                 image={mahasiswaData?.user.image}
                 nama={mahasiswaData?.user.name ?? ''}
