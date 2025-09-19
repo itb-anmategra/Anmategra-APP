@@ -54,7 +54,7 @@ const AssociationRequestEntryUser: React.FC<{ data: PermintaanAsosiasi[] }> = ({
               onClick={() =>
                 console.log(`Permintaan untuk divisi ${item.divisi} ditolak.`)
               }
-              className="border-none px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#FF0000] hover:bg-[#FF0000] hover:text-white"
+              className="border-none px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#FF0000] hover:bg-[#FF0000] hover:text-white active:bg-[#FF0000] active:text-white"
             >
               DECLINE
             </Button>
