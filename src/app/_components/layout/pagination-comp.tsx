@@ -44,7 +44,7 @@ export default function customPagination({
 
   return (
     <Pagination>
-      <PaginationContent className="gap-2">
+      <PaginationContent className="gap-[16px]">
         <PaginationItem>
           <PaginationLink
             href="#"
