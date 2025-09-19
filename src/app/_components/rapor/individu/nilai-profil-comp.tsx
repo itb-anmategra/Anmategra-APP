@@ -1,15 +1,21 @@
+import React, { useState } from "react";
+
 import NilaiProfilCard from "../../card/nilai-profil-card";
-import { NilaiProfilCompProps } from "~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page"
+import { NilaiProfilCardType } from "../../card/nilai-profil-card";
+
+type NilaiProfilCompProps = {
+  nilaiProfils?: NilaiProfilCardType[];
+}
 
 const defaultNilaiProfils = [
-  { namaProfil: 'Profil 1', nilaiProfil: 100 },
-  { namaProfil: 'Profil 2', nilaiProfil: 90 },
-  { namaProfil: 'Profil 3', nilaiProfil: 95 },
-  { namaProfil: 'Profil 4', nilaiProfil: 85 },
-  { namaProfil: 'Profil 5', nilaiProfil: 80 },
-  { namaProfil: 'Profil 6', nilaiProfil: 75 },
-  { namaProfil: 'Profil 7', nilaiProfil: 70 },
-  { namaProfil: 'Profil 8', nilaiProfil: 65 },
+  { idProfil: 'Profil 1', nilaiProfil: 100 },
+  { idProfil: 'Profil 2', nilaiProfil: 90 },
+  { idProfil: 'Profil 3', nilaiProfil: 95 },
+  { idProfil: 'Profil 4', nilaiProfil: 85 },
+  { idProfil: 'Profil 5', nilaiProfil: 80 },
+  { idProfil: 'Profil 6', nilaiProfil: 75 },
+  { idProfil: 'Profil 7', nilaiProfil: 70 },
+  { idProfil: 'Profil 8', nilaiProfil: 65 },
 ]
 
 export default function NilaiProfilComp({
@@ -26,7 +32,7 @@ export default function NilaiProfilComp({
         {nilaiProfils.map((profil, index) => (
           <NilaiProfilCard
             key={index}
-            namaProfil={profil.namaProfil}
+            idProfil={profil.idProfil}
             nilaiProfil={profil.nilaiProfil}
           />
         ))}

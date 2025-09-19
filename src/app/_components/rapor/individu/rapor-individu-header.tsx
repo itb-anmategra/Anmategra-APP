@@ -1,17 +1,32 @@
-import Image, { type StaticImageData } from "next/image";
-import {Avatar, AvatarFallback, AvatarImage} from "~/components/ui/avatar";
+'use client';
+import React, { useState } from "react";
 
+import Image from "next/image";
+import {Avatar, AvatarFallback, AvatarImage} from "~/components/ui/avatar";
 import LineIcon from 'public/icons/line-icon-2.png';
 import WAIcon from 'public/icons/wa-icon.png';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import FormNilaiProfil from "../../form/form-nilai-profil";
 import { HeaderDataProps } from "~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page";
+import NilaiProfilComp from "./nilai-profil-comp";
+import { NilaiProfilCardType } from "../../card/nilai-profil-card";
+
+const dummyNilaiProfils: NilaiProfilCardType[] = [
+  { idProfil: 'Profil 1', nilaiProfil: 100 },
+  { idProfil: 'Profil 2', nilaiProfil: 90 },
+  { idProfil: 'Profil 3', nilaiProfil: 95 },
+  { idProfil: 'Profil 4', nilaiProfil: 85 },
+  { idProfil: 'Profil 5', nilaiProfil: 80 },
+  { idProfil: 'Profil 6', nilaiProfil: 75 },
+  { idProfil: 'Profil 7', nilaiProfil: 70 },
+  { idProfil: 'Profil 8', nilaiProfil: 65 },
+]
 
 export default function RaporIndividuHeader({
   profilePictureLembaga = "/images/logo/hmif-logo.png",
   lembagaName = "HMIF ITB",
   kegiatanName = "WISUDA OKTOBER 2024",
-  profilePictureIndividu = "/images/placeholder/profile-pic.png",
+  profilePictureIndividu = "",
   individuName = "John Doe",
   individuNIM = "12345678",
   individuJurusan = "Sastra Mesin",
@@ -19,10 +34,17 @@ export default function RaporIndividuHeader({
   individuPosisi = "Staff",
   individuLine = "john_doe",
   individuWA = "081234567890",
+  nilaiProfils = dummyNilaiProfils,
 } : HeaderDataProps) {
+  const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(nilaiProfils);
+  const handleUpdateNilaiProfilChange = (updatedProfiles: NilaiProfilCardType[]) => {
+    setNilaiProfilData(updatedProfiles);
+    console.log("Updated Nilai Profil:", updatedProfiles);
+  }
+
   return (
-    <div className="flex flex-col items-start justify-center gap-8">
-      <div className="flex flex-row items-center justify-start w-full mt-1 gap-4">
+    <div className="flex flex-col items-start justify-center">
+      <div className="flex flex-row items-center justify-start w-full mt-1 gap-4 mb-8">
         <div
           className="flex w-fit items-center justify-center gap-2 rounded-full bg-primary-400 px-3 py-1 text-[0.7rem] text-white">
           <Avatar className="size-4 bg-white">
@@ -42,7 +64,7 @@ export default function RaporIndividuHeader({
         </div>
       </div>
       
-      <div className="flex flex-row items-start justify-start w-full">
+      <div className="flex flex-row items-start justify-start w-full mb-16">
         <div className="max-w-[866px] flex flex-row items-center justify-start gap-10 mx-[27px]">
           <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hidden">
             <Image 
@@ -126,8 +148,25 @@ export default function RaporIndividuHeader({
         </div>
 
         <div className="ml-5">
-          <FormNilaiProfil />
+          <FormNilaiProfil
+            initialProfiles={nilaiProfils.map((profil, index) => 
+              ({ id: index + 1, value: profil.nilaiProfil ?? 0 })
+            )}
+            onSave={(updatedProfiles) => {
+              const updatedNilaiProfils = updatedProfiles.map((p, idx) => ({
+                idProfil: `Profil ${idx+1}`,
+                nilaiProfil: p.value ?? 0,
+              }));
+              handleUpdateNilaiProfilChange(updatedNilaiProfils);
+            }}
+          />
         </div>
+      </div>
+
+      <div className="overflow-x-auto w-full px-10">
+        <NilaiProfilComp
+          nilaiProfils={nilaiProfilData}
+        />
       </div>
     </div>
   )

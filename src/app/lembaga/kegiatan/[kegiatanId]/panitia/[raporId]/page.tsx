@@ -1,9 +1,17 @@
 import RaporIndividuHeader from "~/app/_components/rapor/individu/rapor-individu-header";
 import { RaporBreadcrumb } from "~/app/_components/rapor/rapor-breadcrumb";
 import { type NilaiProfilCardType } from "~/app/_components/card/nilai-profil-card";
-import NilaiProfilComp from "~/app/_components/rapor/individu/nilai-profil-comp";
 import ProfilKegiatanSection from "~/app/_components/rapor/individu/profil-kegiatan-section";
 import PemetaanProfilSection from "~/app/_components/rapor/individu/pemetaan-profil-section";
+import { ProfilGroup } from "~/app/lembaga/kegiatan/[kegiatanId]/profil/constant";
+
+// data dari API
+export type dataProfil = {
+  id: string;
+  name: string;
+  description: string;
+  profil_km_id: string[];
+}
 
 export type HeaderDataProps = {
   profilePictureLembaga?: string | null;
@@ -17,13 +25,11 @@ export type HeaderDataProps = {
   individuPosisi: string | null;
   individuLine?: string | null;
   individuWA?: string | null;
-}
-
-export type NilaiProfilCompProps = {
   nilaiProfils?: NilaiProfilCardType[];
 }
 
 export type NilaiProfilType = {
+  idProfil: string;
   namaProfil: string;
   deskripsiProfil: string;
 }
@@ -31,6 +37,21 @@ export type NilaiProfilType = {
 export type ProfilKegiatanSectionProps = {
   nilaiProfilData?: NilaiProfilType[];
 }
+
+export type PemetaanProfilSectionProps = {
+  pemetaanProfilData?: ProfilGroup[];
+}
+
+const dummyNilaiProfils: NilaiProfilCardType[] = [
+  { idProfil: 'Profil 1', nilaiProfil: 100 },
+  { idProfil: 'Profil 2', nilaiProfil: 89 },
+  { idProfil: 'Profil 3', nilaiProfil: 95 },
+  { idProfil: 'Profil 4', nilaiProfil: 85 },
+  { idProfil: 'Profil 5', nilaiProfil: 80 },
+  { idProfil: 'Profil 6', nilaiProfil: 75 },
+  { idProfil: 'Profil 7', nilaiProfil: 70 },
+  { idProfil: 'Profil 8', nilaiProfil: 65 },
+]
 
 const dummyHeaderData: HeaderDataProps = {
   profilePictureLembaga: "/images/logo/hmif-logo.png",
@@ -44,18 +65,19 @@ const dummyHeaderData: HeaderDataProps = {
   individuPosisi: "Staff",
   individuLine: "john_doe",
   individuWA: "081234567890",
+  nilaiProfils: dummyNilaiProfils,
 }
 
 interface RaporIndividuPanitiaPageProps {
   headerData?: HeaderDataProps;
-  nilaiProfils?: NilaiProfilCompProps;
   profilKegiatanData?: ProfilKegiatanSectionProps;
+  pemetaanProfilData?: PemetaanProfilSectionProps;
 }
 
 export default function RaporIndividuPanitiaPage({
   headerData = dummyHeaderData,
-  nilaiProfils,
   profilKegiatanData,
+  pemetaanProfilData
 } : RaporIndividuPanitiaPageProps) {
   return (
     <main className="flex flex-col p-8 min-h-screen">
@@ -75,15 +97,13 @@ export default function RaporIndividuPanitiaPage({
           {...headerData}
         />
 
-        <NilaiProfilComp
-          {...nilaiProfils}
-        />
-
         <ProfilKegiatanSection
           {...profilKegiatanData}
         />
 
-        <PemetaanProfilSection />
+        <PemetaanProfilSection
+          {...pemetaanProfilData}
+        />
       </div>
     </main>
   )

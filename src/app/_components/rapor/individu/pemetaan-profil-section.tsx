@@ -1,12 +1,11 @@
 import ProfilTable from "~/app/lembaga/kegiatan/_components/table/event-profil-table"
 import { ChevronDown } from "lucide-react"
 import { eventProfilProp } from "~/app/lembaga/kegiatan/[kegiatanId]/profil/constant"
+import { PemetaanProfilSectionProps } from "~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page"
 
-type PemetaanProfilSectionProps = {
-  profilData?: typeof eventProfilProp
-}
-
-export default function PemetaanProfilSection() {
+export default function PemetaanProfilSection({
+  pemetaanProfilData = eventProfilProp,
+} : PemetaanProfilSectionProps) {
   return (
     <div className="flex flex-col gap-[10px]">
       <div className="flex flex-row gap-[5px] items-center">
@@ -15,8 +14,7 @@ export default function PemetaanProfilSection() {
         </div>
         <ChevronDown className="w-6 h-6 text-neutral-700" />
       </div>
-
-      <ProfilTable profilData={eventProfilProp} />
+      <ProfilTable profilData={pemetaanProfilData} />
     </div>
   )
 }
