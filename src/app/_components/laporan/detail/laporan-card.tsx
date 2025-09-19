@@ -25,13 +25,13 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
         {
           <div className="flex w-full justify-between text-black">
             <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-semibold">{Laporan.name}</h1>
-              <h3 className="text-base text-[#636A6D]">{Laporan.date}</h3>
-              <span className="border-gray-[#636A6D] rounded-full border px-4 py-2 text-sm text-[#636A6D] justify-content-center w-fit">
+              <h1 className="text-[32px] font-semibold">{Laporan.name}</h1>
+              <h3 className="text-[18px] text-[#636A6D]">{Laporan.date}</h3>
+              <span className="border-gray-[#636A6D] rounded-full border px-4 py-2 text-[16px] text-[#636A6D] justify-content-center w-fit">
                 {Laporan.category}
               </span>
             </div>
-            <div className="flex h-fit flex-row items-center gap-2 text-base font-semibold">
+            <div className="flex h-fit flex-row items-center gap-2 text-[18px] font-semibold">
               <Image
                 src={getTypeImage(Laporan.status)}
                 alt={Laporan.status + ' Icon'}
@@ -43,22 +43,26 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         <>
-          <div className="h-fit text-justify">{Laporan.content}</div>
+          <div className="h-fit text-justify text-[20px]">
+            {Laporan.content}
+          </div>
           {Laporan.attachment && Laporan?.attachment.length > 0 && (
             <div className="flex flex-col gap-2">
-              <span>{Laporan.attachment?.length} Attachment: </span>
+              <span className="text-[20px]">
+                {Laporan.attachment?.length} Attachment:{' '}
+              </span>
               <div className="inline">
                 {Laporan.attachment.map((attch, index) => (
                   <div
                     key={index}
-                    className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white p-4 px-2 py-1"
+                    className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white px-[24px] py-2"
                   >
                     <Image
                       className="h-5 w-5"
                       src={PDFIcon}
                       alt={'Attachment Icon'}
                     />
-                    <h1 className="text-sm">{attch.name}</h1>
+                    <h1 className="text-[18px]">{attch.name}</h1>
                   </div>
                 ))}
               </div>
