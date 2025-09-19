@@ -40,7 +40,15 @@ type SidebarItemType = {
   icon: React.ReactElement;
 };
 
-const SIDEBAR_ITEMS: SidebarItemType[] = [
+type SidebarProfileData = {
+  id: string;
+  name: string;
+  profilePicture: string;
+  label: string;
+  href: string;
+};
+
+const SIDEBAR_ITEMS_LEMBAGA: SidebarItemType[] = [
   { label: 'Beranda', href: '/lembaga', icon: <HomeIcon /> },
   { label: 'Kegiatan', href: '/lembaga/kegiatan', icon: <CalendarIcon /> },
   { label: 'Anggota', href: '/lembaga/anggota', icon: <PersonIcon /> },
@@ -52,19 +60,53 @@ const SIDEBAR_ITEMS: SidebarItemType[] = [
   },
 ];
 
+const SIDEBAR_ITEMS_MAHASISWA: SidebarItemType[] = [
+  { label: 'Beranda', href: '/mahasiswa', icon: <HomeIcon /> },
+  {
+    label: 'Laporan',
+    href: '/mahasiswa/laporan',
+    icon: <ExclamationTriangleIcon />,
+  },
+  { label: 'Inbox', href: '/mahasiswa/inbox', icon: <EnvelopeOpenIcon /> },
+];
+
 export const Sidebar = ({ session }: { session: Session | null }) => {
-  const lembaga: Lembaga = {
-    id: session?.user.lembagaId ?? '',
-    name: session?.user.name ?? '',
-    profilePicture: session?.user.image ?? '',
-  };
+  const user = session?.user;
+  const role = user?.role ?? 'mahasiswa';
+
+  const sidebarItems =
+    role === 'lembaga' ? SIDEBAR_ITEMS_LEMBAGA : SIDEBAR_ITEMS_MAHASISWA;
+
+  let profileData: SidebarProfileData;
+  if (role === 'lembaga') {
+    const lembaga: Lembaga = {
+      id: user?.lembagaId ?? '',
+      name: user?.name ?? '',
+      profilePicture: user?.image ?? '',
+    };
+    profileData = {
+      id: lembaga.id ?? '',
+      name: lembaga.name,
+      profilePicture: lembaga.profilePicture ?? '',
+      label: 'Lembaga',
+      href: `/lembaga/profile-lembaga/${lembaga.id ?? ''}`,
+    };
+  } else {
+    profileData = {
+      id: user?.id ?? '',
+      name: user?.name ?? '',
+      profilePicture: user?.image ?? '',
+      label: 'Mahasiswa',
+      href: `/mahasiswa/profile-mahasiswa/${user?.id ?? ''}`,
+    };
+  }
 
   return (
     <>
       <div className="ml-[16rem]" />
       <div className="w-[16rem] border-r bg-neutral-50 p-6 fixed left-0 h-screen">
         <nav className="w-full h-full flex flex-col justify-between">
-          <div className="space-y-6">
+          <div className="space-y-[32px]">
             <Link href={'/'}>
               <Image
                 src={LogoAnmategra}
@@ -73,36 +115,37 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
                 height={50}
               />
             </Link>
-            <SidebarItems />
+            <SidebarItems items={sidebarItems} />
           </div>
-          <SidebarProfile lembaga={lembaga} />
+          <SidebarProfile profile={profileData} />
         </nav>
       </div>
     </>
   );
 };
 
-const SidebarItems = () => {
+const SidebarItems = ({ items }: { items: SidebarItemType[] }) => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col gap-2">
-      {SIDEBAR_ITEMS.map((item) => (
+    <div className="flex flex-col gap-[16px]">
+      {items.map((item) => (
         <Button
           key={item.href}
-          className="flex items-center justify-start px-4"
+          className="flex items-center justify-start px-4 hover:bg-[#DFE7EC] hover:text-[#2B6282] rounded-[8px] text-[#636A6D] text-[18px]"
           variant="ghost"
           asChild
         >
           <Link
             href={item.href}
             className={cn(
-              'text-neutral-700',
-              pathname === item.href && 'bg-neutral-200 text-Blue-Dark',
+              pathname === item.href && 'bg-[#DFE7EC] text-[#2B6282]',
             )}
           >
-            {item.icon}
-            {item.label}
+            <div className="flex flex-row items-center gap-[12px]">
+              {item.icon}
+              {item.label}
+            </div>
           </Link>
         </Button>
       ))}
@@ -110,31 +153,31 @@ const SidebarItems = () => {
   );
 };
 
-const SidebarProfile = ({ lembaga }: { lembaga: Lembaga }) => {
+const SidebarProfile = ({ profile }: { profile: SidebarProfileData }) => {
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <Link href={`/lembaga/profile-lembaga/${lembaga.id}`}>
+      <Link href={profile.href}>
         <div className="flex items-center gap-4 px-1 py-2">
           <Avatar>
             <AvatarImage
               className="object-contain"
-              src={lembaga.profilePicture ?? ''}
+              src={profile.profilePicture ?? ''}
             />
-            <AvatarFallback>{lembaga.name.slice(0, 2)}</AvatarFallback>
+            <AvatarFallback>{profile.name.slice(0, 2)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-0">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-3">
-                  {lembaga.name}
+                <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-2 text-[18px]">
+                  {profile.name}
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{lembaga.name}</p>
+                  <p>{profile.name}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <span className="line-clamp-1 text-xs text-neutral-700">
-              Lembaga
+            <span className="line-clamp-1 text-xs text-neutral-700 text-[16px]">
+              {profile.label}
             </span>
           </div>
         </div>
