@@ -106,7 +106,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
       <div className="ml-[16rem]" />
       <div className="w-[16rem] border-r bg-neutral-50 p-6 fixed left-0 h-screen">
         <nav className="w-full h-full flex flex-col justify-between">
-          <div className="space-y-6">
+          <div className="space-y-[32px]">
             <Link href={'/'}>
               <Image
                 src={LogoAnmategra}
@@ -128,23 +128,24 @@ const SidebarItems = ({ items }: { items: SidebarItemType[] }) => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-[16px]">
       {items.map((item) => (
         <Button
           key={item.href}
-          className="flex items-center justify-start px-4"
+          className="flex items-center justify-start px-4 hover:bg-[#DFE7EC] hover:text-[#2B6282] rounded-[8px] text-[#636A6D] text-[18px]"
           variant="ghost"
           asChild
         >
           <Link
             href={item.href}
             className={cn(
-              'text-neutral-700',
-              pathname === item.href && 'bg-neutral-200 text-Blue-Dark',
+              pathname === item.href && 'bg-[#DFE7EC] text-[#2B6282]',
             )}
           >
-            {item.icon}
-            {item.label}
+            <div className="flex flex-row items-center gap-[12px]">
+              {item.icon}
+              {item.label}
+            </div>
           </Link>
         </Button>
       ))}
@@ -167,7 +168,7 @@ const SidebarProfile = ({ profile }: { profile: SidebarProfileData }) => {
           <div className="flex flex-col gap-0">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-3">
+                <TooltipTrigger className="line-clamp-1 font-semibold p-0 m-0 -translate-x-2 text-[18px]">
                   {profile.name}
                 </TooltipTrigger>
                 <TooltipContent>
@@ -175,7 +176,7 @@ const SidebarProfile = ({ profile }: { profile: SidebarProfileData }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <span className="line-clamp-1 text-xs text-neutral-700">
+            <span className="line-clamp-1 text-xs text-neutral-700 text-[16px]">
               {profile.label}
             </span>
           </div>
