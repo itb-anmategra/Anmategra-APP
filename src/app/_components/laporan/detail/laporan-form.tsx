@@ -185,14 +185,7 @@ const LaporanFormDialog: React.FC = () => {
             >
               <div className="flex items-center justify-between w-full h-[36px]">
                 <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClose}
-                    className="p-1 h-auto"
-                  >
-                    <ChevronRight className="w-5 h-5 text-[#000000]" />
-                  </Button>
+                  <ChevronRight className="w-5 h-5 text-[#000000]" />
                   <span className="text-[#636A6D] font-bold text-[16px] leading-[24px]">
                     Laporan baru
                   </span>
