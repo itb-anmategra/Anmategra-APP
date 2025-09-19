@@ -2,32 +2,32 @@ import Image from 'next/image';
 import ComingSoonContent from '~/app/_components/coming-soon/coming-soon-content';
 import { getServerAuthSession } from '~/server/auth';
 
-import AssociationRequestEntryLembaga from './_components/association-request-entry-lembaga';
+import AssociationRequestEntryUser from '../_components/association-request-entry-user';
 
 const associationRequestEntries = [
   {
     image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'HMIF',
-    jumlah: '100',
-    tujuan: 'Lembaga',
+    nama: 'Jason Jahja',
+    posisi: 'Staff',
+    divisi: 'UI/UX',
   },
   {
     image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wispril HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
+    nama: 'Jason Jahja',
+    posisi: 'Staff',
+    divisi: 'Back End',
   },
   {
     image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wisagus HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
+    nama: 'Jason Jahja',
+    posisi: 'Staff',
+    divisi: 'Front End',
   },
   {
     image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wisokto HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
+    nama: 'Jason Jahja',
+    posisi: 'Staff',
+    divisi: 'Marketing',
   },
 ];
 
@@ -102,14 +102,14 @@ export default async function InboxPage() {
     <div className="flex min-h-screen bg-[#F8F9FA]">
       <div className="flex-1 p-10">
         <h1 className="m-0 mb-3 text-[32px] weight-600 font-semibold">
-          Permintaan Asosiasi
+          Permintaan Asosiasi [Nama Lembaga/Nama Kegiatan]
         </h1>
 
         <div className="flex items-center mb-5 gap-[18px]">
           <div className="flex-1 relative align-center">
             <input
               type="text"
-              placeholder="Cari nama lembaga atau kegiatan"
+              placeholder="Cari nama pemohon"
               className="w-full pl-[48px] p-3 border border-[#C4CACE] rounded-[20px] font-regular text-[#636A6D]"
             />
             <Image
@@ -133,7 +133,7 @@ export default async function InboxPage() {
         </div>
 
         <div>
-          <AssociationRequestEntryLembaga data={associationRequestEntries} />
+          <AssociationRequestEntryUser data={associationRequestEntries} />
         </div>
       </div>
     </div>

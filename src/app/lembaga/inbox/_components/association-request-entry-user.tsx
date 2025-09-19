@@ -11,7 +11,7 @@ type PermintaanAsosiasi = {
   divisi: string;
 };
 
-const AssociationRequestEntry: React.FC<{ data: PermintaanAsosiasi[] }> = ({
+const AssociationRequestEntryUser: React.FC<{ data: PermintaanAsosiasi[] }> = ({
   data,
 }) => {
   return (
@@ -75,4 +75,4 @@ const AssociationRequestEntry: React.FC<{ data: PermintaanAsosiasi[] }> = ({
   );
 };
 
-export default AssociationRequestEntry;
+export default AssociationRequestEntryUser;
