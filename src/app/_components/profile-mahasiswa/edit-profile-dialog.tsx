@@ -3,7 +3,7 @@
 // Library
 import { zodResolver } from '@hookform/resolvers/zod';
 // Icon Import
-import { Pencil, PencilLine } from 'lucide-react';
+import { Camera, Pencil, PencilLine } from 'lucide-react';
 import Image from 'next/image';
 import LineIcon from 'public/icons/line-icon-2.png';
 import WhatsappIcon from 'public/icons/wa-icon.png';
@@ -150,43 +150,67 @@ const EditProfileDialog = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <UploadButton
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                              if (res && res.length > 0) {
-                                // @ts-expect-error URL is a valid string
-                                field.onChange(res[0].url);
-                              }
-                            }}
-                            onUploadError={(error: Error) => {
-                              alert(`ERROR! ${error.message}`);
-                            }}
-                            appearance={{
-                              button: 'hidden',
-                              container:
-                                'w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors',
-                              allowedContent: 'hidden',
-                            }}
-                            content={{
-                              button: () => (
-                                <div className="relative w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors">
-                                  {image ? (
-                                    <Image
-                                      src={image}
-                                      alt="Profile Picture"
-                                      width={276}
-                                      height={276}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
-                                      Click to upload
-                                    </div>
-                                  )}
-                                </div>
-                              ),
-                            }}
-                          />
+                          <div className="relative w-52 h-52 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
+                            {/* Display the image */}
+                            {field.value ? (
+                              <Image
+                                src={field.value}
+                                alt="Profile Picture"
+                                width={128}
+                                height={128}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                <Camera className="w-8 h-8 mb-2" />
+                                <span className="text-xs text-center">
+                                  Click to upload
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Hover overlay */}
+                            <div className="absolute inset-0 bg-black bg-opacity-10 flex flex-col items-center justify-center opacity-100 transition-opacity">
+                              <Image
+                                src={'/icons/photo-camera.svg'}
+                                alt="Camera Icon"
+                                height={24}
+                                width={24}
+                              />
+                              <span className="text-neutral-300 text-xs text-center font-semibold ">
+                                {field.value
+                                  ? 'Click to change photo'
+                                  : 'Click to upload'}
+                              </span>
+                            </div>
+
+                            {/* Hidden upload button that covers the entire area */}
+                            <div className="absolute inset-0">
+                              <UploadButton
+                                endpoint="imageUploader"
+                                onClientUploadComplete={(res) => {
+                                  if (res && res.length > 0) {
+                                    // @ts-expect-error URL is a valid string
+                                    field.onChange(res[0].url);
+                                  }
+                                }}
+                                onUploadError={(error: Error) => {
+                                  alert(`ERROR! ${error.message}`);
+                                }}
+                                appearance={{
+                                  button:
+                                    'w-full h-full bg-transparent border-none cursor-pointer p-0 m-0',
+                                  container: 'w-full h-full',
+                                  allowedContent: 'hidden',
+                                }}
+                                content={{
+                                  button: () => (
+                                    <div className="w-full h-full bg-transparent" />
+                                  ),
+                                }}
+                              />
+                            </div>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
