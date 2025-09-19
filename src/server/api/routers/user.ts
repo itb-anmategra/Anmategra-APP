@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
@@ -6,10 +7,26 @@ import {
   lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
-import { associationRequests, mahasiswa, users } from '~/server/db/schema';
+import {
+  associationRequests,
+  keanggotaan,
+  kehimpunan,
+  mahasiswa,
+  users,
+} from '~/server/db/schema';
 
 import {
   EditProfilMahasiswaInputSchema,
+  GetAnggotaByIdInputSchema,
+  GetAnggotaByNameInputSchema,
+  GetAnggotaOutputSchema,
+  GetMahasiswaByIdInputSchema,
+  GetMahasiswaByNameInputSchema,
+  GetMahasiswaByNimInputSchema,
+  GetMahasiswaOutputSchema,
+  GetPanitiaByIdInputSchema,
+  GetPanitiaByNameInputSchema,
+  GetPanitiaOutputSchema,
   GetTambahAnggotaKegiatanOptionsInputSchema,
   GetTambahAnggotaKegiatanOptionsOutputSchema,
   GetTambahAnggotaLembagaOptionsInputSchema,
@@ -46,13 +63,23 @@ export const userRouter = createTRPCRouter({
       const lembaga_list_id = lembaga_list.map((item) => item.userId);
       const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
 
-      const [mahasiswa_list, list_posisi_bidang] = await Promise.all([
+      const [mahasiswa_list, nim_list, list_posisi_bidang] = await Promise.all([
         ctx.db.query.users.findMany({
           where: (users, { notInArray }) => notInArray(users.id, hide_list_id),
           columns: {
             id: true,
             name: true,
           },
+          orderBy: (users, { asc }) => asc(users.id),
+        }),
+        ctx.db.query.mahasiswa.findMany({
+          where: (mahasiswa, { notInArray }) =>
+            notInArray(mahasiswa.userId, hide_list_id),
+          columns: {
+            userId: true,
+            nim: true,
+          },
+          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.userId),
         }),
         ctx.db.query.kehimpunan.findMany({
           where: (kehimpunan, { eq }) =>
@@ -67,6 +94,14 @@ export const userRouter = createTRPCRouter({
       const formattedMahasiswaList = mahasiswa_list.map((item) => ({
         value: item.id,
         label: item.name ?? '',
+      }));
+
+      const formattedNimList = nim_list.map((item) => ({
+        value: item.userId,
+        label:
+          item.nim !== undefined && item.nim !== null
+            ? item.nim.toString()
+            : '',
       }));
 
       const uniquePosisi = Array.from(
@@ -87,6 +122,7 @@ export const userRouter = createTRPCRouter({
 
       return {
         mahasiswa: formattedMahasiswaList ?? ([] as comboboxDataType[]),
+        nim: formattedNimList ?? ([] as comboboxDataType[]),
         posisi: posisi_list ?? ([] as comboboxDataType[]),
         bidang: bidang_list ?? ([] as comboboxDataType[]),
       };
@@ -118,13 +154,23 @@ export const userRouter = createTRPCRouter({
       const lembaga_list_id = lembaga_list.map((item) => item.userId);
       const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
 
-      const [mahasiswa_list, list_posisi_bidang] = await Promise.all([
+      const [mahasiswa_list, nim_list, list_posisi_bidang] = await Promise.all([
         ctx.db.query.users.findMany({
           where: (users, { notInArray }) => notInArray(users.id, hide_list_id),
           columns: {
             id: true,
             name: true,
           },
+          orderBy: (users, { asc }) => asc(users.id),
+        }),
+        ctx.db.query.mahasiswa.findMany({
+          where: (mahasiswa, { notInArray }) =>
+            notInArray(mahasiswa.userId, hide_list_id),
+          columns: {
+            userId: true,
+            nim: true,
+          },
+          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.userId),
         }),
         ctx.db.query.keanggotaan.findMany({
           where: (keanggotaan, { eq }) =>
@@ -139,6 +185,14 @@ export const userRouter = createTRPCRouter({
       const formattedMahasiswaList = mahasiswa_list.map((item) => ({
         value: item.id,
         label: item.name ?? '',
+      }));
+
+      const formattedNimList = nim_list.map((item) => ({
+        value: item.userId,
+        label:
+          item.nim !== undefined && item.nim !== null
+            ? item.nim.toString()
+            : '',
       }));
 
       const uniquePosisi = Array.from(
@@ -159,6 +213,7 @@ export const userRouter = createTRPCRouter({
 
       return {
         mahasiswa: formattedMahasiswaList ?? ([] as comboboxDataType[]),
+        nim: formattedNimList ?? ([] as comboboxDataType[]),
         posisi: posisi_list ?? ([] as comboboxDataType[]),
         bidang: bidang_list ?? ([] as comboboxDataType[]),
       };
@@ -226,5 +281,238 @@ export const userRouter = createTRPCRouter({
         console.error('Error creating association request:', error);
         return { success: false };
       }
+    }),
+
+  getMahasiswaById: protectedProcedure
+    .input(GetMahasiswaByIdInputSchema)
+    .output(GetMahasiswaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const mahasiswaResult = await ctx.db
+        .select()
+        .from(mahasiswa)
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(eq(users.id, input.userId))
+        .limit(1);
+
+      if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Mahasiswa not found',
+        });
+      }
+
+      return {
+        mahasiswaData: mahasiswaResult[0],
+      };
+    }),
+
+  getMahasiswaByName: protectedProcedure
+    .input(GetMahasiswaByNameInputSchema)
+    .output(GetMahasiswaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const mahasiswaResult = await ctx.db
+        .select()
+        .from(mahasiswa)
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(eq(users.name, input.name))
+        .limit(1);
+
+      if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Mahasiswa not found',
+        });
+      }
+
+      return {
+        mahasiswaData: mahasiswaResult[0],
+      };
+    }),
+
+  getMahasiswaByNim: protectedProcedure
+    .input(GetMahasiswaByNimInputSchema)
+    .output(GetMahasiswaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const mahasiswaResult = await ctx.db
+        .select()
+        .from(mahasiswa)
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(eq(mahasiswa.nim, Number(input.nim)))
+        .limit(1);
+
+      if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Mahasiswa not found',
+        });
+      }
+
+      return {
+        mahasiswaData: mahasiswaResult[0],
+      };
+    }),
+
+  getAnggotaById: protectedProcedure
+    .input(GetAnggotaByIdInputSchema)
+    .output(GetAnggotaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const anggota = await ctx.db
+        .select({
+          id: users.id,
+          nama: users.name,
+          nim: mahasiswa.nim,
+          divisi: kehimpunan.division,
+          posisi: kehimpunan.position,
+        })
+        .from(kehimpunan)
+        .innerJoin(users, eq(kehimpunan.userId, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .where(
+          and(
+            eq(kehimpunan.lembagaId, input.lembagaId),
+            eq(users.id, input.userId),
+          ),
+        )
+        .limit(1);
+
+      if (anggota.length === 0 || !anggota[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Anggota not found',
+        });
+      }
+
+      const result = anggota[0];
+
+      return {
+        id: result.id,
+        nama: result.nama ?? 'Tidak Diketahui',
+        nim: result.nim.toString(),
+        divisi: result.divisi,
+        posisi: result.posisi,
+      };
+    }),
+
+  getAnggotaByName: protectedProcedure
+    .input(GetAnggotaByNameInputSchema)
+    .output(GetAnggotaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const anggota = await ctx.db
+        .select({
+          id: users.id,
+          nama: users.name,
+          nim: mahasiswa.nim,
+          divisi: kehimpunan.division,
+          posisi: kehimpunan.position,
+        })
+        .from(kehimpunan)
+        .innerJoin(users, eq(kehimpunan.userId, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .where(
+          and(
+            eq(kehimpunan.lembagaId, input.lembagaId),
+            eq(users.name, input.name),
+          ),
+        )
+        .limit(1);
+
+      if (anggota.length === 0 || !anggota[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Anggota not found',
+        });
+      }
+
+      const result = anggota[0];
+
+      return {
+        id: result.id,
+        nama: result.nama ?? 'Tidak Diketahui',
+        nim: result.nim.toString(),
+        divisi: result.divisi,
+        posisi: result.posisi,
+      };
+    }),
+
+  getPanitiaById: protectedProcedure
+    .input(GetPanitiaByIdInputSchema)
+    .output(GetPanitiaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const panitia = await ctx.db
+        .select({
+          id: users.id,
+          nama: users.name,
+          nim: mahasiswa.nim,
+          divisi: keanggotaan.division,
+          posisi: keanggotaan.position,
+        })
+        .from(keanggotaan)
+        .innerJoin(users, eq(keanggotaan.user_id, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .where(
+          and(
+            eq(keanggotaan.event_id, input.kegiatanId),
+            eq(users.id, input.userId),
+          ),
+        )
+        .limit(1);
+
+      if (panitia.length === 0 || !panitia[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Panitia not found',
+        });
+      }
+
+      const result = panitia[0];
+
+      return {
+        id: result.id,
+        nama: result.nama ?? 'Tidak Diketahui',
+        nim: result.nim.toString(),
+        divisi: result.divisi,
+        posisi: result.posisi,
+      };
+    }),
+
+  getPanitiaByName: protectedProcedure
+    .input(GetPanitiaByNameInputSchema)
+    .output(GetPanitiaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const panitia = await ctx.db
+        .select({
+          id: users.id,
+          nama: users.name,
+          nim: mahasiswa.nim,
+          divisi: keanggotaan.division,
+          posisi: keanggotaan.position,
+        })
+        .from(keanggotaan)
+        .innerJoin(users, eq(keanggotaan.user_id, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .where(
+          and(
+            eq(keanggotaan.event_id, input.kegiatanId),
+            eq(users.name, input.name),
+          ),
+        )
+        .limit(1);
+
+      if (panitia.length === 0 || !panitia[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Panitia not found',
+        });
+      }
+
+      const result = panitia[0];
+
+      return {
+        id: result.id,
+        nama: result.nama ?? 'Tidak Diketahui',
+        nim: result.nim.toString(),
+        divisi: result.divisi,
+        posisi: result.posisi,
+      };
     }),
 });
