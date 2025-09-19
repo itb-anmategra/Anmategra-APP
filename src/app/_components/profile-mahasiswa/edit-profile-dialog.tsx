@@ -4,6 +4,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 // Icon Import
 import { Pencil, PencilLine } from 'lucide-react';
+import Image from 'next/image';
+import LineIcon from 'public/icons/line-icon-2.png';
+import WhatsappIcon from 'public/icons/wa-icon.png';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,7 +28,9 @@ import { UploadButton } from '~/utils/uploadthing';
 
 const mahasiswaProfilSchema = z.object({
   fotoProfil: z.string().url('Harus berupa URL yang valid').optional(),
+  nama: z.string().min(1, 'Nama tidak boleh kosong'),
   nim: z.string(),
+  jurusanAngkatan: z.string().min(1, 'Jurusan dan Angkatan tidak boleh kosong'),
   idLine: z
     .string()
     .optional()
@@ -44,27 +49,37 @@ type mahasiswaProfilSchemaType = z.infer<typeof mahasiswaProfilSchema>;
 
 const EditProfileDialog = ({
   image,
+  nama,
   nim,
+  jurusan,
+  angkatan,
   line,
   whatsapp,
+  isEdit,
+  setIsEdit,
 }: {
   image: string | null | undefined;
+  nama: string;
   nim: string;
+  jurusan: string;
+  angkatan: string;
   line: string;
   whatsapp: string;
+  isEdit: boolean;
+  setIsEdit: (value: boolean) => void;
 }) => {
   const toast = useToast();
-  // const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [isEdit, setIsEdit] = useState(false);
 
   const mutation = api.users.editProfilMahasiswa.useMutation();
   const form = useForm<mahasiswaProfilSchemaType>({
     resolver: zodResolver(mahasiswaProfilSchema),
     defaultValues: {
       fotoProfil: image ?? undefined,
+      nama: nama ?? '',
+      nim: nim ?? '',
+      jurusanAngkatan: `${jurusan ?? ''}'${angkatan ?? ''}`,
       idLine: line ?? '',
       noWhatsapp: whatsapp ?? '',
-      nim: nim ?? 0,
     },
   });
 
@@ -76,6 +91,9 @@ const EditProfileDialog = ({
     setIsEdit(value);
   };
   async function onSubmit(values: mahasiswaProfilSchemaType) {
+    // Split jurusanAngkatan back into separate fields
+    const [jurusan, angkatan] = values.jurusanAngkatan.split("'");
+
     mutation.mutate(
       {
         image: values.fotoProfil,
@@ -100,115 +118,220 @@ const EditProfileDialog = ({
   }
 
   return (
-    <div>
+    <div className="w-full px-18 min-h-screen">
       {!isEdit && (
         <Button
-          className="bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-0"
+          className="w-full bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-0 px-6 py-6 text-xl rounded-3xl"
           onClick={() => setIsEdit(true)}
         >
-          Edit Profil <Pencil />
+          <Pencil /> Edit Profile Info
         </Button>
       )}
       {isEdit && (
-        <div className="-translate-y-12 min-w-[700px] w-full">
+        <div className="w-full items-center px-18 pb-2">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-neutral-1000">
+              Edit Profile
+            </h2>
+          </div>
+
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-2 w-full flex flex-col gap-x-4"
+              className="space-y-6 w-full"
             >
-              <div className="w-full flex gap-x-4">
-                <FormField
-                  control={form.control}
-                  name="fotoProfil"
-                  render={({ field }) => (
-                    <FormItem className="w-full flex flex-col items-start">
-                      <FormLabel className="translate-y-1">
-                        Foto Profil
-                      </FormLabel>
-                      <FormControl className="w-full">
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res) => {
-                            if (res && res.length > 0) {
-                              // @ts-expect-error URL is a valid string
-                              field.onChange(res[0].url);
-                            }
-                          }}
-                          onUploadError={(error: Error) => {
-                            alert(`ERROR! ${error.message}`);
-                          }}
-                          appearance={{
-                            button:
-                              'w-full bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md h-9 translate-y-2',
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="nim"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>NIM</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="NIM"
-                          {...field}
-                          readOnly
-                          disabled
-                          className="cursor-not-allowed"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="idLine"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>ID Line</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Masukkan ID Line" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* ID Line */}
-                <FormField
-                  control={form.control}
-                  name="noWhatsapp"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Nomor Whatsapp</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Masukkan Nomor Whatsapp"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {/* Profile Section with Avatar and Personal Info */}
+              <div className="flex items-start gap-x-[52px]">
+                {/* Avatar with Upload Button */}
+                <div className="flex flex-col items-start">
+                  <FormField
+                    control={form.control}
+                    name="fotoProfil"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(res) => {
+                              if (res && res.length > 0) {
+                                // @ts-expect-error URL is a valid string
+                                field.onChange(res[0].url);
+                              }
+                            }}
+                            onUploadError={(error: Error) => {
+                              alert(`ERROR! ${error.message}`);
+                            }}
+                            appearance={{
+                              button: 'hidden',
+                              container:
+                                'w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors',
+                              allowedContent: 'hidden',
+                            }}
+                            content={{
+                              button: () => (
+                                <div className="relative w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors">
+                                  {image ? (
+                                    <Image
+                                      src={image}
+                                      alt="Profile Picture"
+                                      width={276}
+                                      height={276}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                      Click to upload
+                                    </div>
+                                  )}
+                                </div>
+                              ),
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Personal Information */}
+                <div className="flex-1 space-y-4">
+                  {/* Nama */}
+                  <FormField
+                    control={form.control}
+                    name="nama"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                          Nama
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Masukkan nama lengkap"
+                            {...field}
+                            className="border border-neutral-400 bg-neutral-200"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* NIM - Read Only */}
+                  <FormField
+                    control={form.control}
+                    name="nim"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                          NIM
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="NIM"
+                            {...field}
+                            readOnly
+                            disabled
+                            className="bg-gray-100 cursor-not-allowed text-gray-600"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Jurusan'Angkatan in one field */}
+                  <FormField
+                    control={form.control}
+                    name="jurusanAngkatan"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                          Jurusan&apos;Angkatan
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g. Teknik Informatika'2022"
+                            {...field}
+                            className="border border-neutral-400 bg-neutral-200"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
+
+              {/* Contact Information Section */}
+              <div className="space-y-4">
+                <h3 className="text-[28px] font-semibold text-neutral-1000">
+                  Contact Info
+                </h3>
+                <div className="flex gap-x-4">
+                  {/* ID Line */}
+                  <FormField
+                    control={form.control}
+                    name="idLine"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="flex flex-row items-center space-x-3">
+                          <Image
+                            src={LineIcon}
+                            alt="Line Icon"
+                            width={20}
+                            height={20}
+                          />
+                          <p className="font-normal text-xl">ID Line</p>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. @johndoe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* WhatsApp */}
+                  <FormField
+                    control={form.control}
+                    name="noWhatsapp"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="flex flex-row items-center space-x-3">
+                          <Image
+                            src={WhatsappIcon}
+                            alt="Whatsapp Icon"
+                            width={20}
+                            height={20}
+                          />
+                          <p className="font-normal text-xl">Nomor WhatsApp</p>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 08123456789" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
               {/* Submit Button */}
-              <div className="py-2" />
-              <div className="w-full gap-x-4 flex justify-end items-end">
+              <div className="w-full gap-x-4 flex justify-end items-end pt-4">
                 <Button
                   variant={'outline'}
                   className="border-Blue-Dark text-Blue-Dark"
                   onClick={() => setIsEdit(false)}
+                  type="button"
                 >
                   Batal Edit
                 </Button>
-                <Button type="submit" className="bg-Blue-Dark text-white">
-                  Simpan <PencilLine />
+                <Button
+                  type="submit"
+                  className="bg-Blue-Dark text-white px-6 py-3"
+                >
+                  Simpan
                 </Button>
               </div>
             </form>
