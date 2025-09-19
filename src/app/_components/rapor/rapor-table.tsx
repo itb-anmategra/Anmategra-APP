@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { Table, TableBody } from '~/components/ui/table';
 import { useToast } from '~/hooks/use-toast';
 
+import Pagination from '../layout/pagination-comp';
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
 import LinkButton from './link-button';
-import Pagination from './pagination-comp';
 import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
 import RaporTableRow from './rapor-table-row';
