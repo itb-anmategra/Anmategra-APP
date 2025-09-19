@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { lembaga } from '~/server/db/schema';
 
 export const GetTambahAnggotaLembagaOptionsInputSchema = z.object({
   lembagaId: z.string(),
@@ -52,4 +53,22 @@ export const RequestAssociationInputSchema = z.object({
 
 export const RequestAssociationOutputSchema = z.object({
   success: z.boolean(),
+});
+
+export const GetMyRequestAssociationOutputSchema = z.object({
+  id: z.string(),
+  event_id: z.string().nullable(),
+  event_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const GetMyRequestAssociationLembagaOutputSchema = z.object({
+  id: z.string(),
+  lembaga_id: z.string().nullable(),
+  lembaga_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
 });

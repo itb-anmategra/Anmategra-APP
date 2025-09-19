@@ -6,10 +6,18 @@ import {
   lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
-import { associationRequests, mahasiswa, users } from '~/server/db/schema';
+import {
+  associationRequests,
+  events,
+  lembaga,
+  mahasiswa,
+  users,
+} from '~/server/db/schema';
 
 import {
   EditProfilMahasiswaInputSchema,
+  GetMyRequestAssociationLembagaOutputSchema,
+  GetMyRequestAssociationOutputSchema,
   GetTambahAnggotaKegiatanOptionsInputSchema,
   GetTambahAnggotaKegiatanOptionsOutputSchema,
   GetTambahAnggotaLembagaOptionsInputSchema,
@@ -226,5 +234,28 @@ export const userRouter = createTRPCRouter({
         console.error('Error creating association request:', error);
         return { success: false };
       }
+    }),
+
+  /*
+   * Endpoint untuk melihat request association
+   */
+
+  getMyRequestAssociation: protectedProcedure
+    .output(z.array(GetMyRequestAssociationOutputSchema))
+    .query(async ({ ctx }) => {
+      const result = await ctx.db
+        .select({
+          id: associationRequests.id,
+          event_id: associationRequests.event_id,
+          status: associationRequests.status,
+          position: associationRequests.position,
+          division: associationRequests.division,
+          event_name: events.name,
+        })
+        .from(associationRequests)
+        .leftJoin(events, eq(associationRequests.event_id, events.id))
+        .where(eq(associationRequests.user_id, ctx.session.user.id));
+
+      return result;
     }),
 });
