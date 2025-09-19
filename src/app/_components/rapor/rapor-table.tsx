@@ -7,7 +7,7 @@ import { useToast } from '~/hooks/use-toast';
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
 import LinkButton from './link-button';
-import Pagination from './pagination';
+import Pagination from './pagination-comp';
 import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
 import RaporTableRow from './rapor-table-row';
