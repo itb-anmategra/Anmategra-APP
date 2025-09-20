@@ -26,6 +26,8 @@ import {
 } from '~/server/db/schema';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
+import { validateLembagaOwnership } from './services';
+
 export const profileLembagaRouter = createTRPCRouter({
   getLembaga: publicProcedure
     .input(GetLembagaInputSchema)
@@ -153,7 +155,16 @@ export const profileLembagaRouter = createTRPCRouter({
     .input(CreateProfilLembagaInputSchema)
     .output(CreateProfilLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // First, verify the lembaga exists
+      await validateLembagaOwnership(ctx, input.lembaga_id);
+
+      // Login Validation
+      if (ctx.session?.user?.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to create profil for this lembaga',
+        });
+      }
+
       const lembagaExists = await ctx.db.query.lembaga.findFirst({
         where: eq(lembaga.id, input.lembaga_id),
       });
@@ -185,9 +196,7 @@ export const profileLembagaRouter = createTRPCRouter({
         }
       }
 
-      // Use transaction to create profil kegiatan and its mappings
       const result = await ctx.db.transaction(async (tx) => {
-        // Create the profil lembaga
         const newProfil = await tx
           .insert(profilLembaga)
           .values({
@@ -225,6 +234,8 @@ export const profileLembagaRouter = createTRPCRouter({
     .input(DeleteProfilInputSchema)
     .output(DeleteProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
+      await validateLembagaOwnership(ctx, input.profil_id);
+
       const profilExists = await ctx.db.query.profilLembaga.findFirst({
         where: eq(profilLembaga.id, input.profil_id),
       });
@@ -247,6 +258,8 @@ export const profileLembagaRouter = createTRPCRouter({
     .input(EditProfilInputSchema)
     .output(EditProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
+      await validateLembagaOwnership(ctx, input.profil_id);
+
       // Validate profil KM IDs exist
       if (input.profil_km_id && input.profil_km_id.length > 0) {
         const existingProfilKM = await ctx.db.query.profilKM.findMany({

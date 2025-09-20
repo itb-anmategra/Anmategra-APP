@@ -23,6 +23,8 @@ import {
   users,
 } from '~/server/db/schema';
 
+import { validateKegiatanOwnership } from '../profile/services';
+
 export const profilKegiatanRouter = createTRPCRouter({
   getKegiatan: publicProcedure
     .input(GetKegiatanInputSchema)
@@ -133,7 +135,8 @@ export const profilKegiatanRouter = createTRPCRouter({
     .input(CreateProfilKegiatanInputSchema)
     .output(CreateProfilKegiatanOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // First, verify the event exists
+      await validateKegiatanOwnership(ctx, input.event_id);
+
       const eventExists = await ctx.db.query.events.findFirst({
         where: eq(events.id, input.event_id),
       });
@@ -165,7 +168,6 @@ export const profilKegiatanRouter = createTRPCRouter({
         }
       }
 
-      // Use transaction to create profil kegiatan and its mappings
       const result = await ctx.db.transaction(async (tx) => {
         // Create the profil kegiatan
         const newProfil = await tx
@@ -205,6 +207,8 @@ export const profilKegiatanRouter = createTRPCRouter({
     .input(DeleteProfilInputSchema)
     .output(DeleteProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
+      await validateKegiatanOwnership(ctx, input.profil_id);
+
       const profilExists = await ctx.db.query.profilKegiatan.findFirst({
         where: eq(profilKegiatan.id, input.profil_id),
       });
@@ -227,6 +231,8 @@ export const profilKegiatanRouter = createTRPCRouter({
     .input(EditProfilInputSchema)
     .output(EditProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
+      await validateKegiatanOwnership(ctx, input.profil_id);
+
       // Validate profil KM IDs exist
       if (input.profil_km_id && input.profil_km_id.length > 0) {
         const existingProfilKM = await ctx.db.query.profilKM.findMany({
