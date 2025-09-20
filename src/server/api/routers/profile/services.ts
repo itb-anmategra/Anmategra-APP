@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import type { inferAsyncReturnType } from '@trpc/server';
 import { eq } from 'drizzle-orm';
 import { type createTRPCContext } from '~/server/api/trpc';
-import { events } from '~/server/db/schema';
+import { events, profilKegiatan, profilLembaga } from '~/server/db/schema';
 
 type TRPCContext = inferAsyncReturnType<typeof createTRPCContext>;
 
@@ -18,11 +18,27 @@ export async function validateLembagaOwnership(
   }
 }
 
+export async function validateLembagaProfileOwnership(
+  ctx: TRPCContext,
+  profileId: string,
+) {
+  const lembaga = await ctx.db.query.profilLembaga.findFirst({
+    where: eq(profilLembaga.id, profileId),
+    columns: { lembagaId: true },
+  });
+
+  if (ctx.session?.user?.lembagaId !== lembaga?.lembagaId) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not authorized to perform this action',
+    });
+  }
+}
+
 export async function validateKegiatanOwnership(
   ctx: TRPCContext,
   kegiatanId: string,
 ) {
-  // Login Validation
   const eventOwner = await ctx.db.query.events.findFirst({
     where: eq(events.id, kegiatanId),
     columns: { org_id: true },
@@ -35,3 +51,36 @@ export async function validateKegiatanOwnership(
     });
   }
 }
+
+export async function validateKegiatanProfileOwnership(
+  ctx: TRPCContext,
+  profileId: string,
+) {
+  const eventOwner = await ctx.db.query.profilKegiatan.findFirst({
+    where: eq(profilKegiatan.id, profileId),
+    with: {
+      event: {
+        columns: { org_id: true },
+      },
+    },
+  });
+
+  if (ctx.session?.user?.lembagaId !== eventOwner?.event?.org_id) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not authorized to create profil for this kegiatan',
+    });
+  }
+}
+
+// export async function validateLembagaOwnership(
+//   ctx: TRPCContext,
+//   lembagaId: string) {
+//     console.log("hello");
+// }
+
+// export async function validateKegiatanOwnership(
+//     ctx: TRPCContext,
+//     kegiatanID: string) {
+//         console.log("hello")
+//     }

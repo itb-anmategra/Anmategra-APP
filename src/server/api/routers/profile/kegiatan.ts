@@ -1,6 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  lembagaProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
 import {
   CreateProfilKegiatanInputSchema,
   CreateProfilKegiatanOutputSchema,
@@ -23,7 +27,10 @@ import {
   users,
 } from '~/server/db/schema';
 
-import { validateKegiatanOwnership } from '../profile/services';
+import {
+  validateKegiatanOwnership,
+  validateKegiatanProfileOwnership,
+} from '../profile/services';
 
 export const profilKegiatanRouter = createTRPCRouter({
   getKegiatan: publicProcedure
@@ -104,7 +111,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       };
     }),
 
-  getAllProfilKegiatan: publicProcedure
+  getAllProfilKegiatan: lembagaProcedure
     .input(GetAllProfilKegiatanInputSchema)
     .output(GetAllProfilOutputSchema)
     .query(async ({ ctx, input }) => {
@@ -131,7 +138,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       };
     }),
 
-  createProfilKegiatan: publicProcedure
+  createProfilKegiatan: lembagaProcedure
     .input(CreateProfilKegiatanInputSchema)
     .output(CreateProfilKegiatanOutputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -203,11 +210,11 @@ export const profilKegiatanRouter = createTRPCRouter({
       return result;
     }),
 
-  deleteProfilKegiatan: publicProcedure
+  deleteProfilKegiatan: lembagaProcedure
     .input(DeleteProfilInputSchema)
     .output(DeleteProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      await validateKegiatanOwnership(ctx, input.profil_id);
+      await validateKegiatanProfileOwnership(ctx, input.profil_id);
 
       const profilExists = await ctx.db.query.profilKegiatan.findFirst({
         where: eq(profilKegiatan.id, input.profil_id),
@@ -227,11 +234,11 @@ export const profilKegiatanRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  editProfilKegiatan: publicProcedure
+  editProfilKegiatan: lembagaProcedure
     .input(EditProfilInputSchema)
     .output(EditProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      await validateKegiatanOwnership(ctx, input.profil_id);
+      await validateKegiatanProfileOwnership(ctx, input.profil_id);
 
       // Validate profil KM IDs exist
       if (input.profil_km_id && input.profil_km_id.length > 0) {

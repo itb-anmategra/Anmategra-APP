@@ -30,7 +30,10 @@ import {
 } from '~/server/db/schema';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
-import { validateLembagaOwnership } from './services';
+import {
+  validateLembagaOwnership,
+  validateLembagaProfileOwnership,
+} from './services';
 
 export const profileLembagaRouter = createTRPCRouter({
   getLembaga: publicProcedure
@@ -230,7 +233,7 @@ export const profileLembagaRouter = createTRPCRouter({
     .input(DeleteProfilInputSchema)
     .output(DeleteProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      await validateLembagaOwnership(ctx, input.profil_id);
+      await validateLembagaProfileOwnership(ctx, input.profil_id);
 
       const profilExists = await ctx.db.query.profilLembaga.findFirst({
         where: eq(profilLembaga.id, input.profil_id),
@@ -254,7 +257,7 @@ export const profileLembagaRouter = createTRPCRouter({
     .input(EditProfilInputSchema)
     .output(EditProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      await validateLembagaOwnership(ctx, input.profil_id);
+      await validateLembagaProfileOwnership(ctx, input.profil_id);
 
       // Validate profil KM IDs exist
       if (input.profil_km_id && input.profil_km_id.length > 0) {
