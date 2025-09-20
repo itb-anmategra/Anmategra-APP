@@ -1,6 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import { and, desc, eq } from 'drizzle-orm';
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  lembagaProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
 import {
   CreateProfilLembagaInputSchema,
   CreateProfilLembagaOutputSchema,
@@ -124,7 +128,7 @@ export const profileLembagaRouter = createTRPCRouter({
       };
     }),
 
-  getAllProfilLembaga: publicProcedure
+  getAllProfilLembaga: lembagaProcedure
     .input(GetAllProfilLembagaInputSchema)
     .output(GetAllProfilOutputSchema)
     .query(async ({ ctx, input }) => {
@@ -151,19 +155,11 @@ export const profileLembagaRouter = createTRPCRouter({
       };
     }),
 
-  createProfilLembaga: publicProcedure
+  createProfilLembaga: lembagaProcedure
     .input(CreateProfilLembagaInputSchema)
     .output(CreateProfilLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       await validateLembagaOwnership(ctx, input.lembaga_id);
-
-      // Login Validation
-      if (ctx.session?.user?.lembagaId !== input.lembaga_id) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'You are not authorized to create profil for this lembaga',
-        });
-      }
 
       const lembagaExists = await ctx.db.query.lembaga.findFirst({
         where: eq(lembaga.id, input.lembaga_id),
@@ -230,7 +226,7 @@ export const profileLembagaRouter = createTRPCRouter({
       return result;
     }),
 
-  deleteProfilLembaga: publicProcedure
+  deleteProfilLembaga: lembagaProcedure
     .input(DeleteProfilInputSchema)
     .output(DeleteProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -254,7 +250,7 @@ export const profileLembagaRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  editProfilLembaga: publicProcedure
+  editProfilLembaga: lembagaProcedure
     .input(EditProfilInputSchema)
     .output(EditProfilOutputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -299,16 +295,16 @@ export const profileLembagaRouter = createTRPCRouter({
             name: input.name,
             description: input.description,
           })
-          .where(eq(profilKegiatan.id, input.profil_id));
+          .where(eq(profilLembaga.id, input.profil_id));
 
         // Update the mappings
         if (input.profil_km_id && input.profil_km_id.length > 0) {
           const mappings = input.profil_km_id.map((kmId) => ({
-            profilKegiatanId: input.profil_id,
+            profilLembagaId: input.profil_id,
             profilKMId: kmId,
           }));
 
-          await tx.insert(pemetaanProfilKegiatan).values(mappings);
+          await tx.insert(pemetaanProfilLembaga).values(mappings);
         }
         return true;
       });
