@@ -1,3 +1,4 @@
+import { request } from 'http';
 import { z } from 'zod';
 
 export const GetInfoLembagaInputSchema = z.object({
@@ -147,3 +148,13 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationLembagaOutputSchema = z.object({
+  requests: z.array(
+    z.object({
+      user_id: z.string(),
+      mahasiswa_name: z.string(),
+      division: z.string(),
+      position: z.string(),
+    }),
+  ),
+});

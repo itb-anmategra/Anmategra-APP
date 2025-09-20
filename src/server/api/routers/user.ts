@@ -6,7 +6,12 @@ import {
   lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
-import { associationRequests, mahasiswa, users } from '~/server/db/schema';
+import {
+  associationRequests,
+  associationRequestsLembaga,
+  mahasiswa,
+  users,
+} from '~/server/db/schema';
 
 import {
   EditProfilMahasiswaInputSchema,
@@ -15,6 +20,8 @@ import {
   GetTambahAnggotaLembagaOptionsInputSchema,
   GetTambahAnggotaLembagaOptionsOutputSchema,
   RequestAssociationInputSchema,
+  RequestAssociationLembagaInputSchema,
+  RequestAssociationLembagaOutputSchema,
   RequestAssociationOutputSchema,
 } from '../types/user.type';
 
@@ -215,6 +222,42 @@ export const userRouter = createTRPCRouter({
         await ctx.db.insert(associationRequests).values({
           id: crypto.randomUUID(),
           event_id: input.event_id,
+          user_id: ctx.session.user.id,
+          division: input.division,
+          position: input.position,
+          status: 'Pending', // Pending Status
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error('Error creating association request:', error);
+        return { success: false };
+      }
+    }),
+
+  requestAssociationLembaga: protectedProcedure
+    .input(RequestAssociationLembagaInputSchema)
+    .output(RequestAssociationLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequestsLembaga.findFirst({
+            where: (associationRequestsLembaga, { eq, and }) =>
+              and(
+                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              ),
+          });
+        if (existingRequest) {
+          return {
+            success: false,
+            message: 'Anda sudah pernah membuat permintaan untuk lembaga ini',
+          };
+        }
+        await ctx.db.insert(associationRequestsLembaga).values({
+          id: crypto.randomUUID(),
+          lembagaId: input.lembaga_id,
           user_id: ctx.session.user.id,
           division: input.division,
           position: input.position,

@@ -8,6 +8,7 @@ import {
 } from '~/server/api/trpc';
 import {
   associationRequests,
+  associationRequestsLembaga,
   events,
   keanggotaan,
   kehimpunan,
@@ -27,6 +28,7 @@ import {
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffOptionsInputSchema,
   GetBestStaffOptionsOutputSchema,
@@ -482,6 +484,34 @@ export const lembagaRouter = createTRPCRouter({
         staff_options: staffOptions.map((staff) => ({
           user_id: staff.user_id,
           name: staff.name ?? 'Tidak Diketahui',
+        })),
+      };
+    }),
+
+  getAllRequestAssociationLembaga: lembagaProcedure
+    .output(GetAllRequestAssociationLembagaOutputSchema)
+    .query(async ({ ctx }) => {
+      const requests = await ctx.db
+        .select({
+          user_id: associationRequestsLembaga.user_id,
+          mahasiswa_name: users.name,
+          division: associationRequestsLembaga.division,
+          position: associationRequestsLembaga.position,
+        })
+        .from(associationRequestsLembaga)
+        .where(
+          eq(
+            associationRequestsLembaga.lembagaId,
+            ctx.session?.user?.lembagaId ?? '',
+          ),
+        )
+        .innerJoin(users, eq(associationRequestsLembaga.user_id, users.id));
+      return {
+        requests: requests.map((req) => ({
+          user_id: req.user_id ?? '',
+          mahasiswa_name: req.mahasiswa_name ?? '',
+          division: req.division ?? '',
+          position: req.position ?? '',
         })),
       };
     }),
