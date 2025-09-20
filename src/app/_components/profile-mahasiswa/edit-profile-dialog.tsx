@@ -128,9 +128,9 @@ const EditProfileDialog = ({
         </Button>
       )}
       {isEdit && (
-        <div className="w-full items-center px-18 pb-2">
+        <div className="w-full items-center px-[72px] pb-2">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-neutral-1000">
+            <h2 className="text-[32px] font-semibold text-neutral-1000">
               Edit Profile
             </h2>
           </div>
@@ -219,21 +219,21 @@ const EditProfileDialog = ({
                 </div>
 
                 {/* Personal Information */}
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-4 gap-3">
                   {/* Nama */}
                   <FormField
                     control={form.control}
                     name="nama"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                        <FormLabel className="font-normal text-neutral-1000 text-[20px]">
                           Nama
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Masukkan nama lengkap"
                             {...field}
-                            className="border border-neutral-400 bg-neutral-200"
+                            className="border rounded-xl border-neutral-400 bg-neutral-200"
                           />
                         </FormControl>
                         <FormMessage />

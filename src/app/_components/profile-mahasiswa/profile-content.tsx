@@ -14,6 +14,7 @@ import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepa
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
+import { mahasiswa } from '~/server/db/schema';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
 import { type ProfileMahasiswaContentProps } from './constant';
@@ -35,24 +36,29 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
     <div
       className={cn(
         'w-full flex min-h-screen flex-col items-center',
-        isLembagaView ? 'px-6' : 'pt-14',
+        isLembagaView ? 'px-6' : 'pt-14 px-6',
       )}
     >
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-          <p className="text-slate-400">Beranda / Mahasiswa</p>
+          <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
+          <p className="text-neutral-1000">Beranda / Mahasiswa</p>
         </div>
 
         {/* Profil Mahasiswa */}
         {!isEdit && (
-          <div className="w-full flex items-center justify-center gap-x-6 pt-12">
-            <Avatar className="rounded-full size-[200px]">
+          <div className="w-full flex items-center justify-center gap-x-6 pt-12 mb-6">
+            <Avatar
+              className={cn(
+                'rounded-full',
+                isLembagaView ? 'h-[180px] w-[180px]' : 'h-40 w-40',
+              )}
+            >
               <AvatarImage
                 src={mahasiswaData?.user.image ?? ''}
                 alt="Foto Profil"
-                className="rounded-full min-w-[200px] min-h-[200px] max-w-[200px] max-h-[200px] object-cover"
+                className="rounded-full object-cover"
               />
               <AvatarFallback className="text-4xl">
                 {mahasiswaData?.user.name
@@ -63,43 +69,44 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               </AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-              <p className="text-3xl text-slate-700 font-semibold">
+              <p className="text-2xl text-[#181818] font-semibold mb-2">
                 {mahasiswaData?.user.name}
               </p>
-              <p className="text-[18px] text-slate-600 font-medium">
+              <p className="text-[18px] text-neutral-600">
                 {mahasiswaData?.mahasiswa.nim}
               </p>
-              <p className="text-[18px] text-slate-500">
+              <p className="text-[18px] text-neutral-600">
                 {mahasiswaData?.mahasiswa.jurusan} &#39;
                 {mahasiswaData?.mahasiswa.angkatan}
               </p>
-              <div className="flex items-center justify-start gap-x-10 pt-4">
-                {mahasiswaData?.mahasiswa.lineId ? (
-                  <div className="flex items-center gap-x-2">
-                    <Image
-                      src={LineIcon}
-                      alt="Line Messanger Icon"
-                      width={20}
-                      height={20}
-                    />
+              <div className="flex items-center justify-start gap-x-10 pt-[18px]">
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src={LineIcon}
+                    alt="Line Messanger Icon"
+                    width={18}
+                    height={18}
+                  />
+                  {mahasiswaData?.mahasiswa.lineId ? (
                     <p>{mahasiswaData?.mahasiswa.lineId}</p>
-                  </div>
-                ) : (
-                  <></>
-                )}
-                {mahasiswaData?.mahasiswa.whatsapp ? (
-                  <div className="flex items-center gap-x-2">
-                    <Image
-                      src={WhatsappIcon}
-                      alt="Whatsapp Messanger Icon"
-                      width={20}
-                      height={20}
-                    />
+                  ) : (
+                    <p>-</p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-x-2">
+                  <Image
+                    src={WhatsappIcon}
+                    alt="Whatsapp Messanger Icon"
+                    width={18}
+                    height={18}
+                  />
+                  {mahasiswaData?.mahasiswa.whatsapp ? (
                     <p>{mahasiswaData?.mahasiswa.whatsapp}</p>
-                  </div>
-                ) : (
-                  <></>
-                )}
+                  ) : (
+                    <p>-</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -108,6 +115,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
           className={cn(
             'flex items-center justify-center w-full',
             isEdit ? '' : '',
+            isLembagaView ? '' : 'mt-6 mb-8',
           )}
         >
           {session?.user.id === userId && (
@@ -134,8 +142,8 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 
         {/* Kepanitiaan Terbaru */}
         {!isEdit && (
-          <div className="space-y-4 pb-12">
-            <h5 className="text-2xl font-semibold text-slate-600">
+          <div className="space-y-4 pb-12 mt-[50px]">
+            <h5 className="text-2xl font-semibold text-neutral-1000">
               Kepanitiaan Terbaru
             </h5>
             {newestEvent && newestEvent.length !== 0 ? (
