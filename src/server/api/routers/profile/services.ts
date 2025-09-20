@@ -47,7 +47,7 @@ export async function validateKegiatanOwnership(
   if (ctx.session?.user?.lembagaId !== eventOwner?.org_id) {
     throw new TRPCError({
       code: 'FORBIDDEN',
-      message: 'You are not authorized to create profil for this kegiatan',
+      message: 'You are not authorized to perform this action',
     });
   }
 }
@@ -68,19 +68,7 @@ export async function validateKegiatanProfileOwnership(
   if (ctx.session?.user?.lembagaId !== eventOwner?.event?.org_id) {
     throw new TRPCError({
       code: 'FORBIDDEN',
-      message: 'You are not authorized to create profil for this kegiatan',
+      message: 'You are not authorized to perform this action',
     });
   }
 }
-
-// export async function validateLembagaOwnership(
-//   ctx: TRPCContext,
-//   lembagaId: string) {
-//     console.log("hello");
-// }
-
-// export async function validateKegiatanOwnership(
-//     ctx: TRPCContext,
-//     kegiatanID: string) {
-//         console.log("hello")
-//     }

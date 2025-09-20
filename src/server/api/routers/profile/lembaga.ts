@@ -22,9 +22,7 @@ import {
   kehimpunan,
   lembaga,
   mahasiswa,
-  pemetaanProfilKegiatan,
   pemetaanProfilLembaga,
-  profilKegiatan,
   profilLembaga,
   users,
 } from '~/server/db/schema';
@@ -242,7 +240,7 @@ export const profileLembagaRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Profil Lembaga not found',
         });
       }
 
@@ -287,7 +285,7 @@ export const profileLembagaRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Profil Kegiatan not found',
+          message: 'Profil Lembaga not found',
         });
       }
 

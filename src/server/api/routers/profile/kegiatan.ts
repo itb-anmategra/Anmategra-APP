@@ -223,7 +223,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Profil Kegiatan not found',
         });
       }
 
