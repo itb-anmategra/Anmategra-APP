@@ -20,18 +20,28 @@ export default function LayoutCarouselBestStaff({
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <Button variant="light_blue" size="icon" onClick={scrollLeft}>
-        <ChevronLeft width={12} height={21} />
+    <div className="flex flex-row items-center gap-[17px]">
+      <Button
+        variant="light_blue"
+        size="icon"
+        onClick={scrollLeft}
+        className="flex flex-shrink-0 rounded-[8px]"
+      >
+        <ChevronLeft className="size-4" />
       </Button>
       <div
         ref={containerRef}
-        className="flex gap-4 overflow-x-hidden scroll-smooth no-scrollbar"
+        className="flex gap-4 scroll-smooth overflow-x-hidden"
       >
         {children}
       </div>
-      <Button variant="light_blue" size="icon" onClick={scrollRight}>
-        <ChevronRight width={12} height={21} />
+      <Button
+        variant="light_blue"
+        size="icon"
+        onClick={scrollRight}
+        className="flex flex-shrink-0 rounded-[8px]"
+      >
+        <ChevronRight />
       </Button>
     </div>
   );
