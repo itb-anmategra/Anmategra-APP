@@ -264,6 +264,10 @@ export const userRouter = createTRPCRouter({
       return result;
     }),
 
+  /*
+   * Endpoint untuk melihat request association lembaga
+   */
+
   getMyRequestAssociationLembaga: protectedProcedure
     .output(z.array(GetMyRequestAssociationLembagaOutputSchema))
     .query(async ({ ctx }) => {
@@ -282,6 +286,10 @@ export const userRouter = createTRPCRouter({
 
       return result;
     }),
+
+  /*
+   * Endpoint untuk edit request association
+   */
 
   editRequestAssociation: protectedProcedure
     .input(RequestAssociationInputSchema) // Input skema sama seperti RequestAssociationInputSchema (requestAssociation))
@@ -320,6 +328,10 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  /*
+   * Endpoint untuk edit request association lembaga
+   */
+
   editRequestAssociationLembaga: protectedProcedure
     .input(RequestAssociationLembagaInputSchema) // Input skema sama seperti RequestAssociationLembagaInputSchema (requestAssociationLembaga ada di issue sebelah)
     .output(editRequestAssociationOutputSchema)
@@ -357,9 +369,13 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  /*
+   * Endpoint untuk delete request association
+   */
+
   deleteRequestAssociation: protectedProcedure
     .input(DeleteRequestAssociationInputSchema)
-    .output(editRequestAssociationOutputSchema)
+    .output(editRequestAssociationOutputSchema) // Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
       try {
         const existingRequest =
@@ -388,9 +404,13 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  /*
+   * Endpoint untuk delete request association lembaga
+   */
+
   deleteRequestAssociationLembaga: protectedProcedure
     .input(DeleteRequestAssociationLembagaInputSchema)
-    .output(editRequestAssociationOutputSchema)
+    .output(editRequestAssociationOutputSchema) //Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
       try {
         const existingRequest =

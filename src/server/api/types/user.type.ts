@@ -74,6 +74,7 @@ export const GetMyRequestAssociationLembagaOutputSchema = z.object({
 });
 
 export const editRequestAssociationOutputSchema = z.object({
+  // Dipake buat edit & delete
   success: z.boolean(),
   message: z.string().optional(),
 });
@@ -84,6 +85,7 @@ export const RequestAssociationLembagaInputSchema = z.object({
   position: z.string(),
 });
 
+// Delete Request Association event & lembaga input schema
 export const DeleteRequestAssociationInputSchema = z.object({
   event_id: z.string(),
 });
