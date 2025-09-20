@@ -8,6 +8,7 @@ import {
 } from '~/server/api/trpc';
 import {
   associationRequests,
+  associationRequestsLembaga,
   events,
   lembaga,
   mahasiswa,
@@ -15,6 +16,8 @@ import {
 } from '~/server/db/schema';
 
 import {
+  DeleteRequestAssociationInputSchema,
+  DeleteRequestAssociationLembagaInputSchema,
   EditProfilMahasiswaInputSchema,
   GetMyRequestAssociationLembagaOutputSchema,
   GetMyRequestAssociationOutputSchema,
@@ -23,7 +26,9 @@ import {
   GetTambahAnggotaLembagaOptionsInputSchema,
   GetTambahAnggotaLembagaOptionsOutputSchema,
   RequestAssociationInputSchema,
+  RequestAssociationLembagaInputSchema,
   RequestAssociationOutputSchema,
+  editRequestAssociationOutputSchema,
 } from '../types/user.type';
 
 export const userRouter = createTRPCRouter({
@@ -257,5 +262,160 @@ export const userRouter = createTRPCRouter({
         .where(eq(associationRequests.user_id, ctx.session.user.id));
 
       return result;
+    }),
+
+  getMyRequestAssociationLembaga: protectedProcedure
+    .output(z.array(GetMyRequestAssociationLembagaOutputSchema))
+    .query(async ({ ctx }) => {
+      const result = await ctx.db
+        .select({
+          id: associationRequestsLembaga.id,
+          lembaga_id: associationRequestsLembaga.lembagaId,
+          lembaga_name: lembaga.name,
+          position: associationRequestsLembaga.position,
+          division: associationRequestsLembaga.division,
+          status: associationRequestsLembaga.status,
+        })
+        .from(associationRequestsLembaga)
+        .leftJoin(lembaga, eq(associationRequestsLembaga.lembagaId, lembaga.id))
+        .where(eq(associationRequestsLembaga.user_id, ctx.session.user.id));
+
+      return result;
+    }),
+
+  editRequestAssociation: protectedProcedure
+    .input(RequestAssociationInputSchema) // Input skema sama seperti RequestAssociationInputSchema (requestAssociation))
+    .output(editRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequests.findFirst({
+            where: (associationRequests, { eq, and }) =>
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, ctx.session.user.id),
+              ),
+          });
+        if (!existingRequest) {
+          return { success: false, message: 'Request not found' };
+        }
+        await ctx.db
+          .update(associationRequests)
+          .set({
+            division: input.division,
+            position: input.position,
+            status: 'Pending', // Reset status to Pending
+          })
+          .where(
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, ctx.session.user.id),
+            ),
+          );
+        return { success: true, message: 'Request berhasil diubah' };
+      } catch (error) {
+        console.error('Error updating association request:', error);
+        return { success: false, message: 'Failed to update request' };
+      }
+    }),
+
+  editRequestAssociationLembaga: protectedProcedure
+    .input(RequestAssociationLembagaInputSchema) // Input skema sama seperti RequestAssociationLembagaInputSchema (requestAssociationLembaga ada di issue sebelah)
+    .output(editRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequestsLembaga.findFirst({
+            where: (associationRequestsLembaga, { eq, and }) =>
+              and(
+                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              ),
+          });
+        if (!existingRequest) {
+          return { success: false, message: 'Request not found' };
+        }
+        await ctx.db
+          .update(associationRequestsLembaga)
+          .set({
+            division: input.division,
+            position: input.position,
+            status: 'Pending', // Reset status to Pending
+          })
+          .where(
+            and(
+              eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+              eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+            ),
+          );
+        return { success: true, message: 'Request berhasil diubah' };
+      } catch (error) {
+        console.error('Error updating association request:', error);
+        return { success: false, message: 'Failed to update request' };
+      }
+    }),
+
+  deleteRequestAssociation: protectedProcedure
+    .input(DeleteRequestAssociationInputSchema)
+    .output(editRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequests.findFirst({
+            where: (associationRequests, { eq, and }) =>
+              and(
+                eq(associationRequests.event_id, input.event_id),
+                eq(associationRequests.user_id, ctx.session.user.id),
+              ),
+          });
+        if (!existingRequest) {
+          return { success: false, message: 'Request not found' };
+        }
+        await ctx.db
+          .delete(associationRequests)
+          .where(
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, ctx.session.user.id),
+            ),
+          );
+        return { success: true, message: 'Request berhasil dihapus' };
+      } catch (error) {
+        console.error('Error deleting association request:', error);
+        return { success: false, message: 'Failed to delete request' };
+      }
+    }),
+
+  deleteRequestAssociationLembaga: protectedProcedure
+    .input(DeleteRequestAssociationLembagaInputSchema)
+    .output(editRequestAssociationOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequestsLembaga.findFirst({
+            where: (associationRequestsLembaga, { eq, and }) =>
+              and(
+                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              ),
+          });
+        if (!existingRequest) {
+          return { success: false, message: 'Request not found' };
+        }
+        await ctx.db
+          .delete(associationRequestsLembaga)
+          .where(
+            and(
+              eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+              eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+            ),
+          );
+        return { success: true, message: 'Request lembaga berhasil dihapus' };
+      } catch (error) {
+        console.error('Error deleting association request:', error);
+        return { success: false, message: 'Failed to delete request' };
+      }
     }),
 });

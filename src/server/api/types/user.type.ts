@@ -72,3 +72,22 @@ export const GetMyRequestAssociationLembagaOutputSchema = z.object({
   division: z.string(),
   status: z.enum(['Pending', 'Accepted', 'Declined']),
 });
+
+export const editRequestAssociationOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const RequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+export const DeleteRequestAssociationInputSchema = z.object({
+  event_id: z.string(),
+});
+
+export const DeleteRequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+});
