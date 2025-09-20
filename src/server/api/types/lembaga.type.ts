@@ -158,3 +158,25 @@ export const GetAllRequestAssociationLembagaOutputSchema = z.object({
     }),
   ),
 });
+
+export const AcceptRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AcceptRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const DeclineRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const DeclineRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
