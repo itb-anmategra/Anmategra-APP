@@ -11,7 +11,7 @@ const HistoriBestStaffPage = () => {
   const namaLembaga = 'HMIF ITB';
 
   return (
-    <div className="w-full flex min-h-screen flex-col items-center ">
+    <div className="w-full flex h-screen flex-col items-center overflow-y-hidden">
       <div className="flex max-w-7xl w-full flex-col gap-6 px-9 py-[68px]">
         <div className="flex w-full flex-col gap-4 ">
           <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
@@ -27,7 +27,7 @@ const HistoriBestStaffPage = () => {
           />
         </div>
         <div
-          className="flex flex-col max-h-[90vh] overflow-y-auto scroll-smooth gap-[50px]
+          className="flex flex-col max-h-[70vh] overflow-y-auto scroll-smooth gap-[50px]
         [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {/*kalo bisa pake shadcn scrollbar biar bisa hidden*/}
@@ -55,6 +55,7 @@ const HistoriBestStaffPage = () => {
               <CarouselBestStaff />
             </div>
           ))}
+          <div className="min-h-[50vh]"></div>
         </div>
       </div>
     </div>
