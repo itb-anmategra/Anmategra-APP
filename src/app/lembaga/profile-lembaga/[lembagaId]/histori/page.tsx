@@ -1,73 +1,62 @@
-import { ChevronRight, Icon, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import React from 'react';
-import BestStaffCard from '~/app/_components/card/best-staff-card';
+import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 import BestStaff from '~/app/lembaga/kegiatan/[kegiatanId]/_components/best-staff-form';
 import { Button } from '~/components/ui/button';
 
-import { dummyDate, dummyMahasiswaList } from './_components/dummy-histori';
+import { dummyDate } from './_components/dummy-histori';
 import { HistoriBreadCrumb } from './_components/histori-breadcrumb';
 
 const HistoriBestStaffPage = () => {
   const namaLembaga = 'HMIF ITB';
 
   return (
-    <div className="absolute left-[338px] top-[68px] w-[1066px] flex flex-col gap-6 text-[#141718]">
-      <div>
-        <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>{' '}
-        {/*Dapat disesuaikan*/}
-        <HistoriBreadCrumb
-          items={[
-            { label: 'Beranda', href: '/lembaga' },
-            { label: 'Lembaga', href: `/lembaga/profile-lembaga/uuid-hmif` },
-            {
-              label: 'Histori',
-              href: `/lembaga/profile-lembaga/uuid-hmif/histori`,
-            },
-          ]}
-        />
-      </div>
-      <div className="flex flex-col gap-[50px]">
-        {dummyDate.map((item, id) => (
-          <div key={id} className="flex flex-col gap-3">
-            <div className="flex flex-row justify-between items-center">
-              <h2 className="text-2xl font-semibold">
-                Best Staff Periode {item.startDate}–{item.endDate} 2025
-              </h2>
-              <BestStaff
-                trigger={
-                  <Button
-                    variant={'dark_blue'}
-                    className="rounded-xl gap-2 p-3"
-                  >
-                    <Pencil className="w-6 h-6" />
-                    <h3 className="font-semibold text-[18px]">
-                      Edit Best Staff
-                    </h3>
-                  </Button>
-                }
-              />
-            </div>
-
-            <div className="flex flex-row gap-[17px] items-center">
-              {dummyMahasiswaList.slice(0, 4).map((mhs, idx) => (
-                <BestStaffCard
-                  key={mhs.id}
-                  nama={mhs.nama}
-                  NIM={mhs.NIM}
-                  jurusan={mhs.jurusan}
-                  profilePicture={mhs.profilePhoto}
-                  divisi={mhs.divisi}
-                  id_mahasiswa={mhs.id}
+    <div className="w-full flex min-h-screen flex-col items-center ">
+      <div className="flex max-w-7xl w-full flex-col gap-6 px-9 py-[68px]">
+        <div className="flex w-full flex-col gap-4 ">
+          <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
+          <HistoriBreadCrumb
+            items={[
+              { label: 'Beranda', href: '/lembaga' },
+              { label: 'Lembaga', href: `/lembaga/profile-lembaga/uuid-hmif` },
+              {
+                label: 'Histori',
+                href: `/lembaga/profile-lembaga/uuid-hmif/histori`,
+              },
+            ]}
+          />
+        </div>
+        <div
+          className="flex flex-col max-h-[90vh] overflow-y-auto scroll-smooth gap-[50px]
+        [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {/*kalo bisa pake shadcn scrollbar biar bisa hidden*/}
+          {dummyDate.map((item, id) => (
+            <div key={id} className="flex flex-col gap-3">
+              <div className="flex flex-row justify-between items-center">
+                <h2 className="text-2xl font-semibold">
+                  Best Staff Periode {item.startDate}–{item.endDate} 2025
+                </h2>
+                <BestStaff
+                  trigger={
+                    <Button
+                      variant={'dark_blue'}
+                      className="rounded-xl gap-2 p-3"
+                    >
+                      <Pencil className="w-6 h-6" />
+                      <h3 className="font-semibold text-[18px]">
+                        Edit Best Staff
+                      </h3>
+                    </Button>
+                  }
                 />
-              ))}
-              <Button variant={'light_blue'} size={'icon'}>
-                <ChevronRight width={12} height={21} />
-              </Button>
+              </div>
+
+              <CarouselBestStaff />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-3 gap-6"></div>
     </div>
   );
 };

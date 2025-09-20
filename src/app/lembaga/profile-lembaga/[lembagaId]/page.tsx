@@ -1,6 +1,6 @@
 // Libray Import
 // Icons Import
-import { CalendarIcon, ChevronRight } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
@@ -8,12 +8,10 @@ import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
 import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
 import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
 import React from 'react';
-import BestStaffCard from '~/app/_components/card/best-staff-card';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
 import { Badge } from '~/components/ui/badge';
-import { Button } from '~/components/ui/button';
 // Components Import
 import { Card } from '~/components/ui/card';
 import { getServerAuthSession } from '~/server/auth';
@@ -21,6 +19,7 @@ import { getServerAuthSession } from '~/server/auth';
 // TRPC Import
 import { api } from '~/trpc/server';
 
+import CarouselBestStaff from '../../../_components/carousel/carousel-best-staff';
 // Dummy Data Import
 import {
   dummyDate,
@@ -116,31 +115,7 @@ const DetailLembagaPage = async ({
                   Best Staff Periode {item.startDate}–{item.endDate} 2025
                 </h2>
               </div>
-
-              <div className="flex flex-row items-center">
-                {/* Grid responsif */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-1">
-                  {dummyMahasiswaList.slice(0, 4).map((mhs) => (
-                    <BestStaffCard
-                      key={mhs.id}
-                      nama={mhs.nama}
-                      NIM={mhs.NIM}
-                      jurusan={mhs.jurusan}
-                      profilePicture={mhs.profilePhoto}
-                      divisi={mhs.divisi}
-                      id_mahasiswa={mhs.id}
-                    />
-                  ))}
-                </div>
-
-                <Button
-                  variant="light_blue"
-                  size="icon"
-                  className="ml-4 shrink-0"
-                >
-                  <ChevronRight width={16} height={16} />
-                </Button>
-              </div>
+              <CarouselBestStaff />
             </div>
           ))}
         </div>
