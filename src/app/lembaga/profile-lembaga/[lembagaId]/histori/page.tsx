@@ -13,7 +13,7 @@ const HistoriBestStaffPage = () => {
   return (
     <div className="w-full flex h-screen flex-col items-center overflow-y-hidden">
       <div className="flex max-w-7xl w-full flex-col gap-6 px-9 py-[68px]">
-        <div className="flex w-full flex-col gap-4 ">
+        <div className="flex w-full flex-col gap-2">
           <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
           <HistoriBreadCrumb
             items={[
@@ -55,7 +55,6 @@ const HistoriBestStaffPage = () => {
               <CarouselBestStaff />
             </div>
           ))}
-          <div className="min-h-[50vh]"></div>
         </div>
       </div>
     </div>
