@@ -208,7 +208,11 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
   );
 }
 
-const BestStaff = () => {
+type BestStaffProps = {
+  trigger?: React.ReactNode;
+};
+
+const BestStaff = ({ trigger }: BestStaffProps) => {
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -292,15 +296,11 @@ const BestStaff = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
-          <Image
-            src={PartyPopper}
-            alt="confetti"
-            width={24}
-            height={24}
-          />
-          Pilih Best Staff
-        </Button>
+        {trigger ?? (
+          <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
+            Pilih Best Staff
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10 [&>button[aria-label='Close']]:hidden max-h-[90vh] overflow-y-auto">
