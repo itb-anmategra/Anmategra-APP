@@ -283,6 +283,12 @@ export const profilKegiatanRouter = createTRPCRouter({
 
         // Update the mappings
         if (input.profil_km_id && input.profil_km_id.length > 0) {
+          await tx
+            .delete(pemetaanProfilKegiatan)
+            .where(
+              eq(pemetaanProfilKegiatan.profilKegiatanId, input.profil_id),
+            );
+
           const mappings = input.profil_km_id.map((kmId) => ({
             profilKegiatanId: input.profil_id,
             profilKMId: kmId,

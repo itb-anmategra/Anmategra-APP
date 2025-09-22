@@ -300,6 +300,10 @@ export const profileLembagaRouter = createTRPCRouter({
 
         // Update the mappings
         if (input.profil_km_id && input.profil_km_id.length > 0) {
+          await tx
+            .delete(pemetaanProfilLembaga)
+            .where(eq(pemetaanProfilLembaga.profilLembagaId, input.profil_id));
+
           const mappings = input.profil_km_id.map((kmId) => ({
             profilLembagaId: input.profil_id,
             profilKMId: kmId,
