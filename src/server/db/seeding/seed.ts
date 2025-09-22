@@ -68,7 +68,7 @@ function readCsvFile(filename: string): CsvRow[] {
 
       return value;
     },
-  });
+  }); // Type assertion to CsvRow[]
 
   return records;
 }
