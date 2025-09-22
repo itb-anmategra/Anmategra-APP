@@ -70,7 +70,7 @@ function readCsvFile(filename: string): CsvRow[] {
     },
   }); // Type assertion to CsvRow[]
 
-  return records;
+  return records as CsvRow[];
 }
 
 function parseDate(dateString: string | undefined | null): Date | null {
