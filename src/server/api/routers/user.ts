@@ -11,9 +11,9 @@ import {
   associationRequests,
   associationRequestsLembaga,
   events,
-  lembaga,
   keanggotaan,
   kehimpunan,
+  lembaga,
   mahasiswa,
   users,
 } from '~/server/db/schema';
@@ -22,8 +22,7 @@ import {
   DeleteRequestAssociationInputSchema,
   DeleteRequestAssociationLembagaInputSchema,
   EditProfilMahasiswaInputSchema,
-  GetMyRequestAssociationLembagaOutputSchema,
-  GetMyRequestAssociationOutputSchema,
+  EditRequestAssociationOutputSchema,
   GetAnggotaByIdInputSchema,
   GetAnggotaByNameInputSchema,
   GetAnggotaOutputSchema,
@@ -31,6 +30,8 @@ import {
   GetMahasiswaByNameInputSchema,
   GetMahasiswaByNimInputSchema,
   GetMahasiswaOutputSchema,
+  GetMyRequestAssociationLembagaOutputSchema,
+  GetMyRequestAssociationOutputSchema,
   GetPanitiaByIdInputSchema,
   GetPanitiaByNameInputSchema,
   GetPanitiaOutputSchema,
@@ -42,7 +43,6 @@ import {
   RequestAssociationLembagaInputSchema,
   RequestAssociationLembagaOutputSchema,
   RequestAssociationOutputSchema,
-  EditRequestAssociationOutputSchema,
 } from '../types/user.type';
 
 export const userRouter = createTRPCRouter({
@@ -427,7 +427,7 @@ export const userRouter = createTRPCRouter({
 
   deleteRequestAssociation: protectedProcedure
     .input(DeleteRequestAssociationInputSchema)
-    .output(editRequestAssociationOutputSchema) // Karena edit outputnya sama seperti delete
+    .output(EditRequestAssociationOutputSchema) // Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
       try {
         const existingRequest =
@@ -462,7 +462,7 @@ export const userRouter = createTRPCRouter({
 
   deleteRequestAssociationLembaga: protectedProcedure
     .input(DeleteRequestAssociationLembagaInputSchema)
-    .output(editRequestAssociationOutputSchema) //Karena edit outputnya sama seperti delete
+    .output(EditRequestAssociationOutputSchema) //Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
       try {
         const existingRequest =
@@ -490,7 +490,7 @@ export const userRouter = createTRPCRouter({
         return { success: false, message: 'Failed to delete request' };
       }
     }),
-  
+
   requestAssociationLembaga: protectedProcedure
     .input(RequestAssociationLembagaInputSchema)
     .output(RequestAssociationLembagaOutputSchema)
@@ -526,7 +526,7 @@ export const userRouter = createTRPCRouter({
         return { success: false };
       }
     }),
-      
+
   getMahasiswaById: protectedProcedure
     .input(GetMahasiswaByIdInputSchema)
     .output(GetMahasiswaOutputSchema)

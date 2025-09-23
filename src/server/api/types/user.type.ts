@@ -1,6 +1,5 @@
 import { type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { lembaga } from '~/server/db/schema';
 import { type mahasiswa, type users } from '~/server/db/schema';
 
 type User = InferSelectModel<typeof users>;
@@ -84,16 +83,10 @@ export const GetMyRequestAssociationLembagaOutputSchema = z.object({
   status: z.enum(['Pending', 'Accepted', 'Declined']),
 });
 
-export const editRequestAssociationOutputSchema = z.object({
+export const EditRequestAssociationOutputSchema = z.object({
   // Dipake buat edit & delete
   success: z.boolean(),
   message: z.string().optional(),
-});
-
-export const RequestAssociationLembagaInputSchema = z.object({
-  lembaga_id: z.string(),
-  division: z.string(),
-  position: z.string(),
 });
 
 // Delete Request Association event & lembaga input schema

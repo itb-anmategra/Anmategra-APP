@@ -4,7 +4,6 @@ import {
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
-  publicProcedure,
 } from '~/server/api/trpc';
 import {
   associationRequests,
@@ -710,6 +709,7 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Database Error',
         };
       }
+    }),
 
   chooseBestStaffKegiatan: lembagaProcedure
     .input(ChooseBestStaffKegiatanInputSchema)
