@@ -1,3 +1,4 @@
+import { request } from 'http';
 import { z } from 'zod';
 
 export const GetInfoLembagaInputSchema = z.object({
@@ -145,6 +146,39 @@ export const GetBestStaffOptionsOutputSchema = z.object({
       name: z.string(),
     }),
   ),
+});
+
+export const GetAllRequestAssociationLembagaOutputSchema = z.object({
+  requests: z.array(
+    z.object({
+      user_id: z.string(),
+      mahasiswa_name: z.string(),
+      division: z.string(),
+      position: z.string(),
+    }),
+  ),
+});
+
+export const AcceptRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AcceptRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const DeclineRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const DeclineRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
 });
 
 export const ChooseBestStaffKegiatanInputSchema = z.object({

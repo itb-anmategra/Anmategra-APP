@@ -9,6 +9,7 @@ import {
 } from '~/server/api/trpc';
 import {
   associationRequests,
+  associationRequestsLembaga,
   keanggotaan,
   kehimpunan,
   mahasiswa,
@@ -32,6 +33,8 @@ import {
   GetTambahAnggotaLembagaOptionsInputSchema,
   GetTambahAnggotaLembagaOptionsOutputSchema,
   RequestAssociationInputSchema,
+  RequestAssociationLembagaInputSchema,
+  RequestAssociationLembagaOutputSchema,
   RequestAssociationOutputSchema,
 } from '../types/user.type';
 
@@ -283,6 +286,42 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  requestAssociationLembaga: protectedProcedure
+    .input(RequestAssociationLembagaInputSchema)
+    .output(RequestAssociationLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        const existingRequest =
+          await ctx.db.query.associationRequestsLembaga.findFirst({
+            where: (associationRequestsLembaga, { eq, and }) =>
+              and(
+                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              ),
+          });
+        if (existingRequest) {
+          return {
+            success: false,
+            message: 'Anda sudah pernah membuat permintaan untuk lembaga ini',
+          };
+        }
+        await ctx.db.insert(associationRequestsLembaga).values({
+          id: crypto.randomUUID(),
+          lembagaId: input.lembaga_id,
+          user_id: ctx.session.user.id,
+          division: input.division,
+          position: input.position,
+          status: 'Pending', // Pending Status
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error('Error creating association request:', error);
+        return { success: false };
+      }
+    }),
+      
   getMahasiswaById: protectedProcedure
     .input(GetMahasiswaByIdInputSchema)
     .output(GetMahasiswaOutputSchema)

@@ -65,6 +65,16 @@ export const RequestAssociationOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const RequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+export const RequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 export const GetMahasiswaByIdInputSchema = z.object({
   userId: z.string(),
 });

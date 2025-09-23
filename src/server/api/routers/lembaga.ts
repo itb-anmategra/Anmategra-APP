@@ -8,6 +8,7 @@ import {
 } from '~/server/api/trpc';
 import {
   associationRequests,
+  associationRequestsLembaga,
   bestStaffKegiatan,
   bestStaffLembaga,
   events,
@@ -20,6 +21,8 @@ import {
 
 import {
   AcceptRequestAssociationInputSchema,
+  AcceptRequestAssociationLembagaInputSchema,
+  AcceptRequestAssociationLembagaOutputSchema,
   AcceptRequestAssociationOutputSchema,
   AddAnggotaLembagaInputSchema,
   AddAnggotaLembagaOutputSchema,
@@ -28,11 +31,14 @@ import {
   ChooseBestStaffLembagaInputSchema,
   ChooseBestStaffLembagaOutputSchema,
   DeclineRequestAssociationInputSchema,
+  DeclineRequestAssociationLembagaInputSchema,
+  DeclineRequestAssociationLembagaOutputSchema,
   DeclineRequestAssociationOutputSchema,
   EditProfilLembagaInputSchema,
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
   GetBestStaffLembagaOptionsOutputSchema,
@@ -493,6 +499,217 @@ export const lembagaRouter = createTRPCRouter({
         })),
       };
     }),
+
+  getAllRequestAssociationLembaga: lembagaProcedure
+    .output(GetAllRequestAssociationLembagaOutputSchema)
+    .query(async ({ ctx }) => {
+      const requests = await ctx.db
+        .select({
+          user_id: associationRequestsLembaga.user_id,
+          mahasiswa_name: users.name,
+          division: associationRequestsLembaga.division,
+          position: associationRequestsLembaga.position,
+        })
+        .from(associationRequestsLembaga)
+        .where(
+          eq(
+            associationRequestsLembaga.lembagaId,
+            ctx.session?.user?.lembagaId ?? '',
+          ),
+        )
+        .innerJoin(users, eq(associationRequestsLembaga.user_id, users.id));
+      return {
+        requests: requests.map((req) => ({
+          user_id: req.user_id ?? '',
+          mahasiswa_name: req.mahasiswa_name ?? '',
+          division: req.division ?? '',
+          position: req.position ?? '',
+        })),
+      };
+    }),
+
+  acceptRequestAssociationLembaga: lembagaProcedure
+    .input(AcceptRequestAssociationLembagaInputSchema)
+    .output(AcceptRequestAssociationLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (!ctx.session.user) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        // Check if the request exists and is pending
+        console.log('Checking request for:', {
+          lembagaId: ctx.session.user.lembagaId,
+          user_id: input.user_id,
+        });
+
+        const isExistAndAuthorized = await ctx.db
+          .select({ id: associationRequestsLembaga.id })
+          .from(associationRequestsLembaga)
+          .where(
+            and(
+              eq(
+                associationRequestsLembaga.lembagaId,
+                ctx.session.user.lembagaId,
+              ),
+              eq(associationRequestsLembaga.user_id, input.user_id),
+              eq(associationRequestsLembaga.status, 'Pending'),
+            ),
+          )
+          .limit(1);
+
+        if (isExistAndAuthorized.length === 0) {
+          return {
+            success: false,
+            message: 'Association request tidak ditemukan atau sudah diproses.',
+          };
+        }
+
+        // Check if user is already a member of the lembaga
+        const isUserAlreadyMember = await ctx.db
+          .select({ id: kehimpunan.id })
+          .from(kehimpunan)
+          .where(
+            and(
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+              eq(kehimpunan.userId, input.user_id),
+            ),
+          )
+          .limit(1);
+
+        if (isUserAlreadyMember.length > 0) {
+          return {
+            success: false,
+            message:
+              'User sudah terdaftar di dalam lembaga, silahkan edit posisi dan divisi di halaman anggota.',
+          };
+        }
+
+        try {
+          await ctx.db.transaction(async (tx) => {
+            // Add user to kehimpunan
+            await tx.insert(kehimpunan).values({
+              lembagaId: ctx.session.user.lembagaId!,
+              userId: input.user_id,
+              position: input.position,
+              division: input.division,
+            });
+
+            // Update the association request status to 'Accepted'
+            await tx
+              .update(associationRequestsLembaga)
+              .set({
+                status: 'Accepted',
+              })
+              .where(
+                and(
+                  eq(
+                    associationRequestsLembaga.lembagaId,
+                    ctx.session.user.lembagaId!,
+                  ),
+                  eq(associationRequestsLembaga.user_id, input.user_id),
+                ),
+              );
+
+            // Increment lembaga member count
+            const currentLembaga = await tx.query.lembaga.findFirst({
+              where: eq(lembaga.id, ctx.session.user.lembagaId!),
+              columns: { memberCount: true },
+            });
+
+            await tx
+              .update(lembaga)
+              .set({
+                memberCount: (currentLembaga?.memberCount ?? 0) + 1,
+              })
+              .where(eq(lembaga.id, ctx.session.user.lembagaId!));
+          });
+        } catch (dbError) {
+          console.error('Transaction Error:', dbError);
+          return {
+            success: false,
+            message: 'Failed to process request. Please try again.',
+          };
+        }
+
+        return {
+          success: true,
+          message: 'Request berhasil diterima.',
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+          message: 'Database Error',
+        };
+      }
+    }),
+
+  declineRequestAssociationLembaga: lembagaProcedure
+    .input(DeclineRequestAssociationLembagaInputSchema)
+    .output(DeclineRequestAssociationLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (!ctx.session.user) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        // Check if the request exists and is pending
+        const isExistAndAuthorized = await ctx.db
+          .select({ id: associationRequestsLembaga.id })
+          .from(associationRequestsLembaga)
+          .where(
+            and(
+              eq(
+                associationRequestsLembaga.lembagaId,
+                ctx.session.user.lembagaId,
+              ),
+              eq(associationRequestsLembaga.user_id, input.user_id),
+              eq(associationRequestsLembaga.status, 'Pending'),
+            ),
+          )
+          .limit(1);
+
+        if (isExistAndAuthorized.length === 0) {
+          return {
+            success: false,
+            message: 'Association request tidak ditemukan atau sudah diproses.',
+          };
+        }
+
+        // Update the association request status to 'Declined'
+        await ctx.db
+          .update(associationRequestsLembaga)
+          .set({
+            status: 'Declined',
+          })
+          .where(
+            and(
+              eq(
+                associationRequestsLembaga.lembagaId,
+                ctx.session.user.lembagaId,
+              ),
+              eq(associationRequestsLembaga.user_id, input.user_id),
+            ),
+          );
+
+        return {
+          success: true,
+          message: 'Request berhasil ditolak.',
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+          message: 'Database Error',
+        };
+      }
 
   chooseBestStaffKegiatan: lembagaProcedure
     .input(ChooseBestStaffKegiatanInputSchema)
