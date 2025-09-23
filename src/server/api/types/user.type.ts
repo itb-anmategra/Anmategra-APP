@@ -1,5 +1,6 @@
 import { type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
+import { lembaga } from '~/server/db/schema';
 import { type mahasiswa, type users } from '~/server/db/schema';
 
 type User = InferSelectModel<typeof users>;
@@ -63,6 +64,45 @@ export const RequestAssociationInputSchema = z.object({
 
 export const RequestAssociationOutputSchema = z.object({
   success: z.boolean(),
+});
+
+export const GetMyRequestAssociationOutputSchema = z.object({
+  id: z.string(),
+  event_id: z.string().nullable(),
+  event_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const GetMyRequestAssociationLembagaOutputSchema = z.object({
+  id: z.string(),
+  lembaga_id: z.string().nullable(),
+  lembaga_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const editRequestAssociationOutputSchema = z.object({
+  // Dipake buat edit & delete
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const RequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+// Delete Request Association event & lembaga input schema
+export const DeleteRequestAssociationInputSchema = z.object({
+  event_id: z.string(),
+});
+
+export const DeleteRequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
 });
 
 export const RequestAssociationLembagaInputSchema = z.object({
