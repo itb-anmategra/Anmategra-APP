@@ -7,6 +7,7 @@ await import('./src/env.js');
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
+    //TODO: hapus dummyimage.com dan placekitten.com untuk production
     domains: [
       'example.com',
       'dummyimage.com',
