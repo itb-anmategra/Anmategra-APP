@@ -180,3 +180,49 @@ export const DeclineRequestAssociationLembagaOutputSchema = z.object({
   success: z.boolean(),
   message: z.string().optional(),
 });
+
+export const ChooseBestStaffKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const GetBestStaffLembagaOptionsInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+});
+
+export const GetBestStaffLembagaOptionsOutputSchema = z.object({
+  staff_options: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});

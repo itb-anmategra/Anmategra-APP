@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gte, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -9,6 +9,8 @@ import {
 import {
   associationRequests,
   associationRequestsLembaga,
+  bestStaffKegiatan,
+  bestStaffLembaga,
   events,
   keanggotaan,
   kehimpunan,
@@ -24,6 +26,10 @@ import {
   AcceptRequestAssociationOutputSchema,
   AddAnggotaLembagaInputSchema,
   AddAnggotaLembagaOutputSchema,
+  ChooseBestStaffKegiatanInputSchema,
+  ChooseBestStaffKegiatanOutputSchema,
+  ChooseBestStaffLembagaInputSchema,
+  ChooseBestStaffLembagaOutputSchema,
   DeclineRequestAssociationInputSchema,
   DeclineRequestAssociationLembagaInputSchema,
   DeclineRequestAssociationLembagaOutputSchema,
@@ -34,6 +40,8 @@ import {
   GetAllAnggotaLembagaOutputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
+  GetBestStaffLembagaOptionsInputSchema,
+  GetBestStaffLembagaOptionsOutputSchema,
   GetBestStaffOptionsInputSchema,
   GetBestStaffOptionsOutputSchema,
   GetInfoLembagaInputSchema,
@@ -702,5 +710,155 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Database Error',
         };
       }
+
+  chooseBestStaffKegiatan: lembagaProcedure
+    .input(ChooseBestStaffKegiatanInputSchema)
+    .output(ChooseBestStaffKegiatanOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      // Verify that the event belongs to the lembaga
+      const eventOrg = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (ctx.session.user.lembagaId !== eventOrg?.org_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      // Verify the start date and end date is valid
+      if (new Date(input.start_date) > new Date(input.end_date)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Start date tidak boleh lebih besar dari end date',
+        });
+      }
+
+      const existing = await ctx.db.query.bestStaffKegiatan.findMany({
+        where: and(
+          eq(bestStaffKegiatan.eventId, input.event_id),
+          // overlap condition:
+          or(
+            and(
+              lte(bestStaffKegiatan.startDate, new Date(input.end_date)),
+              gte(bestStaffKegiatan.endDate, new Date(input.start_date)),
+            ),
+          ),
+        ),
+      });
+
+      if (existing.length > 0) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Tanggal bentrok dengan Best Staff lain di divisi ini.',
+        });
+      }
+
+      // insert to tabel bestStaffKegiatan
+      await ctx.db.insert(bestStaffKegiatan).values(
+        input.best_staff_list.map((staff) => ({
+          id: crypto.randomUUID(),
+          eventId: input.event_id,
+          mahasiswaId: staff.user_id,
+          division: staff.division,
+          startDate: new Date(input.start_date),
+          endDate: new Date(input.end_date),
+        })),
+      );
+
+      return {
+        success: true,
+      };
+    }),
+
+  getBestStaffLembagaOptions: protectedProcedure
+    .input(GetBestStaffLembagaOptionsInputSchema)
+    .output(GetBestStaffLembagaOptionsOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const staffOptions = await ctx.db
+        .select({
+          user_id: users.id,
+          name: users.name,
+        })
+        .from(kehimpunan)
+        .innerJoin(users, eq(kehimpunan.userId, users.id))
+        .where(
+          and(
+            eq(kehimpunan.lembagaId, input.lembaga_id),
+            eq(kehimpunan.division, input.division),
+          ),
+        );
+
+      return {
+        staff_options: staffOptions.map((staff) => ({
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
+        })),
+      };
+    }),
+
+  chooseBestStaffLembaga: lembagaProcedure
+    .input(ChooseBestStaffLembagaInputSchema)
+    .output(ChooseBestStaffLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      // Verify that lembaga id matches
+      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      // Verify the start date and end date is valid
+      if (new Date(input.start_date) > new Date(input.end_date)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Start date tidak boleh lebih besar dari end date',
+        });
+      }
+
+      const existing = await ctx.db.query.bestStaffLembaga.findMany({
+        where: and(
+          eq(bestStaffLembaga.lembagaId, input.lembaga_id),
+          // overlap condition:
+          or(
+            and(
+              lte(bestStaffLembaga.startDate, new Date(input.end_date)),
+              gte(bestStaffLembaga.endDate, new Date(input.start_date)),
+            ),
+          ),
+        ),
+      });
+
+      if (existing.length > 0) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Tanggal bentrok dengan Best Staff lain di divisi ini.',
+        });
+      }
+
+      // insert to tabel bestStaffKegiatan
+      await ctx.db.insert(bestStaffLembaga).values(
+        input.best_staff_list.map((staff) => ({
+          id: crypto.randomUUID(),
+          lembagaId: input.lembaga_id,
+          mahasiswaId: staff.user_id,
+          division: staff.division,
+          startDate: new Date(input.start_date),
+          endDate: new Date(input.end_date),
+        })),
+      );
+
+      return {
+        success: true,
+      };
     }),
 });
