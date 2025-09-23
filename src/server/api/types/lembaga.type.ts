@@ -1,3 +1,4 @@
+import { request } from 'http';
 import { z } from 'zod';
 
 export const GetInfoLembagaInputSchema = z.object({
@@ -147,3 +148,81 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationLembagaOutputSchema = z.object({
+  requests: z.array(
+    z.object({
+      user_id: z.string(),
+      mahasiswa_name: z.string(),
+      division: z.string(),
+      position: z.string(),
+    }),
+  ),
+});
+
+export const AcceptRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AcceptRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const DeclineRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const DeclineRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const ChooseBestStaffKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const GetBestStaffLembagaOptionsInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+});
+
+export const GetBestStaffLembagaOptionsOutputSchema = z.object({
+  staff_options: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});

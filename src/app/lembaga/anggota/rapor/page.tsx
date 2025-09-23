@@ -53,6 +53,206 @@ const anggotaList = [
     nim: '12324567',
     profil: ['100', '100', '100', '100'],
   },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
+  {
+    nama: 'Naila secira budiana',
+    nim: '12324567',
+    profil: ['100', '100', '100', '100'],
+  },
 ];
 
 const profilHeaders = [
