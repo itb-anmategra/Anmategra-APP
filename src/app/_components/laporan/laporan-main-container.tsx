@@ -51,6 +51,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
         status={status}
         toggleStatus={toggleStatus}
         isLaporanEmpty={isLaporanEmpty}
+        currentDisplay={display}
       />
       {/* Input */}
       {!isLaporanEmpty && (

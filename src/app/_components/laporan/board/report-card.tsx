@@ -20,12 +20,12 @@ export function ReportCard({ report }: { report: Report }) {
       className="rounded-md bg-white px-6 py-5 pr-[20%] shadow"
       style={{ cursor: 'grab' }}
     >
-      <h3 className="mb-2 text-left text-xl font-semibold text-primary-400">
+      <h3 className="mb-2 text-left text-[20px] font-semibold text-primary-400">
         {report.name}
       </h3>
       <div className="text-secondary-1100 flex items-center justify-between">
-        <span className="text-sm text-gray-500">{report.date}</span>
-        <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-2 py-1 text-sm">
+        <span className="text-[18px] text-gray-500">{report.date}</span>
+        <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[18px]">
           {report.category}
         </span>
       </div>

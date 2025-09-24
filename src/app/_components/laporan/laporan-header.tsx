@@ -27,17 +27,17 @@ export type CurrentDisplay = 'Board' | 'List';
 interface LaporanHeaderProps {
   setCurrentDisplay: (value: CurrentDisplay) => void;
   status: ColumnType[];
-
   toggleStatus: (column: ColumnType) => void;
   isLaporanEmpty: boolean;
+  currentDisplay: CurrentDisplay;
 }
 
 export const LaporanHeader = ({
   setCurrentDisplay,
   status,
-
   toggleStatus,
   isLaporanEmpty = false,
+  currentDisplay,
 }: LaporanHeaderProps) => {
   return (
     <header className="flex items-center justify-between">
@@ -132,7 +132,7 @@ export const LaporanHeader = ({
         </DropdownMenu>
 
         {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
-        {!isLaporanEmpty && (
+        {!isLaporanEmpty && currentDisplay === 'Board' && (
           <LaporanDialog
             trigger={
               <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-6 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
