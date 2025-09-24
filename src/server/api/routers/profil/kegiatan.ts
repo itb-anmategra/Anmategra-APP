@@ -10,7 +10,7 @@ import {
   EditProfilOutputSchema,
   GetAllProfilKegiatanInputSchema,
   GetAllProfilOutputSchema,
-} from '~/server/api/types/profile.type';
+} from '~/server/api/types/profil.type';
 import {
   events,
   pemetaanProfilKegiatan,
@@ -20,7 +20,7 @@ import {
 import {
   validateKegiatanOwnership,
   validateKegiatanProfileOwnership,
-} from '../profile/services';
+} from '../profil/services';
 
 export const profilKegiatanRouter = createTRPCRouter({
   getAllProfilKegiatan: lembagaProcedure

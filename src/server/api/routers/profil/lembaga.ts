@@ -10,7 +10,7 @@ import {
   EditProfilOutputSchema,
   GetAllProfilLembagaInputSchema,
   GetAllProfilOutputSchema,
-} from '~/server/api/types/profile.type';
+} from '~/server/api/types/profil.type';
 import {
   lembaga,
   pemetaanProfilLembaga,

@@ -1,7 +1,7 @@
 import { createTRPCRouter } from '~/server/api/trpc';
 
-import { profilKegiatanRouter } from './profile/kegiatan';
-import { profileLembagaRouter } from './profile/lembaga';
+import { profilKegiatanRouter } from './profil/kegiatan';
+import { profileLembagaRouter } from './profil/lembaga';
 
 export const profilRouter = createTRPCRouter({
   ...profilKegiatanRouter._def.procedures,
