@@ -1,10 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
-import {
-  createTRPCRouter,
-  lembagaProcedure,
-  publicProcedure,
-} from '~/server/api/trpc';
+import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
 import {
   CreateProfilKegiatanInputSchema,
   CreateProfilKegiatanOutputSchema,
@@ -14,17 +10,11 @@ import {
   EditProfilOutputSchema,
   GetAllProfilKegiatanInputSchema,
   GetAllProfilOutputSchema,
-  GetKegiatanInputSchema,
-  GetKegiatanOutputSchema,
 } from '~/server/api/types/profile.type';
 import {
   events,
-  keanggotaan,
-  lembaga,
-  mahasiswa,
   pemetaanProfilKegiatan,
   profilKegiatan,
-  users,
 } from '~/server/db/schema';
 
 import {
@@ -33,84 +23,6 @@ import {
 } from '../profile/services';
 
 export const profilKegiatanRouter = createTRPCRouter({
-  getKegiatan: publicProcedure
-    .input(GetKegiatanInputSchema)
-    .output(GetKegiatanOutputSchema)
-    .query(async ({ ctx, input }) => {
-      const kegiatan = await ctx.db.query.events.findFirst({
-        where: (events, { eq }) => eq(events.id, input.kegiatanId),
-      });
-
-      if (!kegiatan) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
-        });
-      }
-
-      if (kegiatan.org_id === null) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
-        });
-      }
-
-      const lembagaRes = await ctx.db
-        .select({
-          id: lembaga.id,
-          name: lembaga.name,
-          description: lembaga.description,
-          image: users.image,
-          memberCount: lembaga.memberCount,
-          foundingDate: lembaga.foundingDate,
-          endingDate: lembaga.endingDate,
-          type: lembaga.type,
-        })
-        .from(lembaga)
-        .innerJoin(users, eq(lembaga.userId, users.id))
-        .where(eq(lembaga.id, kegiatan.org_id))
-        .limit(1);
-
-      if (lembagaRes.length === 0 || !lembagaRes[0]) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Lembaga not found',
-        });
-      }
-
-      const participants = await ctx.db
-        .select({
-          userId: mahasiswa.userId,
-          nama: users.name,
-          nim: mahasiswa.nim,
-          jurusan: mahasiswa.jurusan,
-          image: users.image,
-          position: keanggotaan.position,
-          divisi: keanggotaan.division,
-        })
-        .from(keanggotaan)
-        .innerJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.userId))
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
-        .where(eq(keanggotaan.event_id, input.kegiatanId));
-
-      const formattedParticipants = participants.map((participant) => ({
-        id: participant.userId,
-        nama: participant.nama ?? 'john doe',
-        nim: participant.nim.toString(),
-        jurusan: participant.jurusan,
-        image: participant.image,
-        posisi: participant.position,
-        divisi: participant.divisi,
-        posisiColor: 'blue',
-      }));
-
-      return {
-        kegiatan: kegiatan,
-        lembaga: lembagaRes[0],
-        participant: formattedParticipants,
-      };
-    }),
-
   getAllProfilKegiatan: lembagaProcedure
     .input(GetAllProfilKegiatanInputSchema)
     .output(GetAllProfilOutputSchema)

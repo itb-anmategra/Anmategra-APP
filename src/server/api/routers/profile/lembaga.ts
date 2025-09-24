@@ -1,10 +1,6 @@
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq } from 'drizzle-orm';
-import {
-  createTRPCRouter,
-  lembagaProcedure,
-  publicProcedure,
-} from '~/server/api/trpc';
+import { eq } from 'drizzle-orm';
+import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
 import {
   CreateProfilLembagaInputSchema,
   CreateProfilLembagaOutputSchema,
@@ -14,19 +10,12 @@ import {
   EditProfilOutputSchema,
   GetAllProfilLembagaInputSchema,
   GetAllProfilOutputSchema,
-  GetLembagaInputSchema,
-  GetLembagaOutputSchema,
 } from '~/server/api/types/profile.type';
 import {
-  events,
-  kehimpunan,
   lembaga,
-  mahasiswa,
   pemetaanProfilLembaga,
   profilLembaga,
-  users,
 } from '~/server/db/schema';
-import { type Kepanitiaan } from '~/types/kepanitiaan';
 
 import {
   validateLembagaOwnership,
@@ -34,101 +23,6 @@ import {
 } from './services';
 
 export const profileLembagaRouter = createTRPCRouter({
-  getLembaga: publicProcedure
-    .input(GetLembagaInputSchema)
-    .output(GetLembagaOutputSchema)
-    .query(async ({ ctx, input }) => {
-      const lembaga = await ctx.db.query.lembaga.findFirst({
-        where: (lembaga, { eq }) => eq(lembaga.id, input.lembagaId),
-        with: {
-          users: {
-            columns: {
-              id: true,
-              image: true,
-            },
-          },
-        },
-        columns: {
-          id: true,
-          name: true,
-          description: true,
-          memberCount: true,
-          foundingDate: true,
-          endingDate: true,
-          type: true,
-        },
-      });
-
-      if (!lembaga) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Lembaga not found',
-        });
-      }
-
-      const newestEvent = await ctx.db.query.events.findMany({
-        where: (events, { eq }) => and(eq(events.org_id, input.lembagaId)),
-        orderBy: desc(events.start_date),
-      });
-
-      const formattedEvents: Kepanitiaan[] = newestEvent.map((item) => ({
-        lembaga: {
-          id: item.id,
-          name: item.name,
-          profilePicture: item.image,
-        },
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        quota: item.participant_count ?? 0,
-        image: item.background_image,
-        startDate: new Date(item.start_date),
-        endDate: item.end_date ? new Date(item.end_date) : null,
-      }));
-
-      const highlightedEvent = await ctx.db.query.events.findFirst({
-        where: (events, { eq }) =>
-          and(
-            eq(events.org_id, input.lembagaId),
-            eq(events.is_highlighted, true),
-          ),
-        orderBy: desc(events.start_date),
-      });
-
-      const anggota = await ctx.db
-        .select({
-          id: users.id,
-          nama: users.name,
-          nim: mahasiswa.nim,
-          image: users.image,
-          jurusan: mahasiswa.jurusan,
-          divisi: kehimpunan.division,
-          posisi: kehimpunan.position,
-        })
-        .from(kehimpunan)
-        .innerJoin(users, eq(kehimpunan.userId, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-        .where(eq(kehimpunan.lembagaId, input.lembagaId));
-
-      const formattedAnggota = anggota.map((anggota) => ({
-        id: anggota.id,
-        nama: anggota.nama ?? 'john doe',
-        nim: anggota.nim.toString(),
-        jurusan: anggota.jurusan,
-        image: anggota.image,
-        divisi: anggota.divisi,
-        posisi: anggota.posisi,
-        posisiColor: 'blue',
-      }));
-
-      return {
-        lembagaData: lembaga,
-        newestEvent: formattedEvents,
-        highlightedEvent: highlightedEvent ? highlightedEvent : null,
-        anggota: formattedAnggota,
-      };
-    }),
-
   getAllProfilLembaga: lembagaProcedure
     .input(GetAllProfilLembagaInputSchema)
     .output(GetAllProfilOutputSchema)
