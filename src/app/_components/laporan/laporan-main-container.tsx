@@ -56,7 +56,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       {!isLaporanEmpty && (
         <Input
           placeholder="Cari laporan"
-          className="rounded-2xl py-5 bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+          className="rounded-3xl py-5 bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
           startAdornment={
             <MagnifyingGlassIcon className="size-4 text-gray-500" />
           }

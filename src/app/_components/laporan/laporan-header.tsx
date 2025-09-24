@@ -42,16 +42,20 @@ export const LaporanHeader = ({
   return (
     <header className="flex items-center justify-between">
       <h1 className="text-[32px] font-semibold">Laporan</h1>
-      <div className="flex space-x-2 text-lg font-semibold">
+      <div className="flex space-x-2 gap-[19px] text-lg font-semibold">
         {/* Dropdown for Display Management */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="">
             <Button
               variant="outline"
-              className="flex items-center rounded-xl border px-7 py-3 text-lg font-semibold"
+              className="flex w-[169px] h-[50px] items-center rounded-xl border px-7 py-3 font-semibold"
             >
-              <Image src={Display} alt="Display" className="h-5 w-5" />
-              <p className="text-sm">Display</p>
+              <Image
+                src={Display}
+                alt="Display"
+                className="h-[21px] w-[19.5px]"
+              />
+              <p className="text-[18px]">Display</p>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -84,10 +88,10 @@ export const LaporanHeader = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="px-7 py-2 text-lg font-semibold"
+              className="w-[169px] h-[50px] gap-[10px] px-7 py-2 text-lg font-semibold"
             >
-              <Image src={Status} alt="Status" className="h-5 w-5" />
-              <p className="text-sm">Status</p>
+              <Image src={Status} alt="Status" className="h-[26px] w-[26px]" />
+              <p className="text-[18px]">Status</p>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -131,8 +135,8 @@ export const LaporanHeader = ({
         {!isLaporanEmpty && (
           <LaporanDialog
             trigger={
-              <div className="flex flex-row items-center gap-2 rounded-lg bg-primary-400 px-3 py-[7px] text-sm text-white transition-all hover:bg-primary-500">
-                <Plus width={14} height={14} /> Buat laporan
+              <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-3 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
+                <Plus width={24} height={24} /> Buat laporan
               </div>
             }
           />
