@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { db } from '../index';
 import {
   accounts,
@@ -85,19 +87,14 @@ async function clearAllTables() {
   }
 }
 
-// Run if called directly
-const isMainModule = import.meta.url === `file://${process.argv[1]}`;
-
-if (isMainModule) {
-  clearAllTables()
-    .then(() => {
-      console.log('Database clearing completed.');
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error('Database clearing failed:', error);
-      process.exit(1);
-    });
-}
+clearAllTables()
+  .then(() => {
+    console.log('Database clearing completed.');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Database clearing failed:', error);
+    process.exit(1);
+  });
 
 export { clearAllTables };

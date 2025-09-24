@@ -6,7 +6,7 @@ import path from 'path';
 
 import { db } from '../index.js';
 import {
-  accounts,
+  // accounts,
   associationRequests,
   associationRequestsLembaga,
   bestStaffKegiatan,
@@ -34,6 +34,7 @@ import {
 // Utility functions for parsing CSV values
 
 const TEST_EMAIL = 'your-email@gmail.com'; // Change this to your own private email
+const TEST_EMAIL_MAHASISWA = 'your-nim@mahasiswa.itb.ac.id'; // Change this to your own nim
 
 const CSV_DIR = path.join(
   process.cwd(),
@@ -374,33 +375,33 @@ async function importNotifications() {
   }
 }
 
-async function importAccounts() {
-  console.log('🔐 Importing accounts...');
-  const records = readCsvFile('accounts.csv');
+// async function importAccounts() {
+//   console.log('🔐 Importing accounts...');
+//   const records = readCsvFile('accounts.csv');
 
-  if (records.length === 0) return;
+//   if (records.length === 0) return;
 
-  const data = records
-    .filter((record) => record.user_id && record.type && record.provider)
-    .map((record) => ({
-      userId: record.user_id!,
-      type: record.type as 'oauth' | 'email' | 'oidc',
-      provider: record.provider!,
-      providerAccountId: record.provider_account_id!,
-      refresh_token: record.refresh_token ?? null,
-      access_token: record.access_token ?? null,
-      expires_at: parseInteger(record.expires_at),
-      token_type: record.token_type ?? null,
-      scope: record.scope ?? null,
-      id_token: record.id_token ?? null,
-      session_state: record.session_state ?? null,
-    }));
+//   const data = records
+//     .filter((record) => record.user_id && record.type && record.provider)
+//     .map((record) => ({
+//       userId: record.user_id!,
+//       type: record.type as 'oauth' | 'email' | 'oidc',
+//       provider: record.provider!,
+//       providerAccountId: record.provider_account_id!,
+//       refresh_token: record.refresh_token ?? null,
+//       access_token: record.access_token ?? null,
+//       expires_at: parseInteger(record.expires_at),
+//       token_type: record.token_type ?? null,
+//       scope: record.scope ?? null,
+//       id_token: record.id_token ?? null,
+//       session_state: record.session_state ?? null,
+//     }));
 
-  if (data.length > 0) {
-    await db.insert(accounts).values(data);
-    console.log(`✅ Imported ${data.length} accounts`);
-  }
-}
+//   if (data.length > 0) {
+//     await db.insert(accounts).values(data);
+//     console.log(`✅ Imported ${data.length} accounts`);
+//   }
+// }
 
 // COMMENTED OUT - Session seeding removed as requested
 /*
@@ -734,7 +735,7 @@ export async function seedFromCsv() {
     await importMahasiswa();
     await importLembaga();
     await importEvents();
-    await importAccounts();
+    // await importAccounts();
     await importVerificationTokens();
     await importKeanggotaan();
     await importKehimpunan();
@@ -755,9 +756,33 @@ export async function seedFromCsv() {
 
     console.log('🎉 CSV import completed successfully!');
 
+    const randomLembaga = await db.query.users.findFirst({
+      where: eq(users.role, 'lembaga'),
+    });
+
+    if (randomLembaga) {
+      await db
+        .update(users)
+        .set({ email: TEST_EMAIL })
+        .where(eq(users.id, randomLembaga.id));
+      console.log(`✅ Updated random user's email to ${TEST_EMAIL}`);
+    }
+
+    const randomMahasiswa = await db.query.users.findFirst({
+      where: eq(users.role, 'mahasiswa'),
+    });
+
+    if (randomMahasiswa) {
+      await db
+        .update(users)
+        .set({ email: TEST_EMAIL_MAHASISWA })
+        .where(eq(users.id, randomMahasiswa.id));
+      console.log(`✅ Updated random user's email to ${TEST_EMAIL_MAHASISWA}`);
+    }
+
     // email lembaga seeding
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, TEST_EMAIL),
+    const existingUser = await db.query.verifiedUsers.findFirst({
+      where: eq(verifiedUsers.email, TEST_EMAIL),
     });
 
     if (existingUser) {
@@ -783,7 +808,4 @@ export async function seedFromCsv() {
   }
 }
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  seedFromCsv().catch(console.error);
-}
+seedFromCsv().catch(console.error);
