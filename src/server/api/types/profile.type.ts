@@ -65,7 +65,3 @@ export const GetKegiatanOutputSchema = z.object({
   }),
   participant: z.array(PanitiaKegiatanSchema),
 });
-
-export const GetAllProfilKegiatanInputSchema = z.object({
-  event_id: z.string(),
-});
