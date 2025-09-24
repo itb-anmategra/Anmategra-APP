@@ -135,7 +135,7 @@ export const LaporanHeader = ({
         {!isLaporanEmpty && (
           <LaporanDialog
             trigger={
-              <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-3 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
+              <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-6 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
                 <Plus width={24} height={24} /> Buat laporan
               </div>
             }
