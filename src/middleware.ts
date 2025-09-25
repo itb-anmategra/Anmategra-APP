@@ -12,7 +12,6 @@ const STATIC = [
 ];
 
 export default async function middleware(req: NextRequest) {
-  /*
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (STATIC.some((route) => req.nextUrl.pathname.startsWith(route))) {
@@ -55,6 +54,6 @@ export default async function middleware(req: NextRequest) {
     // }
     return NextResponse.redirect(new URL(`/${token.role}`, req.url));
   }
-  */
+
   return NextResponse.next();
 }

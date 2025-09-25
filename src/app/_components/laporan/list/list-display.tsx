@@ -2,12 +2,17 @@ import { type KanbanBoardProps } from '../board/kanban-board';
 import { getTypeImage } from '../board/report-column';
 import { AccordionDisplay } from './accordion-display';
 
+interface ListDisplayProps extends KanbanBoardProps {
+  isAdminView?: boolean;
+}
+
 export const ListDisplay = ({
   kanbanData,
   displayedColumn,
-}: KanbanBoardProps) => {
+  isAdminView,
+}: ListDisplayProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 overflow-y-visible">
       {kanbanData
         .filter((data) => displayedColumn.includes(data.title))
         .map((data, index) => (
@@ -17,6 +22,7 @@ export const ListDisplay = ({
             title={data.title}
             reports={data.reports}
             selectedStatus={displayedColumn}
+            isAdminView={isAdminView}
           />
         ))}
     </div>

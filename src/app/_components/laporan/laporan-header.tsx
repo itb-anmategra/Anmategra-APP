@@ -1,7 +1,4 @@
-import { AlignLeft, LayoutGrid, Plus } from 'lucide-react';
-import { LayoutDashboard } from 'lucide-react';
-import { AlignJustify } from 'lucide-react';
-import { Monitor, SlidersHorizontal } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '~/components/ui/button';
 import {
@@ -30,6 +27,7 @@ interface LaporanHeaderProps {
   toggleStatus: (column: ColumnType) => void;
   isLaporanEmpty: boolean;
   currentDisplay: CurrentDisplay;
+  isAdminView: boolean;
 }
 
 export const LaporanHeader = ({
@@ -38,6 +36,7 @@ export const LaporanHeader = ({
   toggleStatus,
   isLaporanEmpty = false,
   currentDisplay,
+  isAdminView,
 }: LaporanHeaderProps) => {
   return (
     <header className="flex items-center justify-between">
@@ -132,7 +131,7 @@ export const LaporanHeader = ({
         </DropdownMenu>
 
         {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
-        {!isLaporanEmpty && currentDisplay === 'Board' && (
+        {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
           <LaporanDialog
             trigger={
               <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-6 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">

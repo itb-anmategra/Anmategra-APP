@@ -26,8 +26,9 @@ const DummyData: ColumnProps[] = [
     ],
   },
 ];
+
 const LaporanPage = () => {
-  return <LaporanMainContainer data={DummyData} />;
+  return <LaporanMainContainer data={DummyData} isAdminView={true} />;
 };
 
 export default LaporanPage;

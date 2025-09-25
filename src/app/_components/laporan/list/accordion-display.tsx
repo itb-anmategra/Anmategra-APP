@@ -20,6 +20,7 @@ interface AccordionProps {
   logo: StaticImageData;
   reports: Report[];
   selectedStatus: ColumnType[];
+  isAdminView?: boolean;
 }
 
 type DataItem = Report;
@@ -39,7 +40,12 @@ export const ListDisplayItem = ({ name, date, category }: DataItem) => {
   );
 };
 
-export const AccordionDisplay = ({ title, logo, reports }: AccordionProps) => {
+export const AccordionDisplay = ({
+  title,
+  logo,
+  reports,
+  isAdminView,
+}: AccordionProps) => {
   return (
     <Accordion type="multiple">
       <AccordionItem value={title}>
@@ -60,13 +66,15 @@ export const AccordionDisplay = ({ title, logo, reports }: AccordionProps) => {
               </div>
 
               {/* Kanan: Tombol Buat Laporan */}
-              <LaporanDialog
-                trigger={
-                  <div className="flex h-[42px] w-[169px] flex-row items-center gap-2 rounded-lg bg-[#2B6282] px-7 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-700">
-                    <Plus width={18} height={18} /> Buat laporan
-                  </div>
-                }
-              />
+              {!isAdminView && (
+                <LaporanDialog
+                  trigger={
+                    <div className="flex h-[42px] w-[169px] flex-row items-center gap-2 rounded-lg bg-[#2B6282] px-7 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-700">
+                      <Plus width={18} height={18} /> Buat laporan
+                    </div>
+                  }
+                />
+              )}
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ import { ListDisplay } from './list/list-display';
 
 interface LaporanProps {
   data: ColumnProps[];
+  isAdminView?: boolean;
 }
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
@@ -44,7 +45,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const isLaporanEmpty = Laporan.data.length === 0;
 
   return (
-    <div className="h-screen space-y-4 p-6">
+    <div className="min-h-screen space-y-4 p-6">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
@@ -52,6 +53,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
         toggleStatus={toggleStatus}
         isLaporanEmpty={isLaporanEmpty}
         currentDisplay={display}
+        isAdminView={Laporan.isAdminView ?? false}
       />
       {/* Input */}
       {!isLaporanEmpty && (
@@ -78,6 +80,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           kanbanData={Laporan.data}
           hideColumnAction={hideStatus}
           displayedColumn={status}
+          isAdminView={Laporan.isAdminView}
         />
       )}
       {/* Show Tambah Laporan Button in the middle of Screen */}
