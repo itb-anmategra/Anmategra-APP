@@ -6,6 +6,10 @@ import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import Rapor from '~/../public/icons/assessment.svg';
+import Best from '~/../public/icons/best.svg';
+import Upload from '~/../public/icons/export-button.svg';
+import Filter from '~/../public/icons/filter-list.svg';
 // Icon Import
 import Plus from '~/../public/icons/plus.svg';
 import SearchIcon from '~/../public/icons/search.svg';
@@ -63,7 +67,7 @@ export default function AnggotaContent({
       <div className="flex-1 space-y-4">
         {/* Search Bar */}
         <div className="w-full">
-          <p className="text-2xl mb-4 font-semibold">
+          <p className="text-[32px] mb-4 font-semibold">
             {isAnggota ? <span>Anggota</span> : <span>Anggota Kegiatan</span>}
           </p>
           <div className="flex items-center gap-4">
@@ -77,7 +81,7 @@ export default function AnggotaContent({
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                className="rounded-[24px] pl-12 pr-4 border-[1px] border-neutral-400 w-full"
+                className="rounded-[24px] pl-12 pr-4 border-[1px] border-neutral-400 w-full text-lg"
                 placeholder="Cari nama anggota"
               />
             </div>
@@ -87,49 +91,117 @@ export default function AnggotaContent({
         {/* List Anggota */}
         <div>
           {/* Button Section */}
-          <div className="flex justify-between">
-            <Dialog
-              open={isOpen}
-              onOpenChange={(open) => {
-                setIsOpen(open);
-                if (!open) setManualMode(false);
-              }}
-            >
-              <DialogTrigger asChild>
-                <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
+          <div className="flex">
+            <div className="justify-between flex flex-row w-full">
+              <div className="flex gap-x-5">
+                <Dialog
+                  open={isOpen}
+                  onOpenChange={(open) => {
+                    setIsOpen(open);
+                    if (!open) setManualMode(false);
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg ">
+                      <Image
+                        src={Plus}
+                        alt="Tambah Anggota"
+                        width={24}
+                        height={24}
+                      />
+                      Tambah Anggota Baru
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="w-full max-w-xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
+                        {manualMode
+                          ? 'Tambah Anggota Manual'
+                          : 'Tambah Anggota'}
+                      </DialogTitle>
+                    </DialogHeader>
+                    {isAnggota ? (
+                      <TambahAnggotaForm
+                        session={session}
+                        data={dataAddAnggota}
+                        setIsOpen={setIsOpen}
+                        manualMode={manualMode}
+                        setManualMode={setManualMode}
+                      />
+                    ) : (
+                      <TambahAnggotaKegiatanForm
+                        session={session}
+                        data={dataAddAnggota}
+                        setIsOpen={setIsOpen}
+                        pathname={pathname}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
+                <Button
+                  className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                  onClick={() => {
+                    // Empty function - add rapor komunal functionality here
+                    console.log('Rapor Komunal clicked');
+                  }}
+                >
                   <Image
-                    src={Plus}
-                    alt="Tambah Anggota"
+                    src={Rapor}
+                    alt="Rapor Komunal"
                     width={24}
                     height={24}
                   />
-                  Tambah Anggota Baru
+                  Rapor Komunal
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="w-full max-w-xl">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
-                    {manualMode ? 'Tambah Anggota Manual' : 'Tambah Anggota'}
-                  </DialogTitle>
-                </DialogHeader>
-                {isAnggota ? (
-                  <TambahAnggotaForm
-                    session={session}
-                    data={dataAddAnggota}
-                    setIsOpen={setIsOpen}
-                    manualMode={manualMode}
-                    setManualMode={setManualMode}
+                <Button
+                  className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                  onClick={() => {
+                    // Empty function - add best staff functionality here
+                    console.log('Pilih Best Staff clicked');
+                  }}
+                >
+                  <Image
+                    src={Best}
+                    alt="Pilih Best Staff"
+                    width={24}
+                    height={24}
                   />
-                ) : (
-                  <TambahAnggotaKegiatanForm
-                    session={session}
-                    data={dataAddAnggota}
-                    setIsOpen={setIsOpen}
-                    pathname={pathname}
+                  Pilih Best Staff
+                </Button>
+              </div>
+              <div className="flex gap-x-2">
+                <Button
+                  className="bg-neutral-50 border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
+                  onClick={() => {
+                    // Empty function - add filter functionality here
+                    console.log('Filter clicked');
+                  }}
+                >
+                  <Image
+                    src={Filter}
+                    alt="Filter icon"
+                    width={24}
+                    height={24}
                   />
-                )}
-              </DialogContent>
-            </Dialog>
+                  Filter
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="p-2"
+                  onClick={() => {
+                    // Empty function - add upload functionality here
+                    console.log('Upload clicked');
+                  }}
+                >
+                  <Image
+                    src={Upload}
+                    alt="Upload icon"
+                    width={40}
+                    height={40}
+                  />
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* List Anggota Section */}
