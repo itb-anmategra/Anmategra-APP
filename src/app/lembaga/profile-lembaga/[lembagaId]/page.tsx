@@ -15,8 +15,16 @@ import { Badge } from '~/components/ui/badge';
 // Components Import
 import { Card } from '~/components/ui/card';
 import { getServerAuthSession } from '~/server/auth';
+// Icon Import
 // TRPC Import
 import { api } from '~/trpc/server';
+
+import CarouselBestStaff from '../../../_components/carousel/carousel-best-staff';
+// Dummy Data Import
+import {
+  dummyDate,
+  dummyMahasiswaList,
+} from './histori/_components/dummy-histori';
 
 const DetailLembagaPage = async ({
   params,
@@ -98,6 +106,19 @@ const DetailLembagaPage = async ({
             </div>
           </Link>
         )}
+
+        <div className="flex flex-col gap-12 w-full">
+          {dummyDate.slice(0, 1).map((item, id) => (
+            <div key={id} className="flex flex-col gap-3 w-full">
+              <div className="flex flex-row justify-between items-center">
+                <h2 className="text-2xl font-semibold">
+                  Best Staff Periode {item.startDate}–{item.endDate} 2025
+                </h2>
+              </div>
+              <CarouselBestStaff />
+            </div>
+          ))}
+        </div>
 
         {/* Kepanitiaan Terbaru */}
         <div className="space-y-4 pb-12">

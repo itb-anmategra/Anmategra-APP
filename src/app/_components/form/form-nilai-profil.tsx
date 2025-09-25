@@ -63,10 +63,12 @@ const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
 // Menerima initialProfiles sebagai prop
 interface FormNilaiProfilProps {
   initialProfiles?: Profile[];
+  onSave?: (updatedProfiles: Profile[]) => void;
 }
 
 const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   initialProfiles,
+  onSave,
 }) => {
   const [profiles, setProfiles] = useState<Profile[]>(
     initialProfiles ?? dummyProfiles,
@@ -90,6 +92,9 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
         );
         return; // tetap buka dialog
       }
+    }
+    if (onSave) {
+      onSave(profiles);
     }
 
     // Jika valid, simpan data & tutup dialog

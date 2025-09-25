@@ -1,4 +1,9 @@
+import { type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
+import { type mahasiswa, type users } from '~/server/db/schema';
+
+type User = InferSelectModel<typeof users>;
+type Mahasiswa = InferSelectModel<typeof mahasiswa>;
 
 export const GetTambahAnggotaLembagaOptionsInputSchema = z.object({
   lembagaId: z.string(),
@@ -6,6 +11,12 @@ export const GetTambahAnggotaLembagaOptionsInputSchema = z.object({
 
 export const GetTambahAnggotaLembagaOptionsOutputSchema = z.object({
   mahasiswa: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+  ),
+  nim: z.array(
     z.object({
       value: z.string(),
       label: z.string(),
@@ -52,4 +63,96 @@ export const RequestAssociationInputSchema = z.object({
 
 export const RequestAssociationOutputSchema = z.object({
   success: z.boolean(),
+});
+
+export const GetMyRequestAssociationOutputSchema = z.object({
+  id: z.string(),
+  event_id: z.string().nullable(),
+  event_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const GetMyRequestAssociationLembagaOutputSchema = z.object({
+  id: z.string(),
+  lembaga_id: z.string().nullable(),
+  lembaga_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const EditRequestAssociationOutputSchema = z.object({
+  // Dipake buat edit & delete
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+// Delete Request Association event & lembaga input schema
+export const DeleteRequestAssociationInputSchema = z.object({
+  event_id: z.string(),
+});
+
+export const DeleteRequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+});
+
+export const RequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+export const RequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const GetMahasiswaByIdInputSchema = z.object({
+  userId: z.string(),
+});
+
+export const GetMahasiswaByNameInputSchema = z.object({
+  name: z.string(),
+});
+
+export const GetMahasiswaByNimInputSchema = z.object({
+  nim: z.string(),
+});
+
+export const GetMahasiswaOutputSchema = z.object({
+  mahasiswaData: z.object({
+    mahasiswa: z.custom<Mahasiswa>(),
+    user: z.custom<User>(),
+  }),
+});
+
+export const GetPanitiaByIdInputSchema = z.object({
+  userId: z.string(),
+  kegiatanId: z.string(),
+});
+
+export const GetPanitiaOutputSchema = z.object({
+  id: z.string(),
+  nama: z.string(),
+  nim: z.string(),
+  divisi: z.string(),
+  posisi: z.string(),
+});
+
+export const GetPanitiaByNameInputSchema = z.object({
+  name: z.string(),
+  kegiatanId: z.string(),
+});
+
+export const GetAnggotaByIdInputSchema = z.object({
+  userId: z.string(),
+  lembagaId: z.string(),
+});
+
+export const GetAnggotaOutputSchema = GetPanitiaOutputSchema;
+
+export const GetAnggotaByNameInputSchema = z.object({
+  name: z.string(),
+  lembagaId: z.string(),
 });

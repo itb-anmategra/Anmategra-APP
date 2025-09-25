@@ -20,6 +20,10 @@ const config = {
       {
         hostname: 'utfs.io',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
   },
   // headers: async () => {
