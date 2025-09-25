@@ -756,17 +756,18 @@ export async function seedFromCsv() {
 
     console.log('🎉 CSV import completed successfully!');
 
-    const randomLembaga = await db.query.users.findFirst({
-      where: eq(users.role, 'lembaga'),
-    });
+    // @TODO: Ini short-term solution, tidak untuk digunakan di production.
+    // const randomLembaga = await db.query.users.findFirst({
+    //   where: eq(users.role, 'lembaga'),
+    // });
 
-    if (randomLembaga) {
-      await db
-        .update(users)
-        .set({ email: TEST_EMAIL })
-        .where(eq(users.id, randomLembaga.id));
-      console.log(`✅ Updated random user's email to ${TEST_EMAIL}`);
-    }
+    // if (randomLembaga) {
+    //   await db
+    //     .update(users)
+    //     .set({ email: TEST_EMAIL })
+    //     .where(eq(users.id, randomLembaga.id));
+    //   console.log(`✅ Updated random user's email to ${TEST_EMAIL}`);
+    // }
 
     const randomMahasiswa = await db.query.users.findFirst({
       where: eq(users.role, 'mahasiswa'),
@@ -799,6 +800,25 @@ export async function seedFromCsv() {
     console.log(`Email: ${TEST_EMAIL}`);
     console.log(
       '🔗 Now you can sign in with Google and the user/lembaga records will be created automatically',
+    );
+
+    //@TODO: delete ini console log di bawah
+    console.log('Ini adalah solusi jangka pendek, berikut adalah caranya:');
+    console.log('1. Ubah TEST_EMAIL ke email pribadi');
+    console.log('2. lakukan login di localhost:3000');
+    console.log("3. Buka drizzle (di terminal lain, 'npm run db:studio'");
+    console.log(
+      '4. di tabel anmategra_user, cari salah satu user dengan role lembaga',
+    );
+    console.log('5. ganti email user tersebut dengan TEST_EMAIL');
+    console.log(
+      '6. di tabel anmategra_account, ganti user_id dengan id user yang tadi diubah emailnya',
+    );
+    console.log(
+      '7. Selesai, sekarang coba login dengan email tersebut, seharusnya sudah bisa masuk sebagai lembaga.',
+    );
+    console.log(
+      'Kalau bingung, tanya wakadiv kalian atau message yang ngepush ini jg gpp',
     );
   } catch (error) {
     console.error('❌ Error during CSV import:', error);
