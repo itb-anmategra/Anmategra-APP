@@ -39,7 +39,7 @@ export default function LandingContent({
     <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
       <div className="flex flex-col gap-4 ">
-        <h1 className="text-[32px] font-semibold text-black">Beranda</h1>
+        <h1 className="text-[32px] font-semibold text-[#141718]">Beranda</h1>
         <Input
           placeholder="Cari lembaga, kegiatan, atau mahasiswa"
           className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
@@ -53,7 +53,7 @@ export default function LandingContent({
       </div>
 
       {/* List of Kepanitiaan */}
-      <div className="flex flex-col w-full gap-y-6">
+      <div className="flex flex-col w-full">
         {/*/!* Kepanitiaan *!/*/}
         {/*<div className="space-y-2 w-full">*/}
         {/*    <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kepanitiaan</h3>*/}
@@ -78,15 +78,15 @@ export default function LandingContent({
         {/* Kegiatan */}
         <div className="space-y-2 w-full mt-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-left text-2xl font-semibold mb-2 text-black">
+            <h3 className="text-left text-2xl font-semibold mb-2 text-[#141718]">
               Kepanitiaan Terbaru
             </h3>
             <Link
               href="#"
-              className="flex items-center gap-1 text-lg font-medium text-black"
+              className="flex items-center gap-1 text-lg font-semibold text-[#141718]"
             >
               <span>Lihat Semua</span>
-              <ChevronRightIcon className="h-4 w-4" />
+              <ChevronRightIcon className="h-6 w-6" />
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
