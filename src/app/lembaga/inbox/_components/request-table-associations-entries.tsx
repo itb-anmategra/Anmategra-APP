@@ -1,20 +1,72 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '~/components/ui/button';
+import { api } from '~/trpc/react';
 
 type PermintaanAsosiasiUser = {
   id: string;
   image: string;
   nama: string;
+  user_id: string;
   posisi: string;
   divisi: string;
 };
 
 const RequestTableAssociationsEntries: React.FC<{
+  id: string;
   data: PermintaanAsosiasiUser[];
-}> = ({ data }) => {
+}> = ({ id, data }) => {
+  const router = useRouter();
+
+  // penggunaan mutation baru untuk acc / decline lembaga
+  // pengecekan cuma bawa ke page lain, nanti implementasi kalau backend sudah integrasi menyeluruh
+  const acceptLembagaMutation =
+    api.lembaga.acceptRequestAssociationLembaga.useMutation({
+      onSuccess: () => {
+        router.push('/lembaga/inbox');
+      },
+      onError: (error) => {
+        router.push('/lembaga/anggota');
+      },
+    });
+  const handleAcceptLembaga = (
+    user_id: string,
+    divisi: string,
+    posisi: string,
+  ) => {
+    const query = {
+      user_id: user_id,
+      division: divisi,
+      position: posisi,
+    };
+    acceptLembagaMutation.mutate(query);
+  };
+
+  const declineLembagaMutation =
+    api.lembaga.declineRequestAssociationLembaga.useMutation({
+      onSuccess: () => {
+        router.push('/lembaga/inbox');
+      },
+      onError: (error) => {
+        router.push('/lembaga/anggota');
+      },
+    });
+  const handleDeclineLembaga = (
+    user_id: string,
+    divisi: string,
+    posisi: string,
+  ) => {
+    const query = {
+      user_id: user_id,
+      division: divisi,
+      position: posisi,
+    };
+    declineLembagaMutation.mutate(query);
+  };
+
   return (
     <div className="flex flex-col rounded-xl pl-1 pb-1 p-4 font-sans">
       {Array.isArray(data) && data.length > 0 ? (
@@ -53,22 +105,30 @@ const RequestTableAssociationsEntries: React.FC<{
               </div>
               <div className="flex items-center justify-end gap-2 weight-700">
                 <Button
-                  onClick={() =>
-                    console.log(
-                      `Permintaan untuk divisi ${item?.divisi ?? '-'} ditolak.`,
-                    )
-                  }
+                  onClick={() => {
+                    if (id === 'lembaga') {
+                      handleDeclineLembaga(
+                        item.user_id,
+                        item.divisi,
+                        item.posisi,
+                      );
+                    }
+                  }}
                   className="border-none px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#FF0000] hover:bg-[#FF0000] hover:text-white active:bg-[#FF0000] active:text-white"
                 >
                   DECLINE
                 </Button>
 
                 <Button
-                  onClick={() =>
-                    console.log(
-                      `Permintaan untuk divisi ${item?.divisi ?? '-'} diterima.`,
-                    )
-                  }
+                  onClick={() => {
+                    if (id === 'lembaga') {
+                      handleAcceptLembaga(
+                        item.user_id,
+                        item.divisi,
+                        item.posisi,
+                      );
+                    }
+                  }}
                   variant="outline"
                   className="rounded-2px border-[#29BC5B] border-[2px] px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#29BC5B] hover:bg-[#29BC5B] hover:text-white"
                 >

@@ -9,6 +9,7 @@ type PermintaanAsosiasiUser = {
   id: string;
   image: string;
   nama: string;
+  user_id: string;
   posisi: string;
   divisi: string;
 };
@@ -23,22 +24,21 @@ const InboxPageWithParams = async ({
   type LembagaAssociationRequest = z.infer<
     typeof GetAllRequestAssociationLembagaOutputSchema
   >;
-  const lembagaRequest =
-    lembagaAssociationRequestEntries;
+  const lembagaRequest = lembagaAssociationRequestEntries;
 
   const eventAssociationRequestEntries =
     await api.lembaga.getAllRequestAssociation();
   type EventAssociationRequest = z.infer<
     typeof GetAllRequestAssociationOutputSchema
   >;
-  const eventRequest =
-    eventAssociationRequestEntries;
+  const eventRequest = eventAssociationRequestEntries;
 
   const entries: PermintaanAsosiasiUser[] = [
     ...lembagaRequest.requests.map((lembaga) => ({
       id: 'lembaga',
       image: '/images/miscellaneous/empty-profile-picture.svg',
       nama: lembaga.mahasiswa_name,
+      user_id: lembaga.user_id,
       posisi: lembaga.position,
       divisi: lembaga.division,
     })),
@@ -46,6 +46,7 @@ const InboxPageWithParams = async ({
       id: event.event_id,
       image: '/images/miscellaneous/empty-profile-picture.svg',
       nama: event.mahasiswa_name,
+      user_id: event.user_id,
       posisi: event.position,
       divisi: event.division,
     })),

@@ -8,6 +8,7 @@ type PermintaanAsosiasiUser = {
   id: string;
   image: string;
   nama: string;
+  user_id: string;
   posisi: string;
   divisi: string;
 };
@@ -83,7 +84,7 @@ export default async function RequestTableAssociations({
         </div>
 
         <div>
-          <RequestTableAssociationsEntries data={filteredRequests} />
+          <RequestTableAssociationsEntries id={id} data={filteredRequests} />
         </div>
       </div>
     </div>
