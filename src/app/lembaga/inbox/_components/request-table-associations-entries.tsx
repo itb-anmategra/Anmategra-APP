@@ -2,20 +2,19 @@
 
 import Image from 'next/image';
 import React from 'react';
-import { type z } from 'zod';
 import { Button } from '~/components/ui/button';
-import { type GetAllRequestAssociationOutputSchema } from '~/server/api/types/lembaga.type';
 
-type PermintaanAsosiasi = {
+type PermintaanAsosiasiUser = {
+  id: string;
   image: string;
   nama: string;
   posisi: string;
   divisi: string;
 };
 
-type cobaAPI = z.infer<typeof GetAllRequestAssociationOutputSchema>;
-
-const AssociationRequestEntryUser: React.FC<{ data: cobaAPI }> = ({ data }) => {
+const RequestTableAssociationsEntries: React.FC<{
+  data: PermintaanAsosiasiUser[];
+}> = ({ data }) => {
   return (
     <div className="flex flex-col rounded-xl pl-1 pb-1 p-4 font-sans">
       {Array.isArray(data) && data.length > 0 ? (
@@ -43,20 +42,20 @@ const AssociationRequestEntryUser: React.FC<{ data: cobaAPI }> = ({ data }) => {
                   />
                 </div>
                 <span className="pl-[20px] text-[18px] font-regular weight-400 text-[#636A6D]">
-                  {item?.mahasiswa_name ?? '-'}
+                  {item?.nama ?? '-'}
                 </span>
               </div>
               <div className="text-[18px] font-regular weight-400 pl-[50px] text-[#636A6D]">
-                {item?.position ?? '-'}
+                {item?.posisi ?? '-'}
               </div>
               <div className="text-[18px] font-regular weight-400 text-center text-[#636A6D]">
-                {item?.division ?? '-'}
+                {item?.divisi ?? '-'}
               </div>
               <div className="flex items-center justify-end gap-2 weight-700">
                 <Button
                   onClick={() =>
                     console.log(
-                      `Permintaan untuk divisi ${item?.division ?? '-'} ditolak.`,
+                      `Permintaan untuk divisi ${item?.divisi ?? '-'} ditolak.`,
                     )
                   }
                   className="border-none px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#FF0000] hover:bg-[#FF0000] hover:text-white active:bg-[#FF0000] active:text-white"
@@ -67,7 +66,7 @@ const AssociationRequestEntryUser: React.FC<{ data: cobaAPI }> = ({ data }) => {
                 <Button
                   onClick={() =>
                     console.log(
-                      `Permintaan untuk divisi ${item?.division ?? '-'} diterima.`,
+                      `Permintaan untuk divisi ${item?.divisi ?? '-'} diterima.`,
                     )
                   }
                   variant="outline"
@@ -100,4 +99,4 @@ const AssociationRequestEntryUser: React.FC<{ data: cobaAPI }> = ({ data }) => {
   );
 };
 
-export default AssociationRequestEntryUser;
+export default RequestTableAssociationsEntries;

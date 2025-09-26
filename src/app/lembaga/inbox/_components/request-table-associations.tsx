@@ -2,7 +2,15 @@
 
 import Image from 'next/image';
 
-import AssociationRequestEntryUser from './association-request-entry-user';
+import RequestTableAssociationsEntries from './request-table-associations-entries';
+
+type PermintaanAsosiasiUser = {
+  id: string;
+  image: string;
+  nama: string;
+  posisi: string;
+  divisi: string;
+};
 
 // const associationRequestEntries = [
 //   {
@@ -31,7 +39,15 @@ import AssociationRequestEntryUser from './association-request-entry-user';
 //   },
 // ];
 
-export default function RequestsTable({ entries }) {
+export default async function RequestTableAssociations({
+  requests,
+  id,
+}: {
+  requests: PermintaanAsosiasiUser[];
+  id: string;
+}) {
+  const filteredRequests = requests.filter((entry) => entry.id === id);
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA]">
       <div className="flex-1 p-10">
@@ -67,7 +83,7 @@ export default function RequestsTable({ entries }) {
         </div>
 
         <div>
-          <AssociationRequestEntryUser data={entries} />
+          <RequestTableAssociationsEntries data={filteredRequests} />
         </div>
       </div>
     </div>
