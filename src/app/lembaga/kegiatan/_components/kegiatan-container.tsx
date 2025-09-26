@@ -3,8 +3,16 @@
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Icons Import
-import { Plus } from 'lucide-react';
-import { ArrowUpRight } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Circle,
+  MoreVertical,
+  Pencil,
+  Pin,
+  Plus,
+  Trash,
+} from 'lucide-react';
+// 1. Tambahkan Pin icon
 // Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
@@ -22,6 +30,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
 import { Input } from '~/components/ui/input';
 
 export interface Activity {
@@ -53,6 +68,46 @@ export default function ActivityList({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [updatingHighlightId, setUpdatingHighlightId] = useState<string | null>(
+    null,
+  );
+
+  const getStatusColors = (status: string) => {
+    switch (status) {
+      case 'Coming Soon':
+        return { fill: '#F5CB69', stroke: '#F5CB69' };
+      case 'On going':
+        return { fill: '#29BC5B', stroke: '#29BC5B' };
+      case 'Ended':
+        return { fill: '#F16350', stroke: '#F16350' };
+      default:
+        return { fill: '#9CA3AF', stroke: '#9CA3AF' };
+    }
+  };
+
+  const toggleHighlight = async (
+    activityId: string,
+    currentStatus: boolean,
+  ) => {
+    if (session === null) return;
+    setUpdatingHighlightId(activityId);
+    try {
+      setActivities((prevActivities) => {
+        const updatedList = prevActivities.map((activity) =>
+          activity.id === activityId
+            ? { ...activity, is_highlighted: !currentStatus }
+            : activity,
+        );
+        return updatedList;
+      });
+    } catch (error) {
+      console.error(error);
+      alert('Gagal mengubah status highlight.');
+    } finally {
+      setUpdatingHighlightId(null);
+    }
+  };
 
   useEffect(() => {
     const getActivities = async () => {
@@ -116,12 +171,13 @@ export default function ActivityList({
 
       <div className="bg-white rounded-lg overflow-hidden">
         <div className="min-w-full">
-          <div className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
+          <div className="grid grid-cols-[130px_1fr_131px_110px_141px_94px_24px] gap-8 p-3 bg-gray-50 text-sm font-medium text-gray-500">
             <div>Thumbnail</div>
             <div>Judul</div>
             <div>Tanggal</div>
             <div>Panitia</div>
             <div>Status</div>
+            <div>Rapor</div>
             <div></div>
           </div>
 
@@ -129,70 +185,107 @@ export default function ActivityList({
             {activities.map((activity) => (
               <div
                 key={activity.id}
-                className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 items-center hover:bg-gray-50 transition-colors"
+                className="grid grid-cols-[130px_1fr_131px_110px_141px_94px_24px] gap-8 p-3 items-center hover:bg-gray-50 transition-colors"
               >
-                <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden">
+                <div className="w-[130px] h-[90px] bg-gray-200 rounded overflow-hidden relative">
                   {activity.thumbnail && (
                     <Image
                       src={activity.thumbnail || '/placeholder.svg'}
                       alt=""
                       className="w-full h-full object-cover"
-                      height={64}
-                      width={64}
+                      height={90}
+                      width={130}
                     />
                   )}
+                  <div className="absolute top-1 left-0 p-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto w-auto hover:bg-transparent"
+                      onClick={() =>
+                        toggleHighlight(activity.id, activity.is_highlighted)
+                      }
+                      disabled={updatingHighlightId === activity.id}
+                    >
+                      <Pin
+                        style={{ width: '25px', height: '25px' }}
+                        fill={activity.is_highlighted ? '#141718' : 'none'}
+                        stroke={activity.is_highlighted ? '#141718' : '#141718'}
+                      />
+                    </Button>
+                  </div>
                 </div>
                 <div>
-                  <h3 className="font-medium">{activity.name}</h3>
+                  <p className="text-lg text-gray-500">{activity.name}</p>
                   {activity.description && (
-                    <p className="text-sm text-gray-500 truncate">
-                      {activity.description.length > 150
-                        ? activity.description.slice(0, 147) + '...'
+                    <p className="text-base text-gray-500 truncate">
+                      {activity.description.length > 39
+                        ? activity.description.slice(0, 36) + '...'
                         : activity.description}
                     </p>
                   )}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-base text-gray-500">
                   {activity.start_date}
                 </div>
-                <div className="text-sm text-gray-500 flex items-center gap-x-2">
-                  <p>{activity.participant_count}</p>
+                <div className="flex items-center justify-center text-gray-500">
                   <Link href={`/lembaga/kegiatan/${activity.id}/panitia`}>
                     <Button
                       variant={'outline'}
-                      className="space-x-2"
-                      size={'sm'}
+                      className="rounded-lg text-base"
                     >
-                      Lihat <ArrowUpRight />
+                      Panitia
+                      <ArrowUpRight />
                     </Button>
                   </Link>
                 </div>
-                <div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <div className="flex items-center justify-center">
+                  <span className="inline-flex items-center text-base font-medium text-gray-700">
+                    <Circle
+                      className="h-3 w-3 mr-2"
+                      fill={getStatusColors(activity.status).fill}
+                      stroke={getStatusColors(activity.status).stroke}
+                    />
                     {activity.status}
                   </span>
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
+                <div className="flex items-center justify-center text-gray-500">
+                  <Link href={`/lembaga/kegiatan/${activity.id}/profil`}>
                     <Button
-                      className="border-[#00B7B7] hover:border-secondary-600 hover:text-secondary-600 text-secondary-500 px-4 shadow-none flex items-center gap-2"
                       variant={'outline'}
+                      className="rounded-lg text-base"
                     >
-                      Edit
+                      Lihat
+                      <ArrowUpRight />
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="min-w-[800px]">
-                    <DialogHeader>
-                      <DialogTitle>Edit Kegiatan</DialogTitle>
-                    </DialogHeader>
-                    <EditKegiatanForm
-                      session={session}
-                      setIsOpen={setIsOpen}
-                      setActivityList={setActivities}
-                      kegiatan={activity}
-                    />
-                  </DialogContent>
-                </Dialog>
+                  </Link>
+                </div>
+                <div className="flex justify-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="lg" className="p-1">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="rounded-xl min-w-[120px] p-0 overflow-hidden"
+                    >
+                      <DropdownMenuItem
+                        onSelect={() => setEditingActivity(activity)}
+                        className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
+                      >
+                        <Pencil className="text-[#00B7B7] h-4 w-4" />
+                        <span className="text-sm">Edit</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="mx-0 my-0 h-px bg-gray-200" />
+                      <DropdownMenuItem className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100">
+                        <Trash className="text-[#F16350] h-4 w-4" />
+                        <span className="text-sm">Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             ))}
           </div>
@@ -210,6 +303,27 @@ export default function ActivityList({
           </div>
         )}
       </div>
+
+      <Dialog
+        open={editingActivity !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingActivity(null);
+        }}
+      >
+        <DialogContent className="min-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Edit Kegiatan</DialogTitle>
+          </DialogHeader>
+          {editingActivity && (
+            <EditKegiatanForm
+              session={session}
+              setIsOpen={() => setEditingActivity(null)}
+              setActivityList={setActivities}
+              kegiatan={editingActivity}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
