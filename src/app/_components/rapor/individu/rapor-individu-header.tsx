@@ -174,6 +174,7 @@ export default function RaporIndividuHeader({
 
       <div className="overflow-x-auto w-full px-10">
         <NilaiProfilComp nilaiProfils={nilaiProfilData} />
+        <NilaiProfilComp nilaiProfils={nilaiProfilData} />
       </div>
     </div>
   );

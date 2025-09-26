@@ -5,10 +5,7 @@ import ProfilKegiatanSection from '~/app/_components/rapor/individu/profil-kegia
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
-import {
-  type GetNilaiKegiatanIndividuOutputSchema,
-  GetNilaiLembagaIndividuOutputSchema,
-} from '~/server/api/types/rapor.type';
+import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/server';
 
 type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;

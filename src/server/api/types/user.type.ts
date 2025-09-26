@@ -65,6 +65,49 @@ export const RequestAssociationOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const GetMyRequestAssociationOutputSchema = z.object({
+  id: z.string(),
+  event_id: z.string().nullable(),
+  event_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const GetMyRequestAssociationLembagaOutputSchema = z.object({
+  id: z.string(),
+  lembaga_id: z.string().nullable(),
+  lembaga_name: z.string().nullable(),
+  position: z.string(),
+  division: z.string(),
+  status: z.enum(['Pending', 'Accepted', 'Declined']),
+});
+
+export const EditRequestAssociationOutputSchema = z.object({
+  // Dipake buat edit & delete
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+// Delete Request Association event & lembaga input schema
+export const DeleteRequestAssociationInputSchema = z.object({
+  event_id: z.string(),
+});
+
+export const DeleteRequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+});
+
+export const RequestAssociationLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  division: z.string(),
+  position: z.string(),
+});
+
+export const RequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 export const GetMahasiswaByIdInputSchema = z.object({
   userId: z.string(),
 });
