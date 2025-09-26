@@ -57,7 +57,7 @@ export default function RaporIndividuHeader({
         </div>
 
         <div className="font-bold text-2xl text-[#2B6282] items-center justify-center">
-          {kegiatanOutput.data?.kegiatan.name ?? 'Nama Kegiatan'}
+          {kegiatanOutput.data?.kegiatan.name ?? ''}
         </div>
       </div>
 
