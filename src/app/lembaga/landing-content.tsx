@@ -78,7 +78,7 @@ export default function LandingContent({
         {/*    </div>*/}
         {/*</div>*/}
         {/* Kegiatan */}
-        <div className="space-y-2 w-full mt-6">
+        <div className="space-y-2 w-full mt-2">
           <div className="flex items-center justify-between">
             <h3 className="text-left text-2xl font-semibold mb-2 text-[#141718]">
               Kepanitiaan Terbaru
@@ -115,14 +115,11 @@ export default function LandingContent({
                 <p className="text-[#768085] text-[32px] font-semibold">
                   Tidak ada kegiatan tersedia
                 </p>
-                <p className="text-[#C4CACE] text-2xl font-normal pt-[12px] pl-[197px] pr-[197px]">
+                <p className="text-[#C4CACE] text-2xl font-normal pt-[12px] pl-[197px] pr-[197px] pb-[32px]">
                   Maaf, Anda belum mencatat kegiatan yang dapat ditampilkan.
                   Tambahkan kegiatan terbarumu sekarang
                 </p>
-                <Button
-                  className="mt-6 rounded-xl px-8 py-6 text-lg font-semibold"
-                  onClick={() => router.push('/lembaga/tambah-kegiatan')} // contoh routing
-                >
+                <Button variant="dark_blue" onClick={() => router.push('#')}>
                   Tambah Kegiatan
                 </Button>
               </div>

@@ -3,7 +3,7 @@
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Icons Import
-import { Plus } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import { ArrowUpRight } from 'lucide-react';
 // Auth Import
 import { type Session } from 'next-auth';
@@ -77,10 +77,10 @@ export default function ActivityList({
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 p-6">
+    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+        <h1 className="text-[32px] font-semibold text-[#141718]">Kegiatan</h1>
         <Input
           placeholder="Cari kegiatan"
           className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
@@ -93,12 +93,23 @@ export default function ActivityList({
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-2">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#00B7B7] hover:bg-secondary-600 hover:text-white text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-              <Plus className="h-4 w-4" />
+            <Button variant="light_blue">
+              <Plus className="h-6 w-6" />
               Tambah Kegiatan Baru
+            </Button>
+          </DialogTrigger>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <Image
+                src="/images/lembaga/Vector.svg"
+                alt="Filter"
+                width={24}
+                height={24}
+              />
+              Filter
             </Button>
           </DialogTrigger>
           <DialogContent className="min-w-[800px]">
@@ -114,15 +125,15 @@ export default function ActivityList({
         </Dialog>
       </div>
 
-      <div className="bg-white rounded-lg overflow-hidden">
+      <div className="rounded-lg overflow-hidden">
         <div className="min-w-full">
-          <div className="grid grid-cols-[80px_1fr_120px_100px_160px_50px] gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-500">
+          <div className="grid grid-cols-[123fr_187fr_121fr_58fr_56fr_52fr] gap-4 p-4 bg-gray-50 text-lg text-[#9DA4A8] font-normal border-b rounded-2xl">
             <div>Thumbnail</div>
             <div>Judul</div>
             <div>Tanggal</div>
             <div>Panitia</div>
             <div>Status</div>
-            <div></div>
+            <div>Rapor</div>
           </div>
 
           <div className="divide-y divide-gray-200">

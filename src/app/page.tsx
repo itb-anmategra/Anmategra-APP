@@ -7,7 +7,6 @@ import { api } from '~/trpc/server';
 import HeroSection from './_components/landing/hero';
 import { KegiatanSection } from './_components/landing/kegiatan-section';
 import { KepanitiaanSection } from './_components/landing/kepanitiaan-section';
-import Loading from './_components/layout/loading';
 import Navbar from './_components/layout/navbar';
 
 const LandingPage = async () => {
@@ -20,7 +19,6 @@ const LandingPage = async () => {
       <div className="mb-12 fixed w-full shadow-sm z-20">
         <Navbar session={session} />
       </div>
-      <Loading />
       <HeroSection />
       <div className="space-y-16">
         <KegiatanSection data={kegiatanTerbaru} />
