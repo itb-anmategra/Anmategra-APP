@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { z } from 'zod';
 
 export const GetAllNilaiProfilKegiatanInputSchema = z.object({
@@ -13,7 +14,7 @@ export const GetAllNilaiProfilKegiatanOutputSchema = z.object({
       nilai: z.array(
         z.object({
           profil_id: z.string(),
-          nilai: z.number(),
+          nilai: z.number().min(0).max(100),
         }),
       ),
     }),
@@ -41,6 +42,25 @@ export const GetNilaiKegiatanIndividuOutputSchema = z.object({
   ),
 });
 
+export const upsertNilaiMahasiswaKegiatanInputSchema = z.object({
+  event_id: z.string(),
+  mahasiswa: z.array(
+    z.object({
+      user_id: z.string(),
+      nilai: z.array(
+        z.object({
+          profil_id: z.string(),
+          nilai: z.number(),
+        }),
+      ),
+    })
+  )
+})
+
+export const upsertNilaiMahasiswaKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+})
+
 export const GetAllNilaiProfilLembagaInputSchema = z.object({
   lembaga_id: z.string(),
 });
@@ -55,3 +75,20 @@ export const GetNilaiLembagaIndividuInputSchema = z.object({
 
 export const GetNilaiLembagaIndividuOutputSchema =
   GetNilaiKegiatanIndividuOutputSchema;
+
+export const upsertNilaiMahasiswaLembagaInputSchema = z.object({
+  mahasiswa: z.array(
+    z.object({
+      user_id: z.string(),
+      nilai: z.array(
+        z.object({
+          profil_id: z.string(),
+          nilai: z.number(),
+        }),
+      ),
+    })
+  )
+})
+
+export const upsertNilaiMahasiswaLembagaOutputSchema = upsertNilaiMahasiswaKegiatanOutputSchema
+
