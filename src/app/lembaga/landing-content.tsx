@@ -3,6 +3,7 @@
 // Library Import
 // Icons Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { ChevronRightIcon } from '@radix-ui/react-icons';
 // Auth Import
 import { type Session } from 'next-auth';
 import Link from 'next/link';
@@ -35,10 +36,10 @@ export default function LandingContent({
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 p-6">
+    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
-      <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
+      <div className="flex flex-col gap-4 ">
+        <h1 className="text-[32px] font-semibold text-black">Beranda</h1>
         <Input
           placeholder="Cari lembaga, kegiatan, atau mahasiswa"
           className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
@@ -52,7 +53,7 @@ export default function LandingContent({
       </div>
 
       {/* List of Kepanitiaan */}
-      <div className="flex flex-col w-full gap-y-8">
+      <div className="flex flex-col w-full gap-y-6">
         {/*/!* Kepanitiaan *!/*/}
         {/*<div className="space-y-2 w-full">*/}
         {/*    <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">Kepanitiaan</h3>*/}
@@ -75,10 +76,19 @@ export default function LandingContent({
         {/*    </div>*/}
         {/*</div>*/}
         {/* Kegiatan */}
-        <div className="space-y-2 w-full">
-          <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">
-            Kegiatan terbaru
-          </h3>
+        <div className="space-y-2 w-full mt-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-left text-2xl font-semibold mb-2 text-black">
+              Kepanitiaan Terbaru
+            </h3>
+            <Link
+              href="#"
+              className="flex items-center gap-1 text-lg font-medium text-black"
+            >
+              <span>Lihat Semua</span>
+              <ChevronRightIcon className="h-4 w-4" />
+            </Link>
+          </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mb-4">
             {data.kegiatanTerbaru.length !== 0 &&
               data.kegiatanTerbaru.map((kepanitiaan) => (
@@ -89,16 +99,16 @@ export default function LandingContent({
                   <KepanitiaanCard kepanitiaan={kepanitiaan} />
                 </Link>
               ))}
-            {!data.kegiatanTerbaru ||
+            {/* {!data.kegiatanTerbaru ||
               (data.kegiatanTerbaru.length === 0 && (
                 <div>
                   <p className="text-slate-600">Tidak ada kegiatan terbaru.</p>
                 </div>
-              ))}
+              ))} */}
           </div>
         </div>
         {/* Kepanitiaan Terbesar */}
-        <div className="space-y-2 w-full">
+        {/* <div className="space-y-2 w-full">
           <h3 className="text-left text-xl font-semibold mb-2 text-slate-600">
             Kegiatan Terbesar
           </h3>
@@ -121,7 +131,7 @@ export default function LandingContent({
                 </div>
               ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
