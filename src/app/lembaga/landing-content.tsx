@@ -41,7 +41,7 @@ export default function LandingContent({
         <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
         <Input
           placeholder="Cari lembaga, kegiatan, atau mahasiswa"
-          className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+          className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
           startAdornment={
             <MagnifyingGlassIcon className="size-4 text-gray-500" />
           }
