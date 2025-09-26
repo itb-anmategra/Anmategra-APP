@@ -28,7 +28,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
         <>
           <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-10 border-b border-[#E7E9EC] p-4 font-regular weight-400 text-[18px] text-[#9DA4A8]">
             <div>Nama</div>
-            <div className="-ml-[35px]">Jumlah Permintaan</div>
+            <div className="text-center">Jumlah Permintaan</div>
             <div className="ml-[40px] text-center">Tujuan Asosiasi</div>
             <div className="justify-self-end pr-[12px]">Lihat Permintaan</div>
           </div>
@@ -53,7 +53,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
                   {item.nama}
                 </span>
               </div>
-              <div className="ml-[30px] text-[18px] font-regular weight-400 text-[#636A6D]">
+              <div className="-ml-[20px] text-[18px] font-regular weight-400 text-center text-[#636A6D]">
                 {item.jumlah}
               </div>
               <div className="ml-[45px] text-[18px] font-regular weight-400 text-center text-[#636A6D]">

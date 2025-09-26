@@ -45,7 +45,7 @@ const RequestTableAssociationsEntries: React.FC<{
                   {item?.nama ?? '-'}
                 </span>
               </div>
-              <div className="text-[18px] font-regular weight-400 pl-[50px] text-[#636A6D]">
+              <div className="text-[18px] -ml-[30px] font-regular weight-400 text-center text-[#636A6D]">
                 {item?.posisi ?? '-'}
               </div>
               <div className="text-[18px] font-regular weight-400 text-center text-[#636A6D]">
