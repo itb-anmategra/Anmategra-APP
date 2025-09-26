@@ -1,5 +1,4 @@
 import { TRPCError } from '@trpc/server';
-import { NOTFOUND } from 'dns';
 import { and, desc, eq, gte, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
