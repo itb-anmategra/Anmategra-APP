@@ -50,16 +50,16 @@ export const upsertNilaiMahasiswaKegiatanInputSchema = z.object({
       nilai: z.array(
         z.object({
           profil_id: z.string(),
-          nilai: z.number(),
+          nilai: z.number().min(0).max(100),
         }),
       ),
-    })
-  )
-})
+    }),
+  ),
+});
 
 export const upsertNilaiMahasiswaKegiatanOutputSchema = z.object({
   success: z.boolean(),
-})
+});
 
 export const GetAllNilaiProfilLembagaInputSchema = z.object({
   lembaga_id: z.string(),
@@ -83,12 +83,12 @@ export const upsertNilaiMahasiswaLembagaInputSchema = z.object({
       nilai: z.array(
         z.object({
           profil_id: z.string(),
-          nilai: z.number(),
+          nilai: z.number().min(0).max(100),
         }),
       ),
-    })
-  )
-})
+    }),
+  ),
+});
 
-export const upsertNilaiMahasiswaLembagaOutputSchema = upsertNilaiMahasiswaKegiatanOutputSchema
-
+export const upsertNilaiMahasiswaLembagaOutputSchema =
+  upsertNilaiMahasiswaKegiatanOutputSchema;
