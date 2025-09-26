@@ -37,11 +37,11 @@ export const getAllAnggota = protectedProcedure
       }
 
       if (input.nim) {
-        conditions.push(ilike(mahasiswa.nim, `%${input.nim}%`));
+        conditions.push(eq(mahasiswa.nim, input.nim));
       }
 
       if (input.divisi) {
-        conditions.push(eq(keanggotaan.division, input.divisi));
+        conditions.push(ilike(keanggotaan.division, `%${input.divisi}%`));
       }
       const anggota = await ctx.db
         .select({

@@ -103,11 +103,11 @@ export const lembagaRouter = createTRPCRouter({
         }
 
         if (input.nim) {
-          conditions.push(ilike(mahasiswa.nim, `%${input.nim}%`));
+          conditions.push(eq(mahasiswa.nim, input.nim));
         }
 
         if (input.divisi) {
-          conditions.push(eq(keanggotaan.division, input.divisi));
+          conditions.push(ilike(kehimpunan.division, `%${input.divisi}%`));
         }
         const anggota = await ctx.db
           .select({
@@ -284,11 +284,12 @@ export const lembagaRouter = createTRPCRouter({
     .output(editAnggotaLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
+        const lembagaUserId = ctx.session.user.id;
         if (!ctx.session.user.lembagaId) {
           throw new TRPCError({ code: 'UNAUTHORIZED' });
         }
 
-        await ctx.db
+        const updated = await ctx.db
           .update(kehimpunan)
           .set({
             position: input.position,
@@ -296,10 +297,18 @@ export const lembagaRouter = createTRPCRouter({
           })
           .where(
             and(
-              eq(kehimpunan.userId, input.user_id),
+              eq(kehimpunan.id, input.user_id + '_' + lembagaUserId),
               eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
             ),
-          );
+          )
+          .returning({ id: kehimpunan.id });
+
+        if (updated.length === 0) {
+          return {
+            success: false,
+            error: 'Anggota tidak ditemukan atau data tidak berubah',
+          };
+        }
 
         return {
           success: true,

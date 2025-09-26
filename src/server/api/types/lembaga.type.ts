@@ -32,7 +32,7 @@ const AnggotaLembagaSchema = z.object({
 export const GetAllAnggotaLembagaInputSchema = z.object({
   lembagaId: z.string().nonempty(),
   nama: z.string().optional(),
-  nim: z.string().optional(),
+  nim: z.number().optional(),
   divisi: z.string().optional(),
 });
 
