@@ -1,16 +1,18 @@
-import Image, { type StaticImageData } from "next/image";
-import { type Report, ReportCard } from "./report-card";
-import DraftIcon from "/public/images/laporan/draft.svg";
-import InProgressIcon from "/public/images/laporan/in-progress.svg";
-import ResolvedIcon from "/public/images/laporan/resolved.svg";
-import { Button } from "~/components/ui/button";
+import Image, { type StaticImageData } from 'next/image';
+import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-export type ColumnType = "Draft" | "In Progress" | "Resolved";
+} from '~/components/ui/dropdown-menu';
+
+import { type Report, ReportCard } from './report-card';
+import DraftIcon from '/public/images/laporan/draft.svg';
+import InProgressIcon from '/public/images/laporan/in-progress.svg';
+import ResolvedIcon from '/public/images/laporan/resolved.svg';
+
+export type ColumnType = 'Draft' | 'In Progress' | 'Resolved';
 
 export interface ColumnProps {
   title: ColumnType;
@@ -24,11 +26,11 @@ interface ReportColumnProps extends ColumnProps {
 
 export function getTypeImage(type: ColumnType) {
   switch (type) {
-    case "Draft":
+    case 'Draft':
       return DraftIcon as StaticImageData;
-    case "In Progress":
+    case 'In Progress':
       return InProgressIcon as StaticImageData;
-    case "Resolved":
+    case 'Resolved':
       return ResolvedIcon as StaticImageData;
   }
 }
@@ -46,8 +48,8 @@ export function ReportColumn({
           <div className="mb-4 flex flex-row items-center justify-between">
             <div className="flex flex-row">
               <div className="flex flex-row gap-4">
-                <Image src={getTypeImage(title)} alt={"Status"} />
-                <h2 className="text-xl font-semibold">{title}</h2>
+                <Image src={getTypeImage(title)} alt={'Status'} />
+                <h2 className="text-[18px] font-semibold">{title}</h2>
               </div>
               <span className="ml-2 rounded-full px-2 py-1 text-sm text-[#8196A3]">
                 {reports.length}
@@ -59,7 +61,7 @@ export function ReportColumn({
               </DropdownMenuTrigger>
               <DropdownMenuContent className="text-xl">
                 <DropdownMenuItem>
-                  <Button variant={"ghost"} onClick={() => hideColumn(title)}>
+                  <Button variant={'ghost'} onClick={() => hideColumn(title)}>
                     Hide Column
                   </Button>
                 </DropdownMenuItem>
@@ -68,7 +70,7 @@ export function ReportColumn({
           </div>
           <div className="flex flex-col space-y-4">
             {reports.map((report) => (
-              <ReportCard report={report} key={report.id}/>
+              <ReportCard report={report} key={report.id} />
             ))}
           </div>
         </div>

@@ -1,18 +1,12 @@
 // Library Import
-import React, { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react';
 
-const AdminLayout = ({ 
-  children 
-}:{
-  children: ReactNode
-} ) => {
+const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className='w-full flex flex-col items-center'>
-      <div className='max-w-7xl w-full flex flex-col items-center'>
-        {children}
-      </div>
+    <div className="w-full flex flex-col px-[45px]">
+      <div className="w-full flex flex-col">{children}</div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminLayout
+export default AdminLayout;
