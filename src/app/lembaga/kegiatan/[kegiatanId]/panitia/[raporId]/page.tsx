@@ -5,10 +5,12 @@ import ProfilKegiatanSection from '~/app/_components/rapor/individu/profil-kegia
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
+import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
 import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/server';
 
 type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
+type ProfilOutput = z.infer<typeof GetAllProfilOutputSchema>;
 
 export type HeaderDataProps = {
   dataNilaiProfil: NilaiKegiatanOutput | null;
@@ -36,38 +38,10 @@ export type ProfilDeskripsiType = {
   deskripsiProfil: string;
 };
 
-export type ProfilKegiatanSectionProps = {
-  nilaiProfilData?: ProfilDeskripsiType[];
-};
+export type ProfilKegiatanSectionProps = ProfilOutput;
 
 export type PemetaanProfilSectionProps = {
   pemetaanProfilData?: ProfilGroup[];
-};
-
-const dummyNilaiProfils: NilaiProfilCardType[] = [
-  { idProfil: 'Profil 1', nilaiProfil: 100 },
-  { idProfil: 'Profil 2', nilaiProfil: 89 },
-  { idProfil: 'Profil 3', nilaiProfil: 95 },
-  { idProfil: 'Profil 4', nilaiProfil: 85 },
-  { idProfil: 'Profil 5', nilaiProfil: 80 },
-  { idProfil: 'Profil 6', nilaiProfil: 75 },
-  { idProfil: 'Profil 7', nilaiProfil: 70 },
-  { idProfil: 'Profil 8', nilaiProfil: 65 },
-];
-
-const dummyHeaderData: HeaderDataProp = {
-  profilePictureLembaga: '/images/logo/hmif-logo.png',
-  lembagaName: 'HMIF ITB',
-  kegiatanName: 'WISUDA OKTOBER 2024',
-  profilePictureIndividu: '/images/placeholder/profile-pic.png',
-  individuName: 'John Doe',
-  individuNIM: '12345678',
-  individuJurusan: 'Sastra Mesin',
-  individuDivisi: 'UI/UX',
-  individuPosisi: 'Staff',
-  individuLine: 'john_doe',
-  individuWA: '081234567890',
-  nilaiProfils: dummyNilaiProfils,
 };
 
 interface RaporIndividuPanitiaPageProps {
@@ -75,13 +49,11 @@ interface RaporIndividuPanitiaPageProps {
     kegiatanId: string;
     raporId: string;
   };
-  profilKegiatanData?: ProfilKegiatanSectionProps;
   pemetaanProfilData?: PemetaanProfilSectionProps;
 }
 
 export default async function RaporIndividuPanitiaPage({
   params,
-  profilKegiatanData,
   pemetaanProfilData,
 }: RaporIndividuPanitiaPageProps) {
   const { kegiatanId, raporId } = params;
@@ -89,6 +61,10 @@ export default async function RaporIndividuPanitiaPage({
   const raporData = await api.rapor.getNilaiKegiatanIndividu({
     event_id: kegiatanId,
     mahasiswa_id: raporId,
+  });
+
+  const profilData = await api.profil.getAllProfilKegiatan({
+    event_id: kegiatanId,
   });
 
   return (
@@ -112,7 +88,7 @@ export default async function RaporIndividuPanitiaPage({
           kegiatanId={kegiatanId}
         />
 
-        <ProfilKegiatanSection {...profilKegiatanData} />
+        <ProfilKegiatanSection {...profilData} />
 
         <PemetaanProfilSection {...pemetaanProfilData} />
       </div>

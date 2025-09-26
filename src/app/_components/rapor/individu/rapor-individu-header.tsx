@@ -13,23 +13,14 @@ import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
 import FormNilaiProfil from '../../form/form-nilai-profil';
 import NilaiProfilComp from './nilai-profil-comp';
 
-// const dummyNilaiProfils: NilaiProfilCardType[] = [
-//   { idProfil: 'Profil 1', nilaiProfil: 100 },
-//   { idProfil: 'Profil 2', nilaiProfil: 90 },
-//   { idProfil: 'Profil 3', nilaiProfil: 95 },
-//   { idProfil: 'Profil 4', nilaiProfil: 85 },
-//   { idProfil: 'Profil 5', nilaiProfil: 80 },
-//   { idProfil: 'Profil 6', nilaiProfil: 75 },
-//   { idProfil: 'Profil 7', nilaiProfil: 70 },
-//   { idProfil: 'Profil 8', nilaiProfil: 65 },
-// ]
-
 export default function RaporIndividuHeader({
   dataNilaiProfil,
   kegiatanId,
 }: HeaderDataProps) {
-  const [nilaiProfilData, setNilaiProfilData] =
-    useState<NilaiProfilCardType[]>();
+  const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
+    dataNilaiProfil?.nilai ?? [],
+  );
+
   const handleUpdateNilaiProfilChange = (
     updatedProfiles: NilaiProfilCardType[],
   ) => {
@@ -157,14 +148,14 @@ export default function RaporIndividuHeader({
 
         <div className="ml-5">
           <FormNilaiProfil
-            initialProfiles={dataNilaiProfil?.nilai.map((profil, index) => ({
-              id: index + 1,
+            initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
+              id: profil.profil_id,
               value: profil.nilai ?? 0,
             }))}
             onSave={(updatedProfiles) => {
               const updatedNilaiProfils = updatedProfiles.map((p, idx) => ({
-                idProfil: `Profil ${idx + 1}`, // TODO: ganti dengan nama profil aslinya
-                nilaiProfil: p.value ?? 0,
+                profil_id: p.id,
+                nilai: p.value ?? 0,
               }));
               handleUpdateNilaiProfilChange(updatedNilaiProfils);
             }}
@@ -172,8 +163,7 @@ export default function RaporIndividuHeader({
         </div>
       </div>
 
-      <div className="overflow-x-auto w-full px-10">
-        <NilaiProfilComp nilaiProfils={nilaiProfilData} />
+      <div className="overflow-x-auto w-full">
         <NilaiProfilComp nilaiProfils={nilaiProfilData} />
       </div>
     </div>
