@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq, gte, lte, or } from 'drizzle-orm';
+import { and, eq, gte, ilike, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -18,6 +18,7 @@ import {
   users,
 } from '~/server/db/schema';
 
+import { EditPanitiaKegiatanInputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -51,6 +52,8 @@ import {
   GetLembagaHighlightedEventOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  editAnggotaLembagaInputSchema,
+  editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
 
 export const lembagaRouter = createTRPCRouter({
@@ -93,6 +96,19 @@ export const lembagaRouter = createTRPCRouter({
     .output(GetAllAnggotaLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
+        const conditions = [eq(kehimpunan.lembagaId, input.lembagaId)];
+
+        if (input.nama) {
+          conditions.push(ilike(users.name, `%${input.nama}%`));
+        }
+
+        if (input.nim) {
+          conditions.push(ilike(mahasiswa.nim, `%${input.nim}%`));
+        }
+
+        if (input.divisi) {
+          conditions.push(eq(keanggotaan.division, input.divisi));
+        }
         const anggota = await ctx.db
           .select({
             id: users.id,
@@ -104,7 +120,7 @@ export const lembagaRouter = createTRPCRouter({
           .from(kehimpunan)
           .innerJoin(users, eq(kehimpunan.userId, users.id))
           .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-          .where(eq(kehimpunan.lembagaId, input.lembagaId));
+          .where(and(...conditions));
 
         return anggota.map((anggota) => ({
           id: anggota.id,
@@ -261,6 +277,40 @@ export const lembagaRouter = createTRPCRouter({
       return {
         success: true,
       };
+    }),
+
+  editAnggota: lembagaProcedure
+    .input(editAnggotaLembagaInputSchema)
+    .output(editAnggotaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+
+        await ctx.db
+          .update(kehimpunan)
+          .set({
+            position: input.position,
+            division: input.division,
+          })
+          .where(
+            and(
+              eq(kehimpunan.userId, input.user_id),
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+            ),
+          );
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+          error: 'Database Error',
+        };
+      }
     }),
 
   editProfil: protectedProcedure
