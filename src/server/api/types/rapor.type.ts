@@ -42,7 +42,7 @@ export const GetNilaiKegiatanIndividuOutputSchema = z.object({
   ),
 });
 
-export const upsertNilaiMahasiswaKegiatanInputSchema = z.object({
+export const UpsertNilaiMahasiswaKegiatanInputSchema = z.object({
   event_id: z.string(),
   mahasiswa: z.array(
     z.object({
@@ -57,7 +57,7 @@ export const upsertNilaiMahasiswaKegiatanInputSchema = z.object({
   ),
 });
 
-export const upsertNilaiMahasiswaKegiatanOutputSchema = z.object({
+export const UpsertNilaiMahasiswaKegiatanOutputSchema = z.object({
   success: z.boolean(),
 });
 
@@ -76,7 +76,7 @@ export const GetNilaiLembagaIndividuInputSchema = z.object({
 export const GetNilaiLembagaIndividuOutputSchema =
   GetNilaiKegiatanIndividuOutputSchema;
 
-export const upsertNilaiMahasiswaLembagaInputSchema = z.object({
+export const UpsertNilaiMahasiswaLembagaInputSchema = z.object({
   mahasiswa: z.array(
     z.object({
       user_id: z.string(),
@@ -90,5 +90,5 @@ export const upsertNilaiMahasiswaLembagaInputSchema = z.object({
   ),
 });
 
-export const upsertNilaiMahasiswaLembagaOutputSchema =
-  upsertNilaiMahasiswaKegiatanOutputSchema;
+export const UpsertNilaiMahasiswaLembagaOutputSchema =
+  UpsertNilaiMahasiswaKegiatanOutputSchema;

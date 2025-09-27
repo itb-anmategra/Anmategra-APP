@@ -22,10 +22,10 @@ import {
   GetNilaiKegiatanIndividuOutputSchema,
   GetNilaiLembagaIndividuInputSchema,
   GetNilaiLembagaIndividuOutputSchema,
-  upsertNilaiMahasiswaKegiatanInputSchema,
-  upsertNilaiMahasiswaKegiatanOutputSchema,
-  upsertNilaiMahasiswaLembagaInputSchema,
-  upsertNilaiMahasiswaLembagaOutputSchema,
+  UpsertNilaiMahasiswaKegiatanInputSchema,
+  UpsertNilaiMahasiswaKegiatanOutputSchema,
+  UpsertNilaiMahasiswaLembagaInputSchema,
+  UpsertNilaiMahasiswaLembagaOutputSchema,
 } from '../types/rapor.type';
 
 export const raporRouter = createTRPCRouter({
@@ -196,80 +196,75 @@ export const raporRouter = createTRPCRouter({
         });
       }
     }),
-  
+
   upsertNilaiMahasiswaKegiatan: lembagaProcedure
-  .input(upsertNilaiMahasiswaKegiatanInputSchema)
-  .output(upsertNilaiMahasiswaKegiatanOutputSchema)
-  .mutation(async ({ ctx, input }) => {
-    try {
-      await ctx.db.transaction(async (tx) => {
-        const lembagaId: string = ctx.session.user.lembagaId!;
-        const { event_id } = input;
+    .input(UpsertNilaiMahasiswaKegiatanInputSchema)
+    .output(UpsertNilaiMahasiswaKegiatanOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.transaction(async (tx) => {
+          const lembagaId: string = ctx.session.user.lembagaId!;
+          const { event_id } = input;
 
-        const eventValid = await tx.query.events.findFirst({
-          where: and(
-            eq(events.id, event_id),
-            eq(events.org_id, lembagaId),
-          ),
-        });
-
-        if (!eventValid) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "Event tidak valid atau tidak dimiliki lembaga ini.",
+          const eventValid = await tx.query.events.findFirst({
+            where: and(eq(events.id, event_id), eq(events.org_id, lembagaId)),
           });
-        }
 
-        for (const mahasiswa of input.mahasiswa) {
-          for (const n of mahasiswa.nilai) {
-            const profilValid = await tx.query.profilKegiatan.findFirst({
-              where: and(
-                eq(profilKegiatan.id, n.profil_id),
-                eq(profilKegiatan.eventId, event_id),
-              ),
+          if (!eventValid) {
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: 'Event tidak valid atau tidak dimiliki lembaga ini.',
             });
+          }
 
-            if (!profilValid) {
-              throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: `Profil ${n.profil_id} tidak valid untuk event ${event_id}.`,
+          for (const mahasiswa of input.mahasiswa) {
+            for (const n of mahasiswa.nilai) {
+              const profilValid = await tx.query.profilKegiatan.findFirst({
+                where: and(
+                  eq(profilKegiatan.id, n.profil_id),
+                  eq(profilKegiatan.eventId, event_id),
+                ),
               });
-            }
 
-            const existing = await tx.query.nilaiProfilKegiatan.findFirst({
-              where: and(
-                eq(nilaiProfilKegiatan.mahasiswaId, mahasiswa.user_id),
-                eq(nilaiProfilKegiatan.profilId, n.profil_id),
-              ),
-            });
+              if (!profilValid) {
+                throw new TRPCError({
+                  code: 'BAD_REQUEST',
+                  message: `Profil ${n.profil_id} tidak valid untuk event ${event_id}.`,
+                });
+              }
 
-            if (existing) {
-              await tx
-                .update(nilaiProfilKegiatan)
-                .set({ nilai: n.nilai })
-                .where(eq(nilaiProfilKegiatan.id, existing.id));
-            } else {
-              await tx.insert(nilaiProfilKegiatan).values({
-                mahasiswaId: mahasiswa.user_id,
-                profilId: n.profil_id,
-                nilai: n.nilai,
+              const existing = await tx.query.nilaiProfilKegiatan.findFirst({
+                where: and(
+                  eq(nilaiProfilKegiatan.mahasiswaId, mahasiswa.user_id),
+                  eq(nilaiProfilKegiatan.profilId, n.profil_id),
+                ),
               });
+
+              if (existing) {
+                await tx
+                  .update(nilaiProfilKegiatan)
+                  .set({ nilai: n.nilai })
+                  .where(eq(nilaiProfilKegiatan.id, existing.id));
+              } else {
+                await tx.insert(nilaiProfilKegiatan).values({
+                  mahasiswaId: mahasiswa.user_id,
+                  profilId: n.profil_id,
+                  nilai: n.nilai,
+                });
+              }
             }
           }
-        }
-      });
+        });
 
-      return { success: true };
-    } catch (error) {
-      console.error("Database Error:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Gagal mengupdate nilai mahasiswa.",
-      });
-    }
-  })
-,
-
+        return { success: true };
+      } catch (error) {
+        console.error('Database Error:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengupdate nilai mahasiswa.',
+        });
+      }
+    }),
   getAllNilaiProfilLembaga: lembagaProcedure
     .input(GetAllNilaiProfilLembagaInputSchema)
     .output(GetAllNilaiProfilLembagaOutputSchema)
@@ -426,61 +421,61 @@ export const raporRouter = createTRPCRouter({
         });
       }
     }),
-  
-upsertNilaiMahasiswaLembaga: lembagaProcedure
-  .input(upsertNilaiMahasiswaLembagaInputSchema)
-  .output(upsertNilaiMahasiswaLembagaOutputSchema)
-  .mutation(async ({ ctx, input }) => {
-    try {
-      await ctx.db.transaction(async (tx) => {
-        const lembagaId: string = ctx.session.user.lembagaId!;
-        
-        for (const mahasiswa of input.mahasiswa) {
-          for (const n of mahasiswa.nilai) {
-            const profilValid = await tx.query.profilLembaga.findFirst({
-              where: and(
-                eq(profilLembaga.id, n.profil_id),
-                eq(profilLembaga.lembagaId, lembagaId)
-              ),
-            });
 
-            if (!profilValid) {
-              throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: `Profil ${n.profil_id} tidak valid untuk lembaga ini.`,
+  upsertNilaiMahasiswaLembaga: lembagaProcedure
+    .input(UpsertNilaiMahasiswaLembagaInputSchema)
+    .output(UpsertNilaiMahasiswaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.transaction(async (tx) => {
+          const lembagaId: string = ctx.session.user.lembagaId!;
+
+          for (const mahasiswa of input.mahasiswa) {
+            for (const n of mahasiswa.nilai) {
+              const profilValid = await tx.query.profilLembaga.findFirst({
+                where: and(
+                  eq(profilLembaga.id, n.profil_id),
+                  eq(profilLembaga.lembagaId, lembagaId),
+                ),
               });
-            }
 
-            const existing = await tx.query.nilaiProfilLembaga.findFirst({
-              where: and(
-                eq(nilaiProfilLembaga.mahasiswaId, mahasiswa.user_id),
-                eq(nilaiProfilLembaga.profilId, n.profil_id)
-              ),
-            });
+              if (!profilValid) {
+                throw new TRPCError({
+                  code: 'BAD_REQUEST',
+                  message: `Profil ${n.profil_id} tidak valid untuk lembaga ini.`,
+                });
+              }
 
-            if (existing) {
-              await tx
-                .update(nilaiProfilLembaga)
-                .set({ nilai: n.nilai })
-                .where(eq(nilaiProfilLembaga.id, existing.id));
-            } else {
-              await tx.insert(nilaiProfilLembaga).values({
-                mahasiswaId: mahasiswa.user_id,
-                profilId: n.profil_id,
-                nilai: n.nilai,
+              const existing = await tx.query.nilaiProfilLembaga.findFirst({
+                where: and(
+                  eq(nilaiProfilLembaga.mahasiswaId, mahasiswa.user_id),
+                  eq(nilaiProfilLembaga.profilId, n.profil_id),
+                ),
               });
+
+              if (existing) {
+                await tx
+                  .update(nilaiProfilLembaga)
+                  .set({ nilai: n.nilai })
+                  .where(eq(nilaiProfilLembaga.id, existing.id));
+              } else {
+                await tx.insert(nilaiProfilLembaga).values({
+                  mahasiswaId: mahasiswa.user_id,
+                  profilId: n.profil_id,
+                  nilai: n.nilai,
+                });
+              }
             }
           }
-        }
-      });
+        });
 
-      return { success: true };
-    } catch (error) {
-      console.error("Database Error:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Gagal mengupdate nilai mahasiswa.",
-      });
-    }
-  }),
+        return { success: true };
+      } catch (error) {
+        console.error('Database Error:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengupdate nilai mahasiswa.',
+        });
+      }
+    }),
 });
