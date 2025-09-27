@@ -1,7 +1,6 @@
 // Libray Import
 // Icons Import
 import { CalendarIcon } from 'lucide-react';
-import { Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
@@ -66,82 +65,46 @@ const DetailLembagaPage = async ({
           </div>
         </div>
 
-        {/* Highlighted Event */}
         {highlightedEvent && (
-          <div className="flex flex-col w-full gap-4">
-            <h5 className="text-[24px] leading-[32px] font-semibold text-[#000000]">
-              Highlighted Event
-            </h5>
-
-            <Link href={`/lembaga/profile-kegiatan/${highlightedEvent.id}`}>
-              <Card className="flex flex-row items-center w-full max-w-7xl h-[180px] border-[0.86px] border-[#C4CACE] rounded-[28px] overflow-hidden bg-white transition-all hover:shadow-md">
-                {/* Poster Event */}
+          <Link href={`/lembaga/profile-kegiatan/${highlightedEvent.id}`}>
+            <div className="space-y-4 pb-12">
+              <h5 className="text-2xl font-semibold text-slate-600">
+                Highlighed Event
+              </h5>
+              <Card className="transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center">
                 <Image
-                  src={highlightedEvent.image ?? DummyFotoEvent}
-                  alt="Poster Event Highlight"
-                  width={210}
-                  height={180}
-                  className="object-cover flex-none"
+                  src={highlightedEvent?.image ?? DummyFotoEvent}
+                  alt="Foto Kegiatan"
+                  className="h-full w-auto"
+                  width={200}
+                  height={100}
                 />
-
-                {/* Info Content */}
-                <div className="flex flex-col justify-center items-start px-[30.96px] gap-[10.32px] flex-1 h-[122.4px] bg-white">
-                  {/* Badge & Jumlah Peserta */}
-                  <div className="flex flex-row justify-between items-center w-full">
-                    <Badge className="flex flex-row items-center gap-[6.88px] bg-[#2B6282] py-[3.44px] px-[10.32px] rounded-[13.76px]">
-                      <Image
-                        src={lembagaData?.users.image ?? LogoHMIFKecil}
-                        alt="Logo Lembaga"
-                        width={21}
-                        height={21}
-                        className="rounded-full object-cover"
-                      />
-                      <p className="text-[12px] leading-[16px] font-bold text-white">
-                        {lembagaData?.name}
-                      </p>
-                    </Badge>
-
-                    <div className="flex flex-row items-center gap-[6.88px] text-[#768085] text-[14px] leading-[20px]">
-                      <Users
-                        width={21}
-                        height={21}
-                        className="fill-current text-[#768085]"
-                      />
-                      <p className="font-normal">
-                        {highlightedEvent.participant_count}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Judul & Deskripsi */}
-                  <div className="flex flex-col gap-[6.88px] w-full">
-                    <p className="text-[18px] font-bold leading-[26px] text-[#2B6282]">
-                      {highlightedEvent.name}
-                    </p>
-                    <p className="text-[14px] leading-[20px] text-[#1E1E1E] line-clamp-1">
-                      {highlightedEvent.description}
-                    </p>
-                  </div>
-
-                  {/* Tanggal */}
-                  <div className="flex flex-row items-center gap-[6.88px] text-[14px] leading-[20px] text-[#768085]">
-                    <CalendarIcon width={21} height={21} />
-                    <p>
-                      {highlightedEvent.start_date.toLocaleDateString('id-ID', {
-                        month: 'short',
-                        year: 'numeric',
-                      })}{' '}
-                      -{' '}
-                      {highlightedEvent.end_date?.toLocaleDateString('id-ID', {
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </p>
+                <div className="space-y-2">
+                  <Badge className="space-x-2 rounded-full bg-Blue-Dark py-1">
+                    <Image
+                      src={lembagaData?.users.image ?? LogoHMIFKecil}
+                      alt="Logo HMIF Kecil"
+                      width={20}
+                      height={20}
+                      className="rounded-full object-cover"
+                    />
+                    <p className="text-xs">{lembagaData?.name}</p>
+                  </Badge>
+                  <p className="text-xl text-Blue-Dark font-semibold">
+                    {highlightedEvent?.name}
+                  </p>
+                  <p className="text-neutral-1000">
+                    {highlightedEvent?.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-Regent-Gray">
+                    <CalendarIcon className="h-4 w-4" />
+                    {highlightedEvent?.start_date.toDateString()} -{' '}
+                    {highlightedEvent?.end_date?.toDateString()}
                   </div>
                 </div>
               </Card>
-            </Link>
-          </div>
+            </div>
+          </Link>
         )}
 
         <div className="flex flex-col gap-12 w-full">
