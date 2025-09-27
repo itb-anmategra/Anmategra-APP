@@ -872,23 +872,10 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  getLatestBestStaffKegiatan: lembagaProcedure
+  getLatestBestStaffKegiatan: protectedProcedure
     .input(GetLatestBestStaffKegiatanInputSchema)
     .output(GetLatestBestStaffKegiatanOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
-      const eventOrg = await ctx.db.query.events.findFirst({
-        where: eq(events.id, input.event_id),
-        columns: { org_id: true },
-      });
-
-      if (ctx.session.user.lembagaId !== eventOrg?.org_id) {
-        throw new TRPCError({ code: 'FORBIDDEN' });
-      }
-
       const latestRecord = await ctx.db.query.bestStaffKegiatan.findFirst({
         where: eq(bestStaffKegiatan.eventId, input.event_id),
         orderBy: (bs, { desc }) => [desc(bs.startDate)],
@@ -933,18 +920,10 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  getLatestBestStaffLembaga: lembagaProcedure
+  getLatestBestStaffLembaga: protectedProcedure
     .input(GetLatestBestStaffLembagaInputSchema)
     .output(GetLatestBestStaffLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
-      if (ctx.session.user.lembagaId !== input.lembaga_id) {
-        throw new TRPCError({ code: 'FORBIDDEN' });
-      }
-
       const latestRecord = await ctx.db.query.bestStaffLembaga.findFirst({
         where: eq(bestStaffLembaga.lembagaId, input.lembaga_id),
         orderBy: (bs, { desc }) => [desc(bs.startDate)],
