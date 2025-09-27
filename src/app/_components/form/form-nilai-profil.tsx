@@ -63,7 +63,7 @@ const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
 // Menerima initialProfiles sebagai prop
 interface FormNilaiProfilProps {
   initialProfiles?: Profile[];
-  onSave?: (updatedProfiles: Profile[]) => void; 
+  onSave?: (updatedProfiles: Profile[]) => void;
 }
 
 const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({

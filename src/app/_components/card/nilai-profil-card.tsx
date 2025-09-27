@@ -1,14 +1,14 @@
-import { Card, CardContent } from "~/components/ui/card"
+import { Card, CardContent } from '~/components/ui/card';
 
 export type NilaiProfilCardType = {
   idProfil: string;
   nilaiProfil?: number | null;
-}
+};
 
 export default function NilaiProfilCard({
-  idProfil = "Profil 1",
+  idProfil = 'Profil 1',
   nilaiProfil = 100,
-} : NilaiProfilCardType) {
+}: NilaiProfilCardType) {
   return (
     <Card className="flex flex-col flex-shrink-0 w-[144px] min-h-[110px] items-center justify-center gap-[10px]">
       <CardContent className="flex flex-col items-center px-[25.8px] py-[17.2px] justify-center">
@@ -20,5 +20,5 @@ export default function NilaiProfilCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
