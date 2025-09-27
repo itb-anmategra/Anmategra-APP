@@ -149,7 +149,33 @@ export const authOptions: NextAuthOptions = {
         const isValidLembaga = user.email?.endsWith('@km.itb.ac.id');
         const isVerified = await isEmailInVerifiedUsers(user.email);
 
-        return isValidLembaga || isVerified;
+        if (!isValidLembaga && !isVerified) return false;
+        const existingUser = await db.query.users.findFirst({
+          where: (u) => eq(u.email, user.email),
+        });
+
+        if (existingUser) {
+          // Check if account row already exists
+          const existingAccount = await db.query.accounts.findFirst({
+            where: (a) =>
+              eq(a.provider, account.provider) &&
+              eq(a.providerAccountId, account.providerAccountId),
+          });
+
+          if (!existingAccount) {
+            // Insert new account entry
+            await db.insert(accounts).values({
+              userId: existingUser.id,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              type: 'oauth',
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              id_token: account.id_token,
+            });
+          }
+          return true;
+        }
       }
 
       // signin mahasiswa
