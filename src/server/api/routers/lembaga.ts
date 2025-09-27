@@ -39,6 +39,15 @@ import {
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllDivisionOutputSchema,
+  GetAllHistoryBestStaffKegiatanInputSchema,
+  GetAllHistoryBestStaffKegiatanOutputSchema,
+  GetAllHistoryBestStaffLembagaInputSchema,
+  GetAllHistoryBestStaffLembagaOutputSchema,
+  GetAllHistoryBestStaffMahasiswaInputSchema,
+  GetAllHistoryBestStaffMahasiswaOutputSchema,
+  GetAllKegiatanDivisionInputSchema,
+  GetAllLembagaDivisionInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
@@ -47,6 +56,10 @@ import {
   GetBestStaffOptionsOutputSchema,
   GetInfoLembagaInputSchema,
   GetInfoLembagaOutputSchema,
+  GetLatestBestStaffKegiatanInputSchema,
+  GetLatestBestStaffKegiatanOutputSchema,
+  GetLatestBestStaffLembagaInputSchema,
+  GetLatestBestStaffLembagaOutputSchema,
   GetLembagaEventsInputSchema,
   GetLembagaEventsOutputSchema,
   GetLembagaHighlightedEventInputSchema,
@@ -473,6 +486,63 @@ export const lembagaRouter = createTRPCRouter({
       }
     }),
 
+  getAllLembagaDivision: protectedProcedure
+    .input(GetAllLembagaDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: kehimpunan.division })
+        .from(kehimpunan)
+        .where(eq(kehimpunan.lembagaId, input.lembaga_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
+    }),
+
+  getAllKegiatanDivision: protectedProcedure
+    .input(GetAllKegiatanDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const orgId = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (!orgId) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (orgId.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: keanggotaan.division })
+        .from(keanggotaan)
+        .where(eq(keanggotaan.event_id, input.event_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
+    }),
+
   getBestStaffOptions: protectedProcedure
     .input(GetBestStaffOptionsInputSchema)
     .output(GetBestStaffOptionsOutputSchema)
@@ -864,62 +934,5 @@ export const lembagaRouter = createTRPCRouter({
       return {
         success: true,
       };
-    }),
-
-  getMostViewedLembaga: lembagaProcedure
-    .input(z.void())
-    .output(GetMostViewedLembagaOutputSchema)
-    .query(async ({ ctx }) => {
-      const topLembagaData = await ctx.db
-        .select({
-          lembagaName: lembaga.name,
-          profilePicture: users.image,
-          id: lembaga.id,
-          name: lembaga.name,
-          description: lembaga.description,
-          image: users.image,
-          start_date: lembaga.foundingDate,
-          end_date: lembaga.endingDate,
-          quota: lembaga.memberCount,
-          type: lembaga.type,
-        })
-        .from(lembaga)
-        .leftJoin(users, eq(lembaga.userId, users.id))
-        .orderBy(desc(lembaga.viewCount))
-        .limit(3);
-
-      return {
-        lembaga: topLembagaData.map((item) => ({
-          lembaga: {
-            id: item.id ?? '',
-            name: item.lembagaName ?? '',
-            profilePicture: item.profilePicture ?? '',
-            type: item.type ?? '',
-          },
-          id: item.id,
-          name: item.name ?? '',
-          description: item.description ?? '',
-          image: item.image ?? '',
-          start_date: item.start_date ?? new Date(),
-          end_date: item.end_date ?? new Date(),
-          quota: item.quota ?? 0,
-        })),
-      };
-    }),
-
-  incrementLembagaView: protectedProcedure
-    .input(IncrementLembagaViewInputSchema)
-    .output(z.object({ success: z.boolean() }))
-    .mutation(async ({ ctx, input }) => {
-      const updatedLembaga = await ctx.db
-        .update(lembaga)
-        .set({ viewCount: sql`${lembaga.viewCount} + 1` })
-        .where(eq(lembaga.id, input.lembaga_id))
-        .returning();
-      if (updatedLembaga.length !== 0) {
-        return { success: true };
-      } else {
-        return { success: false };
-      }
     }),
 });
