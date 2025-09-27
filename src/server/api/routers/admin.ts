@@ -1,37 +1,47 @@
-import { eq } from "drizzle-orm";
-
-import { z } from "zod";
-
+import { TRPCError } from '@trpc/server';
+import { set } from 'date-fns';
+import { eq } from 'drizzle-orm';
+import { and, desc, like } from 'drizzle-orm';
+import { z } from 'zod';
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
-} from "~/server/api/trpc";
-import { getServerAuthSession } from "~/server/auth";
-import { users, verifiedUsers } from "~/server/db/schema";
+} from '~/server/api/trpc';
+import {
+  CreateReportOutputSchema,
+  GetAllReportsAdminInputSchema,
+  SetReportStatusInputSchema,
+  SetReportStatusOutputSchema,
+} from '~/server/api/types/admin.type';
+import { getServerAuthSession } from '~/server/auth';
+import { users, verifiedUsers } from '~/server/db/schema';
+import { support } from '~/server/db/schema';
 
 export const adminRouter = createTRPCRouter({
-  addVerifiedEmail: protectedProcedure
+  addVerifiedEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
-
-      const session = await getServerAuthSession()
-      if (session?.user.role !== "admin") {
-        throw new Error("Unauthorized")
+      const session = await getServerAuthSession();
+      if (session?.user.role !== 'admin') {
+        throw new Error('Unauthorized');
       }
 
-      const user = await ctx.db.insert(verifiedUsers).values({
-        email: input.email,
-      }).returning();
+      const user = await ctx.db
+        .insert(verifiedUsers)
+        .values({
+          email: input.email,
+        })
+        .returning();
       return user;
     }),
 
-  deleteVerifiedEmail: protectedProcedure
+  deleteVerifiedEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
-
-      const session = await getServerAuthSession()
-      if (session?.user.role !== "admin") {
-        throw new Error("Unauthorized")
+      const session = await getServerAuthSession();
+      if (session?.user.role !== 'admin') {
+        throw new Error('Unauthorized');
       }
 
       const verified_user = await ctx.db.query.verifiedUsers.findFirst({
@@ -41,7 +51,8 @@ export const adminRouter = createTRPCRouter({
       if (verified_user) {
         userVer = await ctx.db
           .delete(verifiedUsers)
-          .where(eq(verifiedUsers.email, input.email)).returning();
+          .where(eq(verifiedUsers.email, input.email))
+          .returning();
       }
       const user = await ctx.db.query.users.findFirst({
         where: eq(users.email, input.email),
@@ -51,5 +62,64 @@ export const adminRouter = createTRPCRouter({
         return user;
       }
       return userVer;
+    }),
+
+  getAllReportsAdmin: adminProcedure
+    .input(GetAllReportsAdminInputSchema)
+    .output(CreateReportOutputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const queryConditions = [eq(support.user_id, ctx.session.user.id)];
+        if (input.search) {
+          queryConditions.push(like(support.topic, `%${input.search}%`)); // Ini maksudnya apa? (by subject, topic)
+        }
+        if (input.status) {
+          queryConditions.push(eq(support.status, input.status));
+        }
+        const reports = await ctx.db
+          .select()
+          .from(support)
+          .where(and(...queryConditions))
+          .orderBy(desc(support.created_at));
+        return reports.map((report) => ({
+          id: report.id,
+          subject: report.subject,
+          topic: report.topic,
+          description: report.description,
+          status: report.status,
+          attachment: report.attachment,
+          created_at: report.created_at,
+          updated_at: report.updated_at,
+        }));
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch reports',
+        });
+      }
+    }),
+
+  setReportStatus: adminProcedure
+    .input(SetReportStatusInputSchema)
+    .output(SetReportStatusOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const report = await ctx.db
+          .update(support)
+          .set({ status: input.status, updated_at: new Date() })
+          .where(eq(support.id, input.reportId))
+          .returning();
+        if (report.length === 0) {
+          return { success: false, message: 'Report not found' };
+        }
+        return { success: true, message: 'Report status updated successfully' };
+      } catch (error) {
+        console.error('Error updating report status:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update report status',
+        });
+      }
     }),
 });

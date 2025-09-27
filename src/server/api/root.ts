@@ -1,6 +1,7 @@
 import { profileRouter } from '~/server/api/routers/profile';
 import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
 
+import { adminRouter } from './routers/admin';
 import { eventRouter } from './routers/event';
 import { kegiatanRouter } from './routers/kegiatan';
 import { landingRouter } from './routers/landing';
@@ -13,7 +14,7 @@ import { userRouter } from './routers/user';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  // admin: adminRouter,
+  admin: adminRouter, // Ini ku uncomment
   landing: landingRouter,
   lembaga: lembagaRouter,
   event: eventRouter,

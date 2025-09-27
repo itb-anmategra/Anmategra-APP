@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq, like } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import {
@@ -12,11 +12,17 @@ import {
   keanggotaan,
   kehimpunan,
   mahasiswa,
+  support,
   users,
 } from '~/server/db/schema';
 
+import { CreateEventOutputSchema } from '../types/event.type';
 import {
+  CreateReportInputSchema,
+  CreateReportOutputSchema,
   EditProfilMahasiswaInputSchema,
+  EditReportInputSchema,
+  GetAllReportsUserInputSchema,
   GetAnggotaByIdInputSchema,
   GetAnggotaByNameInputSchema,
   GetAnggotaOutputSchema,
@@ -514,5 +520,179 @@ export const userRouter = createTRPCRouter({
         divisi: result.divisi,
         posisi: result.posisi,
       };
+    }),
+
+  createReport: protectedProcedure
+    .input(CreateReportInputSchema)
+    .output(CreateReportOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      // Input Sukses
+      try {
+        await ctx.db.insert(support).values({
+          id: crypto.randomUUID(),
+          user_id: ctx.session.user.id,
+          subject: input.subject,
+          topic: input.topic,
+          description: input.description,
+          status: input.status,
+          attachment: input.attachment,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+        const createdReport = await ctx.db
+          .select()
+          .from(support)
+          .where(eq(support.user_id, ctx.session.user.id))
+          .limit(1);
+        if (createdReport.length === 0 || !createdReport[0]) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Report not found after creation',
+          });
+        }
+        const result = createdReport[0];
+        return {
+          id: result.id,
+          subject: result.subject,
+          topic: result.topic,
+          description: result.description,
+          status: result.status,
+          attachment: result.attachment,
+          created_at: result.created_at.toISOString(),
+          updated_at: result.updated_at.toISOString(),
+        };
+      } catch (error) {
+        console.error('Error creating report:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create report',
+        });
+      }
+    }),
+
+  editReport: protectedProcedure
+    .input(EditReportInputSchema)
+    .output(CreateReportOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db
+          .update(support)
+          .set({
+            id: input.id,
+            subject: input.subject,
+            topic: input.topic,
+            description: input.description,
+            status: 'Draft',
+            attachment: input.attachment,
+            updated_at: new Date(),
+          })
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+            ),
+          );
+        const updatedReport = await ctx.db
+          .select()
+          .from(support)
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+            ),
+          )
+          .limit(1);
+        if (updatedReport.length === 0 || !updatedReport[0]) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Report not found after update',
+          });
+        }
+        const result = updatedReport[0];
+        return {
+          id: result.id,
+          subject: result.subject,
+          topic: result.topic,
+          description: result.description,
+          status: result.status,
+          attachment: result.attachment,
+          created_at: result.created_at.toISOString(),
+          updated_at: result.updated_at.toISOString(),
+        };
+      } catch (error) {
+        console.error('Error updating report:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update report',
+        });
+      }
+    }),
+
+  deleteReport: protectedProcedure
+    .input(z.object({ id: z.string() })) //Ngga bikin type soalnya cuma butuh id doang
+    .output(z.object({ success: z.boolean() })) // sama kaya input, cuma butuh message doang
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const reportToDelete = await ctx.db
+          .select()
+          .from(support)
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+            ),
+          )
+          .limit(1);
+        if (reportToDelete.length === 0 || !reportToDelete[0]) {
+          return { success: false };
+        }
+        await ctx.db
+          .delete(support)
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+            ),
+          );
+        return { success: true };
+      } catch (error) {
+        return { success: false };
+      }
+    }),
+
+  getAllReportsUser: protectedProcedure
+    .input(GetAllReportsUserInputSchema)
+    .output(z.array(CreateReportOutputSchema))
+    .query(async ({ ctx, input }) => {
+      try {
+        const queryConditions = [eq(support.user_id, ctx.session.user.id)];
+        if (input.search) {
+          queryConditions.push(like(support.topic, `%${input.search}%`)); // Ini maksudnya apa? (by subject, topic)
+        }
+        if (input.status) {
+          queryConditions.push(eq(support.status, input.status));
+        }
+        const reports = await ctx.db
+          .select()
+          .from(support)
+          .where(and(...queryConditions))
+          .orderBy(desc(support.created_at));
+        return reports.map((report) => ({
+          id: report.id,
+          subject: report.subject,
+          topic: report.topic,
+          description: report.description,
+          status: report.status,
+          attachment: report.attachment,
+          created_at: report.created_at.toISOString(),
+          updated_at: report.updated_at.toISOString(),
+        }));
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch reports',
+        });
+      }
     }),
 });

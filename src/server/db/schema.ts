@@ -326,10 +326,10 @@ export const associationRequestLembagaRelations = relations(
 
 // Enum for support ticket status
 export const supportStatusEnum = pgEnum('support_status', [
-  'Open',
+  'Draft',
   'In Progress',
   'Resolved',
-  'Closed',
+  'Backlog',
 ]);
 
 // Enum for notification type
@@ -346,6 +346,7 @@ export const support = createTable('support', {
   topic: varchar('topic', { length: 255 }).notNull(),
   description: text('description').notNull(),
   status: supportStatusEnum('status').notNull(),
+  attachment: text('attachment').notNull(),
   ...timestamps,
 });
 

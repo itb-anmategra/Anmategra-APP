@@ -1,4 +1,6 @@
-import { type InferSelectModel } from 'drizzle-orm';
+import { create } from 'domain';
+import { type InferSelectModel, desc } from 'drizzle-orm';
+import { stat } from 'fs';
 import { z } from 'zod';
 import { type mahasiswa, type users } from '~/server/db/schema';
 
@@ -112,4 +114,37 @@ export const GetAnggotaOutputSchema = GetPanitiaOutputSchema;
 export const GetAnggotaByNameInputSchema = z.object({
   name: z.string(),
   lembagaId: z.string(),
+});
+
+export const CreateReportInputSchema = z.object({
+  subject: z.string(),
+  topic: z.string(),
+  description: z.string(),
+  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
+  attachment: z.string(),
+});
+
+export const EditReportInputSchema = z.object({
+  id: z.string(),
+  subject: z.string(),
+  topic: z.string(),
+  description: z.string(),
+  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
+  attachment: z.string(),
+});
+
+export const CreateReportOutputSchema = z.object({
+  id: z.string(),
+  subject: z.string(),
+  topic: z.string(),
+  description: z.string(),
+  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
+  attachment: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const GetAllReportsUserInputSchema = z.object({
+  search: z.string().optional(),
+  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']).optional(),
 });
