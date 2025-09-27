@@ -6,7 +6,7 @@ export default function Loading() {
   return (
     <div className="flex items-center justify-center h-screen">
       <Image
-        src="/images/loading/Property 1=Variant3.png"
+        src="/images/loading/page-loading.png"
         alt="Loading animation"
         width={120}
         height={120}

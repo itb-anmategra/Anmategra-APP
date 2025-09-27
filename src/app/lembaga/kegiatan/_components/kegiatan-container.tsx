@@ -77,7 +77,7 @@ export default function ActivityList({
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
+    <div className="flex w-full flex-col gap-4 pt-[24px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
       <div className="flex flex-col gap-4">
         <h1 className="text-[32px] font-semibold text-[#141718]">Kegiatan</h1>
