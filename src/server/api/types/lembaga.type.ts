@@ -197,6 +197,18 @@ export const ChooseBestStaffKegiatanOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const GetAllLembagaDivisionInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+});
+
+export const GetAllKegiatanDivisionInputSchema = z.object({
+  event_id: z.string().nonempty(),
+});
+
+export const GetAllDivisionOutputSchema = z.object({
+  divisions: z.array(z.string()),
+});
+
 export const GetBestStaffLembagaOptionsInputSchema = z.object({
   lembaga_id: z.string().nonempty(),
   division: z.string().nonempty(),
