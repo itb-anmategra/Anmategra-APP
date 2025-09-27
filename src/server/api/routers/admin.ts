@@ -69,17 +69,9 @@ export const adminRouter = createTRPCRouter({
     .output(CreateReportOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
-        const queryConditions = [eq(support.user_id, ctx.session.user.id)];
-        if (input.search) {
-          queryConditions.push(like(support.topic, `%${input.search}%`)); // Ini maksudnya apa? (by subject, topic)
-        }
-        if (input.status) {
-          queryConditions.push(eq(support.status, input.status));
-        }
         const reports = await ctx.db
           .select()
           .from(support)
-          .where(and(...queryConditions))
           .orderBy(desc(support.created_at));
         return reports.map((report) => ({
           id: report.id,

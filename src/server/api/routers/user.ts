@@ -543,6 +543,7 @@ export const userRouter = createTRPCRouter({
           .select()
           .from(support)
           .where(eq(support.user_id, ctx.session.user.id))
+          .orderBy(desc(support.created_at))
           .limit(1);
         if (createdReport.length === 0 || !createdReport[0]) {
           throw new TRPCError({
@@ -582,7 +583,7 @@ export const userRouter = createTRPCRouter({
             subject: input.subject,
             topic: input.topic,
             description: input.description,
-            status: 'Draft',
+            status: input.status,
             attachment: input.attachment,
             updated_at: new Date(),
           })
@@ -592,6 +593,7 @@ export const userRouter = createTRPCRouter({
               eq(support.user_id, ctx.session.user.id),
             ),
           );
+
         const updatedReport = await ctx.db
           .select()
           .from(support)
@@ -608,6 +610,7 @@ export const userRouter = createTRPCRouter({
             message: 'Report not found after update',
           });
         }
+
         const result = updatedReport[0];
         return {
           id: result.id,
