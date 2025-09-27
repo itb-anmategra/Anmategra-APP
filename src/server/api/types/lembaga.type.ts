@@ -231,8 +231,10 @@ export const GetMostViewedLembagaOutputSchema = z.object({
   lembaga: z.array(
     z.object({
       lembaga: z.object({
+        id: z.string(),
         name: z.string(),
         profilePicture: z.string(),
+        type: z.string().nullable(),
       }),
       id: z.string(),
       name: z.string(),

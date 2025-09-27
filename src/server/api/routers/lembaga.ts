@@ -20,7 +20,6 @@ import {
   users,
 } from '~/server/db/schema';
 
-import { GetMostViewedKegiatanOutputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -882,6 +881,7 @@ export const lembagaRouter = createTRPCRouter({
           start_date: lembaga.foundingDate,
           end_date: lembaga.endingDate,
           quota: lembaga.memberCount,
+          type: lembaga.type,
         })
         .from(lembaga)
         .leftJoin(users, eq(lembaga.userId, users.id))
@@ -891,8 +891,10 @@ export const lembagaRouter = createTRPCRouter({
       return {
         lembaga: topLembagaData.map((item) => ({
           lembaga: {
+            id: item.id ?? '',
             name: item.lembagaName ?? '',
             profilePicture: item.profilePicture ?? '',
+            type: item.type ?? '',
           },
           id: item.id,
           name: item.name ?? '',
