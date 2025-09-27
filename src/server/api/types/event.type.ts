@@ -1,4 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm';
+import { start } from 'repl';
 import { z } from 'zod';
 import type { events } from '~/server/db/schema';
 
@@ -84,3 +85,25 @@ export const GetAllAnggotaKegiatanInputSchema = z.object({
 });
 
 export const GetAllAnggotaKegiatanOutputSchema = z.array(PanitiaKegiatanSchema);
+
+export const GetMostViewedKegiatanOutputSchema = z.object({
+  event: z.array(
+    z.object({
+      lembaga: z.object({
+        name: z.string(),
+        profilePicture: z.string(),
+      }),
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      quota: z.number(),
+      image: z.string(),
+      start_date: z.date(),
+      end_date: z.date(),
+    }),
+  ),
+});
+
+export const IncrementKegiatanViewInputSchema = z.object({
+  event_id: z.string().nonempty(),
+});

@@ -226,3 +226,25 @@ export const ChooseBestStaffLembagaInputSchema = z.object({
 export const ChooseBestStaffLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
+
+export const GetMostViewedLembagaOutputSchema = z.object({
+  lembaga: z.array(
+    z.object({
+      lembaga: z.object({
+        name: z.string(),
+        profilePicture: z.string(),
+      }),
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      quota: z.number(),
+      image: z.string(),
+      start_date: z.date(),
+      end_date: z.date(),
+    }),
+  ),
+});
+
+export const IncrementLembagaViewInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+});

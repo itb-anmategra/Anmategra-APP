@@ -1,9 +1,11 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq, gte, lte, or } from 'drizzle-orm';
+import { and, desc, eq, gte, lte, or, sql } from 'drizzle-orm';
+import { z } from 'zod';
 import {
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
+  publicProcedure,
 } from '~/server/api/trpc';
 import {
   associationRequests,
@@ -18,6 +20,7 @@ import {
   users,
 } from '~/server/db/schema';
 
+import { GetMostViewedKegiatanOutputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -49,6 +52,8 @@ import {
   GetLembagaEventsOutputSchema,
   GetLembagaHighlightedEventInputSchema,
   GetLembagaHighlightedEventOutputSchema,
+  GetMostViewedLembagaOutputSchema,
+  IncrementLembagaViewInputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
@@ -860,5 +865,59 @@ export const lembagaRouter = createTRPCRouter({
       return {
         success: true,
       };
+    }),
+
+  getMostViewedLembaga: lembagaProcedure
+    .input(z.void())
+    .output(GetMostViewedLembagaOutputSchema)
+    .query(async ({ ctx }) => {
+      const topLembagaData = await ctx.db
+        .select({
+          lembagaName: lembaga.name,
+          profilePicture: users.image,
+          id: lembaga.id,
+          name: lembaga.name,
+          description: lembaga.description,
+          image: users.image,
+          start_date: lembaga.foundingDate,
+          end_date: lembaga.endingDate,
+          quota: lembaga.memberCount,
+        })
+        .from(lembaga)
+        .leftJoin(users, eq(lembaga.userId, users.id))
+        .orderBy(desc(lembaga.viewCount))
+        .limit(3);
+
+      return {
+        lembaga: topLembagaData.map((item) => ({
+          lembaga: {
+            name: item.lembagaName ?? '',
+            profilePicture: item.profilePicture ?? '',
+          },
+          id: item.id,
+          name: item.name ?? '',
+          description: item.description ?? '',
+          image: item.image ?? '',
+          start_date: item.start_date ?? new Date(),
+          end_date: item.end_date ?? new Date(),
+          quota: item.quota ?? 0,
+        })),
+      };
+    }),
+
+  incrementLembagaView: protectedProcedure
+    .input(IncrementLembagaViewInputSchema)
+    .output(z.object({ success: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const updatedLembaga = await ctx.db
+        .update(lembaga)
+        .set({ viewCount: sql`${lembaga.viewCount} + 1` })
+        .where(eq(lembaga.id, input.lembaga_id))
+        .returning();
+      if (updatedLembaga.length !== 0) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     }),
 });
