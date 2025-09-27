@@ -37,12 +37,15 @@ import {
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllDivisionOutputSchema,
   GetAllHistoryBestStaffKegiatanInputSchema,
   GetAllHistoryBestStaffKegiatanOutputSchema,
   GetAllHistoryBestStaffLembagaInputSchema,
   GetAllHistoryBestStaffLembagaOutputSchema,
   GetAllHistoryBestStaffMahasiswaInputSchema,
   GetAllHistoryBestStaffMahasiswaOutputSchema,
+  GetAllKegiatanDivisionInputSchema,
+  GetAllLembagaDivisionInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
@@ -477,6 +480,63 @@ export const lembagaRouter = createTRPCRouter({
           success: false,
         };
       }
+    }),
+
+  getAllLembagaDivision: protectedProcedure
+    .input(GetAllLembagaDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: kehimpunan.division })
+        .from(kehimpunan)
+        .where(eq(kehimpunan.lembagaId, input.lembaga_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
+    }),
+
+  getAllKegiatanDivision: protectedProcedure
+    .input(GetAllKegiatanDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const orgId = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (!orgId) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (orgId.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: keanggotaan.division })
+        .from(keanggotaan)
+        .where(eq(keanggotaan.event_id, input.event_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
     }),
 
   getBestStaffOptions: protectedProcedure
