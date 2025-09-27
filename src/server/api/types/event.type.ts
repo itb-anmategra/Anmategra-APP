@@ -81,8 +81,7 @@ const PanitiaKegiatanSchema = z.object({
 
 export const GetAllAnggotaKegiatanInputSchema = z.object({
   event_id: z.string(),
-  nama: z.string().optional(),
-  nim: z.number().optional(),
+  namaOrNim: z.string().optional(),
   divisi: z.string().optional(),
 });
 

@@ -98,12 +98,12 @@ export const lembagaRouter = createTRPCRouter({
       try {
         const conditions = [eq(kehimpunan.lembagaId, input.lembagaId)];
 
-        if (input.nama) {
-          conditions.push(ilike(users.name, `%${input.nama}%`));
-        }
-
-        if (input.nim) {
-          conditions.push(eq(mahasiswa.nim, input.nim));
+        if (input.namaOrNim) {
+          if (isNaN(Number(input.namaOrNim))) {
+            conditions.push(ilike(users.name, `%${input.namaOrNim}%`));
+          } else {
+            conditions.push(eq(mahasiswa.nim, Number(input.namaOrNim)));
+          }
         }
 
         if (input.divisi) {

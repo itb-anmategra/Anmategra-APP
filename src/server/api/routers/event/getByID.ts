@@ -32,12 +32,12 @@ export const getAllAnggota = protectedProcedure
     try {
       const conditions = [eq(keanggotaan.event_id, input.event_id)];
 
-      if (input.nama) {
-        conditions.push(ilike(users.name, `%${input.nama}%`));
-      }
-
-      if (input.nim) {
-        conditions.push(eq(mahasiswa.nim, input.nim));
+      if (input.namaOrNim) {
+        if (isNaN(Number(input.namaOrNim))) {
+          conditions.push(ilike(users.name, `%${input.namaOrNim}%`));
+        } else {
+          conditions.push(eq(mahasiswa.nim, Number(input.namaOrNim)));
+        }
       }
 
       if (input.divisi) {
