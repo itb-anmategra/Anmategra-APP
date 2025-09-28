@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import {
   ArrowUpRight,
   Circle,
+  Filter,
   MoreVertical,
   Pencil,
   Pin,
@@ -131,10 +132,10 @@ export default function ActivityList({
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 p-6">
+    <div className="flex w-full flex-col gap-4 pt-[24px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+        <h1 className="text-[32px] font-semibold text-[#141718]">Kegiatan</h1>
         <Input
           placeholder="Cari kegiatan"
           className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
@@ -147,12 +148,23 @@ export default function ActivityList({
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-2">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#00B7B7] hover:bg-secondary-600 hover:text-white text-white rounded-[16px] px-4 shadow-none flex items-center gap-2">
-              <Plus className="h-4 w-4" />
+            <Button variant="light_blue">
+              <Plus className="h-6 w-6" />
               Tambah Kegiatan Baru
+            </Button>
+          </DialogTrigger>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <Image
+                src="/images/lembaga/Vector.svg"
+                alt="Filter"
+                width={24}
+                height={24}
+              />
+              Filter
             </Button>
           </DialogTrigger>
           <DialogContent className="min-w-[800px]">
