@@ -71,10 +71,10 @@ const RequestTableAssociationsEntries: React.FC<{
     <div className="flex flex-col rounded-xl pl-1 pb-1 p-4 font-sans">
       {Array.isArray(data) && data.length > 0 ? (
         <>
-          <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-4 border-b border-[#E7E9EC] p-4 font-regular weight-400 text-[18px] text-[#9DA4A8]">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-10 border-b border-[#E7E9EC] p-4 font-regular weight-400 text-[18px] text-[#9DA4A8]">
             <div>Nama</div>
-            <div className="pl-[50px]">Posisi</div>
-            <div className="text-center">Divisi</div>
+            <div className="text-center -ml-[40px]">Posisi</div>
+            <div className="text-center -ml-[20px]">Divisi</div>
             <div className="justify-self-end mr-[110px]">Request</div>
           </div>
           {data.map((item, index) => (
@@ -85,19 +85,22 @@ const RequestTableAssociationsEntries: React.FC<{
               }
             >
               <div className="flex items-center gap-4">
-                <div className="rounded-full overflow-hidden w-[60px] h-[60px]">
+                <div className="rounded-full overflow-hidden w-[60px] h-[60px] flex-shrink-0">
                   <Image
-                    src={'/images/miscellaneous/empty-profile-picture.svg'}
+                    src={
+                      item?.image ??
+                      '/images/miscellaneous/empty-profile-picture.svg'
+                    }
                     alt="Profile Picture"
                     width={60}
                     height={60}
                   />
                 </div>
-                <span className="pl-[20px] text-[18px] font-regular weight-400 text-[#636A6D]">
+                <span className="pl-[20px] text-[18px] font-regular weight-400 text-[#636A6D] flex-grow">
                   {item?.nama ?? '-'}
                 </span>
               </div>
-              <div className="text-[18px] -ml-[30px] font-regular weight-400 text-center text-[#636A6D]">
+              <div className="text-[18px] -ml-[50px] font-regular weight-400 text-center text-[#636A6D]">
                 {item?.posisi ?? '-'}
               </div>
               <div className="text-[18px] font-regular weight-400 text-center text-[#636A6D]">

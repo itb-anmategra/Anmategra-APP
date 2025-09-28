@@ -29,8 +29,10 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
           <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-10 border-b border-[#E7E9EC] p-4 font-regular weight-400 text-[18px] text-[#9DA4A8]">
             <div>Nama</div>
             <div className="text-center">Jumlah Permintaan</div>
-            <div className="ml-[40px] text-center">Tujuan Asosiasi</div>
-            <div className="justify-self-end pr-[12px]">Lihat Permintaan</div>
+            <div className="text-center ml-[40px]">Tujuan Asosiasi</div>
+            <div className="justify-self-end pr-[12px] md:text-center">
+              Lihat Permintaan
+            </div>
           </div>
 
           {data.map((item: PermintaanAsosiasi, index: number) => (
@@ -41,15 +43,16 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
               }
             >
               <div className="flex items-center gap-4">
-                <div className="rounded-full overflow-hidden w-[60px] h-[60px]">
+                <div className="rounded-full overflow-hidden w-[60px] h-[60px] flex-shrink-0">
                   <Image
                     src={item.image}
                     alt="Profile Picture"
                     width={60}
                     height={60}
+                    className="h-full w-full object-cover"
                   />
                 </div>
-                <span className="ml-[20px] text-[18px] font-regular weight-400 text-[#636A6D]">
+                <span className="text-[18px] font-regular weight-400 text-[#636A6D] flex-grow min-w-0">
                   {item.nama}
                 </span>
               </div>
@@ -61,7 +64,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
               </div>
               <div
                 key={index}
-                className="flex justify-end pr-[28px] font-regular weight-400"
+                className="flex justify-self-end pr-[28px] font-regular weight-400"
               >
                 <Button
                   onClick={() => handleButtonClick(item.id)}
