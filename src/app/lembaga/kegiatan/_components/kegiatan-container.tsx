@@ -12,7 +12,6 @@ import {
   Plus,
   Trash,
 } from 'lucide-react';
-// 1. Tambahkan Pin icon
 // Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
@@ -170,138 +169,148 @@ export default function ActivityList({
       </div>
 
       <div className="bg-white rounded-lg overflow-hidden">
-        <div className="min-w-full">
-          <div className="grid grid-cols-[130px_1fr_131px_110px_141px_94px_24px] gap-8 p-3 bg-gray-50 text-sm font-medium text-gray-500">
-            <div>Thumbnail</div>
-            <div>Judul</div>
-            <div>Tanggal</div>
-            <div>Panitia</div>
-            <div>Status</div>
-            <div>Rapor</div>
-            <div></div>
-          </div>
+        <div className="overflow-x-auto">
+          <div className="min-w-[900px]">
+            <div className="flex items-center gap-8 p-3 bg-gray-50 text-lg font-medium text-gray-500">
+              <div className="w-[130px] flex-shrink-0">Thumbnail</div>
+              <div className="flex-1 min-w-[200px]">Judul</div>
+              <div className="w-[131px] flex-shrink-0">Tanggal</div>
+              <div className="w-[110px] flex-shrink-0">Panitia</div>
+              <div className="w-[141px] flex-shrink-0">Status</div>
+              <div className="w-[94px] flex-shrink-0">Rapor</div>
+              <div className="w-[24px] flex-shrink-0"></div>
+            </div>
 
-          <div className="divide-y divide-gray-200">
-            {activities.map((activity) => (
-              <div
-                key={activity.id}
-                className="grid grid-cols-[130px_1fr_131px_110px_141px_94px_24px] gap-8 p-3 items-center hover:bg-gray-50 transition-colors"
-              >
-                <div className="w-[130px] h-[90px] bg-gray-200 rounded overflow-hidden relative">
-                  {activity.thumbnail && (
-                    <Image
-                      src={activity.thumbnail || '/placeholder.svg'}
-                      alt=""
-                      className="w-full h-full object-cover"
-                      height={90}
-                      width={130}
-                    />
-                  )}
-                  <div className="absolute top-1 left-0 p-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-1 h-auto w-auto hover:bg-transparent"
-                      onClick={() =>
-                        toggleHighlight(activity.id, activity.is_highlighted)
-                      }
-                      disabled={updatingHighlightId === activity.id}
-                    >
-                      <Pin
-                        style={{ width: '25px', height: '25px' }}
-                        fill={activity.is_highlighted ? '#141718' : 'none'}
-                        stroke={activity.is_highlighted ? '#141718' : '#141718'}
+            <div className="divide-y divide-gray-200">
+              {activities.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="flex items-center gap-8 p-3 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="w-[130px] h-[90px] bg-gray-200 rounded overflow-hidden relative flex-shrink-0">
+                    {activity.thumbnail && (
+                      <Image
+                        src={activity.thumbnail || '/placeholder.svg'}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        height={90}
+                        width={130}
                       />
-                    </Button>
+                    )}
+                    <div className="absolute top-1 left-0 p-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-auto w-auto hover:bg-transparent"
+                        onClick={() =>
+                          toggleHighlight(activity.id, activity.is_highlighted)
+                        }
+                        disabled={updatingHighlightId === activity.id}
+                      >
+                        <Pin
+                          style={{ width: '25px', height: '25px' }}
+                          fill={activity.is_highlighted ? '#141718' : 'none'}
+                          stroke={
+                            activity.is_highlighted ? '#141718' : '#141718'
+                          }
+                        />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-[200px]">
+                    <p className="text-lg text-gray-500">{activity.name}</p>
+                    {activity.description && (
+                      <p className="text-base text-gray-500 truncate">
+                        {activity.description.length > 39
+                          ? activity.description.slice(0, 36) + '...'
+                          : activity.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-[131px] flex-shrink-0 text-base text-gray-500">
+                    {activity.start_date}
+                  </div>
+                  <div className="w-[110px] flex-shrink-0 flex items-center justify-center text-gray-500">
+                    <Link href={`/lembaga/kegiatan/${activity.id}/panitia`}>
+                      <Button
+                        variant={'outline'}
+                        className="rounded-lg text-base"
+                      >
+                        Panitia
+                        <ArrowUpRight />
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="w-[141px] flex-shrink-0 flex items-center justify-start">
+                    <span className="inline-flex items-center text-base font-medium text-gray-700">
+                      <Circle
+                        className="h-3 w-3 mr-2"
+                        fill={getStatusColors(activity.status).fill}
+                        stroke={getStatusColors(activity.status).stroke}
+                      />
+                      {activity.status}
+                    </span>
+                  </div>
+                  <div className="w-[94px] flex-shrink-0 flex items-center justify-center text-gray-500">
+                    <Link href={`/lembaga/kegiatan/${activity.id}/profil`}>
+                      <Button
+                        variant={'outline'}
+                        className="rounded-lg text-base"
+                      >
+                        Lihat
+                        <ArrowUpRight />
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="w-[24px] flex-shrink-0 flex justify-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="lg" className="p-1">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="rounded-xl min-w-[120px] p-0 overflow-hidden"
+                      >
+                        <DropdownMenuItem
+                          onSelect={() => setEditingActivity(activity)}
+                          className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
+                        >
+                          <Pencil className="text-[#00B7B7] h-4 w-4" />
+                          <span className="text-sm">Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="mx-0 my-0 h-px bg-gray-200" />
+                        <DropdownMenuItem className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100">
+                          <Trash className="text-[#F16350] h-4 w-4" />
+                          <span className="text-sm">Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
-                <div>
-                  <p className="text-lg text-gray-500">{activity.name}</p>
-                  {activity.description && (
-                    <p className="text-base text-gray-500 truncate">
-                      {activity.description.length > 39
-                        ? activity.description.slice(0, 36) + '...'
-                        : activity.description}
-                    </p>
-                  )}
-                </div>
-                <div className="text-base text-gray-500">
-                  {activity.start_date}
-                </div>
-                <div className="flex items-center justify-center text-gray-500">
-                  <Link href={`/lembaga/kegiatan/${activity.id}/panitia`}>
-                    <Button
-                      variant={'outline'}
-                      className="rounded-lg text-base"
-                    >
-                      Panitia
-                      <ArrowUpRight />
-                    </Button>
-                  </Link>
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className="inline-flex items-center text-base font-medium text-gray-700">
-                    <Circle
-                      className="h-3 w-3 mr-2"
-                      fill={getStatusColors(activity.status).fill}
-                      stroke={getStatusColors(activity.status).stroke}
-                    />
-                    {activity.status}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center text-gray-500">
-                  <Link href={`/lembaga/kegiatan/${activity.id}/profil`}>
-                    <Button
-                      variant={'outline'}
-                      className="rounded-lg text-base"
-                    >
-                      Lihat
-                      <ArrowUpRight />
-                    </Button>
-                  </Link>
-                </div>
-                <div className="flex justify-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="lg" className="p-1">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="rounded-xl min-w-[120px] p-0 overflow-hidden"
-                    >
-                      <DropdownMenuItem
-                        onSelect={() => setEditingActivity(activity)}
-                        className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
-                      >
-                        <Pencil className="text-[#00B7B7] h-4 w-4" />
-                        <span className="text-sm">Edit</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="mx-0 my-0 h-px bg-gray-200" />
-                      <DropdownMenuItem className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100">
-                        <Trash className="text-[#F16350] h-4 w-4" />
-                        <span className="text-sm">Delete</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+              ))}
+            </div>
+
+            {isLoading && (
+              <div className="p-4 text-center text-gray-500">
+                Loading activities...
               </div>
-            ))}
+            )}
+
+            {isLoading && (
+              <div className="p-4 text-center text-gray-500">
+                Loading activities...
+              </div>
+            )}
+
+            {!isLoading && activities.length === 0 && (
+              <div className="p-8 text-center text-gray-500">
+                Aktivitas tidak ditemukan
+              </div>
+            )}
           </div>
         </div>
-
-        {isLoading && (
-          <div className="p-4 text-center text-gray-500">
-            Loading activities...
-          </div>
-        )}
-
-        {!isLoading && activities.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
-            Aktivitas tidak ditemukan
-          </div>
-        )}
       </div>
 
       <Dialog
