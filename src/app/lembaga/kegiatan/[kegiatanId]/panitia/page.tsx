@@ -202,28 +202,28 @@ const DaftarPanitiaKegiatanPage = async ({
 }: {
   params: Promise<{ kegiatanId: string }>;
 }) => {
-  // const session = await getServerAuthSession();
-  // const query = (await params).kegiatanId;
-  // const formatted_anggota = await api.event.getAllAnggota({ event_id: query });
-  // const addAnggotaProps = await api.users.getTambahAnggotaKegiatanOptions({
-  //   kegiatanId: query,
-  // });
+  const session = await getServerAuthSession();
+  const query = (await params).kegiatanId;
+  const formatted_anggota = await api.event.getAllAnggota({ event_id: query });
+  const addAnggotaProps = await api.users.getTambahAnggotaKegiatanOptions({
+    kegiatanId: query,
+  });
 
   // Mock query parameter for local development
-  const mockQuery = 'mock-kegiatan-id';
+  // const mockQuery = 'mock-kegiatan-id';
 
   return (
     <main>
-      <AnggotaContent
+      {/* <AnggotaContent
         session={mockSession}
         data={mockPanitiaData}
         dataAddAnggota={mockAddPanitiaProps}
-      />
-      {/* <AnggotaContent
+      /> */}
+      <AnggotaContent
         session={session}
         data={formatted_anggota ?? []}
         dataAddAnggota={addAnggotaProps}
-      /> */}
+      />
     </main>
   );
 };

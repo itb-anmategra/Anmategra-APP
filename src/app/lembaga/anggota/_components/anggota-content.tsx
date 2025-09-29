@@ -102,7 +102,10 @@ export default function AnggotaContent({
                   }}
                 >
                   <DialogTrigger asChild>
-                    <Button className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg ">
+                    <Button
+                      variant="light_blue"
+                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg "
+                    >
                       <Image
                         src={Plus}
                         alt="Tambah Anggota"
@@ -140,7 +143,8 @@ export default function AnggotaContent({
                 </Dialog>
                 {isAnggota && (
                   <Button
-                    className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                    variant="light_blue"
+                    className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
                       // Empty function - add rapor komunal functionality here
                       console.log('Rapor Komunal clicked');
@@ -156,7 +160,8 @@ export default function AnggotaContent({
                   </Button>
                 )}
                 <Button
-                  className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                  variant="light_blue"
+                  className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
                     // Empty function - add best staff functionality here
                     console.log('Pilih Best Staff clicked');
@@ -173,7 +178,7 @@ export default function AnggotaContent({
               </div>
               <div className="flex gap-x-2">
                 <Button
-                  className="bg-neutral-50 hover:bg-neu border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
+                  className="bg-neutral-50 hover:bg-neutral-300 border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
                     // Empty function - add filter functionality here
                     console.log('Filter clicked');
