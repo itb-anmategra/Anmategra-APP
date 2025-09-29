@@ -138,21 +138,23 @@ export default function AnggotaContent({
                     )}
                   </DialogContent>
                 </Dialog>
-                <Button
-                  className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
-                  onClick={() => {
-                    // Empty function - add rapor komunal functionality here
-                    console.log('Rapor Komunal clicked');
-                  }}
-                >
-                  <Image
-                    src={Rapor}
-                    alt="Rapor Komunal"
-                    width={24}
-                    height={24}
-                  />
-                  Rapor Komunal
-                </Button>
+                {isAnggota && (
+                  <Button
+                    className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                    onClick={() => {
+                      // Empty function - add rapor komunal functionality here
+                      console.log('Rapor Komunal clicked');
+                    }}
+                  >
+                    <Image
+                      src={Rapor}
+                      alt="Rapor Komunal"
+                      width={24}
+                      height={24}
+                    />
+                    Rapor Komunal
+                  </Button>
+                )}
                 <Button
                   className="bg-[#00B7B7] hover:bg-[#00B7B7]/75 text-white rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
@@ -171,7 +173,7 @@ export default function AnggotaContent({
               </div>
               <div className="flex gap-x-2">
                 <Button
-                  className="bg-neutral-50 border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
+                  className="bg-neutral-50 hover:bg-neu border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
                     // Empty function - add filter functionality here
                     console.log('Filter clicked');
