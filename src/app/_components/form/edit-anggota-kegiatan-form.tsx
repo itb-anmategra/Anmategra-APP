@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import {
   Command,
   CommandEmpty,
@@ -142,265 +143,273 @@ const EditAnggotaKegiatanForm: React.FC<EditAnggotaProps> = ({
   };
 
   return (
-    <div>
-      {/* Title */}
-      <h2 className="text-2xl font-semibold mb-5">Edit Anggota Kegiatan</h2>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl font-semibold text-center">
+          Edit Anggota Kegiatan
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 w-full"
+            autoComplete="off"
+          >
+            {/* Nama */}
+            <FormField
+              control={form.control}
+              name="nama"
+              render={({ field }) => (
+                <FormItem className="w-full flex items-center gap-16">
+                  <FormLabel className="w-24 text-xl font-normal">
+                    Nama
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="text-neutral-700 rounded-[12px] h-12"
+                      placeholder="Masukkan nama"
+                      {...field}
+                      autoComplete="off"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 w-full"
-          autoComplete="off"
-        >
-          {/* Nama */}
-          <FormField
-            control={form.control}
-            name="nama"
-            render={({ field }) => (
-              <FormItem className="w-full flex items-center gap-16">
-                <FormLabel className="w-24 text-xl font-normal">Nama</FormLabel>
-                <FormControl>
-                  <Input
-                    className="text-neutral-700 rounded-[12px] h-12"
-                    placeholder="Masukkan nama"
-                    {...field}
-                    autoComplete="off"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* NIM */}
+            <FormField
+              control={form.control}
+              name="nim"
+              render={({ field }) => (
+                <FormItem className="w-full flex items-center gap-16">
+                  <FormLabel className="w-24 text-xl font-normal">
+                    NIM
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="text-neutral-700 rounded-[12px] h-12"
+                      placeholder="Masukkan NIM"
+                      {...field}
+                      autoComplete="off"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* NIM */}
-          <FormField
-            control={form.control}
-            name="nim"
-            render={({ field }) => (
-              <FormItem className="w-full flex items-center gap-16">
-                <FormLabel className="w-24 text-xl font-normal">NIM</FormLabel>
-                <FormControl>
-                  <Input
-                    className="text-neutral-700 rounded-[12px] h-12"
-                    placeholder="Masukkan NIM"
-                    {...field}
-                    autoComplete="off"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Divisi */}
-          <FormField
-            control={form.control}
-            name="division"
-            render={({ field }) => (
-              <FormItem className="w-full flex items-center gap-16">
-                <FormLabel className="w-24 text-xl font-normal">
-                  Divisi
-                </FormLabel>
-                <FormControl>
-                  <Popover open={divisiOpen} onOpenChange={setDivisiOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
-                      >
-                        {field.value
-                          ? divisiOptions.find((b) => b.value === field.value)
-                              ?.label
-                          : 'Pilih Divisi'}
-                        <ChevronsUpDown className="opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 PopoverContent">
-                      <Command>
-                        <CommandInput placeholder="Cari Divisi" />
-                        <CommandList>
-                          <CommandEmpty>Divisi Tidak Ditemukan.</CommandEmpty>
-                          <CommandGroup>
-                            {divisiOptions.map((b) => (
-                              <CommandItem
-                                key={b.value}
-                                value={b.value}
-                                onSelect={() => {
-                                  field.onChange(b.value);
-                                  setDivisiOpen(false);
-                                }}
-                              >
-                                {b.label}
-                                <Check
-                                  className={cn(
-                                    'ml-auto',
-                                    field.value === b.value
-                                      ? 'opacity-100'
-                                      : 'opacity-0',
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                            <CommandItem>
-                              <Input
-                                className="w-full focus-visible:ring-transparent bg-white"
-                                value={customDivisi}
-                                onChange={(e) =>
-                                  setCustomDivisi(e.target.value)
-                                }
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === 'Enter' &&
-                                    customDivisi.trim() !== ''
-                                  ) {
-                                    const newDivisi = {
-                                      value: customDivisi,
-                                      label: customDivisi,
-                                    };
-                                    if (
-                                      !divisiOptions.some(
-                                        (b) => b.value === customDivisi,
-                                      )
-                                    ) {
-                                      setDivisiOptions([
-                                        ...divisiOptions,
-                                        newDivisi,
-                                      ]);
-                                    }
-                                    field.onChange(customDivisi);
-                                    setCustomDivisi('');
+            {/* Divisi */}
+            <FormField
+              control={form.control}
+              name="division"
+              render={({ field }) => (
+                <FormItem className="w-full flex items-center gap-16">
+                  <FormLabel className="w-24 text-xl font-normal">
+                    Divisi
+                  </FormLabel>
+                  <FormControl>
+                    <Popover open={divisiOpen} onOpenChange={setDivisiOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
+                        >
+                          {field.value
+                            ? divisiOptions.find((b) => b.value === field.value)
+                                ?.label
+                            : 'Pilih Divisi'}
+                          <ChevronsUpDown className="opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 PopoverContent">
+                        <Command>
+                          <CommandInput placeholder="Cari Divisi" />
+                          <CommandList>
+                            <CommandEmpty>Divisi Tidak Ditemukan.</CommandEmpty>
+                            <CommandGroup>
+                              {divisiOptions.map((b) => (
+                                <CommandItem
+                                  key={b.value}
+                                  value={b.value}
+                                  onSelect={() => {
+                                    field.onChange(b.value);
                                     setDivisiOpen(false);
+                                  }}
+                                >
+                                  {b.label}
+                                  <Check
+                                    className={cn(
+                                      'ml-auto',
+                                      field.value === b.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                              <CommandItem>
+                                <Input
+                                  className="w-full focus-visible:ring-transparent bg-white"
+                                  value={customDivisi}
+                                  onChange={(e) =>
+                                    setCustomDivisi(e.target.value)
                                   }
-                                }}
-                                placeholder="Tambah Divisi baru"
-                              />
-                            </CommandItem>
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Posisi */}
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem className="w-full flex items-center gap-16">
-                <FormLabel className="w-24 text-xl font-normal">
-                  Posisi
-                </FormLabel>
-                <FormControl>
-                  <Popover open={posisiOpen} onOpenChange={setPosisiOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
-                      >
-                        {field.value
-                          ? posisiOptions.find((p) => p.value === field.value)
-                              ?.label
-                          : 'Pilih Posisi'}
-                        <ChevronsUpDown className="opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 PopoverContent">
-                      <Command>
-                        <CommandInput placeholder="Cari Posisi" />
-                        <CommandList>
-                          <CommandEmpty>Posisi Tidak Ditemukan.</CommandEmpty>
-                          <CommandGroup>
-                            {posisiOptions.map((p) => (
-                              <CommandItem
-                                key={p.value}
-                                value={p.value}
-                                onSelect={() => {
-                                  field.onChange(p.value);
-                                  setPosisiOpen(false);
-                                }}
-                              >
-                                {p.label}
-                                <Check
-                                  className={cn(
-                                    'ml-auto',
-                                    field.value === p.value
-                                      ? 'opacity-100'
-                                      : 'opacity-0',
-                                  )}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === 'Enter' &&
+                                      customDivisi.trim() !== ''
+                                    ) {
+                                      const newDivisi = {
+                                        value: customDivisi,
+                                        label: customDivisi,
+                                      };
+                                      if (
+                                        !divisiOptions.some(
+                                          (b) => b.value === customDivisi,
+                                        )
+                                      ) {
+                                        setDivisiOptions([
+                                          ...divisiOptions,
+                                          newDivisi,
+                                        ]);
+                                      }
+                                      field.onChange(customDivisi);
+                                      setCustomDivisi('');
+                                      setDivisiOpen(false);
+                                    }
+                                  }}
+                                  placeholder="Tambah Divisi baru"
                                 />
                               </CommandItem>
-                            ))}
-                            <CommandItem>
-                              <Input
-                                className="w-full focus-visible:ring-transparent bg-white"
-                                value={customPosisi}
-                                onChange={(e) =>
-                                  setCustomPosisi(e.target.value)
-                                }
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === 'Enter' &&
-                                    customPosisi.trim() !== ''
-                                  ) {
-                                    const newPosisi = {
-                                      value: customPosisi,
-                                      label: customPosisi,
-                                    };
-                                    if (
-                                      !posisiOptions.some(
-                                        (p) => p.value === customPosisi,
-                                      )
-                                    ) {
-                                      setPosisiOptions([
-                                        ...posisiOptions,
-                                        newPosisi,
-                                      ]);
-                                    }
-                                    field.onChange(customPosisi);
-                                    setCustomPosisi('');
-                                    setPosisiOpen(false);
-                                  }
-                                }}
-                                placeholder="Tambah posisi baru"
-                              />
-                            </CommandItem>
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Buttons */}
-          <div className="flex gap-4 justify-end">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsOpen(false)}
-              className="w-fit px-9 bg-[#F16350] hover:bg-[#FF9185] text-white hover:text-white"
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              className="w-fit px-6 bg-[#2B6282] hover:bg-[#2B6282] text-white"
-              disabled={mutation.isPending}
-            >
-              Simpan Perubahan
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+            {/* Posisi */}
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem className="w-full flex items-center gap-16">
+                  <FormLabel className="w-24 text-xl font-normal">
+                    Posisi
+                  </FormLabel>
+                  <FormControl>
+                    <Popover open={posisiOpen} onOpenChange={setPosisiOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
+                        >
+                          {field.value
+                            ? posisiOptions.find((p) => p.value === field.value)
+                                ?.label
+                            : 'Pilih Posisi'}
+                          <ChevronsUpDown className="opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 PopoverContent">
+                        <Command>
+                          <CommandInput placeholder="Cari Posisi" />
+                          <CommandList>
+                            <CommandEmpty>Posisi Tidak Ditemukan.</CommandEmpty>
+                            <CommandGroup>
+                              {posisiOptions.map((p) => (
+                                <CommandItem
+                                  key={p.value}
+                                  value={p.value}
+                                  onSelect={() => {
+                                    field.onChange(p.value);
+                                    setPosisiOpen(false);
+                                  }}
+                                >
+                                  {p.label}
+                                  <Check
+                                    className={cn(
+                                      'ml-auto',
+                                      field.value === p.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                              <CommandItem>
+                                <Input
+                                  className="w-full focus-visible:ring-transparent bg-white"
+                                  value={customPosisi}
+                                  onChange={(e) =>
+                                    setCustomPosisi(e.target.value)
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === 'Enter' &&
+                                      customPosisi.trim() !== ''
+                                    ) {
+                                      const newPosisi = {
+                                        value: customPosisi,
+                                        label: customPosisi,
+                                      };
+                                      if (
+                                        !posisiOptions.some(
+                                          (p) => p.value === customPosisi,
+                                        )
+                                      ) {
+                                        setPosisiOptions([
+                                          ...posisiOptions,
+                                          newPosisi,
+                                        ]);
+                                      }
+                                      field.onChange(customPosisi);
+                                      setCustomPosisi('');
+                                      setPosisiOpen(false);
+                                    }
+                                  }}
+                                  placeholder="Tambah posisi baru"
+                                />
+                              </CommandItem>
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Buttons */}
+            <div className="flex gap-4 justify-end">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsOpen(false)}
+                className="w-fit px-6 py-3 bg-[#F16350] hover:bg-[#FF9185] text-white hover:text-white"
+              >
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                className="w-fit px-6 py-3 bg-[#2B6282] hover:bg-[#2B6282] text-white"
+                disabled={mutation.isPending}
+              >
+                Simpan Perubahan
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };
 
