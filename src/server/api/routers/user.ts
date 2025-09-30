@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq, like } from 'drizzle-orm';
+import { and, desc, eq, like, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import {
@@ -658,7 +658,7 @@ export const userRouter = createTRPCRouter({
             ),
           );
         return { success: true };
-      } catch (error) {
+      } catch {
         return { success: false };
       }
     }),
@@ -670,7 +670,10 @@ export const userRouter = createTRPCRouter({
       try {
         const queryConditions = [eq(support.user_id, ctx.session.user.id)];
         if (input.search) {
-          queryConditions.push(like(support.topic, `%${input.search}%`)); // Ini maksudnya apa? (by subject, topic)
+          const searchTerm = `%${input.search.toLowerCase()}%`;
+          queryConditions.push(
+            sql`(LOWER(${support.topic}) LIKE ${searchTerm} OR LOWER(${support.subject}) LIKE ${searchTerm})`,
+          );
         }
         if (input.status) {
           queryConditions.push(eq(support.status, input.status));

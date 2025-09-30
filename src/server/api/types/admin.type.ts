@@ -16,7 +16,7 @@ export const GetAllReportsAdminInputSchema = z.object({
   status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']).optional(),
 });
 
-export const CreateReportOutputSchema = z.array(
+export const GetAllReportOutputSchema = z.array(
   z.object({
     id: z.string(),
     subject: z.string(),
@@ -24,8 +24,8 @@ export const CreateReportOutputSchema = z.array(
     description: z.string(),
     status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
     attachment: z.string(),
-    created_at: z.date(),
-    updated_at: z.date(),
+    created_at: z.string(),
+    updated_at: z.string(),
   }),
 );
 
