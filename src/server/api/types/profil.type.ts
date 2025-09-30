@@ -61,3 +61,12 @@ export const EditProfilInputSchema = z.object({
 });
 
 export const EditProfilOutputSchema = z.object({ success: z.boolean() });
+
+const ProfilKMSchema = z.object({
+  id: z.string(),
+  description: z.string(),
+});
+
+export const GetAllProfilKMOutputSchema = z.object({
+  profil_km: z.array(ProfilKMSchema),
+});
