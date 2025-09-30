@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { set } from 'date-fns';
 import { eq } from 'drizzle-orm';
-import { and, desc, like } from 'drizzle-orm';
+import { and, desc, like, or } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   adminProcedure,
@@ -9,7 +9,7 @@ import {
   protectedProcedure,
 } from '~/server/api/trpc';
 import {
-  CreateReportOutputSchema,
+  GetAllReportOutputSchema,
   GetAllReportsAdminInputSchema,
   SetReportStatusInputSchema,
   SetReportStatusOutputSchema,
@@ -66,12 +66,23 @@ export const adminRouter = createTRPCRouter({
 
   getAllReportsAdmin: adminProcedure
     .input(GetAllReportsAdminInputSchema)
-    .output(CreateReportOutputSchema)
+    .output(GetAllReportOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
         const reports = await ctx.db
           .select()
           .from(support)
+          .where(
+            and(
+              input.search
+                ? or(
+                    like(support.subject, `%${input.search}%`),
+                    like(support.topic, `%${input.search}%`),
+                  )
+                : undefined,
+              input.status ? eq(support.status, input.status) : undefined,
+            ),
+          )
           .orderBy(desc(support.created_at));
         return reports.map((report) => ({
           id: report.id,
@@ -80,8 +91,8 @@ export const adminRouter = createTRPCRouter({
           description: report.description,
           status: report.status,
           attachment: report.attachment,
-          created_at: report.created_at,
-          updated_at: report.updated_at,
+          created_at: report.created_at.toISOString(),
+          updated_at: report.updated_at.toISOString(),
         }));
       } catch (error) {
         console.error('Error fetching reports:', error);
