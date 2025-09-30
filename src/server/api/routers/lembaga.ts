@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq, gte, lte, or } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -18,6 +18,7 @@ import {
   users,
 } from '~/server/db/schema';
 
+import { EditPanitiaKegiatanInputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -64,6 +65,8 @@ import {
   GetLembagaHighlightedEventOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  editAnggotaLembagaInputSchema,
+  editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
 
 export const lembagaRouter = createTRPCRouter({
@@ -106,6 +109,19 @@ export const lembagaRouter = createTRPCRouter({
     .output(GetAllAnggotaLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
+        const conditions = [eq(kehimpunan.lembagaId, input.lembagaId)];
+
+        if (input.namaOrNim) {
+          if (isNaN(Number(input.namaOrNim))) {
+            conditions.push(ilike(users.name, `%${input.namaOrNim}%`));
+          } else {
+            conditions.push(eq(mahasiswa.nim, Number(input.namaOrNim)));
+          }
+        }
+
+        if (input.divisi) {
+          conditions.push(ilike(kehimpunan.division, `%${input.divisi}%`));
+        }
         const anggota = await ctx.db
           .select({
             id: users.id,
@@ -117,7 +133,7 @@ export const lembagaRouter = createTRPCRouter({
           .from(kehimpunan)
           .innerJoin(users, eq(kehimpunan.userId, users.id))
           .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-          .where(eq(kehimpunan.lembagaId, input.lembagaId));
+          .where(and(...conditions));
 
         return anggota.map((anggota) => ({
           id: anggota.id,
@@ -274,6 +290,49 @@ export const lembagaRouter = createTRPCRouter({
       return {
         success: true,
       };
+    }),
+
+  editAnggota: lembagaProcedure
+    .input(editAnggotaLembagaInputSchema)
+    .output(editAnggotaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const lembagaUserId = ctx.session.user.id;
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+
+        const updated = await ctx.db
+          .update(kehimpunan)
+          .set({
+            position: input.position,
+            division: input.division,
+          })
+          .where(
+            and(
+              eq(kehimpunan.id, input.user_id + '_' + lembagaUserId),
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+            ),
+          )
+          .returning({ id: kehimpunan.id });
+
+        if (updated.length === 0) {
+          return {
+            success: false,
+            error: 'Anggota tidak ditemukan atau data tidak berubah',
+          };
+        }
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+          error: 'Database Error',
+        };
+      }
     }),
 
   editProfil: protectedProcedure

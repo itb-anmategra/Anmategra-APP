@@ -1,5 +1,6 @@
 import { request } from 'http';
 import { z } from 'zod';
+import { lembaga } from '~/server/db/schema';
 
 export const GetInfoLembagaInputSchema = z.object({
   lembagaId: z.string().nonempty(),
@@ -30,6 +31,8 @@ const AnggotaLembagaSchema = z.object({
 
 export const GetAllAnggotaLembagaInputSchema = z.object({
   lembagaId: z.string().nonempty(),
+  namaOrNim: z.string().optional(),
+  divisi: z.string().optional(),
 });
 
 export const GetAllAnggotaLembagaOutputSchema = z.array(AnggotaLembagaSchema);
@@ -92,6 +95,17 @@ export const RemoveAnggotaLembagaInputSchema = z.object({
 });
 
 export const RemoveAnggotaLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const editAnggotaLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const editAnggotaLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
 
