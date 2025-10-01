@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
+import PartyPopper from 'public/icons/party-popper.svg';
+import { useState, useEffect } from 'react';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -19,6 +21,7 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { api } from '~/trpc/react';
+import { useQueries } from '@tanstack/react-query';
 
 export type Division = {
   name: string;
@@ -212,7 +215,7 @@ type BestStaffProps = {
   lembagaId: string;
 };
 
-const BestStaff = ({ trigger }: BestStaffProps) => {
+const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -235,6 +238,31 @@ const BestStaff = ({ trigger }: BestStaffProps) => {
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
+  const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>({}); 
+
+  // Ambil divisions dari backend
+  const { data: divisionData, isLoading: isLoadingDivisions } =
+    api.lembaga.getAllLembagaDivision.useQuery(
+      { lembaga_id: lembagaId },
+      { enabled: !!lembagaId }
+    );
+  
+  // fetch staff options per division setelah divisions tersedia
+  useEffect(() => {
+    if (!divisionData) return;
+
+    divisionData.divisions.forEach((division) => {
+      const query = api.lembaga.getBestStaffLembagaOptions.useQuery(
+        { lembaga_id: lembagaId, division },
+        { enabled: !!lembagaId }
+      );
+      setStaffOptions(prev => ({
+        ...prev,
+        [division]: query.data?.staff_options.map(s => s.name) ?? []
+      }));
+    });
+  }, [divisionData, lembagaId]);
+
 
   const handleSubmit = () => {
     const { startMonth, startYear, endMonth, endYear } = periode;
@@ -323,7 +351,10 @@ const BestStaff = ({ trigger }: BestStaffProps) => {
         />
 
         <DivisionTable
-          divisions={divisions}
+          divisions={divisionData?.divisions.map((div) => ({
+            name: div,
+            candidates: staffOptions[div] ?? [],
+          })) ?? []} // 🔹 fallback ke array kosong kalau undefined
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
           }
