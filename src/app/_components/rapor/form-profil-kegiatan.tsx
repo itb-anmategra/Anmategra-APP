@@ -152,7 +152,7 @@ export default function FormProfilKegiatan({
                       className="whitespace-normal break-words"
                     />
                   </SelectTrigger>
-                  <SelectContent side="bottom">
+                  <SelectContent side="bottom" className="max-w-[759px]">
                     {profilList?.profil_km.map((profil) => (
                       <SelectItem key={profil.id} value={profil.id.toString()}>
                         {profil.description}
