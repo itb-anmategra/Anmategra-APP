@@ -52,6 +52,15 @@ const months: Month[] = [
   { value: '01', label: 'Januari' },
   { value: '02', label: 'Februari' },
   { value: '03', label: 'Maret' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'Mei' },
+  { value: '06', label: 'Juni' },
+  { value: '07', label: 'Juli' },
+  { value: '08', label: 'Agustus' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'Oktober' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'Desember' },
 ];
 
 const years: string[] = ['2024', '2025'];
@@ -310,6 +319,59 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
       return;
     }
 
+    // Format tanggal: YYYY-MM-01
+    const start_date = `${startYear}-${startMonth.padStart(2, '0')}-01`;
+    const end_date = `${endYear}-${endMonth.padStart(2, '0')}-01`;
+
+    // Mapping division ke data staff lengkap dari backend
+    const [divisionDataMapping, setDivisionDataMapping] = useState<Record<string, {name: string, user_id: string}[]>>({});
+
+    useEffect(() => {
+      if (!divisionData) return;
+    
+      divisionData.divisions.forEach((division) => {
+        const query = api.lembaga.getBestStaffLembagaOptions.useQuery(
+          { lembaga_id: lembagaId, division },
+          { enabled: !!lembagaId }
+        );
+      
+        if (query.data?.staff_options) {
+          setStaffOptions((prev) => ({
+            ...prev,
+            [division]: query.data.staff_options.map((s) => s.name),
+          }));
+        
+          setDivisionDataMapping((prev) => ({
+            ...prev,
+            [division]: query.data.staff_options,
+          }));
+        }
+      });
+    }, [divisionData, lembagaId]);
+
+
+    // Mapping selectedStaff ke best_staff_list[]
+    const best_staff_list = Object.entries(selectedStaff).map(
+      ([division, userName]) => {
+        const usersInDivision = divisionDataMapping[division] ?? []; // fallback ke array kosong
+        const userObj = usersInDivision.find((s) => s.name === userName);
+        return {
+          user_id: userObj?.user_id ?? '', // kasih fallback string kosong kalau undefined
+          division,
+        };
+      }
+    );
+
+    
+    const payload = {
+    lembaga_id: lembagaId,
+    start_date,
+    end_date,
+    best_staff_list,
+    };
+
+    console.log('Payload submit:', payload);
+
     const result = {
       periode: {
         start: { month: startMonth, year: startYear },
@@ -318,9 +380,24 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
       staff: selectedStaff,
     };
 
-    console.log('Data Best Staff:', result);
-  };
 
+    console.log('Data Best Staff:', result);
+
+    // Hook untuk submit data ke backend
+    const chooseBestStaffMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
+      onSuccess: () => {
+        alert('Best Staff berhasil disimpan!');
+      },
+      onError: (err) => {
+        console.error(err);
+        alert('Terjadi kesalahan saat menyimpan Best Staff.');
+      },
+    });
+
+    // Panggil mutation dengan payload
+    chooseBestStaffMutation.mutate(payload);
+  };
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -354,7 +431,7 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
           divisions={divisionData?.divisions.map((div) => ({
             name: div,
             candidates: staffOptions[div] ?? [],
-          })) ?? []} // 🔹 fallback ke array kosong kalau undefined
+          })) ?? []} // fallback ke array kosong kalau undefined
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
           }
