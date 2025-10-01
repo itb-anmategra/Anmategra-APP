@@ -2,6 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import * as React from 'react';
+import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -18,17 +19,29 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
+import { api } from '~/trpc/react';
 
 interface FormProfilKegiatanProps {
-  profil?: string;
+  eventId: string; // penting untuk create
+  profilId?: string; // penting untuk edit
   isTambah?: boolean;
   customClassName?: string;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
+// schema untuk validasi
+const profilSchema = z.object({
+  name: z.string().min(1, 'Profil tidak boleh kosong'),
+  description: z.string().min(1, 'Deskripsi tidak boleh kosong'),
+  profil_km_id: z.array(z.string().min(1, 'Profil KM harus dipilih')).min(1),
+  profil_id: z.string().optional(), // hanya diperlukan saat edit
+  event_id: z.string().optional(), // hanya diperlukan saat create
+});
+
 export default function FormProfilKegiatan({
-  profil = 'Profil 5',
+  eventId,
+  profilId,
   isTambah = true,
   customClassName = '',
   isOpen = true,
@@ -37,32 +50,59 @@ export default function FormProfilKegiatan({
   const [selects, setSelects] = React.useState<number[]>([0]);
   const [mappings, setMappings] = React.useState<Record<number, string>>({});
   const [profilInput, setProfilInput] = React.useState('');
-  const [deskripsi, setDeskripsi] = React.useState('');
+  const [deskripsiInput, setDeskripsiInput] = React.useState('');
   const [errorMessage, setErrorMessage] = React.useState('');
+
+  const { data: profilList } = api.profil.getAllProfilKM.useQuery();
+
+  const createProfilKegiatan = api.profil.createProfilKegiatan.useMutation();
+  const editProfilKegiatan = api.profil.editProfilKegiatan.useMutation();
 
   const addSelect = () => setSelects([...selects, selects.length]);
 
-  const handleSave = () => {
-    if (!profilInput.trim() || !deskripsi.trim()) {
-      setErrorMessage('Profil dan Deskripsi tidak boleh kosong!');
-      return;
-    }
-
-    const adaKosong = selects.some(
-      (id) => !mappings[id] || mappings[id].trim() === '',
-    );
-    if (adaKosong) {
-      setErrorMessage('Semua Pemetaan Profil KM ITB harus dipilih!');
-      return;
-    }
-
-    // Code dibawah dapat disesuaikan
-    // console.log('Data disimpan:', { profilInput, deskripsi, mappings });
-    onClose?.();
-  };
-
   const updateMapping = (id: number, value: string) => {
     setMappings((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSave = async () => {
+    setErrorMessage('');
+    try {
+      // bentuk data input
+      const inputData = {
+        name: profilInput,
+        description: deskripsiInput,
+        profil_km_id: Object.values(mappings),
+        profil_id: !isTambah ? profilId : undefined,
+        event_id: isTambah ? eventId : undefined,
+      };
+
+      // validasi dengan zod
+      const validated = profilSchema.parse(inputData);
+
+      if (isTambah) {
+        await createProfilKegiatan.mutateAsync({
+          event_id: validated.event_id!,
+          name: validated.name,
+          description: validated.description,
+          profil_km_id: validated.profil_km_id,
+        });
+      } else {
+        await editProfilKegiatan.mutateAsync({
+          profil_id: validated.profil_id!,
+          name: validated.name,
+          description: validated.description,
+          profil_km_id: validated.profil_km_id,
+        });
+      }
+
+      onClose?.();
+    } catch (err: any) {
+      if (err instanceof z.ZodError) {
+        setErrorMessage(err.errors[0]?.message ?? 'Validasi gagal');
+      } else {
+        setErrorMessage('Gagal menyimpan data!');
+      }
+    }
   };
 
   return (
@@ -81,7 +121,7 @@ export default function FormProfilKegiatan({
           <Input
             value={profilInput}
             onChange={(e) => setProfilInput(e.target.value)}
-            placeholder={profil}
+            placeholder="Masukkan nama profil"
             className="h-[48px] rounded-xl px-6 text-[20px]"
           />
         </div>
@@ -89,8 +129,8 @@ export default function FormProfilKegiatan({
         <div className="flex flex-col gap-2">
           <label className="text-xl">Deskripsi Profil</label>
           <Textarea
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
+            value={deskripsiInput}
+            onChange={(e) => setDeskripsiInput(e.target.value)}
             placeholder="Jelaskan tentang profil ini ..."
             className="min-h-[152px] rounded-xl px-6 py-4 !text-[20px] resize-none"
           />
@@ -108,13 +148,18 @@ export default function FormProfilKegiatan({
                   onValueChange={(v) => updateMapping(id, v)}
                   value={mappings[id] ?? ''}
                 >
-                  <SelectTrigger className="flex h-[48px] w-full rounded-xl px-6 text-[20px] text-[#636A6D]">
-                    <SelectValue placeholder="Pilih Profil KM ITB" />
+                  <SelectTrigger className="flex h-[48px] max-w-[759px] rounded-xl px-6 text-[20px] text-[#636A6D]">
+                    <SelectValue
+                      placeholder="Pilih Profil KM ITB"
+                      className="whitespace-normal break-words"
+                    />
                   </SelectTrigger>
                   <SelectContent side="bottom">
-                    <SelectItem value="profil1">Profil KM 1</SelectItem>
-                    <SelectItem value="profil2">Profil KM 2</SelectItem>
-                    <SelectItem value="profil3">Profil KM 3</SelectItem>
+                    {profilList?.profil_km.map((profil) => (
+                      <SelectItem key={profil.id} value={profil.id.toString()}>
+                        {profil.description}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button
