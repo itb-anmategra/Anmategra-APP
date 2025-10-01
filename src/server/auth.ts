@@ -102,7 +102,7 @@ export const authOptions: NextAuthOptions = {
         // insert Lembaga table
         else if (account?.provider === 'google') {
           const lembagaExists = await db.query.lembaga.findFirst({
-            where: eq(lembaga.userId, user.id),
+            where: eq(lembaga.user_id, user.id),
           });
           if (!lembagaExists) {
             await db
@@ -115,7 +115,7 @@ export const authOptions: NextAuthOptions = {
               .insert(lembaga)
               .values({
                 id: lembaga_id,
-                userId: user.id,
+                user_id: user.id,
                 name: user.name,
                 foundingDate: new Date(),
               })
@@ -262,14 +262,14 @@ const insertMahasiswa = async (
   angkatan: number,
 ) => {
   const mahasiswaExists = await db.query.mahasiswa.findFirst({
-    where: eq(mahasiswa.userId, id),
+    where: eq(mahasiswa.user_id, id),
   });
   if (mahasiswaExists) return mahasiswaExists;
 
   const newMahasiswa = await db
     .insert(mahasiswa)
     .values({
-      userId: id,
+      user_id: id,
       nim: nim,
       jurusan: jurusan,
       angkatan: angkatan,

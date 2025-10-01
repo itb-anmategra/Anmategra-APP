@@ -29,7 +29,7 @@ export const profileRouter = createTRPCRouter({
         ctx.db
           .select()
           .from(mahasiswa)
-          .innerJoin(users, eq(mahasiswa.userId, users.id))
+          .innerJoin(users, eq(mahasiswa.user_id, users.id))
           .where(eq(users.id, input.mahasiswaId))
           .limit(1),
         ctx.db
@@ -141,8 +141,8 @@ export const profileRouter = createTRPCRouter({
           posisi: kehimpunan.position,
         })
         .from(kehimpunan)
-        .innerJoin(users, eq(kehimpunan.userId, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .innerJoin(users, eq(kehimpunan.user_id, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
         .where(eq(kehimpunan.lembagaId, input.lembagaId));
 
       const formattedAnggota = anggota.map((anggota) => ({
@@ -198,7 +198,7 @@ export const profileRouter = createTRPCRouter({
           type: lembaga.type,
         })
         .from(lembaga)
-        .innerJoin(users, eq(lembaga.userId, users.id))
+        .innerJoin(users, eq(lembaga.user_id, users.id))
         .where(eq(lembaga.id, kegiatan.org_id))
         .limit(1);
 
@@ -211,7 +211,7 @@ export const profileRouter = createTRPCRouter({
 
       const participants = await ctx.db
         .select({
-          userId: mahasiswa.userId,
+          user_id: mahasiswa.user_id,
           nama: users.name,
           nim: mahasiswa.nim,
           jurusan: mahasiswa.jurusan,
@@ -220,12 +220,12 @@ export const profileRouter = createTRPCRouter({
           divisi: keanggotaan.division,
         })
         .from(keanggotaan)
-        .innerJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.userId))
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.user_id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(eq(keanggotaan.event_id, input.kegiatanId));
 
       const formattedParticipants = participants.map((participant) => ({
-        id: participant.userId,
+        id: participant.user_id,
         nama: participant.nama ?? 'john doe',
         nim: participant.nim.toString(),
         jurusan: participant.jurusan,

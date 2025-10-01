@@ -53,7 +53,7 @@ export const raporRouter = createTRPCRouter({
             nim: mahasiswa.nim,
           })
           .from(keanggotaan)
-          .innerJoin(mahasiswa, eq(mahasiswa.userId, keanggotaan.user_id))
+          .innerJoin(mahasiswa, eq(mahasiswa.user_id, keanggotaan.user_id))
           .innerJoin(users, eq(users.id, keanggotaan.user_id))
           .where(eq(keanggotaan.event_id, input.event_id));
 
@@ -137,7 +137,7 @@ export const raporRouter = createTRPCRouter({
             position: keanggotaan.position,
           })
           .from(keanggotaan)
-          .innerJoin(mahasiswa, eq(mahasiswa.userId, keanggotaan.user_id))
+          .innerJoin(mahasiswa, eq(mahasiswa.user_id, keanggotaan.user_id))
           .innerJoin(users, eq(users.id, keanggotaan.user_id))
           .where(
             and(
@@ -284,8 +284,8 @@ export const raporRouter = createTRPCRouter({
             nim: mahasiswa.nim,
           })
           .from(kehimpunan)
-          .innerJoin(users, eq(kehimpunan.userId, users.id))
-          .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+          .innerJoin(users, eq(kehimpunan.user_id, users.id))
+          .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
           .where(eq(kehimpunan.lembagaId, input.lembaga_id));
 
         const anggotaIds = anggotaList.map((a) => a.user_id);
@@ -352,7 +352,7 @@ export const raporRouter = createTRPCRouter({
 
         const mhs = await ctx.db
           .select({
-            user_id: kehimpunan.userId,
+            user_id: kehimpunan.user_id,
             name: users.name,
             nim: mahasiswa.nim,
             jurusan: mahasiswa.jurusan,
@@ -362,12 +362,12 @@ export const raporRouter = createTRPCRouter({
             position: kehimpunan.position,
           })
           .from(kehimpunan)
-          .innerJoin(mahasiswa, eq(mahasiswa.userId, kehimpunan.userId))
-          .innerJoin(users, eq(users.id, kehimpunan.userId))
+          .innerJoin(mahasiswa, eq(mahasiswa.user_id, kehimpunan.user_id))
+          .innerJoin(users, eq(users.id, kehimpunan.user_id))
           .where(
             and(
               eq(kehimpunan.lembagaId, input.lembaga_id),
-              eq(kehimpunan.userId, input.mahasiswa_id),
+              eq(kehimpunan.user_id, input.mahasiswa_id),
             ),
           )
           .limit(1);

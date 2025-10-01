@@ -34,7 +34,7 @@ import {
 // Utility functions for parsing CSV values
 
 const TEST_EMAIL = 'your-email@gmail.com'; // Change this to your own private email
-const TEST_EMAIL_MAHASISWA = 'your-nim@mahasiswa.itb.ac.id'; // Change this to your own nim
+const TEST_EMAIL_MAHASISWA = 'your-email@mahasiswa.itb.ac.id'; // Change this to your own nim
 
 const CSV_DIR = path.join(
   process.cwd(),
@@ -89,25 +89,6 @@ function parseBoolean(value: string | undefined | null): boolean {
   return value === 'true' || value === 'True';
 }
 
-async function importVerifiedUsers() {
-  console.log('📧 Importing verified users...');
-  const records = readCsvFile('verified_users.csv');
-
-  if (records.length === 0) return;
-
-  const data = records
-    .filter((record) => record.email) // Only include records with email
-    .map((record) => ({
-      id: record.id ?? crypto.randomUUID(),
-      email: record.email!,
-    }));
-
-  if (data.length > 0) {
-    await db.insert(verifiedUsers).values(data);
-    console.log(`✅ Imported ${data.length} verified users`);
-  }
-}
-
 async function importUsers() {
   console.log('👥 Importing users...');
   const records = readCsvFile('users.csv');
@@ -145,7 +126,7 @@ async function importMahasiswa() {
         record.user_id && record.nim && record.jurusan && record.angkatan,
     )
     .map((record) => ({
-      userId: record.user_id!,
+      user_id: record.user_id!,
       nim: parseInteger(record.nim) ?? 0,
       jurusan: record.jurusan!,
       angkatan: parseInteger(record.angkatan) ?? 2024,
@@ -174,7 +155,7 @@ async function importLembaga() {
     )
     .map((record) => ({
       id: record.id!,
-      userId: record.user_id!,
+      user_id: record.user_id!,
       name: record.name!,
       description: record.description ?? null,
       foundingDate: parseDate(record.founding_date) ?? new Date(),
@@ -384,7 +365,7 @@ async function importNotifications() {
 //   const data = records
 //     .filter((record) => record.user_id && record.type && record.provider)
 //     .map((record) => ({
-//       userId: record.user_id!,
+//       user_id: record.user_id!,
 //       type: record.type as 'oauth' | 'email' | 'oidc',
 //       provider: record.provider!,
 //       providerAccountId: record.provider_account_id!,
@@ -415,7 +396,7 @@ async function importSessions() {
     .filter(record => record.session_token && record.user_id && record.expires)
     .map(record => ({
       sessionToken: record.session_token!,
-      userId: record.user_id!,
+      user_id: record.user_id!,
       expires: parseDate(record.expires) ?? new Date(),
     }));
   
@@ -456,14 +437,14 @@ async function importKehimpunan() {
     .filter(
       (record) =>
         record.id &&
-        record.userId &&
+        record.user_id &&
         record.lembagaId &&
         record.division &&
         record.position,
     )
     .map((record) => ({
       id: record.id!,
-      userId: record.userId!,
+      user_id: record.user_id!,
       lembagaId: record.lembagaId!,
       division: record.division!,
       position: record.position!,
@@ -730,7 +711,6 @@ export async function seedFromCsv() {
 
   try {
     // Import in dependency order
-    await importVerifiedUsers();
     await importUsers();
     await importMahasiswa();
     await importLembaga();

@@ -131,8 +131,8 @@ export const lembagaRouter = createTRPCRouter({
             posisi: kehimpunan.position,
           })
           .from(kehimpunan)
-          .innerJoin(users, eq(kehimpunan.userId, users.id))
-          .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+          .innerJoin(users, eq(kehimpunan.user_id, users.id))
+          .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
           .where(and(...conditions));
 
         return anggota.map((anggota) => ({
@@ -253,7 +253,7 @@ export const lembagaRouter = createTRPCRouter({
         await ctx.db.insert(kehimpunan).values({
           id: input.user_id + '_' + lembagaUserId,
           lembagaId: ctx.session.user.lembagaId,
-          userId: input.user_id,
+          user_id: input.user_id,
           division: input.division,
           position: input.position,
         });
@@ -282,7 +282,7 @@ export const lembagaRouter = createTRPCRouter({
         .delete(kehimpunan)
         .where(
           and(
-            eq(kehimpunan.userId, input.user_id),
+            eq(kehimpunan.user_id, input.user_id),
             eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
           ),
         );
@@ -703,7 +703,7 @@ export const lembagaRouter = createTRPCRouter({
           .where(
             and(
               eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
-              eq(kehimpunan.userId, input.user_id),
+              eq(kehimpunan.user_id, input.user_id),
             ),
           )
           .limit(1);
@@ -721,7 +721,7 @@ export const lembagaRouter = createTRPCRouter({
             // Add user to kehimpunan
             await tx.insert(kehimpunan).values({
               lembagaId: ctx.session.user.lembagaId!,
-              userId: input.user_id,
+              user_id: input.user_id,
               position: input.position,
               division: input.division,
             });
@@ -917,7 +917,7 @@ export const lembagaRouter = createTRPCRouter({
           name: users.name,
         })
         .from(kehimpunan)
-        .innerJoin(users, eq(kehimpunan.userId, users.id))
+        .innerJoin(users, eq(kehimpunan.user_id, users.id))
         .where(
           and(
             eq(kehimpunan.lembagaId, input.lembaga_id),
@@ -1015,9 +1015,9 @@ export const lembagaRouter = createTRPCRouter({
         .from(bestStaffKegiatan)
         .innerJoin(
           mahasiswa,
-          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.userId),
+          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.user_id),
         )
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(
           and(
             eq(bestStaffKegiatan.eventId, input.event_id),
@@ -1063,9 +1063,9 @@ export const lembagaRouter = createTRPCRouter({
         .from(bestStaffLembaga)
         .innerJoin(
           mahasiswa,
-          eq(bestStaffLembaga.mahasiswaId, mahasiswa.userId),
+          eq(bestStaffLembaga.mahasiswaId, mahasiswa.user_id),
         )
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(
           and(
             eq(bestStaffLembaga.lembagaId, input.lembaga_id),
@@ -1118,9 +1118,9 @@ export const lembagaRouter = createTRPCRouter({
         .from(bestStaffKegiatan)
         .innerJoin(
           mahasiswa,
-          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.userId),
+          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.user_id),
         )
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(eq(bestStaffKegiatan.eventId, input.event_id))
         .orderBy(desc(bestStaffKegiatan.startDate));
 
@@ -1195,9 +1195,9 @@ export const lembagaRouter = createTRPCRouter({
         .from(bestStaffLembaga)
         .innerJoin(
           mahasiswa,
-          eq(bestStaffLembaga.mahasiswaId, mahasiswa.userId),
+          eq(bestStaffLembaga.mahasiswaId, mahasiswa.user_id),
         )
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(eq(bestStaffLembaga.lembagaId, input.lembaga_id))
         .orderBy(desc(bestStaffKegiatan.startDate));
 

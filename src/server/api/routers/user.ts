@@ -58,19 +58,19 @@ export const userRouter = createTRPCRouter({
           where: (kehimpunan, { eq }) =>
             eq(kehimpunan.lembagaId, input.lembagaId),
           columns: {
-            userId: true,
+            user_id: true,
           },
         }),
         ctx.db.query.lembaga.findMany({
           columns: {
-            userId: true,
+            user_id: true,
           },
         }),
       ]);
       const mahasiswa_hide_list_id = mahasiswa_hide_list.map(
-        (item) => item.userId,
+        (item) => item.user_id,
       );
-      const lembaga_list_id = lembaga_list.map((item) => item.userId);
+      const lembaga_list_id = lembaga_list.map((item) => item.user_id);
       const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
 
       const [mahasiswa_list, nim_list, list_posisi_bidang] = await Promise.all([
@@ -84,12 +84,12 @@ export const userRouter = createTRPCRouter({
         }),
         ctx.db.query.mahasiswa.findMany({
           where: (mahasiswa, { notInArray }) =>
-            notInArray(mahasiswa.userId, hide_list_id),
+            notInArray(mahasiswa.user_id, hide_list_id),
           columns: {
-            userId: true,
+            user_id: true,
             nim: true,
           },
-          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.userId),
+          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.user_id),
         }),
         ctx.db.query.kehimpunan.findMany({
           where: (kehimpunan, { eq }) =>
@@ -107,7 +107,7 @@ export const userRouter = createTRPCRouter({
       }));
 
       const formattedNimList = nim_list.map((item) => ({
-        value: item.userId,
+        value: item.user_id,
         label:
           item.nim !== undefined && item.nim !== null
             ? item.nim.toString()
@@ -154,14 +154,14 @@ export const userRouter = createTRPCRouter({
         }),
         ctx.db.query.lembaga.findMany({
           columns: {
-            userId: true,
+            user_id: true,
           },
         }),
       ]);
       const mahasiswa_hide_list_id = mahasiswa_hide_list.map(
         (item) => item.user_id,
       );
-      const lembaga_list_id = lembaga_list.map((item) => item.userId);
+      const lembaga_list_id = lembaga_list.map((item) => item.user_id);
       const hide_list_id = mahasiswa_hide_list_id.concat(lembaga_list_id);
 
       const [mahasiswa_list, nim_list, list_posisi_bidang] = await Promise.all([
@@ -175,12 +175,12 @@ export const userRouter = createTRPCRouter({
         }),
         ctx.db.query.mahasiswa.findMany({
           where: (mahasiswa, { notInArray }) =>
-            notInArray(mahasiswa.userId, hide_list_id),
+            notInArray(mahasiswa.user_id, hide_list_id),
           columns: {
-            userId: true,
+            user_id: true,
             nim: true,
           },
-          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.userId),
+          orderBy: (mahasiswa, { asc }) => asc(mahasiswa.user_id),
         }),
         ctx.db.query.keanggotaan.findMany({
           where: (keanggotaan, { eq }) =>
@@ -198,7 +198,7 @@ export const userRouter = createTRPCRouter({
       }));
 
       const formattedNimList = nim_list.map((item) => ({
-        value: item.userId,
+        value: item.user_id,
         label:
           item.nim !== undefined && item.nim !== null
             ? item.nim.toString()
@@ -250,7 +250,7 @@ export const userRouter = createTRPCRouter({
           lineId: input.idLine,
           whatsapp: input.noWhatsapp,
         })
-        .where(eq(mahasiswa.userId, ctx.session.user.id));
+        .where(eq(mahasiswa.user_id, ctx.session.user.id));
     }),
 
   /*
@@ -534,8 +534,8 @@ export const userRouter = createTRPCRouter({
       const mahasiswaResult = await ctx.db
         .select()
         .from(mahasiswa)
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
-        .where(eq(users.id, input.userId))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
+        .where(eq(users.id, input.user_id))
         .limit(1);
 
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
@@ -557,7 +557,7 @@ export const userRouter = createTRPCRouter({
       const mahasiswaResult = await ctx.db
         .select()
         .from(mahasiswa)
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(eq(users.name, input.name))
         .limit(1);
 
@@ -580,7 +580,7 @@ export const userRouter = createTRPCRouter({
       const mahasiswaResult = await ctx.db
         .select()
         .from(mahasiswa)
-        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .innerJoin(users, eq(mahasiswa.user_id, users.id))
         .where(eq(mahasiswa.nim, Number(input.nim)))
         .limit(1);
 
@@ -609,12 +609,12 @@ export const userRouter = createTRPCRouter({
           posisi: kehimpunan.position,
         })
         .from(kehimpunan)
-        .innerJoin(users, eq(kehimpunan.userId, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .innerJoin(users, eq(kehimpunan.user_id, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
         .where(
           and(
             eq(kehimpunan.lembagaId, input.lembagaId),
-            eq(users.id, input.userId),
+            eq(users.id, input.user_id),
           ),
         )
         .limit(1);
@@ -650,8 +650,8 @@ export const userRouter = createTRPCRouter({
           posisi: kehimpunan.position,
         })
         .from(kehimpunan)
-        .innerJoin(users, eq(kehimpunan.userId, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .innerJoin(users, eq(kehimpunan.user_id, users.id))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
         .where(
           and(
             eq(kehimpunan.lembagaId, input.lembagaId),
@@ -692,11 +692,11 @@ export const userRouter = createTRPCRouter({
         })
         .from(keanggotaan)
         .innerJoin(users, eq(keanggotaan.user_id, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
         .where(
           and(
             eq(keanggotaan.event_id, input.kegiatanId),
-            eq(users.id, input.userId),
+            eq(users.id, input.user_id),
           ),
         )
         .limit(1);
@@ -733,7 +733,7 @@ export const userRouter = createTRPCRouter({
         })
         .from(keanggotaan)
         .innerJoin(users, eq(keanggotaan.user_id, users.id))
-        .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+        .innerJoin(mahasiswa, eq(users.id, mahasiswa.user_id))
         .where(
           and(
             eq(keanggotaan.event_id, input.kegiatanId),

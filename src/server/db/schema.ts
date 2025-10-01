@@ -138,7 +138,7 @@ export const verificationTokens = createTable(
 );
 
 export const mahasiswa = createTable('mahasiswa', {
-  userId: varchar('user_id', { length: 255 })
+  user_id: varchar('user_id', { length: 255 })
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
   nim: integer('nim').notNull(),
@@ -151,7 +151,7 @@ export const mahasiswa = createTable('mahasiswa', {
 
 export const mahasiswaRelations = relations(mahasiswa, ({ one, many }) => ({
   users: one(users, {
-    fields: [mahasiswa.userId],
+    fields: [mahasiswa.user_id],
     references: [users.id],
   }),
 
@@ -169,7 +169,7 @@ export const lembagaTypeEnum = pgEnum('lembaga_type', [
 
 export const lembaga = createTable('lembaga', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  userId: varchar('user_id', { length: 255 })
+  user_id: varchar('user_id', { length: 255 })
     .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -191,7 +191,7 @@ export const lembaga = createTable('lembaga', {
 
 export const lembagaRelations = relations(lembaga, ({ one, many }) => ({
   users: one(users, {
-    fields: [lembaga.userId],
+    fields: [lembaga.user_id],
     references: [users.id],
   }),
   events: many(events),
@@ -415,7 +415,7 @@ export const kehimpunan = createTable('kehimpunan', {
     .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  userId: varchar('user_id', { length: 255 })
+  user_id: varchar('user_id', { length: 255 })
     .notNull()
     .references(() => users.id),
   lembagaId: varchar('lembaga_id', { length: 255 })
@@ -435,7 +435,7 @@ export const bestStaffKegiatan = createTable('best_staff_kegiatan', {
     .references(() => events.id, { onDelete: 'cascade' })
     .notNull(),
   mahasiswaId: varchar('mahasiswa_id', { length: 255 })
-    .references(() => mahasiswa.userId, { onDelete: 'cascade' })
+    .references(() => mahasiswa.user_id, { onDelete: 'cascade' })
     .notNull(),
   division: varchar('division', { length: 255 }).notNull(),
   startDate: timestamp('start_date', {
@@ -457,7 +457,7 @@ export const bestStaffLembaga = createTable('best_staff_lembaga', {
     .references(() => lembaga.id, { onDelete: 'cascade' })
     .notNull(),
   mahasiswaId: varchar('mahasiswa_id', { length: 255 })
-    .references(() => mahasiswa.userId, { onDelete: 'cascade' })
+    .references(() => mahasiswa.user_id, { onDelete: 'cascade' })
     .notNull(),
   division: varchar('division', { length: 255 }).notNull(),
   startDate: timestamp('start_date', {
@@ -479,7 +479,7 @@ export const bestStaffKegiatanRelations = relations(
     }),
     mahasiswa: one(mahasiswa, {
       fields: [bestStaffKegiatan.mahasiswaId],
-      references: [mahasiswa.userId],
+      references: [mahasiswa.user_id],
     }),
   }),
 );
@@ -493,7 +493,7 @@ export const bestStaffLembagaRelations = relations(
     }),
     mahasiswa: one(mahasiswa, {
       fields: [bestStaffLembaga.mahasiswaId],
-      references: [mahasiswa.userId],
+      references: [mahasiswa.user_id],
     }),
   }),
 );
@@ -568,7 +568,7 @@ export const nilaiProfilKegiatan = createTable(
       .references(() => profilKegiatan.id, { onDelete: 'cascade' })
       .notNull(),
     mahasiswaId: varchar('mahasiswa_id', { length: 255 })
-      .references(() => mahasiswa.userId, { onDelete: 'cascade' })
+      .references(() => mahasiswa.user_id, { onDelete: 'cascade' })
       .notNull(),
     nilai: integer('nilai'),
   },
@@ -593,7 +593,7 @@ export const nilaiProfilLembaga = createTable(
       .references(() => profilLembaga.id, { onDelete: 'cascade' })
       .notNull(),
     mahasiswaId: varchar('mahasiswa_id', { length: 255 })
-      .references(() => mahasiswa.userId, { onDelete: 'cascade' })
+      .references(() => mahasiswa.user_id, { onDelete: 'cascade' })
       .notNull(),
     nilai: integer('nilai'),
   },
@@ -673,7 +673,7 @@ export const nilaiProfilKegiatanRelations = relations(
     }),
     mahasiswa: one(mahasiswa, {
       fields: [nilaiProfilKegiatan.mahasiswaId],
-      references: [mahasiswa.userId],
+      references: [mahasiswa.user_id],
     }),
   }),
 );
@@ -687,7 +687,7 @@ export const nilaiProfilLembagaRelations = relations(
     }),
     mahasiswa: one(mahasiswa, {
       fields: [nilaiProfilLembaga.mahasiswaId],
-      references: [mahasiswa.userId],
+      references: [mahasiswa.user_id],
     }),
   }),
 );

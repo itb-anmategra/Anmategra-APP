@@ -21,7 +21,7 @@ import { type ProfileMahasiswaContentProps } from './constant';
 
 const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   session,
-  userId,
+  user_id,
   mahasiswaData,
   newestEvent,
   isLembagaView = false,
@@ -118,7 +118,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             isLembagaView ? '' : 'mt-6 mb-8',
           )}
         >
-          {session?.user.id === userId && (
+          {session?.user.id === user_id && (
             <div
               className={cn(
                 'w-full flex',
@@ -157,7 +157,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               </div>
             ) : (
               <div className="w-full py-16 flex flex-col items-center gap-y-4">
-                {session?.user.id === userId ? (
+                {session?.user.id === user_id ? (
                   <>
                     <div className="text-center items-center flex flex-row gap-8">
                       <Image

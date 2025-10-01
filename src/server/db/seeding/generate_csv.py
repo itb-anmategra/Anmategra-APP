@@ -175,7 +175,7 @@ def generate_accounts(users: list, count: int = None) -> list:
     for i, user in enumerate(target_users):
         provider = random.choice(providers)
         account = {
-            'user_id': user['id'],
+            'userId': user['id'],
             'type': 'oauth',
             'provider': provider,
             'provider_account_id': str(uuid.uuid4()),
@@ -312,7 +312,7 @@ def generate_kehimpunan(users: list, lembaga: list, count: int = 30) -> list:
         
         kehimpunan_data = {
             'id': str(uuid.uuid4()),
-            'userId': mahasiswa_user['id'],
+            'user_id': mahasiswa_user['id'],
             'lembagaId': selected_lembaga['id'],
             'division': random.choice(divisions),
             'position': random.choice(positions),
@@ -671,7 +671,7 @@ def main():
     print("🔐 Generating accounts (one per user)...")
     accounts = generate_accounts(users)  # Generate for ALL users
     write_csv('accounts.csv', accounts, [
-        'user_id', 'type', 'provider', 'provider_account_id', 'refresh_token',
+        'userId', 'type', 'provider', 'provider_account_id', 'refresh_token',
         'access_token', 'expires_at', 'token_type', 'scope', 'id_token', 'session_state'
     ])
     
@@ -691,7 +691,7 @@ def main():
     print("🤝 Generating kehimpunan...")
     kehimpunan = generate_kehimpunan(users, lembaga)
     write_csv('kehimpunan.csv', kehimpunan, [
-        'id', 'userId', 'lembagaId', 'division', 'position'
+        'id', 'user_id', 'lembagaId', 'division', 'position'
     ])
     
     print("📝 Generating association requests...")

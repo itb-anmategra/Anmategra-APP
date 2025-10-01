@@ -22,16 +22,16 @@ const DetailMahasiswaPage = async ({
 }: {
   params: Promise<{ mahasiswaId: string }>;
 }) => {
-  const userId = (await params).mahasiswaId;
+  const user_id = (await params).mahasiswaId;
   const { mahasiswaData, newestEvent } = await api.profile.getMahasiswa({
-    mahasiswaId: userId,
+    mahasiswaId: user_id,
   });
   const session = await getServerAuthSession();
 
   return (
     <ProfileMahasiswaContent
       session={session}
-      userId={userId}
+      user_id={user_id}
       mahasiswaData={mahasiswaData}
       newestEvent={newestEvent}
       isLembagaView={true}

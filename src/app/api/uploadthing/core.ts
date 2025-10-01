@@ -1,6 +1,6 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
-import {getServerAuthSession} from "~/server/auth";
+import { type FileRouter, createUploadthing } from 'uploadthing/next';
+import { UploadThingError } from 'uploadthing/server';
+import { getServerAuthSession } from '~/server/auth';
 
 const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
@@ -12,7 +12,7 @@ export const ourFileRouter = {
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
     },
   })
@@ -23,15 +23,17 @@ export const ourFileRouter = {
 
       // If you throw, the user will not be able to upload
       if (!user) {
-        throw new UploadThingError("You must be logged in to upload images") as Error;
+        throw new UploadThingError(
+          'You must be logged in to upload images',
+        ) as Error;
       }
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.user.id };
+      return { user_id: user.user.id };
     })
     .onUploadComplete(async ({ metadata }) => {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+      return { uploadedBy: metadata.user_id };
     }),
 } satisfies FileRouter;
 

@@ -29,7 +29,7 @@ const PencarianContent = ({
   session: Session | null;
   data: {
     mahasiswa: {
-      userId: string;
+      user_id: string;
       nama: string | null;
       nim: number;
       jurusan: string;
@@ -61,21 +61,21 @@ const PencarianContent = ({
         session?.user.role === 'lembaga' && 'p-6',
       )}
     >
-        <div className="flex flex-col gap-4">
-          <h1 className="text-2xl font-semibold text-slate-600">
-            Hasil Pencarian
-          </h1>
-          <Input
-            placeholder="Cari lembaga, kegiatan, atau mahasiswa"
-            className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
-            startAdornment={
-              <MagnifyingGlassIcon className="size-4 text-gray-500" />
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-semibold text-slate-600">
+          Hasil Pencarian
+        </h1>
+        <Input
+          placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+          className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+          startAdornment={
+            <MagnifyingGlassIcon className="size-4 text-gray-500" />
+          }
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      </div>
       <div
         className={cn(
           'flex flex-col items-center w-full',
@@ -91,11 +91,11 @@ const PencarianContent = ({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {data?.mahasiswa.map((item) => (
                   <Link
-                    key={item.userId}
+                    key={item.user_id}
                     href={
                       isLembaga
-                        ? '/lembaga/profile-mahasiswa/' + item.userId
-                        : '/mahasiswa/profile-mahasiswa/' + item.userId
+                        ? '/lembaga/profile-mahasiswa/' + item.user_id
+                        : '/mahasiswa/profile-mahasiswa/' + item.user_id
                     }
                   >
                     <MahasiswaCard

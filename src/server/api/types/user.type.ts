@@ -109,7 +109,7 @@ export const RequestAssociationLembagaOutputSchema = z.object({
 });
 
 export const GetMahasiswaByIdInputSchema = z.object({
-  userId: z.string(),
+  user_id: z.string(),
 });
 
 export const GetMahasiswaByNameInputSchema = z.object({
@@ -128,7 +128,7 @@ export const GetMahasiswaOutputSchema = z.object({
 });
 
 export const GetPanitiaByIdInputSchema = z.object({
-  userId: z.string(),
+  user_id: z.string(),
   kegiatanId: z.string(),
 });
 
@@ -146,7 +146,7 @@ export const GetPanitiaByNameInputSchema = z.object({
 });
 
 export const GetAnggotaByIdInputSchema = z.object({
-  userId: z.string(),
+  user_id: z.string(),
   lembagaId: z.string(),
 });
 

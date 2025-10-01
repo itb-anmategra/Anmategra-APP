@@ -7,7 +7,7 @@ type GetMahasiswaOutput = z.infer<typeof GetMahasiswaOutputSchema>;
 
 interface ProfileMahasiswaContentProps {
   session: Session | null;
-  userId: string;
+  user_id: string;
   mahasiswaData: GetMahasiswaOutput['mahasiswaData'];
   newestEvent: Kepanitiaan[] | null;
   isLembagaView: boolean;
