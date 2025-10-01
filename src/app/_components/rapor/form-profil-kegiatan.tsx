@@ -67,7 +67,6 @@ export default function FormProfilKegiatan({
   const handleSave = async () => {
     setErrorMessage('');
     try {
-      // bentuk data input
       const inputData = {
         name: profilInput,
         description: deskripsiInput,
@@ -76,7 +75,6 @@ export default function FormProfilKegiatan({
         event_id: isTambah ? eventId : undefined,
       };
 
-      // validasi dengan zod
       const validated = profilSchema.parse(inputData);
 
       if (isTambah) {
