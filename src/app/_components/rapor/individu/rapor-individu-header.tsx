@@ -6,41 +6,65 @@ import WAIcon from 'public/icons/wa-icon.png';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import React, { useState } from 'react';
 import { type z } from 'zod';
-import { type HeaderDataProps } from '~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { type UpsertNilaiMahasiswaKegiatanInputSchema } from '~/server/api/types/rapor.type';
+import {
+  type UpsertNilaiMahasiswaKegiatanInputSchema,
+  type UpsertNilaiMahasiswaLembagaInputSchema,
+} from '~/server/api/types/rapor.type';
+import {
+  type GetNilaiKegiatanIndividuOutputSchema,
+  type GetNilaiLembagaIndividuOutputSchema,
+} from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/react';
 
 import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
 import FormNilaiProfil from '../../form/form-nilai-profil';
 import NilaiProfilComp from './nilai-profil-comp';
 
+type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
+type NilaiLembagaOutput = z.infer<typeof GetNilaiLembagaIndividuOutputSchema>;
+
+export type HeaderDataProps = {
+  dataNilaiProfil: NilaiKegiatanOutput   | null;
+  id: string;
+  isLembaga?: boolean;
+};
+
 export default function RaporIndividuHeader({
   dataNilaiProfil,
-  kegiatanId,
+  id,
+  isLembaga,
 }: HeaderDataProps) {
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
     dataNilaiProfil?.nilai ?? [],
   );
 
-  const upsertMutation = api.rapor.upsertNilaiMahasiswaKegiatan.useMutation({
-    onSuccess: (data) => {
-      console.log('Successfully upserted nilai mahasiswa kegiatan:', data);
-    },
-    onError: (error) => {
-      console.error('Error upserting nilai mahasiswa kegiatan:', error);
-    },
-  });
+  const upsertMutationLembaga =
+    api.rapor.upsertNilaiMahasiswaLembaga.useMutation({
+      onSuccess: (data) => {
+        console.log('Successfully upserted nilai mahasiswa lembaga:', data);
+      },
+      onError: (error) => {
+        console.error('Error upserting nilai mahasiswa kegiatan:', error);
+      },
+    });
+
+  const upsertMutationKegiatan =
+    api.rapor.upsertNilaiMahasiswaKegiatan.useMutation({
+      onSuccess: (data) => {
+        console.log('Successfully upserted nilai mahasiswa kegiatan:', data);
+      },
+      onError: (error) => {
+        console.error('Error upserting nilai mahasiswa kegiatan:', error);
+      },
+    });
 
   const handleUpdateNilaiProfilChange = (
     updatedProfiles: NilaiProfilCardType[],
   ) => {
     setNilaiProfilData(updatedProfiles);
-    console.log('Updated Profiles:', updatedProfiles);
-
-    const upsertData: z.infer<typeof UpsertNilaiMahasiswaKegiatanInputSchema> =
-      {
-        event_id: kegiatanId ?? '',
+    if (isLembaga) {
+      const upsertData = {
         mahasiswa: [
           {
             user_id: dataNilaiProfil?.user_id ?? '',
@@ -50,18 +74,46 @@ export default function RaporIndividuHeader({
             })),
           },
         ],
-      };
-
-    upsertMutation.mutate(upsertData);
+      } satisfies z.infer<typeof UpsertNilaiMahasiswaLembagaInputSchema>;
+      upsertMutationLembaga.mutate(upsertData);
+    } else {
+      const upsertData = {
+        event_id: id ?? '',
+        mahasiswa: [
+          {
+            user_id: dataNilaiProfil?.user_id ?? '',
+            nilai: updatedProfiles.map((p) => ({
+              profil_id: p.profil_id,
+              nilai: p.nilai ?? 0,
+            })),
+          },
+        ],
+      } satisfies z.infer<typeof UpsertNilaiMahasiswaKegiatanInputSchema>;
+      upsertMutationKegiatan.mutate(upsertData);
+    }
   };
 
   const mahasiswaOutput = api.users.getMahasiswaByNim.useQuery({
     nim: dataNilaiProfil?.nim ?? '',
   });
 
-  const kegiatanOutput = api.profile.getKegiatan.useQuery({
-    kegiatanId: kegiatanId ?? '',
-  });
+  let lembagaImage = '';
+  let lembagaName = '';
+  let kegiatanName = '';
+  if (isLembaga) {
+    const lembagaOutput = api.profile.getLembaga.useQuery({
+      lembagaId: id ?? '',
+    });
+    lembagaImage = lembagaOutput.data?.lembagaData.users.image ?? '';
+    lembagaName = lembagaOutput.data?.lembagaData.name ?? '';
+  } else {
+    const kegiatanOutput = api.profile.getKegiatan.useQuery({
+      kegiatanId: id ?? '',
+    });
+    lembagaImage = kegiatanOutput.data?.lembaga.image ?? '';
+    lembagaName = kegiatanOutput.data?.lembaga.name ?? '';
+    kegiatanName = kegiatanOutput.data?.kegiatan.name ?? '';
+  }
 
   return (
     <div className="flex flex-col items-start justify-center">
@@ -70,23 +122,18 @@ export default function RaporIndividuHeader({
           <Avatar className="size-4 bg-white">
             <AvatarImage
               className="object-contain"
-              src={
-                kegiatanOutput.data?.lembaga.image ??
-                '/images/logo/hmif-logo.png'
-              }
+              src={lembagaImage ?? '/images/logo/hmif-logo.png'}
             />
-            <AvatarFallback>
-              {kegiatanOutput.data?.lembaga.name.slice(0, 2)}
-            </AvatarFallback>
+            <AvatarFallback>{lembagaName.slice(0, 2)}</AvatarFallback>
           </Avatar>
-          <span className="line-clamp-1 font-semibold">
-            {kegiatanOutput.data?.lembaga.name}
-          </span>
+          <span className="line-clamp-1 font-semibold">{lembagaName}</span>
         </div>
 
-        <div className="font-bold text-2xl text-[#2B6282] items-center justify-center">
-          {kegiatanOutput.data?.kegiatan.name ?? ''}
-        </div>
+        {!isLembaga && (
+          <div className="font-bold text-2xl text-[#2B6282] items-center justify-center">
+            {kegiatanName ?? ''}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-row items-start justify-start w-full mb-16">

@@ -1,4 +1,4 @@
-import { type ProfilKegiatanSectionProps } from '~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page';
+import { type ProfilOutput } from '~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page';
 import {
   Table,
   TableBody,
@@ -8,9 +8,7 @@ import {
   TableRow,
 } from '~/components/ui/table';
 
-export default function ProfilKegiatanSection(
-  props: ProfilKegiatanSectionProps,
-) {
+export default function ProfilKegiatanSection(props: ProfilOutput) {
   const profil_kegiatan =
     'profil_kegiatan' in props ? props.profil_kegiatan : [];
   return (
