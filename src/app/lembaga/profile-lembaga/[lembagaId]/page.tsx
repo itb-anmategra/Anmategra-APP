@@ -1,25 +1,21 @@
 // Libray Import
 // Icons Import
-import { CalendarIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
 import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
-import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
-import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
 import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
-import { Badge } from '~/components/ui/badge';
 // Components Import
-import { Card } from '~/components/ui/card';
 import { getServerAuthSession } from '~/server/auth';
 // Icon Import
 // TRPC Import
 import { api } from '~/trpc/server';
 
 import CarouselBestStaff from '../../../_components/carousel/carousel-best-staff';
+import HighlightedEventCard from '../_components/highlighted-event-card';
 // Dummy Data Import
 import {
   dummyDate,
@@ -65,46 +61,18 @@ const DetailLembagaPage = async ({
           </div>
         </div>
 
+        {/* Highlighted Event */}
         {highlightedEvent && (
-          <Link href={`/lembaga/profile-kegiatan/${highlightedEvent.id}`}>
-            <div className="space-y-4 pb-12">
-              <h5 className="text-2xl font-semibold text-slate-600">
-                Highlighed Event
-              </h5>
-              <Card className="transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center">
-                <Image
-                  src={highlightedEvent?.image ?? DummyFotoEvent}
-                  alt="Foto Kegiatan"
-                  className="h-full w-auto"
-                  width={200}
-                  height={100}
-                />
-                <div className="space-y-2">
-                  <Badge className="space-x-2 rounded-full bg-Blue-Dark py-1">
-                    <Image
-                      src={lembagaData?.users.image ?? LogoHMIFKecil}
-                      alt="Logo HMIF Kecil"
-                      width={20}
-                      height={20}
-                      className="rounded-full object-cover"
-                    />
-                    <p className="text-xs">{lembagaData?.name}</p>
-                  </Badge>
-                  <p className="text-xl text-Blue-Dark font-semibold">
-                    {highlightedEvent?.name}
-                  </p>
-                  <p className="text-neutral-1000">
-                    {highlightedEvent?.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-Regent-Gray">
-                    <CalendarIcon className="h-4 w-4" />
-                    {highlightedEvent?.start_date.toDateString()} -{' '}
-                    {highlightedEvent?.end_date?.toDateString()}
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </Link>
+          <div className="flex flex-col w-full gap-4">
+            <h5 className="text-[24px] leading-[32px] font-semibold text-[#000000]">
+              Highlighted Event
+            </h5>
+
+            <HighlightedEventCard
+              event={highlightedEvent}
+              lembagaData={lembagaData}
+            />
+          </div>
         )}
 
         <div className="flex flex-col gap-12 w-full">

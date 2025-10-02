@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq, gte, lte, or } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -18,6 +18,7 @@ import {
   users,
 } from '~/server/db/schema';
 
+import { EditPanitiaKegiatanInputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -37,6 +38,15 @@ import {
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
   GetAllAnggotaLembagaOutputSchema,
+  GetAllDivisionOutputSchema,
+  GetAllHistoryBestStaffKegiatanInputSchema,
+  GetAllHistoryBestStaffKegiatanOutputSchema,
+  GetAllHistoryBestStaffLembagaInputSchema,
+  GetAllHistoryBestStaffLembagaOutputSchema,
+  GetAllHistoryBestStaffMahasiswaInputSchema,
+  GetAllHistoryBestStaffMahasiswaOutputSchema,
+  GetAllKegiatanDivisionInputSchema,
+  GetAllLembagaDivisionInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
@@ -45,12 +55,18 @@ import {
   GetBestStaffOptionsOutputSchema,
   GetInfoLembagaInputSchema,
   GetInfoLembagaOutputSchema,
+  GetLatestBestStaffKegiatanInputSchema,
+  GetLatestBestStaffKegiatanOutputSchema,
+  GetLatestBestStaffLembagaInputSchema,
+  GetLatestBestStaffLembagaOutputSchema,
   GetLembagaEventsInputSchema,
   GetLembagaEventsOutputSchema,
   GetLembagaHighlightedEventInputSchema,
   GetLembagaHighlightedEventOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  editAnggotaLembagaInputSchema,
+  editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
 
 export const lembagaRouter = createTRPCRouter({
@@ -93,6 +109,19 @@ export const lembagaRouter = createTRPCRouter({
     .output(GetAllAnggotaLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
+        const conditions = [eq(kehimpunan.lembagaId, input.lembagaId)];
+
+        if (input.namaOrNim) {
+          if (isNaN(Number(input.namaOrNim))) {
+            conditions.push(ilike(users.name, `%${input.namaOrNim}%`));
+          } else {
+            conditions.push(eq(mahasiswa.nim, Number(input.namaOrNim)));
+          }
+        }
+
+        if (input.divisi) {
+          conditions.push(ilike(kehimpunan.division, `%${input.divisi}%`));
+        }
         const anggota = await ctx.db
           .select({
             id: users.id,
@@ -104,7 +133,7 @@ export const lembagaRouter = createTRPCRouter({
           .from(kehimpunan)
           .innerJoin(users, eq(kehimpunan.userId, users.id))
           .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-          .where(eq(kehimpunan.lembagaId, input.lembagaId));
+          .where(and(...conditions));
 
         return anggota.map((anggota) => ({
           id: anggota.id,
@@ -261,6 +290,49 @@ export const lembagaRouter = createTRPCRouter({
       return {
         success: true,
       };
+    }),
+
+  editAnggota: lembagaProcedure
+    .input(editAnggotaLembagaInputSchema)
+    .output(editAnggotaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const lembagaUserId = ctx.session.user.id;
+        if (!ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+
+        const updated = await ctx.db
+          .update(kehimpunan)
+          .set({
+            position: input.position,
+            division: input.division,
+          })
+          .where(
+            and(
+              eq(kehimpunan.id, input.user_id + '_' + lembagaUserId),
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+            ),
+          )
+          .returning({ id: kehimpunan.id });
+
+        if (updated.length === 0) {
+          return {
+            success: false,
+            error: 'Anggota tidak ditemukan atau data tidak berubah',
+          };
+        }
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        console.error('Database Error:', error);
+        return {
+          success: false,
+          error: 'Database Error',
+        };
+      }
     }),
 
   editProfil: protectedProcedure
@@ -467,6 +539,63 @@ export const lembagaRouter = createTRPCRouter({
           success: false,
         };
       }
+    }),
+
+  getAllLembagaDivision: protectedProcedure
+    .input(GetAllLembagaDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: kehimpunan.division })
+        .from(kehimpunan)
+        .where(eq(kehimpunan.lembagaId, input.lembaga_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
+    }),
+
+  getAllKegiatanDivision: protectedProcedure
+    .input(GetAllKegiatanDivisionInputSchema)
+    .output(GetAllDivisionOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const orgId = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (!orgId) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (orgId.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const divisionsRaw = await ctx.db
+        .select({ division: keanggotaan.division })
+        .from(keanggotaan)
+        .where(eq(keanggotaan.event_id, input.event_id));
+
+      const uniqueDivisions = Array.from(
+        new Set(divisionsRaw.map((row) => row.division)),
+      );
+
+      return { divisions: uniqueDivisions };
     }),
 
   getBestStaffOptions: protectedProcedure
@@ -859,6 +988,313 @@ export const lembagaRouter = createTRPCRouter({
 
       return {
         success: true,
+      };
+    }),
+
+  getLatestBestStaffKegiatan: protectedProcedure
+    .input(GetLatestBestStaffKegiatanInputSchema)
+    .output(GetLatestBestStaffKegiatanOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const latestRecord = await ctx.db.query.bestStaffKegiatan.findFirst({
+        where: eq(bestStaffKegiatan.eventId, input.event_id),
+        orderBy: (bs, { desc }) => [desc(bs.startDate)],
+      });
+
+      if (!latestRecord) {
+        throw new TRPCError({ code: 'NOT_FOUND' });
+      }
+
+      const staffList = await ctx.db
+        .select({
+          user_id: users.id,
+          name: users.name,
+          nim: mahasiswa.nim,
+          jurusan: mahasiswa.jurusan,
+          division: bestStaffKegiatan.division,
+        })
+        .from(bestStaffKegiatan)
+        .innerJoin(
+          mahasiswa,
+          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.userId),
+        )
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(
+          and(
+            eq(bestStaffKegiatan.eventId, input.event_id),
+            eq(bestStaffKegiatan.startDate, latestRecord.startDate),
+            eq(bestStaffKegiatan.endDate, latestRecord.endDate),
+          ),
+        );
+
+      return {
+        start_date: latestRecord.startDate.toISOString(),
+        end_date: latestRecord.endDate.toISOString(),
+        best_staff_list: staffList.map((staff) => ({
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
+          nim: staff.nim ? staff.nim.toString() : '-',
+          jurusan: staff.jurusan ?? 'Tidak Diketahui',
+          division: staff.division ?? '',
+        })),
+      };
+    }),
+
+  getLatestBestStaffLembaga: protectedProcedure
+    .input(GetLatestBestStaffLembagaInputSchema)
+    .output(GetLatestBestStaffLembagaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const latestRecord = await ctx.db.query.bestStaffLembaga.findFirst({
+        where: eq(bestStaffLembaga.lembagaId, input.lembaga_id),
+        orderBy: (bs, { desc }) => [desc(bs.startDate)],
+      });
+
+      if (!latestRecord) {
+        throw new TRPCError({ code: 'NOT_FOUND' });
+      }
+
+      const staffList = await ctx.db
+        .select({
+          user_id: users.id,
+          name: users.name,
+          nim: mahasiswa.nim,
+          jurusan: mahasiswa.jurusan,
+          division: bestStaffLembaga.division,
+        })
+        .from(bestStaffLembaga)
+        .innerJoin(
+          mahasiswa,
+          eq(bestStaffLembaga.mahasiswaId, mahasiswa.userId),
+        )
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(
+          and(
+            eq(bestStaffLembaga.lembagaId, input.lembaga_id),
+            eq(bestStaffLembaga.startDate, latestRecord.startDate),
+            eq(bestStaffLembaga.endDate, latestRecord.endDate),
+          ),
+        );
+
+      return {
+        start_date: latestRecord.startDate.toISOString(),
+        end_date: latestRecord.endDate.toISOString(),
+        best_staff_list: staffList.map((staff) => ({
+          user_id: staff.user_id,
+          name: staff.name ?? 'Tidak Diketahui',
+          nim: staff.nim ? staff.nim.toString() : '-',
+          jurusan: staff.jurusan ?? 'Tidak Diketahui',
+          division: staff.division ?? '',
+        })),
+      };
+    }),
+
+  getAllHistoryBestStaffKegiatan: lembagaProcedure
+    .input(GetAllHistoryBestStaffKegiatanInputSchema)
+    .output(GetAllHistoryBestStaffKegiatanOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const eventOrg = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (ctx.session.user.lembagaId !== eventOrg?.org_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const records = await ctx.db
+        .select({
+          id: bestStaffKegiatan.id,
+          startDate: bestStaffKegiatan.startDate,
+          endDate: bestStaffKegiatan.endDate,
+          user_id: users.id,
+          name: users.name,
+          nim: mahasiswa.nim,
+          jurusan: mahasiswa.jurusan,
+          division: bestStaffKegiatan.division,
+        })
+        .from(bestStaffKegiatan)
+        .innerJoin(
+          mahasiswa,
+          eq(bestStaffKegiatan.mahasiswaId, mahasiswa.userId),
+        )
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(eq(bestStaffKegiatan.eventId, input.event_id))
+        .orderBy(desc(bestStaffKegiatan.startDate));
+
+      const grouped = new Map<
+        string,
+        {
+          startDate: Date;
+          endDate: Date;
+          staffList: {
+            user_id: string;
+            name: string;
+            nim: string;
+            jurusan: string;
+            division: string;
+          }[];
+        }
+      >();
+
+      for (const record of records) {
+        const key =
+          record.startDate.toISOString() + '_' + record.endDate.toISOString();
+
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            startDate: record.startDate,
+            endDate: record.endDate,
+            staffList: [],
+          });
+        }
+
+        grouped.get(key)!.staffList.push({
+          user_id: record.user_id,
+          name: record.name ?? 'Tidak Diketahui',
+          nim: record.nim ? record.nim.toString() : '-',
+          jurusan: record.jurusan ?? 'Tidak Diketahui',
+          division: record.division ?? '',
+        });
+      }
+
+      return {
+        periode: Array.from(grouped.values()).map((group) => ({
+          start_date: group.startDate.toISOString(),
+          end_date: group.endDate.toISOString(),
+          best_staff_list: group.staffList,
+        })),
+      };
+    }),
+
+  getAllHistoryBestStaffLembaga: lembagaProcedure
+    .input(GetAllHistoryBestStaffLembagaInputSchema)
+    .output(GetAllHistoryBestStaffLembagaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
+      }
+
+      const records = await ctx.db
+        .select({
+          id: bestStaffLembaga.id,
+          startDate: bestStaffLembaga.startDate,
+          endDate: bestStaffLembaga.endDate,
+          user_id: users.id,
+          name: users.name,
+          nim: mahasiswa.nim,
+          jurusan: mahasiswa.jurusan,
+          division: bestStaffLembaga.division,
+        })
+        .from(bestStaffLembaga)
+        .innerJoin(
+          mahasiswa,
+          eq(bestStaffLembaga.mahasiswaId, mahasiswa.userId),
+        )
+        .innerJoin(users, eq(mahasiswa.userId, users.id))
+        .where(eq(bestStaffLembaga.lembagaId, input.lembaga_id))
+        .orderBy(desc(bestStaffKegiatan.startDate));
+
+      const grouped = new Map<
+        string,
+        {
+          startDate: Date;
+          endDate: Date;
+          staffList: {
+            user_id: string;
+            name: string;
+            nim: string;
+            jurusan: string;
+            division: string;
+          }[];
+        }
+      >();
+
+      for (const record of records) {
+        const key =
+          record.startDate.toISOString() + '_' + record.endDate.toISOString();
+
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            startDate: record.startDate,
+            endDate: record.endDate,
+            staffList: [],
+          });
+        }
+
+        grouped.get(key)!.staffList.push({
+          user_id: record.user_id,
+          name: record.name ?? 'Tidak Diketahui',
+          nim: record.nim ? record.nim.toString() : '-',
+          jurusan: record.jurusan ?? 'Tidak Diketahui',
+          division: record.division ?? '',
+        });
+      }
+
+      return {
+        periode: Array.from(grouped.values()).map((group) => ({
+          start_date: group.startDate.toISOString(),
+          end_date: group.endDate.toISOString(),
+          best_staff_list: group.staffList,
+        })),
+      };
+    }),
+
+  getAllHistoryBestStaffMahasiswa: protectedProcedure
+    .input(GetAllHistoryBestStaffMahasiswaInputSchema)
+    .output(GetAllHistoryBestStaffMahasiswaOutputSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const kegiatanRecords = await ctx.db
+        .select({
+          event_id: events.id,
+          name: events.name,
+          start_date: bestStaffKegiatan.startDate,
+          end_date: bestStaffKegiatan.endDate,
+          division: bestStaffKegiatan.division,
+        })
+        .from(bestStaffKegiatan)
+        .innerJoin(events, eq(bestStaffKegiatan.eventId, events.id))
+        .where(eq(bestStaffKegiatan.mahasiswaId, input.mahasiswa_id))
+        .orderBy(desc(bestStaffKegiatan.startDate));
+
+      const lembagaRecords = await ctx.db
+        .select({
+          lembaga_id: lembaga.id,
+          event_name: lembaga.name,
+          start_date: bestStaffLembaga.startDate,
+          end_date: bestStaffLembaga.endDate,
+          division: bestStaffLembaga.division,
+        })
+        .from(bestStaffLembaga)
+        .innerJoin(lembaga, eq(bestStaffLembaga.lembagaId, lembaga.id))
+        .where(eq(bestStaffLembaga.mahasiswaId, ctx.session.user.id))
+        .orderBy(desc(bestStaffKegiatan.startDate));
+
+      return {
+        best_staff_kegiatan: kegiatanRecords.map((record) => ({
+          event_id: record.event_id ?? '',
+          name: record.name ?? '',
+          start_date: record.start_date.toISOString(),
+          end_date: record.end_date.toISOString(),
+          division: record.division ?? '',
+        })),
+        best_staff_lembaga: lembagaRecords.map((record) => ({
+          lembaga_id: record.lembaga_id ?? '',
+          event_name: record.event_name ?? '',
+          start_date: record.start_date.toISOString(),
+          end_date: record.end_date.toISOString(),
+          division: record.division ?? '',
+        })),
       };
     }),
 });
