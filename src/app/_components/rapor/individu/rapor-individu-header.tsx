@@ -5,8 +5,10 @@ import LineIcon from 'public/icons/line-icon-2.png';
 import WAIcon from 'public/icons/wa-icon.png';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import React, { useState } from 'react';
+import { type z } from 'zod';
 import { type HeaderDataProps } from '~/app/lembaga/kegiatan/[kegiatanId]/panitia/[raporId]/page';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { type UpsertNilaiMahasiswaKegiatanInputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/react';
 
 import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
@@ -21,10 +23,36 @@ export default function RaporIndividuHeader({
     dataNilaiProfil?.nilai ?? [],
   );
 
+  const upsertMutation = api.rapor.upsertNilaiMahasiswaKegiatan.useMutation({
+    onSuccess: (data) => {
+      console.log('Successfully upserted nilai mahasiswa kegiatan:', data);
+    },
+    onError: (error) => {
+      console.error('Error upserting nilai mahasiswa kegiatan:', error);
+    },
+  });
+
   const handleUpdateNilaiProfilChange = (
     updatedProfiles: NilaiProfilCardType[],
   ) => {
     setNilaiProfilData(updatedProfiles);
+    console.log('Updated Profiles:', updatedProfiles);
+
+    const upsertData: z.infer<typeof UpsertNilaiMahasiswaKegiatanInputSchema> =
+      {
+        event_id: kegiatanId ?? '',
+        mahasiswa: [
+          {
+            user_id: dataNilaiProfil?.user_id ?? '',
+            nilai: updatedProfiles.map((p) => ({
+              profil_id: p.profil_id,
+              nilai: p.nilai ?? 0,
+            })),
+          },
+        ],
+      };
+
+    upsertMutation.mutate(upsertData);
   };
 
   const mahasiswaOutput = api.users.getMahasiswaByNim.useQuery({
@@ -153,7 +181,7 @@ export default function RaporIndividuHeader({
               value: profil.nilai ?? 0,
             }))}
             onSave={(updatedProfiles) => {
-              const updatedNilaiProfils = updatedProfiles.map((p, idx) => ({
+              const updatedNilaiProfils = updatedProfiles.map((p) => ({
                 profil_id: p.id,
                 nilai: p.value ?? 0,
               }));
