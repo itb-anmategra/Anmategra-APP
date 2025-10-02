@@ -22,12 +22,15 @@ import { Textarea } from '~/components/ui/textarea';
 import { api } from '~/trpc/react';
 
 interface FormProfilKegiatanProps {
-  eventId: string; // penting untuk create
-  profilId?: string; // penting untuk edit
+  eventId: string;
+  profilId?: string;
   isTambah?: boolean;
   customClassName?: string;
   isOpen?: boolean;
   onClose?: () => void;
+  defaultName?: string;
+  defaultDescription?: string;
+  defaultProfilKM?: string[];
 }
 
 // schema untuk validasi
@@ -46,11 +49,17 @@ export default function FormProfilKegiatan({
   customClassName = '',
   isOpen = true,
   onClose,
+  defaultName = '',
+  defaultDescription = '',
+  defaultProfilKM = [],
 }: FormProfilKegiatanProps) {
+  const [profilInput, setProfilInput] = React.useState(defaultName);
+  const [deskripsiInput, setDeskripsiInput] =
+    React.useState(defaultDescription);
+  const [mappings, setMappings] = React.useState<Record<number, string>>(
+    Object.fromEntries(defaultProfilKM.map((v, i) => [i, v])),
+  );
   const [selects, setSelects] = React.useState<number[]>([0]);
-  const [mappings, setMappings] = React.useState<Record<number, string>>({});
-  const [profilInput, setProfilInput] = React.useState('');
-  const [deskripsiInput, setDeskripsiInput] = React.useState('');
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const { data: profilList } = api.profil.getAllProfilKM.useQuery();
