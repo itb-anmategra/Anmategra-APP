@@ -45,7 +45,7 @@ export const getAllAnggota = protectedProcedure
       }
       const anggota = await ctx.db
         .select({
-          id: keanggotaan.id,
+          id: users.id,
           nama: users.name,
           nim: mahasiswa.nim,
           division: keanggotaan.division,
