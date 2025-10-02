@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 import PemetaanProfilSection from '~/app/_components/rapor/individu/pemetaan-profil-section';
-import ProfilKegiatanSection from '~/app/_components/rapor/individu/profil-kegiatan-section';
+import ProfilDeskripsiSection from '~/app/_components/rapor/individu/profil-deskripsi-section';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
@@ -55,9 +55,8 @@ export default async function RaporIndividuLembagaPage({
         </h1>
         <RaporBreadcrumb
           items={[
-            { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-            { label: 'Panitia', href: '/lembaga/kegiatan' },
-            { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+            { label: 'Anggota', href: '/lembaga/anggota' },
+            { label: 'Rapor Individu', href: '/lembaga/anggota' },
           ]}
         />
       </div>
@@ -69,7 +68,7 @@ export default async function RaporIndividuLembagaPage({
           isLembaga={true}
         />
 
-        <ProfilKegiatanSection {...profilData} />
+        <ProfilDeskripsiSection profilData={profilData} isLembaga={true} />
 
         <PemetaanProfilSection {...pemetaanProfilData} />
       </div>

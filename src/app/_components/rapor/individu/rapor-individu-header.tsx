@@ -25,7 +25,7 @@ type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
 type NilaiLembagaOutput = z.infer<typeof GetNilaiLembagaIndividuOutputSchema>;
 
 export type HeaderDataProps = {
-  dataNilaiProfil: NilaiKegiatanOutput   | null;
+  dataNilaiProfil: NilaiKegiatanOutput | null;
   id: string;
   isLembaga?: boolean;
 };
@@ -40,24 +40,10 @@ export default function RaporIndividuHeader({
   );
 
   const upsertMutationLembaga =
-    api.rapor.upsertNilaiMahasiswaLembaga.useMutation({
-      onSuccess: (data) => {
-        console.log('Successfully upserted nilai mahasiswa lembaga:', data);
-      },
-      onError: (error) => {
-        console.error('Error upserting nilai mahasiswa kegiatan:', error);
-      },
-    });
+    api.rapor.upsertNilaiMahasiswaLembaga.useMutation();
 
   const upsertMutationKegiatan =
-    api.rapor.upsertNilaiMahasiswaKegiatan.useMutation({
-      onSuccess: (data) => {
-        console.log('Successfully upserted nilai mahasiswa kegiatan:', data);
-      },
-      onError: (error) => {
-        console.error('Error upserting nilai mahasiswa kegiatan:', error);
-      },
-    });
+    api.rapor.upsertNilaiMahasiswaKegiatan.useMutation();
 
   const handleUpdateNilaiProfilChange = (
     updatedProfiles: NilaiProfilCardType[],
@@ -239,7 +225,7 @@ export default function RaporIndividuHeader({
       </div>
 
       <div className="overflow-x-auto w-full">
-        <NilaiProfilComp nilaiProfils={nilaiProfilData} />
+        <NilaiProfilComp nilaiProfils={nilaiProfilData} isLembaga={isLembaga} />
       </div>
     </div>
   );

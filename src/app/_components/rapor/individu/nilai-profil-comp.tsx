@@ -5,14 +5,18 @@ import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
 
 type NilaiProfilCompProps = {
   nilaiProfils?: NilaiProfilCardType[];
+  isLembaga?: boolean;
 };
 
 export default function NilaiProfilComp({
   nilaiProfils,
+  isLembaga,
 }: NilaiProfilCompProps) {
   return (
     <div className="flex flex-col gap-[15px]">
-      <div className="text-neutral-700 text-[20px]">Nilai Profil Kegiatan</div>
+      <div className="text-neutral-700 text-[20px]">
+        {isLembaga ? 'Nilai Profil Lembaga' : 'Nilai Profil Kegiatan'}
+      </div>
 
       <div className="flex flex-row gap-6 px-[25px] overflow-x-auto">
         {nilaiProfils?.map((profil, index) => (

@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 import PemetaanProfilSection from '~/app/_components/rapor/individu/pemetaan-profil-section';
-import ProfilKegiatanSection from '~/app/_components/rapor/individu/profil-kegiatan-section';
+import ProfilDeskripsiSection from '~/app/_components/rapor/individu/profil-deskripsi-section';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
@@ -65,7 +65,7 @@ export default async function RaporIndividuPanitiaPage({
           isLembaga={false}
         />
 
-        <ProfilKegiatanSection {...profilData} />
+        <ProfilDeskripsiSection profilData={profilData} isLembaga={false} />
 
         <PemetaanProfilSection {...pemetaanProfilData} />
       </div>
