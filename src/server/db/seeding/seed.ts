@@ -33,8 +33,8 @@ import {
 
 // Utility functions for parsing CSV values
 
-const TEST_EMAIL = 'your-email@gmail.com'; // Change this to your own private email
-const TEST_EMAIL_MAHASISWA = 'your-nim@mahasiswa.itb.ac.id'; // Change this to your own nim
+const TEST_EMAIL = 'themalique1910@gmail.com'; // Change this to your own private email
+const TEST_EMAIL_MAHASISWA = '13523074@mahasiswa.itb.ac.id'; // Change this to your own nim
 
 const CSV_DIR = path.join(
   process.cwd(),
