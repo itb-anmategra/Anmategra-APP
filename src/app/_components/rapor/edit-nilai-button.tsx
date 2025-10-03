@@ -1,7 +1,21 @@
+'use client';
+
 import { Pencil } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 
 type Anggota = { nama: string; nim: string; profil: string[] };
+
+interface EditNilaiButtonProps {
+  editNilaiMode: boolean;
+  setEditNilaiMode: (mode: boolean) => void;
+  editedData: Anggota[] | null;
+  setData: React.Dispatch<React.SetStateAction<Anggota[]>>;
+  setEditedData: React.Dispatch<React.SetStateAction<Anggota[] | null>>;
+  data: Anggota[];
+  onSave?: () => void;
+  isSaving?: boolean;
+  children?: React.ReactNode;
+}
 
 export default function EditNilaiButton({
   editNilaiMode,
@@ -10,34 +24,41 @@ export default function EditNilaiButton({
   setData,
   setEditedData,
   data,
+  onSave,
+  isSaving = false,
   children,
-}: {
-  editNilaiMode: boolean;
-  setEditNilaiMode: (val: boolean) => void;
-  editedData: Anggota[] | null;
-  setData: (val: Anggota[]) => void;
-  setEditedData: (val: Anggota[] | null) => void;
-  data: Anggota[];
-  children?: React.ReactNode;
-}) {
+}: EditNilaiButtonProps) {
+  const handleClick = () => {
+    if (editNilaiMode) {
+      if (onSave) {
+        onSave();
+      } else {
+        if (editedData) {
+          setData(editedData);
+          setEditedData(null);
+        }
+        setEditNilaiMode(false);
+      }
+    } else {
+      setEditedData(JSON.parse(JSON.stringify(data)) as Anggota[]);
+      setEditNilaiMode(true);
+    }
+  };
+
   return (
     <Button
       className="mb-4 rounded-2xl bg-[#2B6282] text-white hover:bg-[#2B6282] hover:text-white"
       variant="ghost"
-      onClick={() => {
-        if (editNilaiMode) {
-          if (editedData) setData(editedData);
-          setEditNilaiMode(false);
-          setEditedData(null);
-        } else {
-          setEditedData(JSON.parse(JSON.stringify(data)) as Anggota[]);
-          setEditNilaiMode(true);
-        }
-      }}
+      onClick={handleClick}
+      disabled={isSaving}
     >
       {children ??
         (editNilaiMode ? (
-          'Simpan Nilai'
+          isSaving ? (
+            'Menyimpan...'
+          ) : (
+            'Simpan Nilai'
+          )
         ) : (
           <>
             <Pencil size={16} />

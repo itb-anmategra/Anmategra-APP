@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody } from '~/components/ui/table';
 import { useToast } from '~/hooks/use-toast';
+import { api } from '~/trpc/react';
 
 import Pagination from '../layout/pagination-comp';
 import DeleteProfilDialog from './delete-profil-dialog';
@@ -16,44 +17,188 @@ import TambahProfilButton from './tambah-profil-button';
 type Anggota = { nama: string; nim: string; profil: string[] };
 type ProfilData = { label: string; deskripsi: string; pemetaan: string };
 
+type ApiMahasiswaData = {
+  user_id: string;
+  name: string;
+  nim: string;
+  nilai: { profil_id: string; nilai: number }[];
+};
+
+interface ProfilItem {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 interface TableProps {
-  data: Anggota[];
-  profil: ProfilData[];
+  event_id?: string;
+  lembaga_id?: string;
   selectOptions: { value: string; label: string }[];
+  type: 'event' | 'lembaga';
 }
 
 export default function RaporTable({
-  data: anggotaList,
-  profil: profilList = [],
+  event_id,
+  lembaga_id,
   selectOptions,
+  type,
 }: TableProps) {
   const { toast } = useToast();
 
-  const [data, setData] = useState<Anggota[]>(anggotaList);
-  const [profilHeaders, setProfilHeaders] = useState<ProfilData[]>(profilList);
-  const [menu, setMenu] = useState<{ row: number; col: number } | null>(null);
+  // API Queries
+  const eventQuery = api.rapor.getAllNilaiProfilKegiatan.useQuery(
+    { event_id: event_id! },
+    { enabled: type === 'event' && !!event_id },
+  );
 
-  // Modal state
+  const lembagaQuery = api.rapor.getAllNilaiProfilLembaga.useQuery(
+    { lembaga_id: lembaga_id! },
+    { enabled: type === 'lembaga' && !!lembaga_id },
+  );
+
+  const lembagaProfilsQuery = api.profil.getAllProfilLembaga.useQuery(
+    { lembaga_id: lembaga_id! },
+    { enabled: type === 'lembaga' && !!lembaga_id },
+  );
+
+  const kegiatanProfilsQuery = api.profil.getAllProfilKegiatan.useQuery(
+    { event_id: event_id! },
+    { enabled: type === 'event' && !!event_id },
+  );
+
+  const profilsQuery =
+    type === 'lembaga' ? lembagaProfilsQuery : kegiatanProfilsQuery;
+
+  // Mutations
+  const eventUpsertMutation =
+    api.rapor.upsertNilaiMahasiswaKegiatan.useMutation();
+  const lembagaUpsertMutation =
+    api.rapor.upsertNilaiMahasiswaLembaga.useMutation();
+  const createLembagaProfilMutation =
+    api.profil.createProfilLembaga.useMutation();
+  const createKegiatanProfilMutation =
+    api.profil.createProfilKegiatan.useMutation();
+  const editLembagaProfilMutation = api.profil.editProfilLembaga.useMutation();
+  const editKegiatanProfilMutation =
+    api.profil.editProfilKegiatan.useMutation();
+
+  // Use appropriate query/mutation based on type
+  const raporData = type === 'event' ? eventQuery.data : lembagaQuery.data;
+  const isLoading =
+    type === 'event' ? eventQuery.isLoading : lembagaQuery.isLoading;
+  const refetch = type === 'event' ? eventQuery.refetch : lembagaQuery.refetch;
+  const upsertMutation =
+    type === 'event' ? eventUpsertMutation : lembagaUpsertMutation;
+
+  // State
+  const [data, setData] = useState<Anggota[]>([]);
+  const [profilHeaders, setProfilHeaders] = useState<ProfilData[]>([]);
+  const [apiMahasiswaData, setApiMahasiswaData] = useState<ApiMahasiswaData[]>(
+    [],
+  );
+  const [profilIdMap, setProfilIdMap] = useState<string[]>([]);
+  const [menu, setMenu] = useState<{ row: number; col: number } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'tambah' | 'edit'>('tambah');
   const [editColIdx, setEditColIdx] = useState<number | null>(null);
-
-  // Form state for modal
   const [profil, setProfil] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [pemetaan, setPemetaan] = useState('');
-
-  // Error state for form validation
-  const [profilError, setProfilError] = useState<string | null>(null);
-
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteColIdx, setDeleteColIdx] = useState<number | null>(null);
-
   const [editNilaiMode, setEditNilaiMode] = useState(false);
   const [editedData, setEditedData] = useState<Anggota[] | null>(null);
-
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6; // Number of rows per page
+
+  const pageSize = 6;
+
+  // Initialize data when queries complete
+  useEffect(() => {
+    if (raporData?.mahasiswa && raporData.mahasiswa.length > 0) {
+      setApiMahasiswaData(raporData.mahasiswa);
+
+      if (profilsQuery?.data) {
+        let profils: ProfilItem[] = [];
+
+        if (type === 'lembaga' && 'profil_lembaga' in profilsQuery.data) {
+          profils = profilsQuery.data.profil_lembaga as ProfilItem[];
+        } else if (type === 'event' && 'profil_kegiatan' in profilsQuery.data) {
+          profils = profilsQuery.data.profil_kegiatan as ProfilItem[];
+        }
+
+        if (profils.length > 0) {
+          const finalProfilIds = profils.map((p) => p.id);
+          const profilData = profils.map((profil) => ({
+            label: profil.name,
+            deskripsi: profil.description ?? '',
+            pemetaan: profil.id,
+          }));
+
+          setProfilIdMap(finalProfilIds);
+          setProfilHeaders(profilData);
+
+          const anggotaData = raporData.mahasiswa.map((mahasiswa) => ({
+            nama: mahasiswa.name,
+            nim: mahasiswa.nim,
+            profil: finalProfilIds.map((profilId) => {
+              const nilai = mahasiswa.nilai.find(
+                (n) => n.profil_id === profilId,
+              );
+              return nilai ? nilai.nilai.toString() : '0';
+            }),
+          }));
+
+          setData(anggotaData);
+        }
+      }
+    } else if (profilsQuery?.data) {
+      // Handle case with no students but existing profils
+      let profils: ProfilItem[] = [];
+
+      if (type === 'lembaga' && 'profil_lembaga' in profilsQuery.data) {
+        profils = profilsQuery.data.profil_lembaga as ProfilItem[];
+      } else if (type === 'event' && 'profil_kegiatan' in profilsQuery.data) {
+        profils = profilsQuery.data.profil_kegiatan as ProfilItem[];
+      }
+
+      if (profils.length > 0) {
+        const finalProfilIds = profils.map((p) => p.id);
+        const profilData = profils.map((profil) => ({
+          label: profil.name,
+          deskripsi: profil.description ?? '',
+          pemetaan: profil.id,
+        }));
+
+        setProfilIdMap(finalProfilIds);
+        setProfilHeaders(profilData);
+        setData([
+          {
+            nama: 'No students found',
+            nim: '',
+            profil: finalProfilIds.map(() => '0'),
+          },
+        ]);
+        setApiMahasiswaData([]);
+      }
+    }
+  }, [raporData, profilsQuery?.data, type]);
+
+  // Loading states
+  if ((type === 'event' && !event_id) || (type === 'lembaga' && !lembaga_id)) {
+    return (
+      <div className="p-4 text-red-600">
+        Error: {type === 'event' ? 'event_id' : 'lembaga_id'} is required
+      </div>
+    );
+  }
+
+  if (isLoading || profilsQuery.isLoading) {
+    return <div className="p-4">Loading rapor data...</div>;
+  }
+
+  if (data.length === 0 && profilHeaders.length === 0) {
+    return <div className="p-4">Initializing table...</div>;
+  }
 
   const totalPages = Math.ceil(data.length / pageSize);
   const paginatedData = (editNilaiMode ? (editedData ?? data) : data).slice(
@@ -61,22 +206,37 @@ export default function RaporTable({
     currentPage * pageSize,
   );
 
-  // Handlers for profil columns
+  // HANDLERS
   const handleTambahProfil = () => {
     setModalType('tambah');
     setProfil('');
     setDeskripsi('');
     setPemetaan('');
     setModalOpen(true);
-    setMenu(null);
-    setEditColIdx(null);
   };
 
   const handleEditProfil = (colIdx: number) => {
+    const profilHeader = profilHeaders[colIdx];
+    if (!profilHeader) return;
+
     setModalType('edit');
-    setProfil(profilHeaders[colIdx]?.label ?? '');
-    setDeskripsi(profilHeaders[colIdx]?.deskripsi ?? '');
-    setPemetaan(profilHeaders[colIdx]?.pemetaan ?? '');
+    setProfil(profilHeader.label);
+    setDeskripsi(profilHeader.deskripsi);
+
+    // Find matching pemetaan option
+    const currentProfil =
+      profilsQuery?.data && 'profil_lembaga' in profilsQuery.data
+        ? profilsQuery.data.profil_lembaga[colIdx]
+        : profilsQuery?.data && 'profil_kegiatan' in profilsQuery.data
+          ? profilsQuery.data.profil_kegiatan[colIdx]
+          : null;
+
+    if (currentProfil?.profil_km_id && currentProfil.profil_km_id.length > 0) {
+      setPemetaan(currentProfil.profil_km_id[0] ?? '');
+    } else {
+      setPemetaan('');
+    }
+
     setModalOpen(true);
     setMenu(null);
     setEditColIdx(colIdx);
@@ -90,6 +250,7 @@ export default function RaporTable({
 
   const handleConfirmDelete = () => {
     if (deleteColIdx === null) return;
+
     setProfilHeaders((prev) => prev.filter((_, i) => i !== deleteColIdx));
     setData((prev) =>
       prev.map((row) => ({
@@ -97,6 +258,7 @@ export default function RaporTable({
         profil: row.profil.filter((_, i) => i !== deleteColIdx),
       })),
     );
+    setProfilIdMap((prev) => prev.filter((_, i) => i !== deleteColIdx));
     setDeleteColIdx(null);
     setConfirmDeleteOpen(false);
   };
@@ -107,50 +269,271 @@ export default function RaporTable({
   };
 
   const handleSimpanTambah = () => {
-    if (!profil.trim() || !pemetaan.trim()) {
+    if (!profil.trim()) {
       toast({
         title: 'Gagal menyimpan',
-        description: 'Nama profil dan pemetaan tidak boleh kosong',
+        description: 'Nama profil tidak boleh kosong',
         variant: 'destructive',
       });
       return;
     }
 
-    setProfilHeaders((prev) => [
-      ...prev,
-      {
-        label: profil ?? `Profil ${prev.length + 1}`,
-        deskripsi,
-        pemetaan,
-      },
-    ]);
-    setData((prev) =>
-      prev.map((row) => ({
-        ...row,
-        profil: [...row.profil, ''],
-      })),
-    );
-    setModalOpen(false);
+    if (type === 'lembaga') {
+      createLembagaProfilMutation.mutate(
+        {
+          lembaga_id: lembaga_id!,
+          name: profil,
+          description: deskripsi,
+          profil_km_id: pemetaan ? [pemetaan] : [],
+        },
+        {
+          onSuccess: () => {
+            setModalOpen(false);
+            setProfil('');
+            setDeskripsi('');
+            setPemetaan('');
+
+            void profilsQuery.refetch();
+
+            toast({
+              title: 'Profil berhasil ditambahkan',
+              description: `Profil "${profil}" telah ditambahkan ke database`,
+            });
+          },
+          onError: (error) => {
+            toast({
+              title: 'Gagal membuat profil',
+              description: error.message,
+              variant: 'destructive',
+            });
+          },
+        },
+      );
+    } else {
+      createKegiatanProfilMutation.mutate(
+        {
+          event_id: event_id!,
+          name: profil,
+          description: deskripsi,
+          profil_km_id: pemetaan ? [pemetaan] : [],
+        },
+        {
+          onSuccess: () => {
+            setModalOpen(false);
+            setProfil('');
+            setDeskripsi('');
+            setPemetaan('');
+
+            void profilsQuery.refetch();
+
+            toast({
+              title: 'Profil berhasil ditambahkan',
+              description: `Profil "${profil}" telah ditambahkan ke database`,
+            });
+          },
+          onError: (error) => {
+            toast({
+              title: 'Gagal membuat profil',
+              description: error.message,
+              variant: 'destructive',
+            });
+          },
+        },
+      );
+    }
   };
 
   const handleSimpanEdit = () => {
-    if (!profil.trim() || !pemetaan.trim()) {
+    if (!profil.trim()) {
       toast({
         title: 'Gagal menyimpan',
-        description: 'Nama profil dan pemetaan tidak boleh kosong',
+        description: 'Nama profil tidak boleh kosong',
         variant: 'destructive',
       });
       return;
     }
 
     if (editColIdx === null) return;
-    setProfilHeaders((prev) =>
-      prev.map((header, idx) =>
-        idx === editColIdx ? { label: profil, deskripsi, pemetaan } : header,
-      ),
-    );
-    setModalOpen(false);
+
+    const profilIdToUpdate = profilIdMap[editColIdx];
+    if (!profilIdToUpdate) {
+      toast({
+        title: 'Error',
+        description: 'Profil ID tidak ditemukan',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const mutation =
+      type === 'lembaga'
+        ? editLembagaProfilMutation
+        : editKegiatanProfilMutation;
+    const payload = {
+      profil_id: profilIdToUpdate,
+      name: profil,
+      description: deskripsi,
+      profil_km_id: pemetaan ? [pemetaan] : [],
+    };
+
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        setProfilHeaders((prev) =>
+          prev.map((header, idx) =>
+            idx === editColIdx
+              ? {
+                  label: profil,
+                  deskripsi: deskripsi,
+                  pemetaan: profilIdToUpdate,
+                }
+              : header,
+          ),
+        );
+
+        setModalOpen(false);
+
+        void Promise.all([profilsQuery.refetch(), refetch()]);
+
+        toast({
+          title: 'Profil berhasil diperbarui',
+          description: `Profil "${profil}" telah diperbarui di database`,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: 'Gagal memperbarui profil',
+          description: error.message,
+          variant: 'destructive',
+        });
+      },
+    });
   };
+
+  const handleSaveNilai = () => {
+    if (!editedData || apiMahasiswaData.length === 0) {
+      toast({
+        title: 'Error: No data',
+        description: 'No data to save. Please refresh the page.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (editedData.length !== apiMahasiswaData.length) {
+      toast({
+        title: 'Error: Data mismatch',
+        description: 'Student data is out of sync. Please refresh the page.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const changedMahasiswa: {
+      user_id: string;
+      nilai: { profil_id: string; nilai: number }[];
+    }[] = [];
+
+    editedData.forEach((editedRow, rowIndex) => {
+      const originalRow = data[rowIndex];
+      const mahasiswaApiData = apiMahasiswaData[rowIndex];
+
+      if (
+        !originalRow ||
+        !mahasiswaApiData ||
+        editedRow.nama !== mahasiswaApiData.name
+      ) {
+        return;
+      }
+
+      const changedNilai: { profil_id: string; nilai: number }[] = [];
+
+      editedRow.profil.forEach((newValue, colIndex) => {
+        const originalValue = (originalRow.profil[colIndex] ?? '0').toString();
+        const newValueStr = newValue.toString();
+
+        if (newValueStr !== originalValue) {
+          const profilId = profilIdMap[colIndex];
+          if (profilId) {
+            changedNilai.push({
+              profil_id: profilId,
+              nilai: parseInt(newValueStr) || 0,
+            });
+          }
+        }
+      });
+
+      if (changedNilai.length > 0) {
+        changedMahasiswa.push({
+          user_id: mahasiswaApiData.user_id,
+          nilai: changedNilai,
+        });
+      }
+    });
+
+    if (changedMahasiswa.length === 0) {
+      toast({
+        title: 'No changes to save',
+        description: 'Make some changes to the scores before saving',
+        variant: 'default',
+      });
+      setEditNilaiMode(false);
+      setEditedData(null);
+      return;
+    }
+
+    if (type === 'event') {
+      eventUpsertMutation.mutate(
+        { event_id: event_id!, mahasiswa: changedMahasiswa },
+        {
+          onSuccess: () => {
+            toast({
+              title: 'Nilai berhasil disimpan',
+              description: `${changedMahasiswa.length} mahasiswa updated`,
+            });
+            setEditNilaiMode(false);
+            setEditedData(null);
+            setData(editedData);
+            void refetch();
+          },
+          onError: (error) => {
+            toast({
+              title: 'Gagal menyimpan nilai',
+              description: error.message,
+              variant: 'destructive',
+            });
+          },
+        },
+      );
+    } else {
+      lembagaUpsertMutation.mutate(
+        { mahasiswa: changedMahasiswa },
+        {
+          onSuccess: () => {
+            toast({
+              title: 'Nilai berhasil disimpan',
+              description: `${changedMahasiswa.length} mahasiswa updated`,
+            });
+            setEditNilaiMode(false);
+            setEditedData(null);
+            setData(editedData);
+            void refetch();
+          },
+          onError: (error) => {
+            toast({
+              title: 'Gagal menyimpan nilai',
+              description: error.message,
+              variant: 'destructive',
+            });
+          },
+        },
+      );
+    }
+  };
+
+  const linkHref =
+    type === 'event'
+      ? `/lembaga/kegiatan/${event_id}/profil`
+      : `/lembaga/profil`;
 
   return (
     <div className="flex flex-col flex-1">
@@ -158,9 +541,11 @@ export default function RaporTable({
         <div className="flex justify-between mb-4">
           <div className="flex gap-x-5">
             <TambahProfilButton onClick={handleTambahProfil}>
-              Tambah Profil Lembaga
+              Tambah Profil {type === 'event' ? 'Kegiatan' : 'Lembaga'}
             </TambahProfilButton>
-            <LinkButton href="">Profil Lembaga</LinkButton>
+            <LinkButton href={linkHref}>
+              Profil {type === 'event' ? 'Kegiatan' : 'Lembaga'}
+            </LinkButton>
           </div>
           <EditNilaiButton
             editNilaiMode={editNilaiMode}
@@ -169,8 +554,11 @@ export default function RaporTable({
             setData={setData}
             setEditedData={setEditedData}
             data={data}
+            onSave={handleSaveNilai}
+            isSaving={upsertMutation.isPending}
           />
         </div>
+
         <div className="w-full overflow-x-auto">
           <Table className="min-w-max">
             <RaporTableHeader
@@ -185,7 +573,7 @@ export default function RaporTable({
                 const absoluteRowIdx = (currentPage - 1) * pageSize + rowIdx;
                 return (
                   <RaporTableRow
-                    key={rowIdx}
+                    key={`${absoluteRowIdx}-${row.nama}`}
                     row={row}
                     editNilaiMode={editNilaiMode}
                     editedData={editedData}
@@ -197,6 +585,7 @@ export default function RaporTable({
             </TableBody>
           </Table>
         </div>
+
         <ProfilDialog
           open={modalOpen}
           setOpen={setModalOpen}
@@ -212,12 +601,14 @@ export default function RaporTable({
           handleBatal={() => setModalOpen(false)}
           selectOptions={selectOptions}
         />
+
         <DeleteProfilDialog
           open={confirmDeleteOpen}
           onCancel={handleCancelDelete}
           onConfirm={handleConfirmDelete}
         />
       </div>
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
