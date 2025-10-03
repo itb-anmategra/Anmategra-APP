@@ -16,16 +16,12 @@ export type HeaderDataProps = {
   kegiatanId?: string;
 };
 
-export type PemetaanProfilSectionProps = {
-  pemetaanProfilData?: ProfilGroup[];
-};
-
 interface RaporIndividuPanitiaPageProps {
   params: {
     kegiatanId: string;
     raporId: string;
   };
-  pemetaanProfilData?: PemetaanProfilSectionProps;
+  pemetaanProfilData?: ProfilGroup[];
 }
 
 export default async function RaporIndividuPanitiaPage({
@@ -67,7 +63,10 @@ export default async function RaporIndividuPanitiaPage({
 
         <ProfilDeskripsiSection profilData={profilData} isLembaga={false} />
 
-        <PemetaanProfilSection {...pemetaanProfilData} />
+        <PemetaanProfilSection
+          pemetaanProfilData={pemetaanProfilData}
+          isLembaga={false}
+        />
       </div>
     </main>
   );

@@ -22,7 +22,6 @@ import FormNilaiProfil from '../../form/form-nilai-profil';
 import NilaiProfilComp from './nilai-profil-comp';
 
 type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
-type NilaiLembagaOutput = z.infer<typeof GetNilaiLembagaIndividuOutputSchema>;
 
 export type HeaderDataProps = {
   dataNilaiProfil: NilaiKegiatanOutput | null;

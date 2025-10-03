@@ -19,15 +19,11 @@ export type HeaderDataLembagaProps = {
 
 export type ProfilLembagaSectionProps = ProfilLembagaOutput;
 
-export type PemetaanProfilSectionProps = {
-  pemetaanProfilData?: ProfilGroup[];
-};
-
 interface RaporIndividuLembagaPageProps {
   params: {
     raporId: string;
   };
-  pemetaanProfilData?: PemetaanProfilSectionProps;
+  pemetaanProfilData?: ProfilGroup[];
 }
 
 export default async function RaporIndividuLembagaPage({
@@ -70,7 +66,10 @@ export default async function RaporIndividuLembagaPage({
 
         <ProfilDeskripsiSection profilData={profilData} isLembaga={true} />
 
-        <PemetaanProfilSection {...pemetaanProfilData} />
+        <PemetaanProfilSection
+          pemetaanProfilData={pemetaanProfilData}
+          isLembaga={true}
+        />
       </div>
     </main>
   );
