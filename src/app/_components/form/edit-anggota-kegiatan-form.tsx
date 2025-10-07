@@ -30,6 +30,7 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
+import { api } from '~/trpc/react';
 
 const EditAnggotaSchema = z.object({
   nama: z.string().min(1, 'Nama wajib diisi'),
@@ -60,16 +61,6 @@ type EditAnggotaProps = {
   onUpdate?: (data: any) => void;
 };
 
-type MutationOptions = {
-  onSuccess?: () => void;
-  onError?: (error: any) => void;
-};
-
-type MockMutation = {
-  mutate: (data: any, options?: MutationOptions) => void;
-  isPending: boolean;
-};
-
 const EditAnggotaKegiatanForm: React.FC<EditAnggotaProps> = ({
   defaultValues,
   divisiList,
@@ -84,21 +75,7 @@ const EditAnggotaKegiatanForm: React.FC<EditAnggotaProps> = ({
   const [customDivisi, setCustomDivisi] = useState('');
   const [customPosisi, setCustomPosisi] = useState('');
 
-  // Fake mutation for UI testing
-  const mutation: MockMutation = {
-    mutate: (data: any, options?: MutationOptions) => {
-      console.log('Mock mutation called with data:', data);
-
-      // Simulate loading state
-      setTimeout(() => {
-        console.log('Mock mutation success!');
-        if (options?.onSuccess) {
-          options.onSuccess();
-        }
-      }, 1000); // 1 second delay to simulate network
-    },
-    isPending: false, // Set to true to test loading state
-  };
+  const mutation = api.event.editPanitia.useMutation();
 
   const form = useForm<EditAnggotaSchemaType>({
     resolver: zodResolver(EditAnggotaSchema),
@@ -137,6 +114,12 @@ const EditAnggotaKegiatanForm: React.FC<EditAnggotaProps> = ({
           }
           setIsOpen(false);
           console.log('Form submitted successfully!');
+        },
+        onError: (error) => {
+          console.error('Mutation Error:', error);
+          console.error('Error message:', error.message);
+          console.error('Error data:', error.data);
+          alert(`Error: ${error.message}`);
         },
       },
     );
