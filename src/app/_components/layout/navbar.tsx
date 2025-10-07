@@ -3,23 +3,31 @@
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Icon Import
-import { CircleUserRound, LogIn, LogOut } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { type Session } from 'next-auth';
 // Next Auth Import
-import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ProfilePic from 'public/images/placeholder/profile-pic.png';
 import React, { useEffect, useState } from 'react';
 // Components Import
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 
+import { Sidebar as Sidebars } from './sidebar';
 // Assets Import
-import LogoAnmategra from '/public/images/logo/anmategra-logo-full.png';
+import LogoAnmategra from '/public/images/logo/anmategra-logo.png';
+
+type SidebarProps = {
+  session: Session | null;
+};
+
+const Sidebar = Sidebars as (props: SidebarProps) => JSX.Element;
 
 const Navbar = ({ session }: { session: Session | null }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const router = useRouter();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -35,58 +43,120 @@ const Navbar = ({ session }: { session: Session | null }) => {
   });
 
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-white border-b-2 border-neutral-100">
-      <div className="w-full max-w-7xl flex justify-between items-center py-4">
-        <div className="flex items-center gap-x-8">
-          <Link href={'/'}>
-            <Image
-              src={LogoAnmategra}
-              alt="Logo Anmategra"
-              width={150}
-              height={50}
-            />
-          </Link>
-        </div>
-        {session && (
-          <div>
+    <>
+      <div className="w-full bg-white border-b border-neutral-50">
+        <div
+          className="flex items-center justify-between max-w-[1440px] max-h-[112px]
+                      py-6 pl-[50px] pr-[72px]"
+        >
+          {/* Logo Anmategra */}
+          {session ? (
+            <div className="flex items-center max-w-[108px] min-h-[64px] gap-[20px]">
+              <Button
+                onClick={() => setIsSideBarOpen(true)}
+                variant="ghost"
+                size="icon"
+                className="w-[24px] h-[30px]"
+              >
+                <Menu className="!w-[24px] !h-[30px]" />
+              </Button>
+
+              <Link href={'/'}>
+                <Image
+                  src={LogoAnmategra}
+                  alt="Logo Anmategra"
+                  width={64}
+                  height={64}
+                />
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-[20px]">
+              <Link href={'/'}>
+                <Image
+                  src={LogoAnmategra}
+                  alt="Logo Anmategra"
+                  width={64}
+                  height={64}
+                />
+              </Link>
+            </div>
+          )}
+
+          {/* Input Search */}
+          <div
+            className="flex items-center w-full max-w-3xl h-[64px] mx-4 lg:flex 
+                      bg-white border border-[#C4CACE] rounded-[40px] 
+                        py-4 px-6 gap-2"
+          >
+            {/* Icon Mangnifying Glass */}
+            <MagnifyingGlassIcon className="size-6 text-gray-500 flex-shrink-0" />
+
+            {/* Input Field */}
             <Input
               placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
-              className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent w-[750px]"
-              startAdornment={
-                <MagnifyingGlassIcon className="size-4 text-gray-500" />
-              }
+              className="w-full h-[32px] bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 
+                           font-[400] text-[20px] leading-[32px] text-[#636A6D]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
             />
           </div>
-        )}
-        <nav className="flex items-center">
-          {session ? (
-            <div className="flex items-center gap-x-2">
-              <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
-                <Button className="bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500">
-                  Profil <CircleUserRound />
+
+          {/* Profil */}
+          <nav className="flex items-center justify-start w-[128px] min-h-[52px] gap-10">
+            {session ? (
+              <div className="w-full items-center gap-[10px] pl-10">
+                <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
+                  {session.user.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt="Profile User"
+                      width={52}
+                      height={52}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <Image
+                      src={ProfilePic}
+                      alt="Default Profile"
+                      width={52}
+                      height={52}
+                      className="rounded-full"
+                    />
+                  )}
+                </Link>
+              </div>
+            ) : (
+              <Link href={'/authentication'}>
+                <Button
+                  className="max-w-[128px] min-h-[48px] px-8 py-2 flex items-center justify-center gap-2
+                                rounded-[12px] bg-[#00B7B7] text-white hover:bg-secondary-500"
+                >
+                  <span className="items-center font-[600] text-[24px] leading-[32px]">
+                    Login
+                  </span>
                 </Button>
               </Link>
-              <Button
-                onClick={() => void signOut()}
-                variant={'outline'}
-                className="space-x-2 hover:bg-red-400 hover:space-x-4 hover:text-white transition-all"
-              >
-                Keluar <LogOut />
-              </Button>
-            </div>
-          ) : (
-            <Link href={'/authentication'}>
-              <Button className="bg-secondary-400 text-white flex gap-x-2 transition-all hover:bg-secondary-500">
-                Masuk <LogIn />
-              </Button>
-            </Link>
-          )}
-        </nav>
+            )}
+          </nav>
+        </div>
       </div>
-    </div>
+      {isSideBarOpen && (
+        <>
+          {/* Background agak sedikit gelap di sekitarnya */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={() => setIsSideBarOpen(false)}
+          />
+
+          {/* Sidebar */}
+          <div className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[100] border-none">
+            <Sidebar session={session} />
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
