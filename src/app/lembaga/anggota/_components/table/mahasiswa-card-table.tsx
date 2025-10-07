@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Image from 'next/image';
+import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
 import MoreVertIcon from 'public/icons/more-vert.svg';
 import * as React from 'react';
@@ -120,17 +121,20 @@ const columns: ColumnDef<Member>[] = [
     accessorKey: 'rapor',
     header: 'Rapor',
     cell: ({ row }) => (
-      <Button
-        variant="outline"
-        className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"
-        onClick={() => {
-          // Handle rapor view action
-          console.log('View rapor for:', row.original.id);
-        }}
-      >
-        Lihat
-        <Image src={CallMadeIcon} alt="Call Made Icon" width={16} height={16} />
-      </Button>
+      <Link href={`/lembaga/anggota/${row.original.id}`}>
+        <Button
+          variant="outline"
+          className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"
+        >
+          Lihat
+          <Image
+            src={CallMadeIcon}
+            alt="Call Made Icon"
+            width={16}
+            height={16}
+          />
+        </Button>
+      </Link>
     ),
   },
   {

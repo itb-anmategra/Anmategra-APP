@@ -13,21 +13,12 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 
-type Profile = { id: number; value: number | null };
-
-// Contoh beberapa data
-const dummyProfiles: Profile[] = [
-  { id: 1, value: 100 },
-  { id: 2, value: 100 },
-  { id: 3, value: 100 },
-  { id: 4, value: 100 },
-  { id: 5, value: 100 },
-];
+type Profile = { id: string; value: number | null };
 
 // Komponen FormProfil
 interface FormProfilProps {
   profiles: Profile[];
-  onChange: (id: number, value: number | null) => void;
+  onChange: (id: string, value: number | null) => void;
 }
 
 const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
@@ -70,11 +61,9 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   initialProfiles,
   onSave,
 }) => {
-  const [profiles, setProfiles] = useState<Profile[]>(
-    initialProfiles ?? dummyProfiles,
-  );
+  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles ?? []);
 
-  const handleProfileChange = (id: number, value: number | null) => {
+  const handleProfileChange = (id: string, value: number | null) => {
     const sanitized = value === null ? null : Math.min(Math.max(value, 0), 100);
     setProfiles(
       profiles.map((p) => (p.id === id ? { ...p, value: sanitized } : p)),

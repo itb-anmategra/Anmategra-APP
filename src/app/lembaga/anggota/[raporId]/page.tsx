@@ -5,38 +5,42 @@ import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
 import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
-import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
+import { type GetNilaiLembagaIndividuOutputSchema } from '~/server/api/types/rapor.type';
+import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 
-type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
-export type ProfilOutput = z.infer<typeof GetAllProfilOutputSchema>;
+type NilaiLembagaOutput = z.infer<typeof GetNilaiLembagaIndividuOutputSchema>;
+type ProfilLembagaOutput = z.infer<typeof GetAllProfilOutputSchema>;
 
-export type HeaderDataProps = {
-  dataNilaiProfil: NilaiKegiatanOutput | null;
+export type HeaderDataLembagaProps = {
+  dataNilaiProfil: NilaiLembagaOutput | null;
   kegiatanId?: string;
 };
 
-interface RaporIndividuPanitiaPageProps {
+export type ProfilLembagaSectionProps = ProfilLembagaOutput;
+
+interface RaporIndividuLembagaPageProps {
   params: {
-    kegiatanId: string;
     raporId: string;
   };
   pemetaanProfilData?: ProfilGroup[];
 }
 
-export default async function RaporIndividuPanitiaPage({
+export default async function RaporIndividuLembagaPage({
   params,
   pemetaanProfilData,
-}: RaporIndividuPanitiaPageProps) {
-  const { kegiatanId, raporId } = params;
+}: RaporIndividuLembagaPageProps) {
+  const { raporId } = params;
 
-  const raporData = await api.rapor.getNilaiKegiatanIndividu({
-    event_id: kegiatanId,
+  const session = await getServerAuthSession();
+
+  const raporData = await api.rapor.getNilaiLembagaIndividu({
+    lembaga_id: session?.user.lembagaId ?? '',
     mahasiswa_id: raporId,
   });
 
-  const profilData = await api.profil.getAllProfilKegiatan({
-    event_id: kegiatanId,
+  const profilData = await api.profil.getAllProfilLembaga({
+    lembaga_id: session?.user.lembagaId ?? '',
   });
 
   return (
@@ -47,9 +51,8 @@ export default async function RaporIndividuPanitiaPage({
         </h1>
         <RaporBreadcrumb
           items={[
-            { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-            { label: 'Panitia', href: '/lembaga/kegiatan' },
-            { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+            { label: 'Anggota', href: '/lembaga/anggota' },
+            { label: 'Rapor Individu', href: '/lembaga/anggota' },
           ]}
         />
       </div>
@@ -57,15 +60,15 @@ export default async function RaporIndividuPanitiaPage({
       <div className="flex flex-col gap-16">
         <RaporIndividuHeader
           dataNilaiProfil={raporData}
-          id={kegiatanId}
-          isLembaga={false}
+          id={session?.user.lembagaId ?? ''}
+          isLembaga={true}
         />
 
-        <ProfilDeskripsiSection profilData={profilData} isLembaga={false} />
+        <ProfilDeskripsiSection profilData={profilData} isLembaga={true} />
 
         <PemetaanProfilSection
           pemetaanProfilData={pemetaanProfilData}
-          isLembaga={false}
+          isLembaga={true}
         />
       </div>
     </main>
