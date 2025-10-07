@@ -91,7 +91,7 @@ export default function LandingContent({
               <ChevronRightIcon className="h-6 w-6" />
             </Link>
           </div>
-          <div className="mb-4 pt-[141px]">
+          <div className="mb-4 pt-[18px]">
             {data.kegiatanTerbaru && data.kegiatanTerbaru.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {data.kegiatanTerbaru.map((kepanitiaan) => (
