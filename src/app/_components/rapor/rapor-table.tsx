@@ -192,12 +192,28 @@ export default function RaporTable({
     );
   }
 
-  if (isLoading || profilsQuery.isLoading) {
-    return <div className="p-4">Loading rapor data...</div>;
+  // Error states
+  const queryError = type === 'event' ? eventQuery.error : lembagaQuery.error;
+  const profilError = profilsQuery.error;
+
+  if (queryError) {
+    return (
+      <div className="p-4 text-red-600">
+        Error loading rapor data: {queryError.message}
+      </div>
+    );
   }
 
-  if (data.length === 0 && profilHeaders.length === 0) {
-    return <div className="p-4">Initializing table...</div>;
+  if (profilError) {
+    return (
+      <div className="p-4 text-red-600">
+        Error loading profil data: {profilError.message}
+      </div>
+    );
+  }
+
+  if (isLoading || profilsQuery.isLoading) {
+    return <div className="p-4">Loading rapor data...</div>;
   }
 
   const totalPages = Math.ceil(data.length / pageSize);
@@ -569,19 +585,37 @@ export default function RaporTable({
               handleDeleteProfil={handleDeleteProfil}
             />
             <TableBody>
-              {paginatedData.map((row, rowIdx) => {
-                const absoluteRowIdx = (currentPage - 1) * pageSize + rowIdx;
-                return (
-                  <RaporTableRow
-                    key={`${absoluteRowIdx}-${row.nama}`}
-                    row={row}
-                    editNilaiMode={editNilaiMode}
-                    editedData={editedData}
-                    setEditedData={setEditedData}
-                    absoluteRowIdx={absoluteRowIdx}
-                  />
-                );
-              })}
+              {profilHeaders.length === 0 ? (
+                <tr>
+                  <td colSpan={100} className="text-center py-12">
+                    <div className="text-neutral-500">
+                      <p className="text-lg mb-2">
+                        Belum ada profil{' '}
+                        {type === 'lembaga' ? 'lembaga' : 'kegiatan'}
+                      </p>
+                      <p className="text-sm">
+                        Klik tombol &quot;Tambah Profil{' '}
+                        {type === 'lembaga' ? 'Lembaga' : 'Kegiatan'}&quot;
+                        untuk memulai
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                paginatedData.map((row, rowIdx) => {
+                  const absoluteRowIdx = (currentPage - 1) * pageSize + rowIdx;
+                  return (
+                    <RaporTableRow
+                      key={`${absoluteRowIdx}-${row.nama}`}
+                      row={row}
+                      editNilaiMode={editNilaiMode}
+                      editedData={editedData}
+                      setEditedData={setEditedData}
+                      absoluteRowIdx={absoluteRowIdx}
+                    />
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </div>

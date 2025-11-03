@@ -1,27 +1,14 @@
-'use client';
-
 import { SearchBar } from '~/app/_components/placeholder/search-bar';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import RaporTable from '~/app/_components/rapor/rapor-table';
-import { api } from '~/trpc/react';
+import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/trpc/server';
 
-export default function RaporPage() {
-  // const { data: session } = useSession();
-  // const lembaga_id = session?.user?.lembagaId
+export default async function RaporPage() {
+  const session = await getServerAuthSession();
+  const lembaga_id = session?.user?.lembagaId ?? '';
 
-  // TODO: Replace with dynamic session data
-  const lembaga_id = 'lembaga-5';
-
-  const { data: profilKMData, isLoading: profilKMLoading } =
-    api.profil.getAllProfilKM.useQuery();
-
-  const selectOptions =
-    profilKMData?.profil_km.map((profil) => ({
-      value: profil.id,
-      label: profil.description,
-    })) ?? [];
-
-  if (profilKMLoading) {
+  if (!session || !lembaga_id) {
     return (
       <main className="flex flex-col p-8 min-h-screen">
         <h1 className="text-[32px] font-semibold mb-2">Rapor Anggota</h1>
@@ -31,6 +18,14 @@ export default function RaporPage() {
       </main>
     );
   }
+
+  const profilKMData = await api.profil.getAllProfilKM();
+
+  const selectOptions =
+    profilKMData?.profil_km.map((profil) => ({
+      value: profil.id,
+      label: profil.description,
+    })) ?? [];
 
   return (
     <main className="flex flex-col p-8 min-h-screen">
