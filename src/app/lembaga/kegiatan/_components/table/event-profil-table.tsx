@@ -21,13 +21,20 @@ interface ProfilMapping {
 interface ProfilTableProps {
   profilData: ProfilKegiatan[] | ProfilMapping[];
   showMapping: boolean;
+  isLembaga?: boolean;
 }
 
-const ProfilTable = ({ profilData, showMapping }: ProfilTableProps) => {
+const ProfilTable = ({
+  profilData,
+  showMapping,
+  isLembaga = false,
+}: ProfilTableProps) => {
   if (profilData.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-neutral-500">Belum ada profil kegiatan</p>
+        <p className="text-neutral-500">
+          Belum ada profil {isLembaga ? 'lembaga' : 'kegiatan'}
+        </p>
       </div>
     );
   }
@@ -39,7 +46,7 @@ const ProfilTable = ({ profilData, showMapping }: ProfilTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead className="text-neutral-500 text-lg font-normal w-1/4">
-              Profil Kegiatan
+              Profil {isLembaga ? 'Lembaga' : 'Kegiatan'}
             </TableHead>
             <TableHead className="text-neutral-500 text-lg font-normal w-3/4">
               Deskripsi
@@ -68,7 +75,7 @@ const ProfilTable = ({ profilData, showMapping }: ProfilTableProps) => {
             Profil KM ITB
           </TableHead>
           <TableHead className="text-neutral-500 text-lg font-normal w-1/5">
-            Profil Kegiatan
+            Profil {isLembaga ? 'Lembaga' : 'Kegiatan'}
           </TableHead>
           <TableHead className="text-neutral-500 text-lg font-normal w-2/5">
             Deskripsi
