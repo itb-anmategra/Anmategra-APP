@@ -264,7 +264,7 @@ export default function ActivityList({
                     </span>
                   </div>
                   <div className="w-[94px] flex-shrink-0 flex items-center justify-center text-gray-500">
-                    <Link href={`/lembaga/kegiatan/${activity.id}/profil`}>
+                    <Link href={`/lembaga/kegiatan/${activity.id}/rapor`}>
                       <Button
                         variant={'outline'}
                         className="rounded-lg text-base"
