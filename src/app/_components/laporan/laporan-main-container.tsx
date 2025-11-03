@@ -2,14 +2,13 @@
 
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '~/components/ui/input';
 
 // Components Import
 import { KanbanBoard } from './board/kanban-board';
 import { type ColumnProps, type ColumnType } from './board/report-column';
-import { LaporanDialog } from './detail/laporan-dialog';
+import LaporanFormDialog from './detail/laporan-form';
 import { type CurrentDisplay, LaporanHeader } from './laporan-header';
 import { ListDisplay } from './list/list-display';
 
@@ -89,14 +88,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           <h1 className="text-2xl font-semibold text-neutral-300">
             Buat laporan baru!
           </h1>
-          <LaporanDialog
-            trigger={
-              <div className="flex flex-row items-center justify-center gap-2 rounded-xl bg-primary-400 px-6 py-3 text-base text-white">
-                <Plus></Plus>
-                <span>Buat laporan</span>
-              </div>
-            }
-          ></LaporanDialog>
+          <LaporanFormDialog />
         </div>
       )}
     </div>

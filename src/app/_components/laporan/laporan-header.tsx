@@ -1,4 +1,3 @@
-import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '~/components/ui/button';
 import {
@@ -10,7 +9,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 
 import { type ColumnType } from './board/report-column';
-import { LaporanDialog } from './detail/laporan-dialog';
+import LaporanFormDialog from './detail/laporan-form';
 import DisplayBoard from '/public/icons/board-icon.svg';
 import Display from '/public/icons/display.svg';
 import DisplayList from '/public/icons/list-icon.svg';
@@ -132,13 +131,7 @@ export const LaporanHeader = ({
 
         {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
         {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
-          <LaporanDialog
-            trigger={
-              <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-6 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
-                <Plus width={24} height={24} /> Buat laporan
-              </div>
-            }
-          />
+          <LaporanFormDialog />
         )}
       </div>
     </header>
