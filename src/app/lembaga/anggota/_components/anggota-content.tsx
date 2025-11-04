@@ -18,6 +18,7 @@ import TambahAnggotaForm, {
   type comboboxDataType,
 } from '~/app/_components/form/tambah-anggota-form';
 import TambahAnggotaKegiatanForm from '~/app/_components/form/tambah-anggota-kegiatan-form';
+import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
   MahasiswaCardTable,
   type Member,
@@ -96,60 +97,10 @@ export default function AnggotaContent({
           <div className="flex">
             <div className="justify-between flex flex-row w-full">
               <div className="flex gap-x-5">
-                <Dialog
-                  open={isOpen}
-                  onOpenChange={(open) => {
-                    setIsOpen(open);
-                    if (!open) setManualMode(false);
-                  }}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="light_blue"
-                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg "
-                    >
-                      <Image
-                        src={Plus}
-                        alt="Tambah Anggota"
-                        width={24}
-                        height={24}
-                      />
-                      Tambah Anggota Baru
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent
-                    className="w-full max-w-xl"
-                    aria-describedby={undefined}
-                  >
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
-                        {manualMode
-                          ? 'Tambah Anggota Manual'
-                          : 'Tambah Anggota'}
-                      </DialogTitle>
-                      <DialogDescription className="sr-only">
-                        Form untuk menambahkan anggota baru ke{' '}
-                        {isAnggota ? 'lembaga' : 'kegiatan'}
-                      </DialogDescription>
-                    </DialogHeader>
-                    {isAnggota ? (
-                      <TambahAnggotaForm
-                        session={session}
-                        data={dataAddAnggota}
-                        setIsOpen={setIsOpen}
-                        manualMode={manualMode}
-                        setManualMode={setManualMode}
-                      />
-                    ) : (
-                      <TambahAnggotaKegiatanForm
-                        session={session}
-                        data={dataAddAnggota}
-                        setIsOpen={setIsOpen}
-                        pathname={pathname}
-                      />
-                    )}
-                  </DialogContent>
-                </Dialog>
+                <TambahAnggotaDialog
+                  session={session}
+                  dataAddAnggota={dataAddAnggota}
+                />
                 {isAnggota && (
                   <Button
                     variant="light_blue"
