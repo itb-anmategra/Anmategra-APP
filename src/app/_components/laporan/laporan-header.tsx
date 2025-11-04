@@ -52,6 +52,7 @@ export const LaporanHeader = ({
                 src={Display}
                 alt="Display"
                 className="h-[21px] w-[19.5px]"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <p className="text-[18px]">Display</p>
             </Button>
@@ -64,7 +65,12 @@ export const LaporanHeader = ({
               className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold"
               onClick={() => setCurrentDisplay('List')}
             >
-              <Image src={DisplayList} alt="Display-list" className="h-4 w-4" />
+              <Image
+                src={DisplayList}
+                alt="Display-list"
+                className="h-4 w-4"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <p className="text-sm">List</p>
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -75,6 +81,7 @@ export const LaporanHeader = ({
                 src={DisplayBoard}
                 alt="Display-list"
                 className="h-4 w-4"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <p className="text-sm text-neutral-900">Board</p>
             </DropdownMenuItem>
@@ -88,7 +95,12 @@ export const LaporanHeader = ({
               variant="outline"
               className="w-[169px] h-[50px] gap-[10px] px-7 py-2 text-lg font-semibold"
             >
-              <Image src={Status} alt="Status" className="h-[26px] w-[26px]" />
+              <Image
+                src={Status}
+                alt="Status"
+                className="h-[26px] w-[26px]"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <p className="text-[18px]">Status</p>
             </Button>
           </DropdownMenuTrigger>
@@ -101,7 +113,12 @@ export const LaporanHeader = ({
               checked={status.includes('Draft')}
               onClick={() => toggleStatus('Draft')}
             >
-              <Image src={Draft} alt="Draft Icon" className="h-5 w-5" />
+              <Image
+                src={Draft}
+                alt="Draft Icon"
+                className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <span className="text-sm">Draft</span>
             </DropdownMenuCheckboxItem>
 
@@ -114,6 +131,7 @@ export const LaporanHeader = ({
                 src={InProgress}
                 alt="In Progress Icon"
                 className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <span className="text-sm text-yellow-500">In Progress</span>
             </DropdownMenuCheckboxItem>
@@ -123,7 +141,12 @@ export const LaporanHeader = ({
               checked={status.includes('Resolved')}
               onClick={() => toggleStatus('Resolved')}
             >
-              <Image src={Resolved} alt="Resolved Icon" className="h-5 w-5" />
+              <Image
+                src={Resolved}
+                alt="Resolved Icon"
+                className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <span className="text-sm text-green-700">Resolved</span>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>

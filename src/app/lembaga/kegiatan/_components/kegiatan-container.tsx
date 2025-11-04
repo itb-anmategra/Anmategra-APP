@@ -163,6 +163,7 @@ export default function ActivityList({
                 alt="Filter"
                 width={24}
                 height={24}
+                style={{ width: 'auto', height: 'auto' }}
               />
               Filter
             </Button>

@@ -55,6 +55,7 @@ const HighlightedEventCard: FC<HighlightedEventCardProps> = ({
             alt="Poster Event Highlight"
             fill
             className="object-cover rounded-l-[28px] opacity-100"
+            sizes="245px"
           />
         </div>
 

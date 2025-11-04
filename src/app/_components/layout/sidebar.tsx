@@ -113,6 +113,8 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
+                style={{ width: 'auto', height: 'auto' }}
+                priority
               />
             </Link>
             <SidebarItems items={sidebarItems} />
