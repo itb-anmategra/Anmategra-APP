@@ -1,12 +1,13 @@
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
 import { eventProfilProp } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
-import ProfilTable from '~/app/lembaga/kegiatan/_components/table/event-profil-table';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '~/components/ui/accordion';
+
+import ProfilTable from '../../table/event-profil-table';
 
 export type PemetaanProfilSectionProps = {
   pemetaanProfilData?: ProfilGroup[];
@@ -24,7 +25,7 @@ export default function DetailPemetaanProfilSection({
           {isLembaga ? 'Pemetaan Profil Lembaga' : 'Pemetaan Profil Kegiatan'}
         </AccordionTrigger>
         <AccordionContent>
-          <ProfilTable profilData={pemetaanProfilData} />
+          {/* <ProfilTable profilData={pemetaanProfilData} /> */}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -3,11 +3,12 @@ import { type z } from 'zod';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
-import ProfilTable from '~/app/lembaga/kegiatan/_components/table/event-profil-table';
 import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
 import { type GetNilaiLembagaIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
+
+import ProfilTable from '../../../_components/table/event-profil-table';
 
 type NilaiLembagaOutput = z.infer<typeof GetNilaiLembagaIndividuOutputSchema>;
 type ProfilLembagaOutput = z.infer<typeof GetAllProfilOutputSchema>;

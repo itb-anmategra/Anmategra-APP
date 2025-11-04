@@ -1,7 +1,7 @@
 import React from 'react';
 import { api } from '~/trpc/server';
 
-import ProfilTable from '../../_components/table/event-profil-table';
+import ProfilTable from '../../../../_components/table/event-profil-table';
 
 interface ProfilEventProps {
   params: {
