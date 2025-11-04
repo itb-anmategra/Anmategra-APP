@@ -5,19 +5,13 @@
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
 import Upload from '~/../public/icons/export-button.svg';
 import Filter from '~/../public/icons/filter-list.svg';
-// Icon Import
-import Plus from '~/../public/icons/plus.svg';
 import SearchIcon from '~/../public/icons/search.svg';
 // Import the magnifying glass icon
-import TambahAnggotaForm, {
-  type comboboxDataType,
-} from '~/app/_components/form/tambah-anggota-form';
-import TambahAnggotaKegiatanForm from '~/app/_components/form/tambah-anggota-kegiatan-form';
+import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
   MahasiswaCardTable,
@@ -25,15 +19,6 @@ import {
 } from '~/app/lembaga/anggota/_components/table/mahasiswa-card-table';
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
-// Components Import
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 
 export default function AnggotaContent({
@@ -50,8 +35,6 @@ export default function AnggotaContent({
     bidang: comboboxDataType[];
   };
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';

@@ -17,10 +17,7 @@ import { api } from '~/trpc/server';
 import CarouselBestStaff from '../../../_components/carousel/carousel-best-staff';
 import HighlightedEventCard from '../_components/highlighted-event-card';
 // Dummy Data Import
-import {
-  dummyDate,
-  dummyMahasiswaList,
-} from './histori/_components/dummy-histori';
+import { dummyDate } from './histori/_components/dummy-histori';
 
 const DetailLembagaPage = async ({
   params,

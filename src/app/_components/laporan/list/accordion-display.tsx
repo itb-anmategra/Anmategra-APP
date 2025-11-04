@@ -1,19 +1,9 @@
-import { Plus } from 'lucide-react';
 import Image, { type StaticImageData } from 'next/image';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '~/components/ui/accordion';
+import { Accordion, AccordionItem } from '~/components/ui/accordion';
 
 import { type Report } from '../board/report-card';
-import { type ColumnProps, type ColumnType } from '../board/report-column';
+import { type ColumnType } from '../board/report-column';
 import LaporanFormDialog from '../detail/laporan-form';
-
-interface LaporanProps {
-  data: ColumnProps[];
-}
 
 interface AccordionProps {
   title: ColumnType;

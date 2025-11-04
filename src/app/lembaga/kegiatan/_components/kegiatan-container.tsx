@@ -6,7 +6,6 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import {
   ArrowUpRight,
   Circle,
-  Filter,
   MoreVertical,
   Pencil,
   Pin,

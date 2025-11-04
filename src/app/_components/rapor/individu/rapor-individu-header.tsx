@@ -11,10 +11,7 @@ import {
   type UpsertNilaiMahasiswaKegiatanInputSchema,
   type UpsertNilaiMahasiswaLembagaInputSchema,
 } from '~/server/api/types/rapor.type';
-import {
-  type GetNilaiKegiatanIndividuOutputSchema,
-  type GetNilaiLembagaIndividuOutputSchema,
-} from '~/server/api/types/rapor.type';
+import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/react';
 
 import { type NilaiProfilCardType } from '../../card/nilai-profil-card';

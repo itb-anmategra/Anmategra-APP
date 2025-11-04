@@ -18,7 +18,6 @@ import {
   users,
 } from '~/server/db/schema';
 
-import { EditPanitiaKegiatanInputSchema } from '../types/event.type';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,

@@ -136,6 +136,7 @@ const LaporanFormDialog: React.FC = () => {
       });
       setIsOpen(false);
     } catch (error) {
+      console.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
     }

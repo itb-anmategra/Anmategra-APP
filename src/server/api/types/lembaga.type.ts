@@ -1,6 +1,4 @@
-import { request } from 'http';
 import { z } from 'zod';
-import { lembaga } from '~/server/db/schema';
 
 export const GetInfoLembagaInputSchema = z.object({
   lembagaId: z.string().nonempty(),
