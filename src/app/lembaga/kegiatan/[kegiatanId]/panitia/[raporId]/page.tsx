@@ -1,9 +1,7 @@
 import { type z } from 'zod';
-import PemetaanProfilSection from '~/app/_components/rapor/individu/pemetaan-profil-section';
-import ProfilDeskripsiSection from '~/app/_components/rapor/individu/profil-deskripsi-section';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
-import { type ProfilGroup } from '~/app/lembaga/kegiatan/[kegiatanId]/profil/constant';
+import ProfilTable from '~/app/_components/table/event-profil-table';
 import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
 import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/server';
@@ -21,53 +19,113 @@ interface RaporIndividuPanitiaPageProps {
     kegiatanId: string;
     raporId: string;
   };
-  pemetaanProfilData?: ProfilGroup[];
 }
 
 export default async function RaporIndividuPanitiaPage({
   params,
-  pemetaanProfilData,
 }: RaporIndividuPanitiaPageProps) {
   const { kegiatanId, raporId } = params;
 
-  const raporData = await api.rapor.getNilaiKegiatanIndividu({
-    event_id: kegiatanId,
-    mahasiswa_id: raporId,
-  });
+  try {
+    const [raporData, profilData, profilKMData] = await Promise.all([
+      api.rapor.getNilaiKegiatanIndividu({
+        event_id: kegiatanId,
+        mahasiswa_id: raporId,
+      }),
+      api.profil.getAllProfilKegiatan({
+        event_id: kegiatanId,
+      }),
+      api.profil.getAllProfilKM(),
+    ]);
 
-  const profilData = await api.profil.getAllProfilKegiatan({
-    event_id: kegiatanId,
-  });
+    const profilKMMap = new Map(
+      profilKMData.profil_km.map((km) => [km.id, km.description]),
+    );
 
-  return (
-    <main className="flex flex-col p-8 min-h-screen">
-      <div className="flex flex-col pb-7 border-b border-neutral-400 mb-8">
-        <h1 className="text-[32px] font-semibold mb-2 text-neutral-1000">
-          Rapor Individu
-        </h1>
-        <RaporBreadcrumb
-          items={[
-            { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-            { label: 'Panitia', href: '/lembaga/kegiatan' },
-            { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
-          ]}
-        />
-      </div>
+    const profilKegiatanList =
+      'profil_kegiatan' in profilData
+        ? profilData.profil_kegiatan.map((kegiatan) => ({
+            name: kegiatan.name,
+            description: kegiatan.description,
+          }))
+        : [];
 
-      <div className="flex flex-col gap-16">
-        <RaporIndividuHeader
-          dataNilaiProfil={raporData}
-          id={kegiatanId}
-          isLembaga={false}
-        />
+    const mappingData =
+      'profil_kegiatan' in profilData
+        ? profilData.profil_kegiatan.flatMap((kegiatan) =>
+            kegiatan.profil_km_id.map((kmId) => ({
+              profilKMDescription: profilKMMap.get(kmId) ?? 'Unknown',
+              profilKegiatanName: kegiatan.name,
+              profilKegiatanDescription: kegiatan.description,
+            })),
+          )
+        : [];
 
-        <ProfilDeskripsiSection profilData={profilData} isLembaga={false} />
+    return (
+      <main className="flex flex-col p-8 min-h-screen">
+        <div className="flex flex-col pb-7 border-b border-neutral-400 mb-8">
+          <h1 className="text-[32px] font-semibold mb-2 text-neutral-1000">
+            Rapor Individu
+          </h1>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
+              { label: 'Panitia', href: '/lembaga/kegiatan' },
+              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+            ]}
+          />
+        </div>
 
-        <PemetaanProfilSection
-          pemetaanProfilData={pemetaanProfilData}
-          isLembaga={false}
-        />
-      </div>
-    </main>
-  );
+        <div className="flex flex-col gap-16">
+          <RaporIndividuHeader
+            dataNilaiProfil={raporData}
+            id={kegiatanId}
+            isLembaga={false}
+          />
+
+          <div className="flex flex-col gap-y-4">
+            <h2 className="text-neutral-700 text-[20px] font-normal">
+              Profil Kegiatan
+            </h2>
+            <ProfilTable
+              profilData={profilKegiatanList}
+              showMapping={false}
+              isLembaga={false}
+            />
+          </div>
+
+          <div className="flex flex-col gap-y-4">
+            <h2 className="text-neutral-700 text-[20px] font-normal">
+              Detail Pemetaan Profil Kegiatan
+            </h2>
+            <ProfilTable
+              profilData={mappingData}
+              showMapping={true}
+              isLembaga={false}
+            />
+          </div>
+        </div>
+      </main>
+    );
+  } catch {
+    return (
+      <main className="flex flex-col p-8 min-h-screen">
+        <div className="flex flex-col pb-7 border-b border-neutral-400 mb-8">
+          <h1 className="text-[32px] font-semibold mb-2 text-neutral-1000">
+            Rapor Individu
+          </h1>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
+              { label: 'Panitia', href: '/lembaga/kegiatan' },
+              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+            ]}
+          />
+        </div>
+        <div className="text-center py-8">
+          <p className="text-neutral-500">Gagal memuat data rapor individu</p>
+        </div>
+      </main>
+    );
+  }
 }
