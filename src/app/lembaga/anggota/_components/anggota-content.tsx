@@ -4,7 +4,7 @@
 // Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
@@ -28,6 +28,7 @@ import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -51,6 +52,7 @@ export default function AnggotaContent({
   const [isOpen, setIsOpen] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';
   let tableData;
   if (!isAnggota && pathname) {
@@ -122,6 +124,10 @@ export default function AnggotaContent({
                           ? 'Tambah Anggota Manual'
                           : 'Tambah Anggota'}
                       </DialogTitle>
+                      <DialogDescription className="sr-only">
+                        Form untuk menambahkan anggota baru ke{' '}
+                        {isAnggota ? 'lembaga' : 'kegiatan'}
+                      </DialogDescription>
                     </DialogHeader>
                     {isAnggota ? (
                       <TambahAnggotaForm
@@ -147,7 +153,7 @@ export default function AnggotaContent({
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
                       // Empty function - add rapor komunal functionality here
-                      console.log('Rapor Komunal clicked');
+                      router.push('/lembaga/anggota/rapor');
                     }}
                   >
                     <Image

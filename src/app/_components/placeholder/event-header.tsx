@@ -47,6 +47,7 @@ export function EventHeader({
             layout="fill"
             objectFit="cover"
             priority
+            sizes="100vw"
           />
         </div>
         <div
@@ -64,6 +65,7 @@ export function EventHeader({
                 alt="Event logo"
                 fill
                 className="object-cover object-center"
+                sizes="128px"
               />
             </div>
 
