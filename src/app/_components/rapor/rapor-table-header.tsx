@@ -2,7 +2,12 @@ import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
 
 import ProfilMenu from './profil-menu';
 
-type ProfilHeader = { label: string; deskripsi: string; pemetaan: string };
+type ProfilHeader = {
+  id: string;
+  name: string;
+  description: string;
+  profil_km_id: string[];
+};
 
 export default function RaporTableHeader({
   profilHeaders,
@@ -29,10 +34,10 @@ export default function RaporTableHeader({
         {profilHeaders.map((header, colIdx) => (
           <TableHead key={colIdx} className="relative w-[120px]">
             <div className="flex items-center">
-              <span title={header.label}>
-                {header.label.length > 20
-                  ? header.label.slice(0, 20) + '…'
-                  : header.label}
+              <span title={header.name}>
+                {header.name.length > 20
+                  ? header.name.slice(0, 20) + '…'
+                  : header.name}
               </span>
               <ProfilMenu
                 colIdx={colIdx}

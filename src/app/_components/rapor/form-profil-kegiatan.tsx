@@ -19,11 +19,15 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
+import {
+  CreateProfilLembagaInputSchema,
+  EditProfilInputSchema,
+} from '~/server/api/types/profil.type';
 import { api } from '~/trpc/react';
 
 interface FormProfilKegiatanProps {
-  eventId: string;
   profilId?: string;
+  lembagaId?: string;
   isTambah?: boolean;
   customClassName?: string;
   isOpen?: boolean;
@@ -33,17 +37,8 @@ interface FormProfilKegiatanProps {
   defaultProfilKM?: string[];
 }
 
-// schema untuk validasi
-const profilSchema = z.object({
-  name: z.string().min(1, 'Profil tidak boleh kosong'),
-  description: z.string().min(1, 'Deskripsi tidak boleh kosong'),
-  profil_km_id: z.array(z.string().min(1, 'Profil KM harus dipilih')).min(1),
-  profil_id: z.string().optional(), // hanya diperlukan saat edit
-  event_id: z.string().optional(), // hanya diperlukan saat create
-});
-
 export default function FormProfilKegiatan({
-  eventId,
+  lembagaId,
   profilId,
   isTambah = true,
   customClassName = '',
@@ -59,53 +54,72 @@ export default function FormProfilKegiatan({
   const [mappings, setMappings] = React.useState<Record<number, string>>(
     Object.fromEntries(defaultProfilKM.map((v, i) => [i, v])),
   );
-  const [selects, setSelects] = React.useState<number[]>([0]);
+  const [selects, setSelects] = React.useState<number[]>(
+    defaultProfilKM.length ? defaultProfilKM.map((_, i) => i) : [0],
+  );
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const { data: profilList } = api.profil.getAllProfilKM.useQuery();
+  const createProfilLembaga = api.profil.createProfilLembaga.useMutation();
+  const editProfilLembaga = api.profil.editProfilLembaga.useMutation();
 
-  const createProfilKegiatan = api.profil.createProfilKegiatan.useMutation();
-  const editProfilKegiatan = api.profil.editProfilKegiatan.useMutation();
+  React.useEffect(() => {
+    setProfilInput(defaultName);
+    setDeskripsiInput(defaultDescription);
+    setMappings(Object.fromEntries(defaultProfilKM.map((v, i) => [i, v])));
+    setSelects(defaultProfilKM.length ? defaultProfilKM.map((_, i) => i) : [0]);
+  }, [defaultName, defaultDescription, defaultProfilKM, isOpen]);
 
   const addSelect = () => setSelects([...selects, selects.length]);
-
-  const updateMapping = (id: number, value: string) => {
+  const updateMapping = (id: number, value: string) =>
     setMappings((prev) => ({ ...prev, [id]: value }));
-  };
 
   const handleSave = async () => {
     setErrorMessage('');
+
+    const profilKMArray = Object.values(mappings).filter(
+      (v) => v.trim() !== '',
+    );
+
+    if (
+      !profilInput.trim() ||
+      !deskripsiInput.trim() ||
+      profilKMArray.length === 0
+    ) {
+      setErrorMessage(
+        'Semua field harus diisi dan setidaknya satu Profil KM dipilih!',
+      );
+      return;
+    }
+
     try {
-      const inputData = {
-        name: profilInput,
-        description: deskripsiInput,
-        profil_km_id: Object.values(mappings),
-        profil_id: !isTambah ? profilId : undefined,
-        event_id: isTambah ? eventId : undefined,
-      };
-
-      const validated = profilSchema.parse(inputData);
-
       if (isTambah) {
-        await createProfilKegiatan.mutateAsync({
-          event_id: validated.event_id!,
-          name: validated.name,
-          description: validated.description,
-          profil_km_id: validated.profil_km_id,
+        const validatedCreate = CreateProfilLembagaInputSchema.parse({
+          name: profilInput,
+          description: deskripsiInput,
+          profil_km_id: profilKMArray,
+          lembaga_id: lembagaId!,
         });
+
+        await createProfilLembaga.mutateAsync(validatedCreate);
       } else {
-        await editProfilKegiatan.mutateAsync({
-          profil_id: validated.profil_id!,
-          name: validated.name,
-          description: validated.description,
-          profil_km_id: validated.profil_km_id,
+        const validatedEdit = EditProfilInputSchema.parse({
+          name: profilInput,
+          description: deskripsiInput,
+          profil_km_id: profilKMArray,
+          profil_id: profilId!,
         });
+
+        await editProfilLembaga.mutateAsync(validatedEdit);
       }
 
       onClose?.();
     } catch (err: any) {
+      console.error('Error saat save profil:', err);
       if (err instanceof z.ZodError) {
         setErrorMessage(err.errors[0]?.message ?? 'Validasi gagal');
+      } else if (err instanceof Error) {
+        setErrorMessage(err.message);
       } else {
         setErrorMessage('Gagal menyimpan data!');
       }

@@ -1,6 +1,9 @@
 import { SearchBar } from '~/app/_components/placeholder/search-bar';
 import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
 import RaporTable from '~/app/_components/rapor/rapor-table';
+import { getAllAnggota } from '~/server/api/routers/event/getByID';
+import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/trpc/server';
 
 const anggotaList = [
   {
@@ -284,7 +287,17 @@ const selectOptions = [
   },
 ];
 
-export default function RaporPage() {
+export default async function RaporPage() {
+  const session = await getServerAuthSession();
+  const anggota = await api.lembaga.getAllAnggota({
+    lembagaId: session?.user.lembagaId ?? '',
+  });
+
+  const profilResult = await api.profil.getAllProfilLembaga({
+    lembaga_id: session?.user.lembagaId ?? '',
+  });
+  const profilLembaga =
+    'profil_lembaga' in profilResult ? profilResult.profil_lembaga : [];
   return (
     <main className="flex flex-col p-8 min-h-screen">
       <h1 className="text-[32px] font-semibold mb-2">Wisnight</h1>
@@ -299,8 +312,9 @@ export default function RaporPage() {
       <div className="mb-6" />
       <RaporTable
         data={anggotaList}
-        profil={profilHeaders}
+        profil={profilLembaga}
         selectOptions={selectOptions}
+        lembagaId={session?.user.lembagaId ?? ''}
       />
     </main>
   );

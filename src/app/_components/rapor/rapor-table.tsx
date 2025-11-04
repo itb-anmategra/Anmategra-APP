@@ -7,6 +7,7 @@ import { useToast } from '~/hooks/use-toast';
 import Pagination from '../layout/pagination-comp';
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
+import FormProfilKegiatan from './form-profil-kegiatan';
 import LinkButton from './link-button';
 import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
@@ -14,23 +15,30 @@ import RaporTableRow from './rapor-table-row';
 import TambahProfilButton from './tambah-profil-button';
 
 type Anggota = { nama: string; nim: string; profil: string[] };
-type ProfilData = { label: string; deskripsi: string; pemetaan: string };
+type ProfilData = {
+  id: string;
+  name: string;
+  description: string;
+  profil_km_id: string[];
+};
 
 interface TableProps {
   data: Anggota[];
   profil: ProfilData[];
   selectOptions: { value: string; label: string }[];
+  lembagaId: string;
 }
 
 export default function RaporTable({
-  data: anggotaList,
-  profil: profilList = [],
+  data: anggota,
+  profil: profilKM = [],
   selectOptions,
+  lembagaId: sessLembagaId,
 }: TableProps) {
   const { toast } = useToast();
 
-  const [data, setData] = useState<Anggota[]>(anggotaList);
-  const [profilHeaders, setProfilHeaders] = useState<ProfilData[]>(profilList);
+  const [data, setData] = useState<Anggota[]>(anggota);
+  const [profilHeaders, setProfilHeaders] = useState<ProfilData[]>(profilKM);
   const [menu, setMenu] = useState<{ row: number; col: number } | null>(null);
 
   // Modal state
@@ -41,10 +49,9 @@ export default function RaporTable({
   // Form state for modal
   const [profil, setProfil] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
-  const [pemetaan, setPemetaan] = useState('');
+  const [pemetaan, setPemetaan] = useState<string[]>([]);
 
-  // Error state for form validation
-  const [profilError, setProfilError] = useState<string | null>(null);
+  // Error state for form validationlError] = useState<string | null>(null);
 
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteColIdx, setDeleteColIdx] = useState<number | null>(null);
@@ -66,7 +73,7 @@ export default function RaporTable({
     setModalType('tambah');
     setProfil('');
     setDeskripsi('');
-    setPemetaan('');
+    setPemetaan([]);
     setModalOpen(true);
     setMenu(null);
     setEditColIdx(null);
@@ -74,9 +81,9 @@ export default function RaporTable({
 
   const handleEditProfil = (colIdx: number) => {
     setModalType('edit');
-    setProfil(profilHeaders[colIdx]?.label ?? '');
-    setDeskripsi(profilHeaders[colIdx]?.deskripsi ?? '');
-    setPemetaan(profilHeaders[colIdx]?.pemetaan ?? '');
+    setProfil(profilHeaders[colIdx]?.name ?? '');
+    setDeskripsi(profilHeaders[colIdx]?.description ?? '');
+    setPemetaan(profilHeaders[colIdx]?.profil_km_id ?? []);
     setModalOpen(true);
     setMenu(null);
     setEditColIdx(colIdx);
@@ -107,7 +114,11 @@ export default function RaporTable({
   };
 
   const handleSimpanTambah = () => {
-    if (!profil.trim() || !pemetaan.trim()) {
+    if (
+      !profil.trim() ||
+      pemetaan.length === 0 ||
+      pemetaan.some((p) => !p.trim())
+    ) {
       toast({
         title: 'Gagal menyimpan',
         description: 'Nama profil dan pemetaan tidak boleh kosong',
@@ -119,11 +130,13 @@ export default function RaporTable({
     setProfilHeaders((prev) => [
       ...prev,
       {
-        label: profil ?? `Profil ${prev.length + 1}`,
-        deskripsi,
-        pemetaan,
+        id: crypto.randomUUID(),
+        name: profil,
+        description: deskripsi,
+        profil_km_id: pemetaan,
       },
     ]);
+
     setData((prev) =>
       prev.map((row) => ({
         ...row,
@@ -134,7 +147,11 @@ export default function RaporTable({
   };
 
   const handleSimpanEdit = () => {
-    if (!profil.trim() || !pemetaan.trim()) {
+    if (
+      !profil.trim() ||
+      pemetaan.length === 0 ||
+      pemetaan.some((p) => !p.trim())
+    ) {
       toast({
         title: 'Gagal menyimpan',
         description: 'Nama profil dan pemetaan tidak boleh kosong',
@@ -144,11 +161,20 @@ export default function RaporTable({
     }
 
     if (editColIdx === null) return;
+
     setProfilHeaders((prev) =>
       prev.map((header, idx) =>
-        idx === editColIdx ? { label: profil, deskripsi, pemetaan } : header,
+        idx === editColIdx
+          ? {
+              ...header,
+              name: profil,
+              description: deskripsi,
+              profil_km_id: pemetaan,
+            } // <-- jadikan array
+          : header,
       ),
     );
+
     setModalOpen(false);
   };
 
@@ -197,7 +223,7 @@ export default function RaporTable({
             </TableBody>
           </Table>
         </div>
-        <ProfilDialog
+        {/* <ProfilDialog
           open={modalOpen}
           setOpen={setModalOpen}
           modalType={modalType}
@@ -211,6 +237,24 @@ export default function RaporTable({
           handleSimpanEdit={handleSimpanEdit}
           handleBatal={() => setModalOpen(false)}
           selectOptions={selectOptions}
+        /> */}
+        <FormProfilKegiatan
+          lembagaId={sessLembagaId}
+          profilId={editColIdx !== null ? profilHeaders[editColIdx]?.id : ''}
+          isTambah={modalType === 'tambah'}
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          defaultName={
+            editColIdx !== null ? profilHeaders[editColIdx]?.name : ''
+          }
+          defaultDescription={
+            editColIdx !== null ? profilHeaders[editColIdx]?.description : ''
+          }
+          defaultProfilKM={
+            editColIdx !== null
+              ? (profilHeaders[editColIdx]?.profil_km_id ?? [])
+              : []
+          }
         />
         <DeleteProfilDialog
           open={confirmDeleteOpen}
