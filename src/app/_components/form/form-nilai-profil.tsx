@@ -104,7 +104,10 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="[&>button]:hidden bg-transparent border-0 shadow-none p-0 flex items-center justify-center">
+      <DialogContent
+        className="[&>button]:hidden bg-transparent border-0 shadow-none p-0 flex items-center justify-center"
+        aria-describedby={undefined}
+      >
         <Card className="relative w-[309px] max-h-[90vh] rounded-[26.1px] border border-[#C4CACE] pt-[35px] pr-[37px] pb-[27px] pl-[37px] bg-white flex flex-col gap-[10px] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-semibold text-[24px] leading-[40px] text-center text-[#141718]">

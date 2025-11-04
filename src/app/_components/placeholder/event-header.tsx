@@ -131,7 +131,10 @@ export function EventHeader({
 
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="w-712px mx-auto p-6 bg-white rounded-3xl">
+        <DialogContent
+          className="w-712px mx-auto p-6 bg-white rounded-3xl"
+          aria-describedby={undefined}
+        >
           <div className="text-center">
             <p className="text-xl font-regular text-gray-900 mt-2 mb-2">
               Apakah Anda yakin ingin membatalkan pengajuan asosiasi?

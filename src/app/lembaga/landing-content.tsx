@@ -84,7 +84,7 @@ export default function LandingContent({
               Kepanitiaan Terbaru
             </h3>
             <Link
-              href="#"
+              href="/lembaga/kegiatan"
               className="flex items-center gap-1 text-lg font-semibold text-[#141718]"
             >
               <span>Lihat Semua</span>

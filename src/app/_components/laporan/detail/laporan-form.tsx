@@ -175,6 +175,7 @@ const LaporanFormDialog: React.FC = () => {
                 : 'w-[1000px] h-[384px] max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
             }
           `}
+          aria-describedby={undefined}
         >
           <div
             className={`flex flex-col pt-8 pr-6 pb-4 pl-6 gap-[${isMaximized ? '400px' : '120px'}]`}

@@ -145,7 +145,10 @@ const AjuanAsosiasiForm = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="w-[880px] h-fit max-w-none mx-auto p-0 bg-white rounded-xl overflow-hidden [&>button]:right-6 [&>button]:top-7">
+      <DialogContent
+        className="w-[880px] h-fit max-w-none mx-auto p-0 bg-white rounded-xl overflow-hidden [&>button]:right-6 [&>button]:top-7"
+        aria-describedby={undefined}
+      >
         {/* Header */}
         <DialogHeader className="p-6 pb-4">
           <div className="flex items-center justify-between">

@@ -69,6 +69,7 @@ export default function FormProfilKegiatan({
     <Dialog open={isOpen} onOpenChange={(o) => !o && onClose?.()}>
       <DialogContent
         className={`h-auto max-h-screen overflow-auto max-w-none w-[907px] rounded-[26.1px] bg-white border-[0.82px] border-[#C4CACE] px-9 py-6 flex flex-col gap-[21px] text-[#141718] ${customClassName}`}
+        aria-describedby={undefined}
       >
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="text-2xl font-semibold">

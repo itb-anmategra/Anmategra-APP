@@ -117,7 +117,10 @@ export default function AnggotaContent({
                       Tambah Anggota Baru
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="w-full max-w-xl">
+                  <DialogContent
+                    className="w-full max-w-xl"
+                    aria-describedby={undefined}
+                  >
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
                         {manualMode

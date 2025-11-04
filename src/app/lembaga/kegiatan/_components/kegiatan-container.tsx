@@ -167,7 +167,7 @@ export default function ActivityList({
               Filter
             </Button>
           </DialogTrigger>
-          <DialogContent className="min-w-[800px]">
+          <DialogContent className="min-w-[800px]" aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Tambah Kegiatan</DialogTitle>
             </DialogHeader>

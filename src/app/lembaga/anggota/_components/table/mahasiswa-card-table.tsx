@@ -95,7 +95,7 @@ const columns: ColumnDef<Member>[] = [
                 Hapus
               </Button> */}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Hapus Anggota</DialogTitle>
                 <DialogDescription>
