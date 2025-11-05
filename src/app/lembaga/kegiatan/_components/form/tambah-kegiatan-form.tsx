@@ -191,9 +191,9 @@ const TambahKegiatanForm = ({
                   <FormLabel>
                     Tanggal Mulai<span className="text-red-500 ml-1">*</span>
                   </FormLabel>
-                  <FormControl className="p-2">
-                    <Popover>
-                      <PopoverTrigger asChild>
+                  <Popover modal={true}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
@@ -208,21 +208,22 @@ const TambahKegiatanForm = ({
                           )}
                           <CalendarIcon className="mr-2 h-4 w-4" />
                         </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-20">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : undefined
-                          }
-                          onSelect={(date) =>
-                            field.onChange(date?.toISOString())
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 !z-[9999]"
+                      style={{ zIndex: 9999 }}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -234,9 +235,9 @@ const TambahKegiatanForm = ({
               render={({ field }) => (
                 <FormItem className="flex-1 flex flex-col gap-y-[2px]">
                   <FormLabel>Tanggal Selesai</FormLabel>
-                  <FormControl className="p-2">
-                    <Popover>
-                      <PopoverTrigger asChild>
+                  <Popover modal={true}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
@@ -251,26 +252,27 @@ const TambahKegiatanForm = ({
                           )}
                           <CalendarIcon className="mr-2 h-4 w-4" />
                         </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-20">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : undefined
-                          }
-                          onSelect={(date) =>
-                            field.onChange(date?.toISOString())
-                          }
-                          initialFocus
-                          disabled={(date) =>
-                            startDate
-                              ? new Date(date) < new Date(startDate)
-                              : false
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 !z-[9999]"
+                      style={{ zIndex: 9999 }}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        initialFocus
+                        disabled={(date) =>
+                          startDate
+                            ? new Date(date) < new Date(startDate)
+                            : false
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
