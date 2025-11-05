@@ -484,6 +484,7 @@ const TambahKegiatanForm = ({
                   <CustomDropzone
                     label="Upload Gambar"
                     onFileChange={field.onChange}
+                    initialValue={field.value}
                   />
                 </FormControl>
                 <FormMessage />
@@ -500,6 +501,7 @@ const TambahKegiatanForm = ({
                   <CustomDropzone
                     label="Upload Banner"
                     onFileChange={field.onChange}
+                    initialValue={field.value}
                   />
                 </FormControl>
                 <FormMessage />
@@ -516,6 +518,7 @@ const TambahKegiatanForm = ({
                   <CustomDropzone
                     label="Upload Organogram"
                     onFileChange={field.onChange}
+                    initialValue={field.value}
                   />
                 </FormControl>
                 <FormMessage />

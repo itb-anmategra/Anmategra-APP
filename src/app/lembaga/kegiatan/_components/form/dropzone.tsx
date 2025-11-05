@@ -9,11 +9,18 @@ import { Dropzone } from '~/components/ui/shadcn-io/dropzone/index';
 interface CustomDropzoneProps {
   onFileChange: (url: string) => void;
   label: string;
+  initialValue?: string;
 }
 
-const CustomDropzone = ({ onFileChange, label }: CustomDropzoneProps) => {
+const CustomDropzone = ({
+  onFileChange,
+  label,
+  initialValue,
+}: CustomDropzoneProps) => {
   const [files, setFiles] = useState<File[] | undefined>();
-  const [filePreview, setFilePreview] = useState<string | undefined>();
+  const [filePreview, setFilePreview] = useState<string | undefined>(
+    initialValue,
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -60,6 +67,7 @@ const CustomDropzone = ({ onFileChange, label }: CustomDropzoneProps) => {
     setFilePreview(undefined);
     setFiles(undefined);
     setUploadProgress(0);
+    onFileChange('');
   };
 
   return (
@@ -72,7 +80,7 @@ const CustomDropzone = ({ onFileChange, label }: CustomDropzoneProps) => {
       <div
         className={`relative w-full h-44 border-2 p-4 rounded-xl transition-all ${filePreview && !isUploading ? 'border-solid border-[#00B7B7]' : 'border-dashed border-gray-300 group-hover:border-[#00B7B7]'}`}
       >
-        {!files && !isUploading && (
+        {!files && !isUploading && !filePreview && (
           <div className="flex flex-col items-center justify-center h-full gap-3 group-hover:text-[#00B7B7] transition-colors">
             <div className="relative w-12 h-12">
               <Image
@@ -132,7 +140,7 @@ const CustomDropzone = ({ onFileChange, label }: CustomDropzoneProps) => {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-semibold text-blue-600">
+                <span className="text-sm font-semibold text-[#00b7b7]">
                   {uploadProgress}%
                 </span>
               </div>
