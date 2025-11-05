@@ -146,7 +146,9 @@ const TambahKegiatanForm = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nama Kegiatan</FormLabel>
+                <FormLabel>
+                  Nama Kegiatan<span className="text-red-500 ml-1">*</span>
+                </FormLabel>
                 <FormControl className="p-2">
                   <Input
                     className="rounded-lg"
@@ -165,7 +167,9 @@ const TambahKegiatanForm = ({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Deskripsi</FormLabel>
+                <FormLabel>
+                  Deskripsi<span className="text-red-500 ml-1">*</span>
+                </FormLabel>
                 <FormControl className="p-2">
                   <Textarea
                     className="rounded-lg"
@@ -184,7 +188,9 @@ const TambahKegiatanForm = ({
               name="start_date"
               render={({ field }) => (
                 <FormItem className="flex-1 flex flex-col gap-y-[2px]">
-                  <FormLabel>Tanggal Mulai</FormLabel>
+                  <FormLabel>
+                    Tanggal Mulai<span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
                   <FormControl className="p-2">
                     <Popover>
                       <PopoverTrigger asChild>
@@ -278,7 +284,9 @@ const TambahKegiatanForm = ({
               name="status"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Status Kegiatan</FormLabel>
+                  <FormLabel>
+                    Status Kegiatan<span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -306,7 +314,9 @@ const TambahKegiatanForm = ({
               name="location"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Lokasi Kegiatan</FormLabel>
+                  <FormLabel>
+                    Lokasi Kegiatan<span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
                   <FormControl className="p-2">
                     <Input
                       className="rounded-lg "
@@ -346,7 +356,9 @@ const TambahKegiatanForm = ({
               name="participant_limit"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Batas Peserta</FormLabel>
+                  <FormLabel>
+                    Batas Peserta<span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
                   <FormControl className="p-2">
                     <div className="relative">
                       <Input
@@ -396,7 +408,10 @@ const TambahKegiatanForm = ({
               name="participant_count"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Jumlah Peserta Saat Ini</FormLabel>
+                  <FormLabel>
+                    Jumlah Peserta Saat Ini
+                    <span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
                   <FormControl className="p-2">
                     <div className="relative">
                       <Input
@@ -460,7 +475,9 @@ const TambahKegiatanForm = ({
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload Gambar</FormLabel>
+                <FormLabel>
+                  Upload Gambar<span className="text-red-500 ml-1">*</span>
+                </FormLabel>
                 <FormControl>
                   <CustomDropzone
                     label="Upload Gambar"
