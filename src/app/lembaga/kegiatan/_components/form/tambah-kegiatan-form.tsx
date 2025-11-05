@@ -487,7 +487,7 @@ const TambahKegiatanForm = ({
           className="w-full bg-primary-400"
           disabled={!isValid}
         >
-          Simpan Kegiatan
+          SIMPAN
         </Button>
       </form>
     </Form>
