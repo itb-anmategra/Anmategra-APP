@@ -221,6 +221,7 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
 
 type BestStaffProps = {
   trigger?: React.ReactNode;
+  lembagaId: string;
 };
 
 const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
