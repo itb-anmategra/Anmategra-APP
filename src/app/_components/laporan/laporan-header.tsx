@@ -38,12 +38,12 @@ export const LaporanHeader = ({
   isAdminView,
 }: LaporanHeaderProps) => {
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex justify-between">
       <h1 className="text-[32px] font-semibold">Laporan</h1>
       <div className="flex space-x-2 gap-[19px] text-lg font-semibold">
         {/* Dropdown for Display Management */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="">
+          <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
               className="flex w-[169px] h-[50px] items-center rounded-xl border px-7 py-3 font-semibold"
@@ -62,7 +62,7 @@ export const LaporanHeader = ({
             className="flex flex-col items-center gap-4 rounded-md border py-4 pl-3 pr-3"
           >
             <DropdownMenuItem
-              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold"
+              className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold hover:bg-gray-200"
               onClick={() => setCurrentDisplay('List')}
             >
               <Image
@@ -93,7 +93,7 @@ export const LaporanHeader = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="w-[169px] h-[50px] gap-[10px] px-7 py-2 text-lg font-semibold"
+              className="w-[193px] h-[50px] gap-[10px] px-7 py-2 text-lg font-semibold"
             >
               <Image
                 src={Status}

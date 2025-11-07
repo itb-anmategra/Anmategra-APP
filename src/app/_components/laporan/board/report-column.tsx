@@ -1,4 +1,9 @@
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import Image, { type StaticImageData } from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
@@ -7,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 
-import { type Report, ReportCard } from './report-card';
+import { type Report } from './report-card';
+import { SortableReportCard } from './sortable-report-card';
 import DraftIcon from '/public/images/laporan/draft.svg';
 import InProgressIcon from '/public/images/laporan/in-progress.svg';
 import ResolvedIcon from '/public/images/laporan/resolved.svg';
@@ -22,6 +28,7 @@ export interface ColumnProps {
 interface ReportColumnProps extends ColumnProps {
   displayedStatus: ColumnType[];
   hideColumn: (type: ColumnType) => void;
+  activeReportId?: string;
 }
 
 export function getTypeImage(type: ColumnType) {
@@ -40,7 +47,14 @@ export function ReportColumn({
   reports,
   displayedStatus,
   hideColumn,
+  activeReportId,
 }: ReportColumnProps) {
+  const router = useRouter();
+
+  const handleClick = (id: string) => {
+    router.push(`/lembaga/laporan/${id}`);
+  };
+
   return (
     <>
       {displayedStatus.includes(title) && (
@@ -48,7 +62,7 @@ export function ReportColumn({
           <div className="mb-4 flex flex-row items-center justify-between">
             <div className="flex flex-row">
               <div className="flex flex-row gap-4">
-                <Image src={getTypeImage(title)} alt={'Status'} />
+                <Image src={getTypeImage(title)} alt="Status" />
                 <h2 className="text-[18px] font-semibold">{title}</h2>
               </div>
               <span className="ml-2 rounded-full px-2 py-1 text-sm text-[#8196A3]">
@@ -61,18 +75,35 @@ export function ReportColumn({
               </DropdownMenuTrigger>
               <DropdownMenuContent className="text-xl">
                 <DropdownMenuItem>
-                  <Button variant={'ghost'} onClick={() => hideColumn(title)}>
+                  <Button variant="ghost" onClick={() => hideColumn(title)}>
                     Hide Column
                   </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-col space-y-4">
-            {reports.map((report) => (
-              <ReportCard report={report} key={report.id} />
-            ))}
-          </div>
+
+          <SortableContext
+            id={title} // penting: id kolom untuk DnD
+            items={reports.map((r) => r.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col space-y-4 min-h-[100px]">
+              {reports.map((report) => (
+                <div
+                  key={report.id}
+                  className={
+                    report.id === activeReportId ? 'opacity-0' : 'opacity-100'
+                  }
+                >
+                  <SortableReportCard
+                    report={report}
+                    onClickAction={() => handleClick(report.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          </SortableContext>
         </div>
       )}
     </>

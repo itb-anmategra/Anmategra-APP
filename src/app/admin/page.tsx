@@ -1,7 +1,7 @@
 // Props Import
-import { type ColumnProps } from '../_components/laporan/board/report-column';
+import { type ColumnProps } from '~/app/_components/laporan/board/report-column';
 // Components Import
-import { LaporanMainContainer } from '../_components/laporan/laporan-main-container';
+import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-container';
 
 const DummyData: ColumnProps[] = [
   {
@@ -27,8 +27,6 @@ const DummyData: ColumnProps[] = [
   },
 ];
 
-const LaporanPage = () => {
+export default async function LaporanPage() {
   return <LaporanMainContainer data={DummyData} isAdminView={true} />;
-};
-
-export default LaporanPage;
+}

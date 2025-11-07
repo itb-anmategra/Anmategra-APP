@@ -1,4 +1,4 @@
-import { useDraggable } from '@dnd-kit/core';
+'use client';
 
 export interface Report {
   id: string;
@@ -7,18 +7,17 @@ export interface Report {
   category: string;
 }
 
-export function ReportCard({ report }: { report: Report }) {
-  const { attributes, listeners, setNodeRef } = useDraggable({
-    id: report.id,
-  });
+export interface ReportCardProps {
+  report: Report;
+  onClick?: () => void;
+}
+
+export function ReportCard({ report, onClick }: ReportCardProps) {
   return (
     <button
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      id={report.id}
-      className="rounded-md bg-white px-6 py-5 pr-[20%] shadow"
-      style={{ cursor: 'grab' }}
+      onClick={onClick}
+      className="rounded-[20px] bg-white px-6 py-5 pr-[20%] shadow w-full"
+      style={{ cursor: 'pointer' }}
     >
       <h3 className="mb-2 text-left text-[20px] font-semibold text-primary-400">
         {report.name}
