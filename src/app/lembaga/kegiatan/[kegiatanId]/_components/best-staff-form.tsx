@@ -22,6 +22,7 @@ import {
 } from '~/components/ui/select';
 import { api } from '~/trpc/react';
 import { useQueries } from '@tanstack/react-query';
+import { skipToken } from '@tanstack/query-core';
 
 export type Division = {
   name: string;
@@ -221,7 +222,7 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
 
 type BestStaffProps = {
   trigger?: React.ReactNode;
-  lembagaId: string;
+  lembagaId?: string;
 };
 
 const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
@@ -244,33 +245,57 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     endYear: null,
   });
 
+  const chooseBestStaffMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
+    onSuccess: () => {
+      alert('Best Staff berhasil disimpan!');
+    },
+    onError: (err) => {
+      console.error(err);
+      alert('Terjadi kesalahan saat menyimpan Best Staff.');
+    },
+  });
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
   const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>({}); 
+  const [divisionDataMapping, setDivisionDataMapping] = useState<
+    Record<string, { name: string; user_id: string }[]>
+  >({});
 
   // Ambil divisions dari backend
   const { data: divisionData, isLoading: isLoadingDivisions } =
     api.lembaga.getAllLembagaDivision.useQuery(
-      { lembaga_id: lembagaId },
+      lembagaId ? { lembaga_id: lembagaId } : skipToken,
       { enabled: !!lembagaId }
     );
   
-  // fetch staff options per division setelah divisions tersedia
-  useEffect(() => {
-    if (!divisionData) return;
+  // Fetch all anggota once and group by division, then build staff options
+  const { data: anggotaData, isLoading: isLoadingAnggota } =
+    api.lembaga.getAllAnggota.useQuery(
+      lembagaId ? { lembagaId: lembagaId } : skipToken,
+      { enabled: !!lembagaId }
+    );
 
-    divisionData.divisions.forEach((division) => {
-      const query = api.lembaga.getBestStaffLembagaOptions.useQuery(
-        { lembaga_id: lembagaId, division },
-        { enabled: !!lembagaId }
-      );
-      setStaffOptions(prev => ({
-        ...prev,
-        [division]: query.data?.staff_options.map(s => s.name) ?? []
-      }));
-    });
-  }, [divisionData, lembagaId]);
+  useEffect(() => {
+    if (!anggotaData) return;
+
+    const fullMap: Record<string, { user_id: string; name: string }[]> = {};
+    for (const a of anggotaData) {
+      const div = a.divisi ?? 'Umum';
+      if (!fullMap[div]) fullMap[div] = [];
+      fullMap[div].push({ user_id: a.id, name: a.nama });
+    }
+
+    const optionsMap: Record<string, string[]> = {};
+    for (const k of Object.keys(fullMap)) {
+      const list = fullMap[k] ?? [];
+      optionsMap[k] = list.map((u) => u.name);
+    }
+
+    setStaffOptions((prev) => ({ ...prev, ...optionsMap }));
+    setDivisionDataMapping((prev) => ({ ...prev, ...fullMap }));
+  }, [anggotaData]);
 
 
   const handleSubmit = () => {
@@ -309,13 +334,11 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
       return;
     }
 
-    const emptyDivisi = divisions.filter((d) => !selectedStaff[d.name]?.trim());
+    const emptyDivisi = (divisionData?.divisions ?? []).filter(
+      (d) => !(selectedStaff[d] && selectedStaff[d].trim()),
+    );
     if (emptyDivisi.length > 0) {
-      alert(
-        `Masih ada divisi yang belum dipilih: ${emptyDivisi
-          .map((d) => d.name)
-          .join(', ')}`,
-      );
+      alert(`Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`);
       return;
     }
 
@@ -323,31 +346,7 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     const start_date = `${startYear}-${startMonth.padStart(2, '0')}-01`;
     const end_date = `${endYear}-${endMonth.padStart(2, '0')}-01`;
 
-    // Mapping division ke data staff lengkap dari backend
-    const [divisionDataMapping, setDivisionDataMapping] = useState<Record<string, {name: string, user_id: string}[]>>({});
-
-    useEffect(() => {
-      if (!divisionData) return;
-    
-      divisionData.divisions.forEach((division) => {
-        const query = api.lembaga.getBestStaffLembagaOptions.useQuery(
-          { lembaga_id: lembagaId, division },
-          { enabled: !!lembagaId }
-        );
-      
-        if (query.data?.staff_options) {
-          setStaffOptions((prev) => ({
-            ...prev,
-            [division]: query.data.staff_options.map((s) => s.name),
-          }));
-        
-          setDivisionDataMapping((prev) => ({
-            ...prev,
-            [division]: query.data.staff_options,
-          }));
-        }
-      });
-    }, [divisionData, lembagaId]);
+    // divisionDataMapping is populated by the top-level anggota query effect
 
 
     // Mapping selectedStaff ke best_staff_list[]
@@ -363,11 +362,16 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     );
 
     
+    if (!lembagaId) {
+      alert('Missing lembaga_id - cannot submit');
+      return;
+    }
+
     const payload = {
-    lembaga_id: lembagaId,
-    start_date,
-    end_date,
-    best_staff_list,
+      lembaga_id: lembagaId,
+      start_date,
+      end_date,
+      best_staff_list,
     };
 
     console.log('Payload submit:', payload);
@@ -380,19 +384,7 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
       staff: selectedStaff,
     };
 
-
     console.log('Data Best Staff:', result);
-
-    // Hook untuk submit data ke backend
-    const chooseBestStaffMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
-      onSuccess: () => {
-        alert('Best Staff berhasil disimpan!');
-      },
-      onError: (err) => {
-        console.error(err);
-        alert('Terjadi kesalahan saat menyimpan Best Staff.');
-      },
-    });
 
     // Panggil mutation dengan payload
     chooseBestStaffMutation.mutate(payload);

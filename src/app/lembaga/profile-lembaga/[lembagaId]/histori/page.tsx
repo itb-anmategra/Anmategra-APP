@@ -7,7 +7,13 @@ import { Button } from '~/components/ui/button';
 import { dummyDate } from './_components/dummy-histori';
 import { HistoriBreadCrumb } from './_components/histori-breadcrumb';
 
-const HistoriBestStaffPage = () => {
+interface Props {
+  params: {
+    lembagaId: string;
+  };
+}
+
+const HistoriBestStaffPage = ({ params }: Props) => {
   const namaLembaga = 'HMIF ITB';
 
   return (
@@ -38,6 +44,7 @@ const HistoriBestStaffPage = () => {
                   Best Staff Periode {item.startDate}–{item.endDate} 2025
                 </h2>
                 <BestStaff
+                  lembagaId={params.lembagaId}
                   trigger={
                     <Button
                       variant={'dark_blue'}
