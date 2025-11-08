@@ -3,17 +3,16 @@
 import {
   DndContext,
   type DragEndEvent,
+  type DragOverEvent,
   DragOverlay,
   MouseSensor,
   TouchSensor,
-  closestCorners,
-  rectIntersection,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
 import { useState } from 'react';
 
+// import { arrayMove } from "@dnd-kit/sortable";
 import { Droppable } from './droppable';
 import { type Report, ReportCard } from './report-card';
 import {
@@ -27,46 +26,73 @@ export interface KanbanBoardProps {
   displayedColumn: ColumnType[];
   hideColumnAction: (type: ColumnType) => void;
 }
-
-/**
- *
- * @param data Props
- * @returns Convert data to Record<ColumnType, Report[]> to convert data to be used in useState
- */
-function handleConvertDataToRecord(data: ColumnProps[]) {
-  return data.reduce(
-    (acc, column) => {
-      acc[column.title] = column.reports;
-      return acc;
-    },
-    {} as Record<ColumnType, Report[]>,
-  );
-}
-
 export const KanbanBoard = ({
   kanbanData,
   hideColumnAction,
   displayedColumn,
 }: KanbanBoardProps) => {
-  const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint: {
-      distance: 10,
-    },
-  });
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: {
-      distance: 5,
-      delay: 150,
-    },
-  });
-
-  const sensors = useSensors(mouseSensor, touchSensor);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 100, tolerance: 5 },
+    }),
+  );
 
   const [reports, setReports] = useState<Record<ColumnType, Report[]>>(() =>
-    handleConvertDataToRecord(kanbanData),
+    kanbanData.reduce(
+      (acc, col) => {
+        acc[col.title] = col.reports;
+        return acc;
+      },
+      {} as Record<ColumnType, Report[]>,
+    ),
   );
 
   const [activeReport, setActiveReport] = useState<Report | null>(null);
+
+  const findColumnByReportId = (id: string): ColumnType | undefined =>
+    (Object.keys(reports) as ColumnType[]).find((col) =>
+      reports[col].some((r) => r.id === id),
+    );
+
+  const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
+
+    const sourceColumn = findColumnByReportId(activeId);
+    const destinationColumn =
+      findColumnByReportId(overId) ?? (overId as ColumnType);
+    if (
+      !sourceColumn ||
+      !destinationColumn ||
+      sourceColumn === destinationColumn
+    )
+      return;
+
+    const activeItem = reports[sourceColumn].find((r) => r.id === activeId);
+    if (!activeItem) return;
+
+    setReports((prev) => {
+      const sourceItems = prev[sourceColumn].filter((r) => r.id !== activeId);
+      const destinationItems = prev[destinationColumn];
+
+      const overIndex = destinationItems.findIndex((r) => r.id === overId);
+      const insertIndex = overIndex >= 0 ? overIndex : destinationItems.length;
+
+      return {
+        ...prev,
+        [sourceColumn]: sourceItems,
+        [destinationColumn]: [
+          ...destinationItems.slice(0, insertIndex),
+          activeItem,
+          ...destinationItems.slice(insertIndex),
+        ],
+      };
+    });
+  };
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -77,84 +103,90 @@ export const KanbanBoard = ({
     const overId = over.id.toString();
 
     const sourceColumn = findColumnByReportId(activeId);
-    if (!sourceColumn) return;
+    const destinationColumn =
+      findColumnByReportId(overId) ?? (overId as ColumnType);
 
-    // over.id bisa berupa id report ATAU id kolom (karena SortableContext punya id kolom)
-    const destinationColumn = (Object.keys(reports) as ColumnType[]).includes(
-      overId as ColumnType,
-    )
-      ? (overId as ColumnType)
-      : findColumnByReportId(overId);
+    if (!sourceColumn || !destinationColumn) return;
 
-    if (!destinationColumn) return;
+    const sourceItems = reports[sourceColumn];
+    const destinationItems = reports[destinationColumn];
 
-    // === reorder dalam kolom sama ===
+    const activeIndex = sourceItems.findIndex((r) => r.id === activeId);
+    const overIndexInSource = sourceItems.findIndex((r) => r.id === overId);
+    const overIndexInDestination = destinationItems
+      ? destinationItems.findIndex((r) => r.id === overId)
+      : -1;
+
     if (sourceColumn === destinationColumn) {
-      const items = reports[sourceColumn];
-      const oldIndex = items.findIndex((item) => item.id === activeId);
-      const newIndex = items.findIndex((item) => item.id === overId);
+      if (activeIndex === -1) return;
+      const targetIndex =
+        overIndexInSource >= 0 ? overIndexInSource : sourceItems.length - 1;
+      if (activeIndex === targetIndex) return;
 
-      if (oldIndex !== newIndex && newIndex !== -1) {
-        setReports((prev) => ({
-          ...prev,
-          [sourceColumn]: arrayMove(prev[sourceColumn], oldIndex, newIndex),
-        }));
-      }
+      const updated = [...sourceItems];
+      const [movedItem] = updated.splice(activeIndex, 1);
+      if (!movedItem) return;
+
+      // insert at target
+      updated.splice(
+        targetIndex >= 0 ? targetIndex : updated.length,
+        0,
+        movedItem,
+      );
+
+      setReports((prev) => ({
+        ...prev,
+        [sourceColumn]: updated,
+      }));
+
       return;
     }
 
-    // === pindah antar kolom ===
-    const movedItem = reports[sourceColumn].find(
-      (item) => item.id === activeId,
-    );
-    if (!movedItem) return;
+    if (activeIndex === -1) return;
+    const activeItem = sourceItems[activeIndex];
+    if (!activeItem) return;
 
-    const sourceItems = reports[sourceColumn];
-    const destItems = reports[destinationColumn] ?? [];
+    const newSource = sourceItems.filter((r) => r.id !== activeId);
+    const insertIndex =
+      overIndexInDestination >= 0
+        ? overIndexInDestination
+        : (destinationItems?.length ?? 0);
 
-    const overIndex = destItems.findIndex((item) => item.id === overId);
-    const insertIndex = overIndex === -1 ? destItems.length : overIndex;
+    const newDestination = [
+      ...(destinationItems?.slice(0, insertIndex) ?? []),
+      activeItem,
+      ...(destinationItems?.slice(insertIndex) ?? []),
+    ];
 
     setReports((prev) => ({
       ...prev,
-      [sourceColumn]: sourceItems.filter((item) => item.id !== activeId),
-      [destinationColumn]: [
-        ...destItems.slice(0, insertIndex),
-        movedItem,
-        ...destItems.slice(insertIndex),
-      ],
+      [sourceColumn]: newSource,
+      [destinationColumn]: newDestination,
     }));
-  };
-
-  const findColumnByReportId = (id: string) => {
-    return (Object.keys(reports) as ColumnType[]).find((column) =>
-      reports[column].some((report) => report.id === id),
-    );
   };
 
   return (
     <div className="container mx-auto">
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={(event) => {
-          const { active } = event;
-          const column = findColumnByReportId(active.id.toString());
-          if (column) {
-            const item = reports[column]?.find((item) => item.id === active.id);
-            setActiveReport(item ?? null);
-          }
+        onDragStart={({ active }) => {
+          const col = findColumnByReportId(active.id.toString());
+          const item = col
+            ? reports[col].find((r) => r.id === active.id)
+            : null;
+          setActiveReport(item ?? null);
         }}
+        onDragOver={onDragOver}
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveReport(null)}
       >
         <div className="flex flex-col gap-4 overflow-x-scroll md:flex-row">
-          {(Object.keys(reports) as ColumnType[]).map((columnId) => (
-            <Droppable id={columnId} key={columnId}>
+          {(Object.keys(reports) as ColumnType[]).map((colId) => (
+            <Droppable id={colId} key={colId}>
               <ReportColumn
-                key={columnId}
-                title={columnId}
-                reports={reports[columnId]}
+                key={colId}
+                title={colId}
+                reports={reports[colId]}
                 hideColumn={hideColumnAction}
                 displayedStatus={displayedColumn}
                 activeReportId={activeReport?.id}
@@ -162,8 +194,9 @@ export const KanbanBoard = ({
             </Droppable>
           ))}
         </div>
+
         <DragOverlay>
-          {activeReport ? <ReportCard report={activeReport} /> : null}
+          {activeReport && <ReportCard report={activeReport} />}
         </DragOverlay>
       </DndContext>
     </div>

@@ -82,19 +82,18 @@ export function ReportColumn({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
           <SortableContext
-            id={title} // penting: id kolom untuk DnD
+            id={title}
             items={reports.map((r) => r.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="flex flex-col space-y-4 min-h-[100px]">
+            <div className="flex flex-col space-y-4 min-h-[120px] pb-4">
               {reports.map((report) => (
                 <div
                   key={report.id}
-                  className={
+                  className={`transition-opacity ${
                     report.id === activeReportId ? 'opacity-0' : 'opacity-100'
-                  }
+                  }`}
                 >
                   <SortableReportCard
                     report={report}
