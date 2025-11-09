@@ -5,12 +5,15 @@
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
 import Upload from '~/../public/icons/export-button.svg';
-import Filter from '~/../public/icons/filter-list.svg';
 import SearchIcon from '~/../public/icons/search.svg';
 // Import the magnifying glass icon
+import FilterDropdown, {
+  type FilterOption,
+} from '~/app/_components/filter/filter-dropdown';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
@@ -35,6 +38,7 @@ export default function AnggotaContent({
     bidang: comboboxDataType[];
   };
 }) {
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
   const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';
@@ -47,6 +51,22 @@ export default function AnggotaContent({
       };
     });
   }
+
+  const filterOptions: FilterOption[] = useMemo(
+    () =>
+      dataAddAnggota.bidang.map((bidang) => ({
+        id: bidang.value,
+        label: bidang.label,
+        value: bidang.value,
+      })),
+    dataAddAnggota.bidang,
+  );
+
+  const handleFilterChange = useCallback((filters: string[]) => {
+    setSelectedFilters(filters);
+    // TODO: Implement server-side filtering when BE is ready
+  }, []);
+
   return (
     <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
       {/* Content */}
@@ -120,21 +140,12 @@ export default function AnggotaContent({
                 </Button>
               </div>
               <div className="flex gap-x-2">
-                <Button
-                  className="bg-neutral-50 hover:bg-neutral-300 border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
-                  onClick={() => {
-                    // Empty function - add filter functionality here
-                    console.log('Filter clicked');
-                  }}
-                >
-                  <Image
-                    src={Filter}
-                    alt="Filter icon"
-                    width={24}
-                    height={24}
-                  />
-                  Filter
-                </Button>
+                <FilterDropdown
+                  filterTitle="Divisi"
+                  filterOptions={filterOptions}
+                  selectedFilters={selectedFilters}
+                  onFilterChange={handleFilterChange}
+                />
                 <Button
                   variant="ghost"
                   className="p-2"
