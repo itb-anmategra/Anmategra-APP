@@ -1,6 +1,6 @@
 import { type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { type users } from '~/server/db/schema';
+import { supportStatusEnum, type users } from '~/server/db/schema';
 
 export type Admin = InferSelectModel<typeof users>;
 
@@ -13,25 +13,27 @@ export const adminSchema = z.object({
 
 export const GetAllReportsAdminInputSchema = z.object({
   search: z.string().optional(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']).optional(),
+  status: z.enum(supportStatusEnum.enumValues).optional(),
 });
 
-export const GetAllReportOutputSchema = z.array(
-  z.object({
-    id: z.string(),
-    subject: z.string(),
-    topic: z.string(),
-    description: z.string(),
-    status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
-    attachment: z.string(),
-    created_at: z.string(),
-    updated_at: z.string(),
-  }),
-);
+export const GetAllReportsAdminOutputSchema = z.object({
+  reports: z.array(
+    z.object({
+      id: z.string(),
+      subject: z.string(),
+      topic: z.string(),
+      description: z.string(),
+      status: z.enum(supportStatusEnum.enumValues),
+      attachment: z.string(),
+      created_at: z.string(),
+      updated_at: z.string(),
+    }),
+  ),
+});
 
 export const SetReportStatusInputSchema = z.object({
-  reportId: z.string(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
+  id: z.string(),
+  status: z.enum(supportStatusEnum.enumValues),
 });
 
 export const SetReportStatusOutputSchema = z.object({

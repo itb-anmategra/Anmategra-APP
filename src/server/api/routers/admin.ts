@@ -1,16 +1,11 @@
 import { TRPCError } from '@trpc/server';
-import { set } from 'date-fns';
-import { eq } from 'drizzle-orm';
-import { and, desc, like, or } from 'drizzle-orm';
+import { eq, ilike, inArray } from 'drizzle-orm';
+import { and, desc, or } from 'drizzle-orm';
 import { z } from 'zod';
+import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
 import {
-  adminProcedure,
-  createTRPCRouter,
-  protectedProcedure,
-} from '~/server/api/trpc';
-import {
-  GetAllReportOutputSchema,
   GetAllReportsAdminInputSchema,
+  GetAllReportsAdminOutputSchema,
   SetReportStatusInputSchema,
   SetReportStatusOutputSchema,
 } from '~/server/api/types/admin.type';
@@ -66,7 +61,7 @@ export const adminRouter = createTRPCRouter({
 
   getAllReportsAdmin: adminProcedure
     .input(GetAllReportsAdminInputSchema)
-    .output(GetAllReportOutputSchema)
+    .output(GetAllReportsAdminOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
         const reports = await ctx.db
@@ -74,26 +69,29 @@ export const adminRouter = createTRPCRouter({
           .from(support)
           .where(
             and(
+              inArray(support.status, ['In Progress', 'Resolved', 'Backlog']), // Only include non-draft reports
+              input.status ? eq(support.status, input.status) : undefined,
               input.search
                 ? or(
-                    like(support.subject, `%${input.search}%`),
-                    like(support.topic, `%${input.search}%`),
+                    ilike(support.subject, `%${input.search}%`),
+                    ilike(support.topic, `%${input.search}%`),
                   )
                 : undefined,
-              input.status ? eq(support.status, input.status) : undefined,
             ),
           )
           .orderBy(desc(support.created_at));
-        return reports.map((report) => ({
-          id: report.id,
-          subject: report.subject,
-          topic: report.topic,
-          description: report.description,
-          status: report.status,
-          attachment: report.attachment,
-          created_at: report.created_at.toISOString(),
-          updated_at: report.updated_at.toISOString(),
-        }));
+        return {
+          reports: reports.map((report) => ({
+            id: report.id,
+            subject: report.subject,
+            topic: report.topic,
+            description: report.description,
+            status: report.status,
+            attachment: report.attachment,
+            created_at: report.created_at.toISOString(),
+            updated_at: report.updated_at.toISOString(),
+          })),
+        };
       } catch (error) {
         console.error('Error fetching reports:', error);
         throw new TRPCError({
@@ -110,8 +108,8 @@ export const adminRouter = createTRPCRouter({
       try {
         const report = await ctx.db
           .update(support)
-          .set({ status: input.status, updated_at: new Date() })
-          .where(eq(support.id, input.reportId))
+          .set({ status: input.status })
+          .where(eq(support.id, input.id))
           .returning();
         if (report.length === 0) {
           return { success: false, message: 'Report not found' };

@@ -2,7 +2,11 @@ import { create } from 'domain';
 import { type InferSelectModel, desc } from 'drizzle-orm';
 import { stat } from 'fs';
 import { z } from 'zod';
-import { type mahasiswa, type users } from '~/server/db/schema';
+import {
+  type mahasiswa,
+  supportStatusEnum,
+  type users,
+} from '~/server/db/schema';
 
 type User = InferSelectModel<typeof users>;
 type Mahasiswa = InferSelectModel<typeof mahasiswa>;
@@ -116,35 +120,46 @@ export const GetAnggotaByNameInputSchema = z.object({
   lembagaId: z.string(),
 });
 
-export const CreateReportInputSchema = z.object({
+export const CreateDraftInputSchema = z.object({
   subject: z.string(),
   topic: z.string(),
   description: z.string(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
   attachment: z.string(),
 });
 
-export const EditReportInputSchema = z.object({
+export const EditDraftInputSchema = z.object({
   id: z.string(),
   subject: z.string(),
   topic: z.string(),
   description: z.string(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
   attachment: z.string(),
 });
 
-export const CreateReportOutputSchema = z.object({
+export const SubmitReportInputSchema = z.object({
+  id: z.string(),
+});
+
+export const ReportOutputSchema = z.object({
   id: z.string(),
   subject: z.string(),
   topic: z.string(),
   description: z.string(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']),
+  status: z.enum(supportStatusEnum.enumValues),
   attachment: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
 });
 
+export const SubmitReportOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
+
 export const GetAllReportsUserInputSchema = z.object({
   search: z.string().optional(),
-  status: z.enum(['Draft', 'In Progress', 'Resolved', 'Backlog']).optional(),
+  status: z.enum(supportStatusEnum.enumValues).optional(),
+});
+
+export const GetAllReportsUserOutputSchema = z.object({
+  reports: z.array(ReportOutputSchema),
 });

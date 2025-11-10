@@ -345,8 +345,8 @@ export const support = createTable('support', {
   subject: varchar('subject', { length: 255 }).notNull(),
   topic: varchar('topic', { length: 255 }).notNull(),
   description: text('description').notNull(),
-  status: supportStatusEnum('status').notNull(),
-  attachment: text('attachment').notNull(),
+  status: supportStatusEnum('status').notNull().default('Draft'),
+  attachment: varchar('attachment', { length: 255 }).notNull(),
   ...timestamps,
 });
 
