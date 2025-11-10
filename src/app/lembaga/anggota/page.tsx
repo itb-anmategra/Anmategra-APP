@@ -15,9 +15,14 @@ export default async function Home() {
   });
   return (
     <main>
+      {/* <AnggotaContent
+        session={mockSession}
+        data={mockAnggotaData}
+        dataAddAnggota={mockAddAnggotaProps}
+      /> */}
       <AnggotaContent
         session={session}
-        data={anggota ?? []}
+        data={anggota}
         dataAddAnggota={addAnggotaProps}
       />
     </main>

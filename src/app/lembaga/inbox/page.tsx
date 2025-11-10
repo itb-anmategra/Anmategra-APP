@@ -1,104 +1,90 @@
 import Image from 'next/image';
-import ComingSoonContent from '~/app/_components/coming-soon/coming-soon-content';
+import { Input } from '~/components/ui/input';
 import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/trpc/server';
 
-import AssociationRequestEntryLembaga from './_components/association-request-entry-lembaga';
+import RequestTableEventsEntries from './_components/request-table-events-entries';
 
-const associationRequestEntries = [
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'HMIF',
-    jumlah: '100',
-    tujuan: 'Lembaga',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wispril HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wisagus HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Wisokto HMIF 2025',
-    jumlah: '100',
-    tujuan: 'Kegiatan',
-  },
-];
+// import { Footer } from 'react-day-picker';
+// import { requestAsyncStorage } from 'next/dist/client/components/request-async-storage-instance';
+
+type PermintaanAsosiasi = {
+  id: string;
+  image: string;
+  nama: string;
+  jumlah: string;
+  tujuan: string;
+};
 
 export default async function InboxPage() {
   const session = await getServerAuthSession();
-  return (
-    // <main>
-    //   <div className="p-6 w-full h-full">
-    //     <h1 className="mb-4 text-2xl font-semibold"> Permintaan Asosiasi</h1>
-    //     <Input
-    //       value={searchTerm}
-    //       onChange={handleSearch}
-    //       placeholder="Cari nama pemohon"
-    //       className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
-    //       startAdornment={
-    //         <MagnifyingGlassIcon className="size-4 text-gray-500" />
-    //       }
-    //     />
-    //     <div className="mt-5 flex justify-end">
-    //       <Button variant="outline" className="font-bold">
-    //         <Filter />
-    //         Filter
-    //       </Button>
-    //     </div>
-    //     <div className="mt-5">
-    //       <Table>
-    //         <TableHeader>
-    //           <TableRow>
-    //             <TableHead className="w-[50%]">Nama</TableHead>
-    //             <TableHead className="w-[20%]">NIM</TableHead>
-    //             <TableHead className="w-[10%]">Jurusan</TableHead>
-    //             <TableHead className="w-[10%]">Request</TableHead>
-    //             <TableHead className="w-[10%]"></TableHead>
-    //           </TableRow>
-    //         </TableHeader>
-    //         <TableBody>
-    //           {filteredUsers.map((user) => (
-    //             <TableRow key={user.id}>
-    //               {/* Taro profile disini */}
-    //               <TableCell className="flex w-[50%] items-center gap-5">
-    //                 <div className="h-9 w-9 rounded-full bg-[#D9D9D9]"></div>
-    //                 {user.name}
-    //               </TableCell>
-    //               <TableCell className="w-[20%]">{user.nim}</TableCell>
-    //               <TableCell className="w-[10%]">{user.major}</TableCell>
-    //               <TableCell className="w-[10%]">
-    //                 <div className="cursor-pointer font-semibold text-[#F16350]">
-    //                   DECLINE
-    //                 </div>
-    //               </TableCell>
-    //               <TableCell className="w-[10%]">
-    //                 <Button className="bg-[#29BC5B] font-semibold">
-    //                   ACCEPTS
-    //                 </Button>
-    //               </TableCell>
-    //             </TableRow>
-    //           ))}
-    //           {filteredUsers.length === 0 && (
-    //             <TableRow>
-    //               <TableCell colSpan={5} className="text-center">
-    //                 No results found
-    //               </TableCell>
-    //             </TableRow>
-    //           )}
-    //         </TableBody>
-    //       </Table>
-    //     </div>
-    //   </div>
-    // </main>
-    // <ComingSoonContent session={session} />
 
+  const lembagaAssociationRequestEntries =
+    await api.lembaga.getAllRequestAssociationLembaga();
+  const eventAssociationRequestEntries =
+    await api.lembaga.getAllRequestAssociation();
+
+  let lembagaInfo = { nama: '', foto: '' };
+  let eventInfo = {} as Record<string, string>;
+
+  const lembagaID = session?.user?.lembagaId;
+  if (lembagaID) {
+    const lembagaGetInfo = await api.lembaga.getInfo({ lembagaId: lembagaID });
+    lembagaInfo = {
+      nama: lembagaGetInfo.nama ?? 'Lembaga Tidak Diketahui',
+      foto: lembagaGetInfo.foto ?? '/images/placeholder/rick1.jpg',
+    };
+
+    const eventGetInfo = await api.lembaga.getEvents({ lembagaId: lembagaID });
+    eventInfo = eventGetInfo.events.reduce(
+      (output, event) => {
+        output[event.id] = event.poster ?? '/images/placeholder/rick1.jpg';
+        return output;
+      },
+      {} as Record<string, string>,
+    );
+  }
+
+  const lembagaEntries: PermintaanAsosiasi[] = [
+    {
+      id: 'lembaga',
+      image: lembagaInfo.foto ?? '/images/placeholder/rick1.jpg',
+      nama: lembagaInfo.nama,
+      jumlah: lembagaAssociationRequestEntries.requests
+        .length as unknown as string,
+      tujuan: 'Lembaga',
+    },
+  ];
+
+  const eventEntriesCounter = eventAssociationRequestEntries.reduce(
+    (counter, event) => {
+      counter[event.event_name] = (counter[event.event_name] ?? 0) + 1;
+      return counter;
+    },
+    {} as Record<string, number>,
+  );
+
+  const eventEntries: PermintaanAsosiasi[] = Object.keys(
+    eventEntriesCounter,
+  ).map((eventName) => {
+    const event = eventAssociationRequestEntries.find(
+      (entry) => entry.event_name === eventName,
+    );
+
+    return {
+      id: event?.event_id ?? 'unknown',
+      image:
+        eventInfo[event?.event_id ?? 'unknown'] ??
+        '/images/placeholder/rick1.jpg',
+      nama: eventName,
+      jumlah: eventEntriesCounter[eventName] as unknown as string,
+      tujuan: 'Kegiatan',
+    };
+  });
+
+  const entries: PermintaanAsosiasi[] = [...lembagaEntries, ...eventEntries];
+
+  return (
     <div className="flex min-h-screen bg-[#F8F9FA]">
       <div className="flex-1 p-10">
         <h1 className="m-0 mb-3 text-[32px] weight-600 font-semibold">
@@ -107,17 +93,17 @@ export default async function InboxPage() {
 
         <div className="flex items-center mb-5 gap-[18px]">
           <div className="flex-1 relative align-center">
-            <input
+            <Input
               type="text"
               placeholder="Cari nama lembaga atau kegiatan"
-              className="w-full pl-[48px] p-3 border border-[#C4CACE] rounded-[20px] font-regular text-[#636A6D]"
+              className="w-full pl-[48px] border border-[#C4CACE] rounded-[20px] bg-white h-[50px] font-regular weight-400 text-[18px] text-[#636A6D]" // Kelas styling utama digantikan oleh komponen
             />
             <Image
               src="/icons/search.svg"
               alt="Search Icon"
               width={24}
               height={24}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 opacity-50 ml-1"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 ml-1"
             />
           </div>
 
@@ -133,7 +119,7 @@ export default async function InboxPage() {
         </div>
 
         <div>
-          <AssociationRequestEntryLembaga data={associationRequestEntries} />
+          <RequestTableEventsEntries data={entries} />
         </div>
       </div>
     </div>

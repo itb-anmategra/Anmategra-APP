@@ -1,6 +1,6 @@
 import { TableCell, TableRow } from '~/components/ui/table';
 
-import { type ProfilRowProps } from '../../[kegiatanId]/profil/constant';
+import { type ProfilRowProps } from '../../lembaga/kegiatan/[kegiatanId]/profil/constant';
 
 const ProfilRow = ({ profilGroup }: ProfilRowProps) => {
   return (

@@ -14,7 +14,6 @@ import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepa
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
-import { mahasiswa } from '~/server/db/schema';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
 import { type ProfileMahasiswaContentProps } from './constant';

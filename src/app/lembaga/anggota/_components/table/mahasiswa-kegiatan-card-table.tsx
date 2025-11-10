@@ -10,7 +10,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import Image from 'next/image';
+import Link from 'next/link';
+import CallMadeIcon from 'public/icons/call_made.svg';
+import MoreVertIcon from 'public/icons/more-vert.svg';
 import * as React from 'react';
+import CustomPagination from '~/app/_components/layout/pagination-comp';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -62,16 +67,7 @@ const columns: ColumnDef<MemberKegiatan>[] = [
     accessorKey: 'posisi',
     header: 'Posisi',
     cell: ({ row }) => {
-      const colorMap: Record<string, string> = {
-        yellow: 'bg-yellow-400',
-        green: 'bg-green-400',
-        blue: 'bg-blue-400',
-        navy: 'bg-blue-900',
-        red: 'bg-red-400',
-      };
-      const posisiColor = colorMap[row.original.posisiColor] ?? 'bg-gray-400';
       const mutation = api.event.removePanitia.useMutation();
-
       const onDelete = (id: string, event_id: string) => {
         mutation.mutate(
           { id: id, event_id: event_id },
@@ -87,21 +83,20 @@ const columns: ColumnDef<MemberKegiatan>[] = [
       return (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${posisiColor}`}></span>
             {row.getValue('posisi')}
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button
+              {/* <Button
                 // onClick={() => onDelete(row.original.id)}
                 variant={'outline'}
                 size={'sm'}
                 className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
               >
                 Hapus
-              </Button>
+              </Button> */}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Hapus Anggota</DialogTitle>
                 <DialogDescription>
@@ -125,6 +120,47 @@ const columns: ColumnDef<MemberKegiatan>[] = [
       );
     },
   },
+  {
+    accessorKey: 'rapor',
+    header: 'Rapor',
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`/lembaga/kegiatan/${row.original.event_id}/panitia/${row.original.id}`}
+        >
+          <Button
+            variant="outline"
+            className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"
+          >
+            Lihat
+            <Image
+              src={CallMadeIcon}
+              alt="Call Made Icon"
+              width={16}
+              height={16}
+            />
+          </Button>
+        </Link>
+      );
+    },
+  },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0 hover:bg-gray-100"
+        onClick={() => {
+          // Handle more actions
+          console.log('More actions for:', row.original.id);
+        }}
+      >
+        <Image src={MoreVertIcon} alt="More Options" width={20} height={20} />
+      </Button>
+    ),
+  },
 ];
 
 export function MahasiswaKegiatanCardTable({
@@ -133,8 +169,17 @@ export function MahasiswaKegiatanCardTable({
   data: MemberKegiatan[];
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 10; // You can make this configurable
+
+  // Calculate pagination
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = data.slice(startIndex, endIndex);
+
   const table = useReactTable({
-    data: data,
+    data: paginatedData,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -153,7 +198,7 @@ export function MahasiswaKegiatanCardTable({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="text-left text-gray-600"
+                    className="text-left text-neutral-500 font-normal text-lg"
                   >
                     {header.isPlaceholder
                       ? null
@@ -171,7 +216,10 @@ export function MahasiswaKegiatanCardTable({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-gray-800">
+                    <TableCell
+                      key={cell.id}
+                      className="text-neutral-700 text-lg"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -190,6 +238,17 @@ export function MahasiswaKegiatanCardTable({
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

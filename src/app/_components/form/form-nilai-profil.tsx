@@ -13,21 +13,12 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 
-type Profile = { id: number; value: number | null };
-
-// Contoh beberapa data
-const dummyProfiles: Profile[] = [
-  { id: 1, value: 100 },
-  { id: 2, value: 100 },
-  { id: 3, value: 100 },
-  { id: 4, value: 100 },
-  { id: 5, value: 100 },
-];
+type Profile = { id: string; value: number | null };
 
 // Komponen FormProfil
 interface FormProfilProps {
   profiles: Profile[];
-  onChange: (id: number, value: number | null) => void;
+  onChange: (id: string, value: number | null) => void;
 }
 
 const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
@@ -63,18 +54,16 @@ const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
 // Menerima initialProfiles sebagai prop
 interface FormNilaiProfilProps {
   initialProfiles?: Profile[];
-  onSave?: (updatedProfiles: Profile[]) => void; 
+  onSave?: (updatedProfiles: Profile[]) => void;
 }
 
 const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   initialProfiles,
   onSave,
 }) => {
-  const [profiles, setProfiles] = useState<Profile[]>(
-    initialProfiles ?? dummyProfiles,
-  );
+  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles ?? []);
 
-  const handleProfileChange = (id: number, value: number | null) => {
+  const handleProfileChange = (id: string, value: number | null) => {
     const sanitized = value === null ? null : Math.min(Math.max(value, 0), 100);
     setProfiles(
       profiles.map((p) => (p.id === id ? { ...p, value: sanitized } : p)),
@@ -115,7 +104,10 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="[&>button]:hidden bg-transparent border-0 shadow-none p-0 flex items-center justify-center">
+      <DialogContent
+        className="[&>button]:hidden bg-transparent border-0 shadow-none p-0 flex items-center justify-center"
+        aria-describedby={undefined}
+      >
         <Card className="relative w-[309px] max-h-[90vh] rounded-[26.1px] border border-[#C4CACE] pt-[35px] pr-[37px] pb-[27px] pl-[37px] bg-white flex flex-col gap-[10px] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-semibold text-[24px] leading-[40px] text-center text-[#141718]">

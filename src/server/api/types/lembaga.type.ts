@@ -29,6 +29,8 @@ const AnggotaLembagaSchema = z.object({
 
 export const GetAllAnggotaLembagaInputSchema = z.object({
   lembagaId: z.string().nonempty(),
+  namaOrNim: z.string().optional(),
+  divisi: z.string().optional(),
 });
 
 export const GetAllAnggotaLembagaOutputSchema = z.array(AnggotaLembagaSchema);
@@ -94,6 +96,17 @@ export const RemoveAnggotaLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const editAnggotaLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const editAnggotaLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 export const EditProfilLembagaInputSchema = z.object({
   nama: z
     .string()
@@ -147,3 +160,198 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationLembagaOutputSchema = z.object({
+  requests: z.array(
+    z.object({
+      user_id: z.string(),
+      mahasiswa_name: z.string(),
+      division: z.string(),
+      position: z.string(),
+    }),
+  ),
+});
+
+export const AcceptRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AcceptRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const DeclineRequestAssociationLembagaInputSchema = z.object({
+  user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const DeclineRequestAssociationLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const ChooseBestStaffKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const GetAllLembagaDivisionInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+});
+
+export const GetAllKegiatanDivisionInputSchema = z.object({
+  event_id: z.string().nonempty(),
+});
+
+export const GetAllDivisionOutputSchema = z.object({
+  divisions: z.array(z.string()),
+});
+
+export const GetBestStaffLembagaOptionsInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+});
+
+export const GetBestStaffLembagaOptionsOutputSchema = z.object({
+  staff_options: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const ChooseBestStaffLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const GetLatestBestStaffKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+});
+
+export const GetLatestBestStaffKegiatanOutputSchema = z.object({
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+      nim: z.string(),
+      jurusan: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const GetLatestBestStaffLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+});
+
+export const GetLatestBestStaffLembagaOutputSchema = z.object({
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  best_staff_list: z.array(
+    z.object({
+      user_id: z.string(),
+      name: z.string(),
+      nim: z.string(),
+      jurusan: z.string(),
+      division: z.string(),
+    }),
+  ),
+});
+
+export const GetAllHistoryBestStaffKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+});
+
+export const GetAllHistoryBestStaffKegiatanOutputSchema = z.object({
+  periode: z.array(
+    z.object({
+      start_date: z.string().datetime(),
+      end_date: z.string().datetime(),
+      best_staff_list: z.array(
+        z.object({
+          user_id: z.string(),
+          name: z.string(),
+          nim: z.string(),
+          jurusan: z.string(),
+          division: z.string(),
+        }),
+      ),
+    }),
+  ),
+});
+
+export const GetAllHistoryBestStaffLembagaInputSchema = z.object({
+  lembaga_id: z.string().nonempty(),
+});
+
+export const GetAllHistoryBestStaffLembagaOutputSchema = z.object({
+  periode: z.array(
+    z.object({
+      start_date: z.string().datetime(),
+      end_date: z.string().datetime(),
+      best_staff_list: z.array(
+        z.object({
+          user_id: z.string(),
+          name: z.string(),
+          nim: z.string(),
+          jurusan: z.string(),
+          division: z.string(),
+        }),
+      ),
+    }),
+  ),
+});
+
+export const GetAllHistoryBestStaffMahasiswaInputSchema = z.object({
+  mahasiswa_id: z.string().nonempty(),
+});
+
+export const GetAllHistoryBestStaffMahasiswaOutputSchema = z.object({
+  best_staff_kegiatan: z.array(
+    z.object({
+      event_id: z.string(),
+      name: z.string(),
+      start_date: z.string().datetime(),
+      end_date: z.string().datetime(),
+      division: z.string(),
+    }),
+  ),
+  best_staff_lembaga: z.array(
+    z.object({
+      lembaga_id: z.string(),
+      event_name: z.string(),
+      start_date: z.string().datetime(),
+      end_date: z.string().datetime(),
+      division: z.string(),
+    }),
+  ),
+});

@@ -1,55 +1,98 @@
 import Image from 'next/image';
+import { Input } from '~/components/ui/input';
+import { api } from '~/trpc/server';
 
-import AssociationRequestEntryUser from '../_components/association-request-entry-user';
+import RequestTableAssociationsEntries from '../_components/request-table-associations-entries';
 
-const associationRequestEntries = [
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Jason Jahja',
-    posisi: 'Staff',
-    divisi: 'UI/UX',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Jason Jahja',
-    posisi: 'Staff',
-    divisi: 'Back End',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Jason Jahja',
-    posisi: 'Staff',
-    divisi: 'Front End',
-  },
-  {
-    image: '/images/miscellaneous/empty-profile-picture.svg',
-    nama: 'Jason Jahja',
-    posisi: 'Staff',
-    divisi: 'Marketing',
-  },
-];
+// import { apiBaseUrl } from 'next-auth/client/_utils';
 
-export default async function InboxPage() {
+type PermintaanAsosiasiUser = {
+  id: string;
+  image: string;
+  nama: string;
+  user_id: string;
+  posisi: string;
+  divisi: string;
+};
+
+export default async function InboxPageWithParams({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const lembagaAssociationRequestEntries =
+    await api.lembaga.getAllRequestAssociationLembaga();
+  const eventAssociationRequestEntries =
+    await api.lembaga.getAllRequestAssociation();
+
+  const lembagaAssociationImage = (
+    await Promise.all(
+      lembagaAssociationRequestEntries.requests.map(async (lembaga) => {
+        const data = await api.users.getMahasiswaById({
+          userId: lembaga.user_id,
+        });
+        return { [lembaga.user_id]: data.mahasiswaData.user.image };
+      }),
+    )
+  ).reduce((id, image) => ({ ...id, ...image }), {});
+
+  const eventAssociationImage = (
+    await Promise.all(
+      eventAssociationRequestEntries.map(async (event) => {
+        const data = await api.users.getMahasiswaById({
+          userId: event.user_id,
+        });
+        return { [event.user_id]: data.mahasiswaData.user.image };
+      }),
+    )
+  ).reduce((id, image) => ({ ...id, ...image }), {});
+
+  const entries: PermintaanAsosiasiUser[] = [
+    ...lembagaAssociationRequestEntries.requests.map((lembaga) => ({
+      id: 'lembaga',
+      image:
+        lembagaAssociationImage[lembaga.user_id] ??
+        '/images/placeholder/profile-pic.png',
+      nama: lembaga.mahasiswa_name,
+      user_id: lembaga.user_id,
+      posisi: lembaga.position,
+      divisi: lembaga.division,
+    })),
+    ...eventAssociationRequestEntries.map((event) => ({
+      id: event.event_id,
+      image:
+        eventAssociationImage[event.user_id] ??
+        '/images/placeholder/profile-pic.png',
+      nama: event.mahasiswa_name,
+      user_id: event.user_id,
+      posisi: event.position,
+      divisi: event.division,
+    })),
+  ];
+
+  const id = params.slug;
+  const filteredRequests = entries.filter((entry) => entry.id === id);
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA]">
       <div className="flex-1 p-10">
         <h1 className="m-0 mb-3 text-[32px] weight-600 font-semibold">
-          Permintaan Asosiasi [Nama Lembaga/Nama Kegiatan]
+          Permintaan Asosiasi
         </h1>
 
         <div className="flex items-center mb-5 gap-[18px]">
           <div className="flex-1 relative align-center">
-            <input
+            <Input
               type="text"
               placeholder="Cari nama pemohon"
-              className="w-full pl-[48px] p-3 border border-[#C4CACE] rounded-[20px] font-regular text-[#636A6D]"
+              className="w-full pl-[48px] border border-[#C4CACE] rounded-[20px] bg-white h-[50px] font-regular weight-400 text-[18px] text-[#636A6D]" // Kelas styling utama digantikan oleh komponen
             />
             <Image
               src="/icons/search.svg"
               alt="Search Icon"
               width={24}
               height={24}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 opacity-50 ml-1"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 ml-1"
             />
           </div>
 
@@ -65,7 +108,7 @@ export default async function InboxPage() {
         </div>
 
         <div>
-          <AssociationRequestEntryUser data={associationRequestEntries} />
+          <RequestTableAssociationsEntries id={id} data={filteredRequests} />
         </div>
       </div>
     </div>

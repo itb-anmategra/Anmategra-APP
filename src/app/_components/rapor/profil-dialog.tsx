@@ -55,7 +55,7 @@ export default function ProfilDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="lg:rounded-[26px]">
+      <DialogContent className="lg:rounded-[26px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {title ??

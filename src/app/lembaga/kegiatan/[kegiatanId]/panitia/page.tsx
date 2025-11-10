@@ -18,6 +18,7 @@ const DaftarPanitiaKegiatanPage = async ({
   const addAnggotaProps = await api.users.getTambahAnggotaKegiatanOptions({
     kegiatanId: query,
   });
+
   return (
     <main>
       <AnggotaContent

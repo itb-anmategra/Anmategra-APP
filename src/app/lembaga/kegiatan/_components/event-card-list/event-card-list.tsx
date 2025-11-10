@@ -19,7 +19,13 @@ export function EventCard({
   return (
     <div className="flex items-center overflow-hidden rounded-lg border bg-white p-4">
       <div className="relative h-[100px] w-[100px] flex-shrink-0 rounded-lg bg-black">
-        <Image src={imageUrl} alt={title} fill className="object-cover" />
+        <Image
+          src={imageUrl}
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="100px"
+        />
       </div>
       <div className="ml-4 flex-1">
         <div className="mb-2 flex items-center gap-2">

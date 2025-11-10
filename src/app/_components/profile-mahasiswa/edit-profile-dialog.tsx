@@ -3,11 +3,11 @@
 // Library
 import { zodResolver } from '@hookform/resolvers/zod';
 // Icon Import
-import { Camera, Pencil, PencilLine } from 'lucide-react';
+import { Camera, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import LineIcon from 'public/icons/line-icon-2.png';
 import WhatsappIcon from 'public/icons/wa-icon.png';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 // Components Import
@@ -92,7 +92,7 @@ const EditProfileDialog = ({
   };
   async function onSubmit(values: mahasiswaProfilSchemaType) {
     // Split jurusanAngkatan back into separate fields
-    const [jurusan, angkatan] = values.jurusanAngkatan.split("'");
+    // const [jurusan, angkatan] = values.jurusanAngkatan.split("'");
 
     mutation.mutate(
       {
