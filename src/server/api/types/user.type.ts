@@ -5,6 +5,7 @@ import { z } from 'zod';
 import {
   type mahasiswa,
   supportStatusEnum,
+  supportUrgentEnum,
   type users,
 } from '~/server/db/schema';
 
@@ -165,17 +166,17 @@ export const GetAnggotaByNameInputSchema = z.object({
 
 export const CreateDraftInputSchema = z.object({
   subject: z.string(),
-  topic: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
   description: z.string(),
-  attachment: z.string(),
+  attachment: z.string().optional(),
 });
 
 export const EditDraftInputSchema = z.object({
   id: z.string(),
   subject: z.string(),
-  topic: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
   description: z.string(),
-  attachment: z.string(),
+  attachment: z.string().optional(),
 });
 
 export const SubmitReportInputSchema = z.object({
@@ -185,10 +186,10 @@ export const SubmitReportInputSchema = z.object({
 export const ReportOutputSchema = z.object({
   id: z.string(),
   subject: z.string(),
-  topic: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
   description: z.string(),
   status: z.enum(supportStatusEnum.enumValues),
-  attachment: z.string(),
+  attachment: z.string().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });

@@ -74,7 +74,7 @@ export const adminRouter = createTRPCRouter({
               input.search
                 ? or(
                     ilike(support.subject, `%${input.search}%`),
-                    ilike(support.topic, `%${input.search}%`),
+                    ilike(support.description, `%${input.search}%`),
                   )
                 : undefined,
             ),
@@ -84,10 +84,10 @@ export const adminRouter = createTRPCRouter({
           reports: reports.map((report) => ({
             id: report.id,
             subject: report.subject,
-            topic: report.topic,
+            urgent: report.urgent,
             description: report.description,
             status: report.status,
-            attachment: report.attachment,
+            attachment: report.attachment ?? undefined,
             created_at: report.created_at.toISOString(),
             updated_at: report.updated_at.toISOString(),
           })),

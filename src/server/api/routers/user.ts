@@ -780,7 +780,7 @@ export const userRouter = createTRPCRouter({
             id: crypto.randomUUID(),
             user_id: ctx.session.user.id,
             subject: input.subject,
-            topic: input.topic,
+            urgent: input.urgent,
             description: input.description,
             status: 'Draft',
             attachment: input.attachment,
@@ -797,10 +797,10 @@ export const userRouter = createTRPCRouter({
         return {
           id: createdDraft.id,
           subject: createdDraft.subject,
-          topic: createdDraft.topic,
+          urgent: createdDraft.urgent,
           description: createdDraft.description,
           status: createdDraft.status,
-          attachment: createdDraft.attachment,
+          attachment: createdDraft.attachment ?? undefined,
           created_at: createdDraft.created_at.toISOString(),
           updated_at: createdDraft.updated_at.toISOString(),
         };
@@ -822,7 +822,7 @@ export const userRouter = createTRPCRouter({
           .update(support)
           .set({
             subject: input.subject,
-            topic: input.topic,
+            urgent: input.urgent,
             description: input.description,
             attachment: input.attachment,
           })
@@ -845,10 +845,10 @@ export const userRouter = createTRPCRouter({
         return {
           id: updatedDraft.id,
           subject: updatedDraft.subject,
-          topic: updatedDraft.topic,
+          urgent: updatedDraft.urgent,
           description: updatedDraft.description,
           status: updatedDraft.status,
-          attachment: updatedDraft.attachment,
+          attachment: updatedDraft.attachment ?? undefined,
           created_at: updatedDraft.created_at.toISOString(),
           updated_at: updatedDraft.updated_at.toISOString(),
         };
@@ -935,7 +935,7 @@ export const userRouter = createTRPCRouter({
               eq(support.user_id, ctx.session.user.id),
               input.search
                 ? or(
-                    ilike(support.topic, `%${input.search}%`),
+                    ilike(support.description, `%${input.search}%`),
                     ilike(support.subject, `%${input.search}%`),
                   )
                 : undefined,
@@ -947,10 +947,10 @@ export const userRouter = createTRPCRouter({
           reports: reports.map((report) => ({
             id: report.id,
             subject: report.subject,
-            topic: report.topic,
+            urgent: report.urgent,
             description: report.description,
             status: report.status,
-            attachment: report.attachment,
+            attachment: report.attachment ?? undefined,
             created_at: report.created_at.toISOString(),
             updated_at: report.updated_at.toISOString(),
           })),

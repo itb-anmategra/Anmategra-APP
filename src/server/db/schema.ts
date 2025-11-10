@@ -332,6 +332,12 @@ export const supportStatusEnum = pgEnum('support_status', [
   'Backlog',
 ]);
 
+export const supportUrgentEnum = pgEnum('support_urgent', [
+  'Low',
+  'Medium',
+  'High',
+]);
+
 // Enum for notification type
 export const notificationTypeEnum = pgEnum('notification_type', [
   'Association Request',
@@ -343,10 +349,10 @@ export const support = createTable('support', {
   id: varchar('id', { length: 255 }).primaryKey(),
   user_id: varchar('user_id', { length: 255 }).references(() => users.id),
   subject: varchar('subject', { length: 255 }).notNull(),
-  topic: varchar('topic', { length: 255 }).notNull(),
+  urgent: supportUrgentEnum('urgent').notNull().default('Low'),
   description: text('description').notNull(),
   status: supportStatusEnum('status').notNull().default('Draft'),
-  attachment: varchar('attachment', { length: 255 }).notNull(),
+  attachment: varchar('attachment', { length: 255 }),
   ...timestamps,
 });
 

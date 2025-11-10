@@ -1,6 +1,10 @@
 import { type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { supportStatusEnum, type users } from '~/server/db/schema';
+import {
+  supportStatusEnum,
+  supportUrgentEnum,
+  type users,
+} from '~/server/db/schema';
 
 export type Admin = InferSelectModel<typeof users>;
 
@@ -21,10 +25,10 @@ export const GetAllReportsAdminOutputSchema = z.object({
     z.object({
       id: z.string(),
       subject: z.string(),
-      topic: z.string(),
+      urgent: z.enum(supportUrgentEnum.enumValues),
       description: z.string(),
       status: z.enum(supportStatusEnum.enumValues),
-      attachment: z.string(),
+      attachment: z.string().optional(),
       created_at: z.string(),
       updated_at: z.string(),
     }),
