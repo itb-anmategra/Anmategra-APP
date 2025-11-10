@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import {
@@ -15,14 +15,20 @@ import {
   kehimpunan,
   lembaga,
   mahasiswa,
+  support,
   users,
 } from '~/server/db/schema';
 
+import { CreateEventOutputSchema } from '../types/event.type';
 import {
+  CreateDraftInputSchema,
   DeleteRequestAssociationInputSchema,
   DeleteRequestAssociationLembagaInputSchema,
+  EditDraftInputSchema,
   EditProfilMahasiswaInputSchema,
   EditRequestAssociationOutputSchema,
+  GetAllReportsUserInputSchema,
+  GetAllReportsUserOutputSchema,
   GetAnggotaByIdInputSchema,
   GetAnggotaByNameInputSchema,
   GetAnggotaOutputSchema,
@@ -39,10 +45,13 @@ import {
   GetTambahAnggotaKegiatanOptionsOutputSchema,
   GetTambahAnggotaLembagaOptionsInputSchema,
   GetTambahAnggotaLembagaOptionsOutputSchema,
+  ReportOutputSchema,
   RequestAssociationInputSchema,
   RequestAssociationLembagaInputSchema,
   RequestAssociationLembagaOutputSchema,
   RequestAssociationOutputSchema,
+  SubmitReportInputSchema,
+  SubmitReportOutputSchema,
 } from '../types/user.type';
 
 export const userRouter = createTRPCRouter({
@@ -758,5 +767,200 @@ export const userRouter = createTRPCRouter({
         divisi: result.divisi,
         posisi: result.posisi,
       };
+    }),
+
+  createDraft: protectedProcedure
+    .input(CreateDraftInputSchema)
+    .output(ReportOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const [createdDraft] = await ctx.db
+          .insert(support)
+          .values({
+            id: crypto.randomUUID(),
+            user_id: ctx.session.user.id,
+            subject: input.subject,
+            urgent: input.urgent,
+            description: input.description,
+            status: 'Draft',
+            attachment: input.attachment,
+          })
+          .returning();
+
+        if (!createdDraft) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to create draft',
+          });
+        }
+
+        return {
+          id: createdDraft.id,
+          subject: createdDraft.subject,
+          urgent: createdDraft.urgent,
+          description: createdDraft.description,
+          status: createdDraft.status,
+          attachment: createdDraft.attachment ?? undefined,
+          created_at: createdDraft.created_at.toISOString(),
+          updated_at: createdDraft.updated_at.toISOString(),
+        };
+      } catch (error) {
+        console.error('Error creating draft:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create draft',
+        });
+      }
+    }),
+
+  editDraft: protectedProcedure
+    .input(EditDraftInputSchema)
+    .output(ReportOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const [updatedDraft] = await ctx.db
+          .update(support)
+          .set({
+            subject: input.subject,
+            urgent: input.urgent,
+            description: input.description,
+            attachment: input.attachment,
+          })
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+              eq(support.status, 'Draft'), // Only allow editing drafts
+            ),
+          )
+          .returning();
+
+        if (!updatedDraft) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Draft not found or not editable',
+          });
+        }
+
+        return {
+          id: updatedDraft.id,
+          subject: updatedDraft.subject,
+          urgent: updatedDraft.urgent,
+          description: updatedDraft.description,
+          status: updatedDraft.status,
+          attachment: updatedDraft.attachment ?? undefined,
+          created_at: updatedDraft.created_at.toISOString(),
+          updated_at: updatedDraft.updated_at.toISOString(),
+        };
+      } catch (error) {
+        console.error('Error updating draft:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update draft',
+        });
+      }
+    }),
+
+  submitReport: protectedProcedure
+    .input(SubmitReportInputSchema)
+    .output(SubmitReportOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const [submittedReport] = await ctx.db
+          .update(support)
+          .set({
+            status: 'Backlog',
+          })
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+              eq(support.status, 'Draft'), // Only allow submitting drafts
+            ),
+          )
+          .returning();
+
+        if (!submittedReport) {
+          return {
+            success: false,
+            message: 'Draft not found or already submitted',
+          };
+        }
+
+        return {
+          success: true,
+          message: 'Report submitted successfully',
+        };
+      } catch (error) {
+        console.error('Error submitting report:', error);
+        return {
+          success: false,
+          message: 'Failed to submit report',
+        };
+      }
+    }),
+
+  deleteReport: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .output(z.object({ success: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const [deletedReport] = await ctx.db
+          .delete(support)
+          .where(
+            and(
+              eq(support.id, input.id),
+              eq(support.user_id, ctx.session.user.id),
+              eq(support.status, 'Draft'), // Only allow deleting drafts
+            ),
+          )
+          .returning({ id: support.id });
+
+        return { success: !!deletedReport };
+      } catch {
+        return { success: false };
+      }
+    }),
+
+  getAllReportsUser: protectedProcedure
+    .input(GetAllReportsUserInputSchema)
+    .output(GetAllReportsUserOutputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const reports = await ctx.db
+          .select()
+          .from(support)
+          .where(
+            and(
+              eq(support.user_id, ctx.session.user.id),
+              input.search
+                ? or(
+                    ilike(support.description, `%${input.search}%`),
+                    ilike(support.subject, `%${input.search}%`),
+                  )
+                : undefined,
+              input.status ? eq(support.status, input.status) : undefined,
+            ),
+          )
+          .orderBy(desc(support.created_at));
+        return {
+          reports: reports.map((report) => ({
+            id: report.id,
+            subject: report.subject,
+            urgent: report.urgent,
+            description: report.description,
+            status: report.status,
+            attachment: report.attachment ?? undefined,
+            created_at: report.created_at.toISOString(),
+            updated_at: report.updated_at.toISOString(),
+          })),
+        };
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch reports',
+        });
+      }
     }),
 });

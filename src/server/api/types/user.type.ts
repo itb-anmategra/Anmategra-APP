@@ -1,6 +1,13 @@
-import { type InferSelectModel } from 'drizzle-orm';
+import { create } from 'domain';
+import { type InferSelectModel, desc } from 'drizzle-orm';
+import { stat } from 'fs';
 import { z } from 'zod';
-import { type mahasiswa, type users } from '~/server/db/schema';
+import {
+  type mahasiswa,
+  supportStatusEnum,
+  supportUrgentEnum,
+  type users,
+} from '~/server/db/schema';
 
 type User = InferSelectModel<typeof users>;
 type Mahasiswa = InferSelectModel<typeof mahasiswa>;
@@ -155,4 +162,48 @@ export const GetAnggotaOutputSchema = GetPanitiaOutputSchema;
 export const GetAnggotaByNameInputSchema = z.object({
   name: z.string(),
   lembagaId: z.string(),
+});
+
+export const CreateDraftInputSchema = z.object({
+  subject: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
+  description: z.string(),
+  attachment: z.string().optional(),
+});
+
+export const EditDraftInputSchema = z.object({
+  id: z.string(),
+  subject: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
+  description: z.string(),
+  attachment: z.string().optional(),
+});
+
+export const SubmitReportInputSchema = z.object({
+  id: z.string(),
+});
+
+export const ReportOutputSchema = z.object({
+  id: z.string(),
+  subject: z.string(),
+  urgent: z.enum(supportUrgentEnum.enumValues),
+  description: z.string(),
+  status: z.enum(supportStatusEnum.enumValues),
+  attachment: z.string().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const SubmitReportOutputSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
+
+export const GetAllReportsUserInputSchema = z.object({
+  search: z.string().optional(),
+  status: z.enum(supportStatusEnum.enumValues).optional(),
+});
+
+export const GetAllReportsUserOutputSchema = z.object({
+  reports: z.array(ReportOutputSchema),
 });
