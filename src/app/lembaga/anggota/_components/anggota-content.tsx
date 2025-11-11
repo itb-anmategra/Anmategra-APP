@@ -4,34 +4,21 @@
 // Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
 import Upload from '~/../public/icons/export-button.svg';
 import Filter from '~/../public/icons/filter-list.svg';
-// Icon Import
-import Plus from '~/../public/icons/plus.svg';
 import SearchIcon from '~/../public/icons/search.svg';
 // Import the magnifying glass icon
-import TambahAnggotaForm, {
-  type comboboxDataType,
-} from '~/app/_components/form/tambah-anggota-form';
-import TambahAnggotaKegiatanForm from '~/app/_components/form/tambah-anggota-kegiatan-form';
+import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
+import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
   MahasiswaCardTable,
   type Member,
 } from '~/app/lembaga/anggota/_components/table/mahasiswa-card-table';
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
-// Components Import
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 
 export default function AnggotaContent({
@@ -48,9 +35,8 @@ export default function AnggotaContent({
     bidang: comboboxDataType[];
   };
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';
   let tableData;
   if (!isAnggota && pathname) {
@@ -94,60 +80,17 @@ export default function AnggotaContent({
           <div className="flex">
             <div className="justify-between flex flex-row w-full">
               <div className="flex gap-x-5">
-                <Dialog
-                  open={isOpen}
-                  onOpenChange={(open) => {
-                    setIsOpen(open);
-                    if (!open) setManualMode(false);
-                  }}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="light_blue"
-                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg "
-                    >
-                      <Image
-                        src={Plus}
-                        alt="Tambah Anggota"
-                        width={24}
-                        height={24}
-                      />
-                      Tambah Anggota Baru
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="w-full max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
-                        {manualMode
-                          ? 'Tambah Anggota Manual'
-                          : 'Tambah Anggota'}
-                      </DialogTitle>
-                    </DialogHeader>
-                    {isAnggota ? (
-                      <TambahAnggotaForm
-                        session={session}
-                        data={dataAddAnggota}
-                        setIsOpen={setIsOpen}
-                        manualMode={manualMode}
-                        setManualMode={setManualMode}
-                      />
-                    ) : (
-                      <TambahAnggotaKegiatanForm
-                        session={session}
-                        data={dataAddAnggota}
-                        setIsOpen={setIsOpen}
-                        pathname={pathname}
-                      />
-                    )}
-                  </DialogContent>
-                </Dialog>
+                <TambahAnggotaDialog
+                  session={session}
+                  dataAddAnggota={dataAddAnggota}
+                />
                 {isAnggota && (
                   <Button
                     variant="light_blue"
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
                       // Empty function - add rapor komunal functionality here
-                      console.log('Rapor Komunal clicked');
+                      router.push('/lembaga/anggota/rapor');
                     }}
                   >
                     <Image

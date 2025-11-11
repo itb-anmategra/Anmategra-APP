@@ -4,6 +4,8 @@ import { api } from '~/trpc/server';
 
 import RequestTableAssociationsEntries from '../_components/request-table-associations-entries';
 
+// import { apiBaseUrl } from 'next-auth/client/_utils';
+
 type PermintaanAsosiasiUser = {
   id: string;
   image: string;
@@ -23,10 +25,34 @@ export default async function InboxPageWithParams({
   const eventAssociationRequestEntries =
     await api.lembaga.getAllRequestAssociation();
 
+  const lembagaAssociationImage = (
+    await Promise.all(
+      lembagaAssociationRequestEntries.requests.map(async (lembaga) => {
+        const data = await api.users.getMahasiswaById({
+          userId: lembaga.user_id,
+        });
+        return { [lembaga.user_id]: data.mahasiswaData.user.image };
+      }),
+    )
+  ).reduce((id, image) => ({ ...id, ...image }), {});
+
+  const eventAssociationImage = (
+    await Promise.all(
+      eventAssociationRequestEntries.map(async (event) => {
+        const data = await api.users.getMahasiswaById({
+          userId: event.user_id,
+        });
+        return { [event.user_id]: data.mahasiswaData.user.image };
+      }),
+    )
+  ).reduce((id, image) => ({ ...id, ...image }), {});
+
   const entries: PermintaanAsosiasiUser[] = [
     ...lembagaAssociationRequestEntries.requests.map((lembaga) => ({
       id: 'lembaga',
-      image: '/images/placeholder/profile-pic.png',
+      image:
+        lembagaAssociationImage[lembaga.user_id] ??
+        '/images/placeholder/profile-pic.png',
       nama: lembaga.mahasiswa_name,
       user_id: lembaga.user_id,
       posisi: lembaga.position,
@@ -34,7 +60,9 @@ export default async function InboxPageWithParams({
     })),
     ...eventAssociationRequestEntries.map((event) => ({
       id: event.event_id,
-      image: '/images/placeholder/profile-pic.png',
+      image:
+        eventAssociationImage[event.user_id] ??
+        '/images/placeholder/profile-pic.png',
       nama: event.mahasiswa_name,
       user_id: event.user_id,
       posisi: event.position,

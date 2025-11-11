@@ -1,19 +1,9 @@
-import { Plus } from 'lucide-react';
 import Image, { type StaticImageData } from 'next/image';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '~/components/ui/accordion';
+import { Accordion, AccordionItem } from '~/components/ui/accordion';
 
 import { type Report } from '../board/report-card';
-import { type ColumnProps, type ColumnType } from '../board/report-column';
-import { LaporanDialog } from '../detail/laporan-dialog';
-
-interface LaporanProps {
-  data: ColumnProps[];
-}
+import { type ColumnType } from '../board/report-column';
+import LaporanFormDialog from '../detail/laporan-form';
 
 interface AccordionProps {
   title: ColumnType;
@@ -66,15 +56,7 @@ export const AccordionDisplay = ({
               </div>
 
               {/* Kanan: Tombol Buat Laporan */}
-              {!isAdminView && (
-                <LaporanDialog
-                  trigger={
-                    <div className="flex h-[42px] w-[169px] flex-row items-center gap-2 rounded-lg bg-[#2B6282] px-7 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-700">
-                      <Plus width={18} height={18} /> Buat laporan
-                    </div>
-                  }
-                />
-              )}
+              {!isAdminView && <LaporanFormDialog />}
             </div>
           </div>
         </div>

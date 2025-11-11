@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  CaretSortIcon,
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,

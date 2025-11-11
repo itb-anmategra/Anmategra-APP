@@ -4,8 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from './index.js';
 import { users, verifiedUsers } from './schema.js';
 
-const TEST_EMAIL = 'danielkusumo550@gmail.com'; // Change this to your own private email
-const TEST_NAME = 'Test Lembaga';
+const TEST_EMAIL = 'themalique1910@gmail.com'; // Change this to your own private email
 
 async function seed() {
   console.log('🌱 Starting seed...');

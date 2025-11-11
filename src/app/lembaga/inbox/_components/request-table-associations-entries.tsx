@@ -28,7 +28,7 @@ const RequestTableAssociationsEntries: React.FC<{
       onSuccess: () => {
         router.push('/lembaga/inbox');
       },
-      onError: (error) => {
+      onError: () => {
         router.push('/lembaga/anggota');
       },
     });
@@ -50,7 +50,7 @@ const RequestTableAssociationsEntries: React.FC<{
       onSuccess: () => {
         router.push('/lembaga/inbox');
       },
-      onError: (error) => {
+      onError: () => {
         router.push('/lembaga/anggota');
       },
     });
@@ -65,6 +65,53 @@ const RequestTableAssociationsEntries: React.FC<{
       position: posisi,
     };
     declineLembagaMutation.mutate(query);
+  };
+
+  const acceptEventMutation = api.lembaga.acceptRequestAssociation.useMutation({
+    onSuccess: () => {
+      router.push('/lembaga/inbox');
+    },
+    onError: () => {
+      router.push('/lembaga/anggota');
+    },
+  });
+  const handleAcceptEvent = (
+    user_id: string,
+    event_id: string,
+    divisi: string,
+    posisi: string,
+  ) => {
+    const query = {
+      user_id: user_id,
+      event_id: event_id,
+      division: divisi,
+      position: posisi,
+    };
+    acceptEventMutation.mutate(query);
+  };
+
+  const declineEventMutation =
+    api.lembaga.declineRequestAssociation.useMutation({
+      onSuccess: () => {
+        router.push('/lembaga/inbox');
+      },
+      onError: () => {
+        router.push('/lembaga/anggota');
+      },
+    });
+  const handleDeclineEvent = (
+    user_id: string,
+    event_id: string,
+    divisi: string,
+    posisi: string,
+  ) => {
+    const query = {
+      user_id: user_id,
+      event_id: event_id,
+      division: divisi,
+      position: posisi,
+    };
+    declineEventMutation.mutate(query);
   };
 
   return (
@@ -100,10 +147,10 @@ const RequestTableAssociationsEntries: React.FC<{
                   {item?.nama ?? '-'}
                 </span>
               </div>
-              <div className="text-[18px] -ml-[50px] font-regular weight-400 text-center text-[#636A6D]">
+              <div className="text-[18px] pr-[55px] font-regular weight-400 text-center text-[#636A6D]">
                 {item?.posisi ?? '-'}
               </div>
-              <div className="text-[18px] font-regular weight-400 text-center text-[#636A6D]">
+              <div className="text-[18px] sm:-ml-[20px] font-regular weight-400 text-center text-[#636A6D]">
                 {item?.divisi ?? '-'}
               </div>
               <div className="flex items-center justify-end gap-2 weight-700">
@@ -111,6 +158,13 @@ const RequestTableAssociationsEntries: React.FC<{
                   onClick={() => {
                     if (id === 'lembaga') {
                       handleDeclineLembaga(
+                        item.user_id,
+                        item.divisi,
+                        item.posisi,
+                      );
+                    } else {
+                      handleDeclineEvent(
+                        id,
                         item.user_id,
                         item.divisi,
                         item.posisi,
@@ -126,6 +180,13 @@ const RequestTableAssociationsEntries: React.FC<{
                   onClick={() => {
                     if (id === 'lembaga') {
                       handleAcceptLembaga(
+                        item.user_id,
+                        item.divisi,
+                        item.posisi,
+                      );
+                    } else {
+                      handleAcceptEvent(
+                        id,
                         item.user_id,
                         item.divisi,
                         item.posisi,

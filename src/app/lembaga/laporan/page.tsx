@@ -1,8 +1,6 @@
 // Props Import
 import { type ColumnProps } from '~/app/_components/laporan/board/report-column';
 import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-container';
-// Components Import
-import { getServerAuthSession } from '~/server/auth';
 
 const DummyData: ColumnProps[] = [
   {
@@ -29,6 +27,5 @@ const DummyData: ColumnProps[] = [
 ];
 
 export default async function LaporanPage() {
-  const session = await getServerAuthSession();
   return <LaporanMainContainer data={DummyData} isAdminView={false} />;
 }

@@ -23,6 +23,7 @@ export default function ProfilMahasiswa({
           className="rounded-full object-cover"
           src={profileImageUrl}
           fill
+          sizes="180px"
           priority
         />
       </div>

@@ -4,9 +4,9 @@ import ProfilMenu from './profil-menu';
 
 type ProfilHeader = {
   id: string;
-  name: string;
-  description: string;
-  profil_km_id: string[];
+  label: string;
+  deskripsi: string;
+  pemetaan: string[];
 };
 
 export default function RaporTableHeader({
@@ -34,10 +34,10 @@ export default function RaporTableHeader({
         {profilHeaders.map((header, colIdx) => (
           <TableHead key={colIdx} className="relative w-[120px]">
             <div className="flex items-center">
-              <span title={header.name}>
-                {header.name.length > 20
-                  ? header.name.slice(0, 20) + '…'
-                  : header.name}
+              <span title={header.label}>
+                {header.label.length > 20
+                  ? header.label.slice(0, 20) + '…'
+                  : header.label}
               </span>
               <ProfilMenu
                 colIdx={colIdx}

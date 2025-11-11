@@ -244,7 +244,10 @@ const CsvForm = () => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-white p-[24px_28px] rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.18)] max-w-[800px] w-[90%] min-h-[400px]">
+      <DialogContent
+        className="bg-white p-[24px_28px] rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.18)] max-w-[800px] w-[90%] min-h-[400px]"
+        aria-describedby={undefined}
+      >
         {renderContent()}
 
         {/* confirmation message */}

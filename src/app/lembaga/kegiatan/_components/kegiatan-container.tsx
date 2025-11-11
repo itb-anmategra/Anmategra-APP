@@ -6,7 +6,6 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import {
   ArrowUpRight,
   Circle,
-  Filter,
   MoreVertical,
   Pencil,
   Pin,
@@ -163,11 +162,12 @@ export default function ActivityList({
                 alt="Filter"
                 width={24}
                 height={24}
+                style={{ width: 'auto', height: 'auto' }}
               />
               Filter
             </Button>
           </DialogTrigger>
-          <DialogContent className="min-w-[800px]">
+          <DialogContent className="min-w-[800px]" aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Tambah Kegiatan</DialogTitle>
             </DialogHeader>
@@ -264,7 +264,7 @@ export default function ActivityList({
                     </span>
                   </div>
                   <div className="w-[94px] flex-shrink-0 flex items-center justify-center text-gray-500">
-                    <Link href={`/lembaga/kegiatan/${activity.id}/profil`}>
+                    <Link href={`/lembaga/kegiatan/${activity.id}/rapor`}>
                       <Button
                         variant={'outline'}
                         className="rounded-lg text-base"

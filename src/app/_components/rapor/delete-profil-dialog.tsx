@@ -18,7 +18,7 @@ export default function DeleteProfilDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onCancel}>
-      <DialogContent className="lg:rounded-[26px]">
+      <DialogContent className="lg:rounded-[26px]" aria-describedby={undefined}>
         <div className="text-center">{title}</div>
         <div className="flex justify-center gap-4">
           <Button

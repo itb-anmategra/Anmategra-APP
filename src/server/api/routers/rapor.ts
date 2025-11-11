@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, eq, exists, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
 import {
   events,

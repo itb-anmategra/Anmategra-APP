@@ -34,6 +34,7 @@ const ProfileKegiatan = async ({
             kegiatan?.image ??
             '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
           }
+          ajuanAsosiasi={Boolean(kegiatan?.id)}
         />
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-slate-600">

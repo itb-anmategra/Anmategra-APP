@@ -1,4 +1,3 @@
-import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '~/components/ui/button';
 import {
@@ -10,7 +9,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 
 import { type ColumnType } from './board/report-column';
-import { LaporanDialog } from './detail/laporan-dialog';
+import LaporanFormDialog from './detail/laporan-form';
 import DisplayBoard from '/public/icons/board-icon.svg';
 import Display from '/public/icons/display.svg';
 import DisplayList from '/public/icons/list-icon.svg';
@@ -53,6 +52,7 @@ export const LaporanHeader = ({
                 src={Display}
                 alt="Display"
                 className="h-[21px] w-[19.5px]"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <p className="text-[18px]">Display</p>
             </Button>
@@ -65,7 +65,12 @@ export const LaporanHeader = ({
               className="flex w-full min-w-[150px] flex-row items-center gap-4 text-lg font-semibold"
               onClick={() => setCurrentDisplay('List')}
             >
-              <Image src={DisplayList} alt="Display-list" className="h-4 w-4" />
+              <Image
+                src={DisplayList}
+                alt="Display-list"
+                className="h-4 w-4"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <p className="text-sm">List</p>
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -76,6 +81,7 @@ export const LaporanHeader = ({
                 src={DisplayBoard}
                 alt="Display-list"
                 className="h-4 w-4"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <p className="text-sm text-neutral-900">Board</p>
             </DropdownMenuItem>
@@ -89,7 +95,12 @@ export const LaporanHeader = ({
               variant="outline"
               className="w-[169px] h-[50px] gap-[10px] px-7 py-2 text-lg font-semibold"
             >
-              <Image src={Status} alt="Status" className="h-[26px] w-[26px]" />
+              <Image
+                src={Status}
+                alt="Status"
+                className="h-[26px] w-[26px]"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <p className="text-[18px]">Status</p>
             </Button>
           </DropdownMenuTrigger>
@@ -102,7 +113,12 @@ export const LaporanHeader = ({
               checked={status.includes('Draft')}
               onClick={() => toggleStatus('Draft')}
             >
-              <Image src={Draft} alt="Draft Icon" className="h-5 w-5" />
+              <Image
+                src={Draft}
+                alt="Draft Icon"
+                className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <span className="text-sm">Draft</span>
             </DropdownMenuCheckboxItem>
 
@@ -115,6 +131,7 @@ export const LaporanHeader = ({
                 src={InProgress}
                 alt="In Progress Icon"
                 className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <span className="text-sm text-yellow-500">In Progress</span>
             </DropdownMenuCheckboxItem>
@@ -124,7 +141,12 @@ export const LaporanHeader = ({
               checked={status.includes('Resolved')}
               onClick={() => toggleStatus('Resolved')}
             >
-              <Image src={Resolved} alt="Resolved Icon" className="h-5 w-5" />
+              <Image
+                src={Resolved}
+                alt="Resolved Icon"
+                className="h-5 w-5"
+                style={{ width: 'auto', height: 'auto' }}
+              />
               <span className="text-sm text-green-700">Resolved</span>
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
@@ -132,13 +154,7 @@ export const LaporanHeader = ({
 
         {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
         {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
-          <LaporanDialog
-            trigger={
-              <div className="flex w-[201px] h-[50px] flex-row items-center gap-[8px] rounded-xl bg-primary-400 px-6 py-[7px] text-[18px] text-white transition-all hover:bg-primary-500">
-                <Plus width={24} height={24} /> Buat laporan
-              </div>
-            }
-          />
+          <LaporanFormDialog />
         )}
       </div>
     </header>
