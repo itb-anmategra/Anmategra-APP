@@ -1,10 +1,11 @@
 'use client';
 
-import { Upload, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Dropzone } from '~/components/ui/shadcn-io/dropzone/index';
+import { useUploadThing } from '~/utils/uploadthing';
 
 interface CustomDropzoneProps {
   onFileChange: (url: string) => void;
@@ -14,7 +15,6 @@ interface CustomDropzoneProps {
 
 const CustomDropzone = ({
   onFileChange,
-  label,
   initialValue,
 }: CustomDropzoneProps) => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -24,6 +24,30 @@ const CustomDropzone = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Use UploadThing hook
+  const { startUpload } = useUploadThing('imageUploader', {
+    onClientUploadComplete: (res) => {
+      if (res?.[0]?.url) {
+        const uploadedUrl = res[0].url;
+        setFilePreview(uploadedUrl);
+        onFileChange(uploadedUrl);
+        setUploadProgress(100);
+        setTimeout(() => {
+          setIsUploading(false);
+        }, 500);
+      }
+    },
+    onUploadError: (error: Error) => {
+      console.error('Upload error:', error);
+      setIsUploading(false);
+      setUploadProgress(0);
+      alert(`Upload failed: ${error.message}`);
+    },
+    onUploadProgress: (progress: number) => {
+      setUploadProgress(progress);
+    },
+  });
+
   const handleDrop = async (droppedFiles: File[]) => {
     if (droppedFiles.length === 0) return;
 
@@ -31,30 +55,23 @@ const CustomDropzone = ({
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 10;
-      });
-    }, 200);
-
+    // Create preview immediately using FileReader
     const reader = new FileReader();
     reader.onload = (e) => {
       if (typeof e.target?.result === 'string') {
         setFilePreview(e.target?.result);
-        onFileChange(e.target?.result);
-        setUploadProgress(100);
-        setTimeout(() => {
-          setIsUploading(false);
-          clearInterval(interval);
-        }, 500);
       }
     };
     reader.readAsDataURL(droppedFiles[0]!);
+
+    // Upload to UploadThing
+    try {
+      await startUpload(droppedFiles);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const handleCancel = () => {
@@ -161,10 +178,11 @@ const CustomDropzone = ({
 
         {filePreview && !isUploading && (
           <div className="absolute inset-0 w-full h-full rounded-lg overflow-hidden">
-            <img
+            <Image
               alt="Preview"
               className="w-full h-full object-cover"
               src={filePreview}
+              fill
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
               <Button

@@ -43,39 +43,47 @@ import { Textarea } from '~/components/ui/textarea';
 import { cn } from '~/lib/utils';
 // TRPC Import
 import { api } from '~/trpc/react';
-// Upload Thing Import
-import { UploadButton } from '~/utils/uploadthing';
 
 import CustomDropzone from './dropzone';
 
 // ✅ Schema dengan Zod
-const EventInputSchema = z.object({
-  name: z.string().min(1, 'Nama kegiatan wajib diisi'),
-  description: z
-    .string()
-    .min(10, 'Deskripsi minimal 10 karakter')
-    .max(100, 'Deskripsi maksimal 100 karakter'),
-  image: z.string().url('Harus berupa URL yang valid'),
-  start_date: z.string().datetime(),
-  end_date: z.string().datetime().nullable().optional(),
-  status: z.enum(['Coming Soon', 'On going', 'Ended']),
-  oprec_link: z
-    .string()
-    .url('Harus berupa URL yang valid')
-    .or(z.literal(''))
-    .optional(),
-  location: z.string().min(3, 'Lokasi minimal 3 karakter'),
-  participant_limit: z.number().int().min(1, 'Minimal 1 peserta'),
-  participant_count: z.number().int().min(0, 'Minimal 0 peserta'),
-  is_highlighted: z.boolean().optional(),
-  is_organogram: z.boolean().optional(),
-  background_image: z.string().url('Harus berupa URL yang valid').optional(),
-  organogram_image: z
-    .string()
-    .url('Harus berupa URL yang valid')
-    .or(z.literal(''))
-    .optional(),
-});
+const EventInputSchema = z
+  .object({
+    name: z.string().min(1, 'Nama kegiatan wajib diisi'),
+    description: z
+      .string()
+      .min(10, 'Deskripsi minimal 10 karakter')
+      .max(100, 'Deskripsi maksimal 100 karakter'),
+    image: z.string().url('Harus berupa URL yang valid'),
+    start_date: z.string().datetime(),
+    end_date: z.string().datetime().nullable().optional(),
+    status: z.enum(['Coming Soon', 'On going', 'Ended']),
+    oprec_link: z
+      .string()
+      .url('Harus berupa URL yang valid')
+      .or(z.literal(''))
+      .optional(),
+    location: z.string().min(3, 'Lokasi minimal 3 karakter'),
+    participant_limit: z.number().int().min(1, 'Minimal 1 peserta'),
+    participant_count: z.number().int().min(0, 'Minimal 0 peserta'),
+    is_highlighted: z.boolean().optional(),
+    is_organogram: z.boolean().optional(),
+    background_image: z.string().url('Harus berupa URL yang valid').optional(),
+    organogram_image: z
+      .string()
+      .url('Harus berupa URL yang valid')
+      .or(z.literal(''))
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      !data.is_organogram ||
+      (data.organogram_image && data.organogram_image.length > 0),
+    {
+      message: 'Organogram wajib diupload ketika menggunakan organogram',
+      path: ['organogram_image'],
+    },
+  );
 
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
@@ -132,6 +140,21 @@ const TambahKegiatanForm = ({
   const isValid = form.formState.isValid;
 
   const startDate = useWatch({ control: form.control, name: 'start_date' });
+  const isOrganogram = useWatch({
+    control: form.control,
+    name: 'is_organogram',
+  });
+  const organogramImage = useWatch({
+    control: form.control,
+    name: 'organogram_image',
+  });
+
+  // Auto-check 'Gunakan Organogram' when organogram image is uploaded
+  React.useEffect(() => {
+    if (organogramImage && organogramImage.length > 0 && !isOrganogram) {
+      form.setValue('is_organogram', true);
+    }
+  }, [organogramImage, isOrganogram, form]);
 
   return (
     <Form {...form}>
@@ -496,7 +519,9 @@ const TambahKegiatanForm = ({
             name="background_image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload Banner</FormLabel>
+                <FormLabel>
+                  Upload Banner <span className="text-red-500 ml-1">*</span>
+                </FormLabel>
                 <FormControl>
                   <CustomDropzone
                     label="Upload Banner"
@@ -513,7 +538,14 @@ const TambahKegiatanForm = ({
             name="organogram_image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload Organogram (Opsional)</FormLabel>
+                <FormLabel>
+                  Upload Organogram
+                  {isOrganogram ? (
+                    <span className="text-red-500 ml-1">*</span>
+                  ) : (
+                    <span className="text-gray-500 ml-1">(Opsional)</span>
+                  )}
+                </FormLabel>
                 <FormControl>
                   <CustomDropzone
                     label="Upload Organogram"
