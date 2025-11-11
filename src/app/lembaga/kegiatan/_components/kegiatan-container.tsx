@@ -16,7 +16,10 @@ import {
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import FilterDropdown, {
+  type FilterOption,
+} from '~/app/_components/filter/filter-dropdown';
 import DeleteProfilDialog from '~/app/_components/rapor/delete-profil-dialog';
 import EditKegiatanForm from '~/app/lembaga/kegiatan/_components/form/edit-kegiatan-form';
 import TambahKegiatanForm from '~/app/lembaga/kegiatan/_components/form/tambah-kegiatan-form';
@@ -75,6 +78,23 @@ export default function ActivityList({
   const [updatingHighlightId, setUpdatingHighlightId] = useState<string | null>(
     null,
   );
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  const filterOptions: FilterOption[] = useMemo(() => {
+    const uniqueStatuses = Array.from(
+      new Set(propActivites.map((activity) => activity.status)),
+    ).filter(Boolean);
+    return uniqueStatuses.map((status) => ({
+      id: status,
+      label: status,
+      value: status,
+    }));
+  }, [propActivites]);
+
+  const handleFilterChange = useCallback((filters: string[]) => {
+    setSelectedFilters(filters);
+    // TODO: Implement server-side filtering when BE is ready
+  }, []);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingActivity, setDeletingActivity] = useState<Activity | null>(
     null,
@@ -198,18 +218,6 @@ export default function ActivityList({
               Tambah Kegiatan Baru
             </Button>
           </DialogTrigger>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <Image
-                src="/images/lembaga/Vector.svg"
-                alt="Filter"
-                width={24}
-                height={24}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              Filter
-            </Button>
-          </DialogTrigger>
           <DialogContent className="min-w-[800px]" aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Tambah Kegiatan</DialogTitle>
@@ -221,6 +229,12 @@ export default function ActivityList({
             />
           </DialogContent>
         </Dialog>
+        <FilterDropdown
+          filterTitle="Status"
+          filterOptions={filterOptions}
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+        />
       </div>
 
       <div className="bg-white rounded-lg overflow-hidden">
