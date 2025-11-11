@@ -2,7 +2,12 @@ import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
 
 import ProfilMenu from './profil-menu';
 
-type ProfilHeader = { label: string; deskripsi: string; pemetaan: string };
+type ProfilHeader = {
+  id: string;
+  label: string;
+  deskripsi: string;
+  pemetaan: string[];
+};
 
 export default function RaporTableHeader({
   profilHeaders,
