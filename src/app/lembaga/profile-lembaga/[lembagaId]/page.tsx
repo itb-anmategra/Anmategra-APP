@@ -1,5 +1,6 @@
 // Libray Import
 // Icons Import
+import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
@@ -8,6 +9,7 @@ import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
+import { Button } from '~/components/ui/button';
 // Components Import
 import { getServerAuthSession } from '~/server/auth';
 // Icon Import
@@ -60,7 +62,7 @@ const DetailLembagaPage = async ({
 
         {/* Highlighted Event */}
         {highlightedEvent && (
-          <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-col w-full gap-4 mb-8">
             <h5 className="text-[24px] leading-[32px] font-semibold text-[#000000]">
               Highlighted Event
             </h5>
@@ -72,13 +74,27 @@ const DetailLembagaPage = async ({
           </div>
         )}
 
-        <div className="flex flex-col gap-12 w-full">
+        <div className="flex flex-col gap-12 w-full mb-8">
           {dummyDate.slice(0, 1).map((item, id) => (
             <div key={id} className="flex flex-col gap-3 w-full">
               <div className="flex flex-row justify-between items-center">
                 <h2 className="text-2xl font-semibold">
                   Best Staff Periode {item.startDate}–{item.endDate} 2025
                 </h2>
+                {is_user_owner && (
+                  <Button asChild variant="ghost">
+                    <Link
+                      href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
+                      className="flex items-center gap-2 text-lg"
+                    >
+                      <span>Lihat Histori </span>
+                      <ChevronRight
+                        className="!w-4 !h-4 text-slate-1000"
+                        aria-hidden
+                      />
+                    </Link>
+                  </Button>
+                )}
               </div>
               <CarouselBestStaff />
             </div>
@@ -86,7 +102,7 @@ const DetailLembagaPage = async ({
         </div>
 
         {/* Kepanitiaan Terbaru */}
-        <div className="space-y-4 pb-12">
+        <div className="space-y-4">
           <h5 className="text-2xl font-semibold text-slate-600">
             Kepanitiaan Terbaru
           </h5>
