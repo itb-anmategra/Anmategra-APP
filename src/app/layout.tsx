@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="bg-neutral-100 overflow-auto">
-        <div className="min-h-screen flex flex-col hidden lg:block">
+        <div className="min-h-screen flex flex-col">
           <div className="flex-1">
             <TRPCReactProvider>{children}</TRPCReactProvider>
           </div>
@@ -35,7 +35,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </div>
-        <div className="w-full h-screen flex flex-col justify-between lg:hidden">
+        <div className="w-full h-screen flex flex-col justify-between hidden">
           <div className="flex items-center justify-center py-12">
             <Image
               src={LogoAnmategra}
