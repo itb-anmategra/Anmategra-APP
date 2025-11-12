@@ -7,7 +7,6 @@ import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
-import { dummyDate } from '~/app/lembaga/profile-lembaga/[lembagaId]/histori/_components/dummy-histori';
 import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -23,6 +22,27 @@ const ProfileKegiatan = async ({
   });
   const session = await getServerAuthSession();
   const is_user_owner = session?.user?.lembagaId === lembaga?.id;
+
+  let latestBestStaff: {
+    start_date: string;
+    end_date: string;
+    best_staff_list: {
+      user_id: string;
+      name: string;
+      image: string | null;
+      nim: string;
+      jurusan: string;
+      division: string;
+    }[];
+  } | null = null;
+  try {
+    latestBestStaff = await api.lembaga.getLatestBestStaffKegiatan({
+      event_id: query,
+    });
+    console.log('Best staff data loaded for kegiatan:', latestBestStaff);
+  } catch (error) {
+    console.log('No best staff data available for kegiatan:', query, error);
+  }
 
   return (
     <div className="w-full flex min-h-screen flex-col items-center px-6">
@@ -60,12 +80,29 @@ const ProfileKegiatan = async ({
             />
           </Link>
         </div>
-        <div className="flex flex-col gap-12 w-full">
-          {dummyDate.slice(0, 1).map((item, id) => (
-            <div key={id} className="flex flex-col gap-3 w-full">
+
+        {/* Best Staff Section */}
+        {latestBestStaff && (
+          <div className="flex flex-col gap-12 w-full mb-8">
+            <div className="flex flex-col gap-3 w-full">
               <div className="flex flex-row justify-between items-center">
                 <h2 className="text-2xl font-semibold text-[##141718]">
-                  Best Staff Periode {item.startDate}–{item.endDate} 2025
+                  Best Staff Periode{' '}
+                  {new Date(latestBestStaff.start_date).toLocaleDateString(
+                    'id-ID',
+                    {
+                      month: 'long',
+                      year: 'numeric',
+                    },
+                  )}
+                  –
+                  {new Date(latestBestStaff.end_date).toLocaleDateString(
+                    'id-ID',
+                    {
+                      month: 'long',
+                      year: 'numeric',
+                    },
+                  )}
                 </h2>
                 {is_user_owner && (
                   <Button asChild variant="ghost">
@@ -82,10 +119,13 @@ const ProfileKegiatan = async ({
                   </Button>
                 )}
               </div>
-              <CarouselBestStaff />
+              <CarouselBestStaff
+                bestStaffList={latestBestStaff.best_staff_list}
+              />
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
         <ProfileKegiatanComp anggota={participant ?? []} />
       </div>
     </div>

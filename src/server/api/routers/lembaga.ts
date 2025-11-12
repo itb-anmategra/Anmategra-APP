@@ -1007,6 +1007,7 @@ export const lembagaRouter = createTRPCRouter({
         .select({
           user_id: users.id,
           name: users.name,
+          image: users.image,
           nim: mahasiswa.nim,
           jurusan: mahasiswa.jurusan,
           division: bestStaffKegiatan.division,
@@ -1031,6 +1032,7 @@ export const lembagaRouter = createTRPCRouter({
         best_staff_list: staffList.map((staff) => ({
           user_id: staff.user_id,
           name: staff.name ?? 'Tidak Diketahui',
+          image: staff.image,
           nim: staff.nim ? staff.nim.toString() : '-',
           jurusan: staff.jurusan ?? 'Tidak Diketahui',
           division: staff.division ?? '',
@@ -1055,6 +1057,7 @@ export const lembagaRouter = createTRPCRouter({
         .select({
           user_id: users.id,
           name: users.name,
+          image: users.image,
           nim: mahasiswa.nim,
           jurusan: mahasiswa.jurusan,
           division: bestStaffLembaga.division,
@@ -1079,6 +1082,7 @@ export const lembagaRouter = createTRPCRouter({
         best_staff_list: staffList.map((staff) => ({
           user_id: staff.user_id,
           name: staff.name ?? 'Tidak Diketahui',
+          image: staff.image,
           nim: staff.nim ? staff.nim.toString() : '-',
           jurusan: staff.jurusan ?? 'Tidak Diketahui',
           division: staff.division ?? '',
@@ -1110,6 +1114,7 @@ export const lembagaRouter = createTRPCRouter({
           endDate: bestStaffKegiatan.endDate,
           user_id: users.id,
           name: users.name,
+          image: users.image,
           nim: mahasiswa.nim,
           jurusan: mahasiswa.jurusan,
           division: bestStaffKegiatan.division,
@@ -1131,6 +1136,7 @@ export const lembagaRouter = createTRPCRouter({
           staffList: {
             user_id: string;
             name: string;
+            image: string | null;
             nim: string;
             jurusan: string;
             division: string;
@@ -1153,6 +1159,7 @@ export const lembagaRouter = createTRPCRouter({
         grouped.get(key)!.staffList.push({
           user_id: record.user_id,
           name: record.name ?? 'Tidak Diketahui',
+          image: record.image,
           nim: record.nim ? record.nim.toString() : '-',
           jurusan: record.jurusan ?? 'Tidak Diketahui',
           division: record.division ?? '',
@@ -1187,6 +1194,7 @@ export const lembagaRouter = createTRPCRouter({
           endDate: bestStaffLembaga.endDate,
           user_id: users.id,
           name: users.name,
+          image: users.image,
           nim: mahasiswa.nim,
           jurusan: mahasiswa.jurusan,
           division: bestStaffLembaga.division,
@@ -1208,6 +1216,7 @@ export const lembagaRouter = createTRPCRouter({
           staffList: {
             user_id: string;
             name: string;
+            image: string | null;
             nim: string;
             jurusan: string;
             division: string;
@@ -1230,6 +1239,7 @@ export const lembagaRouter = createTRPCRouter({
         grouped.get(key)!.staffList.push({
           user_id: record.user_id,
           name: record.name ?? 'Tidak Diketahui',
+          image: record.image,
           nim: record.nim ? record.nim.toString() : '-',
           jurusan: record.jurusan ?? 'Tidak Diketahui',
           division: record.division ?? '',
