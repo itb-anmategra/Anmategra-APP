@@ -8,6 +8,7 @@ import { api } from '~/trpc/react';
 import Pagination from '../layout/pagination-comp';
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
+import FormProfilKegiatan from './form-profil-kegiatan';
 import LinkButton from './link-button';
 import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
@@ -15,7 +16,12 @@ import RaporTableRow from './rapor-table-row';
 import TambahProfilButton from './tambah-profil-button';
 
 type Anggota = { nama: string; nim: string; profil: string[] };
-type ProfilData = { label: string; deskripsi: string; pemetaan: string };
+type ProfilData = {
+  id: string;
+  label: string;
+  deskripsi: string;
+  pemetaan: string[];
+};
 
 type ApiMahasiswaData = {
   user_id: string;
@@ -27,7 +33,8 @@ type ApiMahasiswaData = {
 interface ProfilItem {
   id: string;
   name: string;
-  description?: string;
+  description: string;
+  profil_km_id: string[];
 }
 
 interface TableProps {
@@ -81,7 +88,10 @@ export default function RaporTable({
   const editLembagaProfilMutation = api.profil.editProfilLembaga.useMutation();
   const editKegiatanProfilMutation =
     api.profil.editProfilKegiatan.useMutation();
-
+  const deleteLembagaProfilMutation =
+    api.profil.deleteProfilLembaga.useMutation();
+  const deleteKegiatanProfilMutation =
+    api.profil.deleteProfilKegiatan.useMutation();
   // Use appropriate query/mutation based on type
   const raporData = type === 'event' ? eventQuery.data : lembagaQuery.data;
   const isLoading =
@@ -103,7 +113,7 @@ export default function RaporTable({
   const [editColIdx, setEditColIdx] = useState<number | null>(null);
   const [profil, setProfil] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
-  const [pemetaan, setPemetaan] = useState('');
+  const [pemetaan, setPemetaan] = useState<string[]>([]);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteColIdx, setDeleteColIdx] = useState<number | null>(null);
   const [editNilaiMode, setEditNilaiMode] = useState(false);
@@ -129,9 +139,10 @@ export default function RaporTable({
         if (profils.length > 0) {
           const finalProfilIds = profils.map((p) => p.id);
           const profilData = profils.map((profil) => ({
+            id: profil.id,
             label: profil.name,
             deskripsi: profil.description ?? '',
-            pemetaan: profil.id,
+            pemetaan: profil.profil_km_id ?? [],
           }));
 
           setProfilIdMap(finalProfilIds);
@@ -164,9 +175,10 @@ export default function RaporTable({
       if (profils.length > 0) {
         const finalProfilIds = profils.map((p) => p.id);
         const profilData = profils.map((profil) => ({
+          id: profil.id,
           label: profil.name,
           deskripsi: profil.description ?? '',
-          pemetaan: profil.id,
+          pemetaan: profil.profil_km_id ?? [],
         }));
 
         setProfilIdMap(finalProfilIds);
@@ -227,7 +239,7 @@ export default function RaporTable({
     setModalType('tambah');
     setProfil('');
     setDeskripsi('');
-    setPemetaan('');
+    setPemetaan([]);
     setModalOpen(true);
   };
 
@@ -248,9 +260,9 @@ export default function RaporTable({
           : null;
 
     if (currentProfil?.profil_km_id && currentProfil.profil_km_id.length > 0) {
-      setPemetaan(currentProfil.profil_km_id[0] ?? '');
+      setPemetaan(currentProfil.profil_km_id ?? []);
     } else {
-      setPemetaan('');
+      setPemetaan([]);
     }
 
     setModalOpen(true);
@@ -267,16 +279,44 @@ export default function RaporTable({
   const handleConfirmDelete = () => {
     if (deleteColIdx === null) return;
 
-    setProfilHeaders((prev) => prev.filter((_, i) => i !== deleteColIdx));
-    setData((prev) =>
-      prev.map((row) => ({
-        ...row,
-        profil: row.profil.filter((_, i) => i !== deleteColIdx),
-      })),
+    const profilIdToDelete = profilIdMap[deleteColIdx];
+    if (!profilIdToDelete) return;
+
+    const mutation =
+      type === 'lembaga'
+        ? deleteLembagaProfilMutation
+        : deleteKegiatanProfilMutation;
+
+    mutation.mutate(
+      { profil_id: profilIdToDelete },
+      {
+        onSuccess: () => {
+          setProfilHeaders((prev) => prev.filter((_, i) => i !== deleteColIdx));
+          setData((prev) =>
+            prev.map((row) => ({
+              ...row,
+              profil: row.profil.filter((_, i) => i !== deleteColIdx),
+            })),
+          );
+          setProfilIdMap((prev) => prev.filter((_, i) => i !== deleteColIdx));
+          setDeleteColIdx(null);
+          setConfirmDeleteOpen(false);
+
+          void profilsQuery.refetch();
+
+          toast({
+            title: 'Profil berhasil dihapus',
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: 'Gagal menghapus profil',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      },
     );
-    setProfilIdMap((prev) => prev.filter((_, i) => i !== deleteColIdx));
-    setDeleteColIdx(null);
-    setConfirmDeleteOpen(false);
   };
 
   const handleCancelDelete = () => {
@@ -300,14 +340,14 @@ export default function RaporTable({
           lembaga_id: lembaga_id!,
           name: profil,
           description: deskripsi,
-          profil_km_id: pemetaan ? [pemetaan] : [],
+          profil_km_id: pemetaan,
         },
         {
           onSuccess: () => {
             setModalOpen(false);
             setProfil('');
             setDeskripsi('');
-            setPemetaan('');
+            setPemetaan([]);
 
             void profilsQuery.refetch();
 
@@ -331,14 +371,14 @@ export default function RaporTable({
           event_id: event_id!,
           name: profil,
           description: deskripsi,
-          profil_km_id: pemetaan ? [pemetaan] : [],
+          profil_km_id: pemetaan,
         },
         {
           onSuccess: () => {
             setModalOpen(false);
             setProfil('');
             setDeskripsi('');
-            setPemetaan('');
+            setPemetaan([]);
 
             void profilsQuery.refetch();
 
@@ -389,7 +429,7 @@ export default function RaporTable({
       profil_id: profilIdToUpdate,
       name: profil,
       description: deskripsi,
-      profil_km_id: pemetaan ? [pemetaan] : [],
+      profil_km_id: pemetaan,
     };
 
     mutation.mutate(payload, {
@@ -398,9 +438,10 @@ export default function RaporTable({
           prev.map((header, idx) =>
             idx === editColIdx
               ? {
+                  id: profilIdToUpdate,
                   label: profil,
                   deskripsi: deskripsi,
-                  pemetaan: profilIdToUpdate,
+                  pemetaan: pemetaan,
                 }
               : header,
           ),
@@ -619,8 +660,22 @@ export default function RaporTable({
             </TableBody>
           </Table>
         </div>
-
-        <ProfilDialog
+        {/* <ProfilDialog
+          open={modalOpen}
+          setOpen={setModalOpen}
+          modalType={modalType}
+          profil={profil}
+          setProfil={setProfil}
+          deskripsi={deskripsi}
+          setDeskripsi={setDeskripsi}
+          pemetaan={pemetaan}
+          setPemetaan={setPemetaan}
+          handleSimpanTambah={handleSimpanTambah}
+          handleSimpanEdit={handleSimpanEdit}
+          handleBatal={() => setModalOpen(false)}
+          selectOptions={selectOptions}
+        /> */}
+        <FormProfilKegiatan
           open={modalOpen}
           setOpen={setModalOpen}
           modalType={modalType}

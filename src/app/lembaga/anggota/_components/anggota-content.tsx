@@ -1,16 +1,17 @@
 'use client';
 
-// Library Import
-// Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
 import Upload from '~/../public/icons/export-button.svg';
-import Filter from '~/../public/icons/filter-list.svg';
 import SearchIcon from '~/../public/icons/search.svg';
 // Import the magnifying glass icon
+import FilterDropdown, {
+  type FilterOption,
+} from '~/app/_components/filter/filter-dropdown';
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
@@ -20,6 +21,7 @@ import {
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import BestStaff from '../../_components/best-staff-form';
 
 export default function AnggotaContent({
   session,
@@ -35,9 +37,12 @@ export default function AnggotaContent({
     bidang: comboboxDataType[];
   };
 }) {
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
   const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';
+  const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
+  const lembagaId = session?.user.lembagaId ?? undefined;
   let tableData;
   if (!isAnggota && pathname) {
     tableData = data.map((member) => {
@@ -47,6 +52,22 @@ export default function AnggotaContent({
       };
     });
   }
+
+  const filterOptions: FilterOption[] = useMemo(
+    () =>
+      dataAddAnggota.bidang.map((bidang) => ({
+        id: bidang.value,
+        label: bidang.label,
+        value: bidang.value,
+      })),
+    [dataAddAnggota.bidang],
+  );
+
+  const handleFilterChange = useCallback((filters: string[]) => {
+    setSelectedFilters(filters);
+    // TODO: Implement server-side filtering when BE is ready
+  }, []);
+
   return (
     <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
       {/* Content */}
@@ -54,7 +75,7 @@ export default function AnggotaContent({
         {/* Search Bar */}
         <div className="w-full">
           <p className="text-[32px] mb-4 font-semibold">
-            {isAnggota ? <span>Anggota</span> : <span>Anggota Kegiatan</span>}
+            {isAnggota ? <span>Anggota</span> : <span>Panitia Kegiatan</span>}
           </p>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
@@ -89,7 +110,6 @@ export default function AnggotaContent({
                     variant="light_blue"
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
-                      // Empty function - add rapor komunal functionality here
                       router.push('/lembaga/anggota/rapor');
                     }}
                   >
@@ -102,7 +122,7 @@ export default function AnggotaContent({
                     Rapor Komunal
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   variant="light_blue"
                   className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
@@ -117,24 +137,32 @@ export default function AnggotaContent({
                     height={24}
                   />
                   Pilih Best Staff
-                </Button>
+                </Button> */}
+                <BestStaff
+                  lembagaId={lembagaId}
+                  eventId={eventId}
+                  trigger={
+                    <Button
+                      variant="light_blue"
+                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg">
+                        <Image
+                          src={Best}
+                          alt="Pilih Best Staff"
+                          width={24}
+                          height={24}
+                        />
+                        Pilih Best Staff
+                    </Button>
+                  }
+                />
               </div>
               <div className="flex gap-x-2">
-                <Button
-                  className="bg-neutral-50 hover:bg-neutral-300 border border-netural-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg"
-                  onClick={() => {
-                    // Empty function - add filter functionality here
-                    console.log('Filter clicked');
-                  }}
-                >
-                  <Image
-                    src={Filter}
-                    alt="Filter icon"
-                    width={24}
-                    height={24}
-                  />
-                  Filter
-                </Button>
+                <FilterDropdown
+                  filterTitle="Divisi"
+                  filterOptions={filterOptions}
+                  selectedFilters={selectedFilters}
+                  onFilterChange={handleFilterChange}
+                />
                 <Button
                   variant="ghost"
                   className="p-2"
