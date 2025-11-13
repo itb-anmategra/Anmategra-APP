@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-import PartyPopper from 'public/icons/party-popper.svg';
+// import Image from 'next/image';
+// import PartyPopper from 'public/icons/party-popper.svg';
 import { useState, useEffect } from 'react';
 import { Button } from '~/components/ui/button';
 import {
@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { api } from '~/trpc/react';
-import { useQueries } from '@tanstack/react-query';
+// import { useQueries } from '@tanstack/react-query';
 import { skipToken } from '@tanstack/query-core';
 
 export type Division = {
@@ -335,7 +335,7 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     }
 
     const emptyDivisi = (divisionData?.divisions ?? []).filter(
-      (d) => !(selectedStaff[d] && selectedStaff[d].trim()),
+      (d) => !(selectedStaff[d]?.trim()),
     );
     if (emptyDivisi.length > 0) {
       alert(`Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`);
@@ -343,8 +343,8 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     }
 
     // Format tanggal: YYYY-MM-01
-    const start_date = `${startYear}-${startMonth.padStart(2, '0')}-01`;
-    const end_date = `${endYear}-${endMonth.padStart(2, '0')}-01`;
+    const start_date = (new Date(sYear, sMonth - 1, 1)).toISOString();
+    const end_date = (new Date(eYear, eMonth - 1, 1)).toISOString();
 
     // divisionDataMapping is populated by the top-level anggota query effect
 
