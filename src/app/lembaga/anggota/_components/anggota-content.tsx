@@ -1,7 +1,5 @@
 'use client';
 
-// Library Import
-// Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -10,7 +8,6 @@ import Best from '~/../public/icons/best.svg';
 import Upload from '~/../public/icons/export-button.svg';
 import Filter from '~/../public/icons/filter-list.svg';
 import SearchIcon from '~/../public/icons/search.svg';
-// Import the magnifying glass icon
 import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
 import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
 import {
@@ -54,7 +51,7 @@ export default function AnggotaContent({
         {/* Search Bar */}
         <div className="w-full">
           <p className="text-[32px] mb-4 font-semibold">
-            {isAnggota ? <span>Anggota</span> : <span>Anggota Kegiatan</span>}
+            {isAnggota ? <span>Anggota</span> : <span>Panitia Kegiatan</span>}
           </p>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
@@ -89,7 +86,6 @@ export default function AnggotaContent({
                     variant="light_blue"
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
-                      // Empty function - add rapor komunal functionality here
                       router.push('/lembaga/anggota/rapor');
                     }}
                   >
