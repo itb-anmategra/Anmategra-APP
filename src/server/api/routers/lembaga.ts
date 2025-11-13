@@ -1206,7 +1206,7 @@ export const lembagaRouter = createTRPCRouter({
         )
         .innerJoin(users, eq(mahasiswa.userId, users.id))
         .where(eq(bestStaffLembaga.lembagaId, input.lembaga_id))
-        .orderBy(desc(bestStaffKegiatan.startDate));
+        .orderBy(desc(bestStaffLembaga.startDate));
 
       const grouped = new Map<
         string,
