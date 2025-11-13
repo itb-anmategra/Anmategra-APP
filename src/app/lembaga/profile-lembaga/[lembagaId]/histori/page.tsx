@@ -1,7 +1,7 @@
 import { Pencil } from 'lucide-react';
 import React from 'react';
 import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
-import BestStaff from '~/app/lembaga/kegiatan/[kegiatanId]/_components/best-staff-form';
+import BestStaff from '~/app/lembaga/_components/best-staff-form';
 import { Button } from '~/components/ui/button';
 
 import { dummyDate } from './_components/dummy-histori';
