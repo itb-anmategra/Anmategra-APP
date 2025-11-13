@@ -21,6 +21,7 @@ import {
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import BestStaff from '../../_components/best-staff-form';
 
 export default function AnggotaContent({
   session,
@@ -40,6 +41,8 @@ export default function AnggotaContent({
   const pathname = usePathname();
   const router = useRouter();
   const isAnggota = pathname === '/lembaga/anggota';
+  const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
+  const lembagaId = session?.user.lembagaId ?? undefined;
   let tableData;
   if (!isAnggota && pathname) {
     tableData = data.map((member) => {
@@ -57,7 +60,7 @@ export default function AnggotaContent({
         label: bidang.label,
         value: bidang.value,
       })),
-    dataAddAnggota.bidang,
+    [dataAddAnggota.bidang],
   );
 
   const handleFilterChange = useCallback((filters: string[]) => {
@@ -119,7 +122,7 @@ export default function AnggotaContent({
                     Rapor Komunal
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   variant="light_blue"
                   className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                   onClick={() => {
@@ -134,7 +137,24 @@ export default function AnggotaContent({
                     height={24}
                   />
                   Pilih Best Staff
-                </Button>
+                </Button> */}
+                <BestStaff
+                  lembagaId={lembagaId}
+                  eventId={eventId}
+                  trigger={
+                    <Button
+                      variant="light_blue"
+                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg">
+                        <Image
+                          src={Best}
+                          alt="Pilih Best Staff"
+                          width={24}
+                          height={24}
+                        />
+                        Pilih Best Staff
+                    </Button>
+                  }
+                />
               </div>
               <div className="flex gap-x-2">
                 <FilterDropdown
