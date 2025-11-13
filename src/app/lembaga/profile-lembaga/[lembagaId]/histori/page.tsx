@@ -16,7 +16,7 @@ interface Props {
 }
 
 const HistoriBestStaffPage = async ({ params }: Props) => {
-  const session = await getServerAuthSession();
+  // const session = await getServerAuthSession();
   const { lembagaId } = params;
 
   const historyData = await api.lembaga.getAllHistoryBestStaffLembaga({
