@@ -2,7 +2,7 @@
 
 // import Image from 'next/image';
 // import PartyPopper from 'public/icons/party-popper.svg';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -34,21 +34,6 @@ export type Month = {
   label: string;
 };
 
-const divisions: Division[] = [
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-];
-
 const months: Month[] = [
   { value: '01', label: 'Januari' },
   { value: '02', label: 'Februari' },
@@ -64,7 +49,13 @@ const months: Month[] = [
   { value: '12', label: 'Desember' },
 ];
 
-const years: string[] = ['2024', '2025'];
+function generateYears(startYear: number, endYear: number): string[] {
+  const years: string[] = [];
+  for (let year = startYear; year <= endYear; year++) {
+    years.push(year.toString());
+  }
+  return years;
+}
 
 type PeriodSelectProps = {
   months: Month[];
@@ -223,9 +214,10 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
 type BestStaffProps = {
   trigger?: React.ReactNode;
   lembagaId?: string;
+  eventId?: string;
 };
 
-const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
+const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -245,7 +237,37 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     endYear: null,
   });
 
-  const chooseBestStaffMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
+  const { data: eventData } = api.event.getByID.useQuery(
+    eventId ? { id: eventId } : skipToken,
+    { enabled: !!eventId }
+  );
+
+  const years = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    
+    if (eventId && eventData) {
+      const startYear = new Date(eventData.start_date).getFullYear();
+      const endYear = eventData.end_date 
+        ? new Date(eventData.end_date).getFullYear() 
+        : currentYear;
+      return generateYears(startYear, endYear);
+    }
+    
+    // For lembaga: 1956 to current year
+    return generateYears(1956, currentYear);
+  }, [eventId, eventData]);
+
+  const chooseBestStaffLembagaMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
+    onSuccess: () => {
+      alert('Best Staff berhasil disimpan!');
+    },
+    onError: (err) => {
+      console.error(err);
+      alert('Terjadi kesalahan saat menyimpan Best Staff.');
+    },
+  });
+
+  const chooseBestStaffKegiatanMutation = api.lembaga.chooseBestStaffKegiatan.useMutation({
     onSuccess: () => {
       alert('Best Staff berhasil disimpan!');
     },
@@ -264,18 +286,26 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
   >({});
 
   // Ambil divisions dari backend
-  const { data: divisionData, isLoading: isLoadingDivisions } =
-    api.lembaga.getAllLembagaDivision.useQuery(
-      lembagaId ? { lembaga_id: lembagaId } : skipToken,
-      { enabled: !!lembagaId }
-    );
+  const { data: divisionData } = eventId
+    ? api.lembaga.getAllKegiatanDivision.useQuery(
+        { event_id: eventId },
+        { enabled: !!eventId }
+      )
+    : api.lembaga.getAllLembagaDivision.useQuery(
+        lembagaId ? { lembaga_id: lembagaId } : skipToken,
+        { enabled: !!lembagaId }
+      );
   
   // Fetch all anggota once and group by division, then build staff options
-  const { data: anggotaData, isLoading: isLoadingAnggota } =
-    api.lembaga.getAllAnggota.useQuery(
-      lembagaId ? { lembagaId: lembagaId } : skipToken,
-      { enabled: !!lembagaId }
-    );
+  const { data: anggotaData } = eventId
+    ? api.event.getAllAnggota.useQuery(
+        { event_id: eventId },
+        { enabled: !!eventId }
+      )
+    : api.lembaga.getAllAnggota.useQuery(
+        lembagaId ? { lembagaId: lembagaId } : skipToken,
+        { enabled: !!lembagaId }
+      );
 
   useEffect(() => {
     if (!anggotaData) return;
@@ -362,32 +392,30 @@ const BestStaff = ({ trigger,lembagaId }: BestStaffProps) => {
     );
 
     
-    if (!lembagaId) {
-      alert('Missing lembaga_id - cannot submit');
+    if (eventId) {
+      // Event context
+      const payload = {
+        event_id: eventId,
+        start_date,
+        end_date,
+        best_staff_list,
+      };
+      console.log('Payload submit (Kegiatan):', payload);
+      chooseBestStaffKegiatanMutation.mutate(payload);
+    } else if (lembagaId) {
+      // Lembaga context
+      const payload = {
+        lembaga_id: lembagaId,
+        start_date,
+        end_date,
+        best_staff_list,
+      };
+      console.log('Payload submit (Lembaga):', payload);
+      chooseBestStaffLembagaMutation.mutate(payload);
+    } else {
+      alert('Missing lembaga_id or event_id - cannot submit');
       return;
     }
-
-    const payload = {
-      lembaga_id: lembagaId,
-      start_date,
-      end_date,
-      best_staff_list,
-    };
-
-    console.log('Payload submit:', payload);
-
-    const result = {
-      periode: {
-        start: { month: startMonth, year: startYear },
-        end: { month: endMonth, year: endYear },
-      },
-      staff: selectedStaff,
-    };
-
-    console.log('Data Best Staff:', result);
-
-    // Panggil mutation dengan payload
-    chooseBestStaffMutation.mutate(payload);
   };
   
   return (
