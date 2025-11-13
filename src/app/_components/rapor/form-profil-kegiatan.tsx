@@ -1,7 +1,9 @@
 'use client';
 
+import { set } from 'date-fns';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
+import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -18,71 +20,88 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
+import {
+  CreateProfilLembagaInputSchema,
+  EditProfilInputSchema,
+} from '~/server/api/types/profil.type';
+import { api } from '~/trpc/react';
 
 interface FormProfilKegiatanProps {
-  profil?: string;
+  profilId?: string;
+  lembagaId?: string;
   isTambah?: boolean;
   customClassName?: string;
   isOpen?: boolean;
   onClose?: () => void;
+  defaultName?: string;
+  defaultDescription?: string;
+  defaultProfilKM?: string[];
 }
 
+type SelectOption = { value: string; label: string };
+
 export default function FormProfilKegiatan({
-  profil = 'Profil 5',
-  isTambah = true,
-  customClassName = '',
-  isOpen = true,
-  onClose,
-}: FormProfilKegiatanProps) {
-  const [selects, setSelects] = React.useState<number[]>([0]);
-  const [mappings, setMappings] = React.useState<Record<number, string>>({});
-  const [profilInput, setProfilInput] = React.useState('');
-  const [deskripsi, setDeskripsi] = React.useState('');
-  const [errorMessage, setErrorMessage] = React.useState('');
-
+  open,
+  setOpen,
+  modalType,
+  profil,
+  setProfil,
+  deskripsi,
+  setDeskripsi,
+  pemetaan,
+  setPemetaan,
+  handleSimpanTambah,
+  handleSimpanEdit,
+  handleBatal,
+  selectOptions,
+  title,
+  saveButtonText = 'Simpan Perubahan',
+  cancelButtonText = 'Batal',
+  customClassName,
+}: {
+  open: boolean;
+  setOpen: (val: boolean) => void;
+  modalType: 'tambah' | 'edit';
+  profil: string;
+  setProfil: (val: string) => void;
+  deskripsi: string;
+  setDeskripsi: (val: string) => void;
+  pemetaan: string[];
+  setPemetaan: (val: string[]) => void;
+  handleSimpanTambah: () => void;
+  handleSimpanEdit: () => void;
+  handleBatal: () => void;
+  selectOptions: SelectOption[];
+  title?: string;
+  saveButtonText?: string;
+  cancelButtonText?: string;
+  customClassName?: string;
+}) {
+  const [selects, setSelects] = React.useState<number[]>(
+    pemetaan.length ? pemetaan.map((_, i) => i) : [0],
+  );
   const addSelect = () => setSelects([...selects, selects.length]);
-
-  const handleSave = () => {
-    if (!profilInput.trim() || !deskripsi.trim()) {
-      setErrorMessage('Profil dan Deskripsi tidak boleh kosong!');
-      return;
-    }
-
-    const adaKosong = selects.some(
-      (id) => !mappings[id] || mappings[id].trim() === '',
-    );
-    if (adaKosong) {
-      setErrorMessage('Semua Pemetaan Profil KM ITB harus dipilih!');
-      return;
-    }
-
-    // Code dibawah dapat disesuaikan
-    // console.log('Data disimpan:', { profilInput, deskripsi, mappings });
-    onClose?.();
-  };
-
-  const updateMapping = (id: number, value: string) => {
-    setMappings((prev) => ({ ...prev, [id]: value }));
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={(o) => !o && onClose?.()}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={`h-auto max-h-screen overflow-auto max-w-none w-[907px] rounded-[26.1px] bg-white border-[0.82px] border-[#C4CACE] px-9 py-6 flex flex-col gap-[21px] text-[#141718] ${customClassName}`}
         aria-describedby={undefined}
       >
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="text-2xl font-semibold">
-            {isTambah ? 'Tambah Profil Kegiatan' : 'Edit Profil Kegiatan'}
+            {modalType === 'tambah'
+              ? 'Tambah Profil Kegiatan'
+              : 'Edit Profil Kegiatan'}
           </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-2">
           <label className="text-xl">Profil</label>
           <Input
-            value={profilInput}
-            onChange={(e) => setProfilInput(e.target.value)}
-            placeholder={profil}
+            id="profil"
+            value={profil}
+            onChange={(e) => setProfil(e.target.value)}
+            placeholder="Masukkan nama profil"
             className="h-[48px] rounded-xl px-6 text-[20px]"
           />
         </div>
@@ -106,16 +125,25 @@ export default function FormProfilKegiatan({
                 key={id}
               >
                 <Select
-                  onValueChange={(v) => updateMapping(id, v)}
-                  value={mappings[id] ?? ''}
+                  onValueChange={(value) => {
+                    const newPemetaan = [...pemetaan];
+                    newPemetaan[id] = value;
+                    setPemetaan(newPemetaan);
+                  }}
+                  value={pemetaan[id] ?? ''}
                 >
-                  <SelectTrigger className="flex h-[48px] w-full rounded-xl px-6 text-[20px] text-[#636A6D]">
-                    <SelectValue placeholder="Pilih Profil KM ITB" />
+                  <SelectTrigger className="flex h-[48px] max-w-[759px] rounded-xl px-6 text-[20px] text-[#636A6D]">
+                    <SelectValue
+                      placeholder="Pilih Profil KM ITB"
+                      className="whitespace-normal break-words"
+                    />
                   </SelectTrigger>
-                  <SelectContent side="bottom">
-                    <SelectItem value="profil1">Profil KM 1</SelectItem>
-                    <SelectItem value="profil2">Profil KM 2</SelectItem>
-                    <SelectItem value="profil3">Profil KM 3</SelectItem>
+                  <SelectContent side="bottom" className="max-w-[759px]">
+                    {selectOptions.map((profil) => (
+                      <SelectItem key={profil.value} value={profil.value}>
+                        {profil.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button
@@ -131,23 +159,21 @@ export default function FormProfilKegiatan({
           </div>
         </div>
 
-        {errorMessage && (
-          <p className="text-red-600 font-semibold">{errorMessage}</p>
-        )}
-
         <div className="flex justify-center gap-4 pt-4">
           <Button
             variant="warning"
             className="w-[120px] h-[40px] bg-[#F16350] rounded-xl px-6 py-3 font-bold text-[14px]"
-            onClick={onClose}
+            onClick={handleBatal}
           >
-            BATAL
+            {cancelButtonText}
           </Button>
           <Button
-            onClick={handleSave}
+            onClick={
+              modalType === 'tambah' ? handleSimpanTambah : handleSimpanEdit
+            }
             className="w-[196px] h-[40px] rounded-xl px-6 py-3 bg-[#2B6282] font-bold text-[14px] hover:bg-[#1a4a5c] "
           >
-            SIMPAN PERUBAHAN
+            {saveButtonText}
           </Button>
         </div>
       </DialogContent>

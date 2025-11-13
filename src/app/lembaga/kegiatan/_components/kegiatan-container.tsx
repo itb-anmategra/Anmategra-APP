@@ -16,7 +16,11 @@ import {
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import FilterDropdown, {
+  type FilterOption,
+} from '~/app/_components/filter/filter-dropdown';
+import DeleteProfilDialog from '~/app/_components/rapor/delete-profil-dialog';
 import EditKegiatanForm from '~/app/lembaga/kegiatan/_components/form/edit-kegiatan-form';
 import TambahKegiatanForm from '~/app/lembaga/kegiatan/_components/form/tambah-kegiatan-form';
 // Components Import
@@ -37,6 +41,8 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { Input } from '~/components/ui/input';
+import { useToast } from '~/hooks/use-toast';
+import { api } from '~/trpc/react';
 
 export interface Activity {
   id: string;
@@ -62,6 +68,7 @@ export default function ActivityList({
   propActivites: Activity[];
   session: Session | null;
 }) {
+  const { toast } = useToast();
   const [activities, setActivities] = useState<Activity[]>(propActivites);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +78,46 @@ export default function ActivityList({
   const [updatingHighlightId, setUpdatingHighlightId] = useState<string | null>(
     null,
   );
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  const filterOptions: FilterOption[] = useMemo(() => {
+    const uniqueStatuses = Array.from(
+      new Set(propActivites.map((activity) => activity.status)),
+    ).filter(Boolean);
+    return uniqueStatuses.map((status) => ({
+      id: status,
+      label: status,
+      value: status,
+    }));
+  }, [propActivites]);
+
+  const handleFilterChange = useCallback((filters: string[]) => {
+    setSelectedFilters(filters);
+    // TODO: Implement server-side filtering when BE is ready
+  }, []);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletingActivity, setDeletingActivity] = useState<Activity | null>(
+    null,
+  );
+
+  const deleteMutation = api.event.delete.useMutation({
+    onSuccess: (data) => {
+      setActivities((prev) => prev.filter((a) => a.id !== data.id));
+      setDeleteConfirmOpen(false);
+      setDeletingActivity(null);
+      toast({
+        title: 'Kegiatan berhasil dihapus',
+        description: 'Kegiatan telah dihapus dari database',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Gagal menghapus kegiatan',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
 
   const getStatusColors = (status: string) => {
     switch (status) {
@@ -130,6 +177,22 @@ export default function ActivityList({
     }
   };
 
+  const handleDeleteClick = (activity: Activity) => {
+    setDeletingActivity(activity);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingActivity) {
+      deleteMutation.mutate({ id: deletingActivity.id });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setDeletingActivity(null);
+  };
+
   return (
     <div className="flex w-full flex-col gap-4 pt-[24px] pl-[42px] pr-[36px]">
       {/* Title and Search */}
@@ -155,18 +218,6 @@ export default function ActivityList({
               Tambah Kegiatan Baru
             </Button>
           </DialogTrigger>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <Image
-                src="/images/lembaga/Vector.svg"
-                alt="Filter"
-                width={24}
-                height={24}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              Filter
-            </Button>
-          </DialogTrigger>
           <DialogContent className="min-w-[800px]" aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Tambah Kegiatan</DialogTitle>
@@ -178,6 +229,12 @@ export default function ActivityList({
             />
           </DialogContent>
         </Dialog>
+        <FilterDropdown
+          filterTitle="Status"
+          filterOptions={filterOptions}
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+        />
       </div>
 
       <div className="bg-white rounded-lg overflow-hidden">
@@ -293,7 +350,10 @@ export default function ActivityList({
                           <span className="text-sm">Edit</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="mx-0 my-0 h-px bg-gray-200" />
-                        <DropdownMenuItem className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100">
+                        <DropdownMenuItem
+                          onSelect={() => handleDeleteClick(activity)}
+                          className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
+                        >
                           <Trash className="text-[#F16350] h-4 w-4" />
                           <span className="text-sm">Delete</span>
                         </DropdownMenuItem>
@@ -345,6 +405,15 @@ export default function ActivityList({
           )}
         </DialogContent>
       </Dialog>
+
+      <DeleteProfilDialog
+        open={deleteConfirmOpen}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={`Apakah Anda yakin ingin menghapus kegiatan "${deletingActivity?.name}"?`}
+        cancelButtonText="Batal"
+        confirmButtonText="Hapus"
+      />
     </div>
   );
 }

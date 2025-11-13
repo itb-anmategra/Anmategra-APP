@@ -43,8 +43,8 @@ export default function ProfilDialog({
   setProfil: (val: string) => void;
   deskripsi: string;
   setDeskripsi: (val: string) => void;
-  pemetaan: string;
-  setPemetaan: (val: string) => void;
+  pemetaan: string[];
+  setPemetaan: (val: string[]) => void;
   handleSimpanTambah: () => void;
   handleSimpanEdit: () => void;
   handleBatal: () => void;
