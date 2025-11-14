@@ -12,7 +12,6 @@ import {
 } from '@dnd-kit/core';
 import { useState } from 'react';
 
-// import { arrayMove } from "@dnd-kit/sortable";
 import { Droppable } from './droppable';
 import { type Report, ReportCard } from './report-card';
 import {
@@ -25,11 +24,14 @@ export interface KanbanBoardProps {
   kanbanData: ColumnProps[];
   displayedColumn: ColumnType[];
   hideColumnAction: (type: ColumnType) => void;
+  isAdminView?: boolean;
 }
+
 export const KanbanBoard = ({
   kanbanData,
   hideColumnAction,
   displayedColumn,
+  isAdminView = false, // default: bukan admin
 }: KanbanBoardProps) => {
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -49,49 +51,23 @@ export const KanbanBoard = ({
   );
 
   const [activeReport, setActiveReport] = useState<Report | null>(null);
-
   const findColumnByReportId = (id: string): ColumnType | undefined =>
     (Object.keys(reports) as ColumnType[]).find((col) =>
       reports[col].some((r) => r.id === id),
     );
 
-  const onDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
+  const isForbiddenMove = (source?: ColumnType, dest?: ColumnType) => {
+    if (isAdminView) return false;
 
-    const activeId = active.id.toString();
-    const overId = over.id.toString();
+    if (source === 'Resolved' || dest === 'Resolved') {
+      return true;
+    }
 
-    const sourceColumn = findColumnByReportId(activeId);
-    const destinationColumn =
-      findColumnByReportId(overId) ?? (overId as ColumnType);
-    if (
-      !sourceColumn ||
-      !destinationColumn ||
-      sourceColumn === destinationColumn
-    )
-      return;
+    return false;
+  };
 
-    const activeItem = reports[sourceColumn].find((r) => r.id === activeId);
-    if (!activeItem) return;
-
-    setReports((prev) => {
-      const sourceItems = prev[sourceColumn].filter((r) => r.id !== activeId);
-      const destinationItems = prev[destinationColumn];
-
-      const overIndex = destinationItems.findIndex((r) => r.id === overId);
-      const insertIndex = overIndex >= 0 ? overIndex : destinationItems.length;
-
-      return {
-        ...prev,
-        [sourceColumn]: sourceItems,
-        [destinationColumn]: [
-          ...destinationItems.slice(0, insertIndex),
-          activeItem,
-          ...destinationItems.slice(insertIndex),
-        ],
-      };
-    });
+  const onDragOver = (_event: DragOverEvent) => {
+    //empty
   };
 
   const onDragEnd = (event: DragEndEvent) => {
@@ -106,56 +82,49 @@ export const KanbanBoard = ({
     const destinationColumn =
       findColumnByReportId(overId) ?? (overId as ColumnType);
 
+    if (isForbiddenMove(sourceColumn, destinationColumn)) return;
     if (!sourceColumn || !destinationColumn) return;
 
     const sourceItems = reports[sourceColumn];
     const destinationItems = reports[destinationColumn];
 
     const activeIndex = sourceItems.findIndex((r) => r.id === activeId);
-    const overIndexInSource = sourceItems.findIndex((r) => r.id === overId);
-    const overIndexInDestination = destinationItems
-      ? destinationItems.findIndex((r) => r.id === overId)
-      : -1;
+    if (activeIndex === -1) return;
+
+    const activeItem = sourceItems[activeIndex];
+    if (!activeItem) return;
 
     if (sourceColumn === destinationColumn) {
-      if (activeIndex === -1) return;
-      const targetIndex =
-        overIndexInSource >= 0 ? overIndexInSource : sourceItems.length - 1;
+      const overIndex = sourceItems.findIndex((r) => r.id === overId);
+      const targetIndex = overIndex >= 0 ? overIndex : sourceItems.length - 1;
+
       if (activeIndex === targetIndex) return;
 
       const updated = [...sourceItems];
-      const [movedItem] = updated.splice(activeIndex, 1);
-      if (!movedItem) return;
-
-      // insert at target
-      updated.splice(
-        targetIndex >= 0 ? targetIndex : updated.length,
-        0,
-        movedItem,
-      );
+      updated.splice(activeIndex, 1);
+      updated.splice(targetIndex, 0, activeItem);
 
       setReports((prev) => ({
         ...prev,
         [sourceColumn]: updated,
       }));
-
       return;
     }
 
-    if (activeIndex === -1) return;
-    const activeItem = sourceItems[activeIndex];
-    if (!activeItem) return;
-
     const newSource = sourceItems.filter((r) => r.id !== activeId);
+    const overIndexInDestination = destinationItems.findIndex(
+      (r) => r.id === overId,
+    );
+
     const insertIndex =
       overIndexInDestination >= 0
         ? overIndexInDestination
-        : (destinationItems?.length ?? 0);
+        : destinationItems.length;
 
     const newDestination = [
-      ...(destinationItems?.slice(0, insertIndex) ?? []),
+      ...destinationItems.slice(0, insertIndex),
       activeItem,
-      ...(destinationItems?.slice(insertIndex) ?? []),
+      ...destinationItems.slice(insertIndex),
     ];
 
     setReports((prev) => ({
@@ -171,6 +140,9 @@ export const KanbanBoard = ({
         sensors={sensors}
         onDragStart={({ active }) => {
           const col = findColumnByReportId(active.id.toString());
+          if (!isAdminView && col === 'Resolved') {
+            return;
+          }
           const item = col
             ? reports[col].find((r) => r.id === active.id)
             : null;
@@ -180,7 +152,7 @@ export const KanbanBoard = ({
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveReport(null)}
       >
-        <div className="flex flex-col gap-4 overflow-x-scroll md:flex-row">
+        <div className="flex flex-col gap-4 md:flex-row md:overflow-x-auto md:pb-4">
           {(Object.keys(reports) as ColumnType[]).map((colId) => (
             <Droppable id={colId} key={colId}>
               <ReportColumn

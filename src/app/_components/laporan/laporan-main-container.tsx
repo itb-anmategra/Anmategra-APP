@@ -71,6 +71,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           kanbanData={Laporan.data}
           hideColumnAction={hideStatus}
           displayedColumn={status}
+          isAdminView={Laporan.isAdminView ?? false}
         />
       )}
       {/* List Display */}

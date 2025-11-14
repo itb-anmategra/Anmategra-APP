@@ -58,19 +58,18 @@ export function ReportColumn({
   return (
     <>
       {displayedStatus.includes(title) && (
-        <div className="h-[574px] w-[424px] overflow-y-scroll rounded-md bg-gray-100 p-4">
+        <div className="flex flex-col bg-gray-100 rounded-xl p-4 shadow-smw-full flex-shrink-0 h-auto md:h-[574px]">
           <div className="mb-4 flex flex-row items-center justify-between">
-            <div className="flex flex-row">
-              <div className="flex flex-row gap-4">
-                <Image src={getTypeImage(title)} alt="Status" />
-                <h2 className="text-[18px] font-semibold">{title}</h2>
-              </div>
-              <span className="ml-2 rounded-full px-2 py-1 text-sm text-[#8196A3]">
+            <div className="flex flex-row items-center gap-3">
+              <Image src={getTypeImage(title)} alt="Status" />
+              <h2 className="text-lg font-semibold">{title}</h2>
+              <span className="rounded-full px-2 py-1 text-sm text-gray-500">
                 {reports.length}
               </span>
             </div>
+
             <DropdownMenu>
-              <DropdownMenuTrigger className="mb-2 text-2xl">
+              <DropdownMenuTrigger className="mb-2 text-2xl select-none">
                 ...
               </DropdownMenuTrigger>
               <DropdownMenuContent className="text-xl">
@@ -82,27 +81,42 @@ export function ReportColumn({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <SortableContext
-            id={title}
-            items={reports.map((r) => r.id)}
-            strategy={verticalListSortingStrategy}
+
+          <div
+            className="
+            flex-1 overflow-y-auto pr-2 
+
+            /* SCROLLBAR STYLE */
+            scrollbar-thin 
+            scrollbar-thumb-gray-400 
+            scrollbar-track-transparent
+
+            /* MOBILE SCROLLBAR HIDE */
+            [-webkit-overflow-scrolling:touch]
+          "
           >
-            <div className="flex flex-col space-y-4 min-h-[120px] pb-4">
-              {reports.map((report) => (
-                <div
-                  key={report.id}
-                  className={`transition-opacity ${
-                    report.id === activeReportId ? 'opacity-0' : 'opacity-100'
-                  }`}
-                >
-                  <SortableReportCard
-                    report={report}
-                    onClickAction={() => handleClick(report.id)}
-                  />
-                </div>
-              ))}
-            </div>
-          </SortableContext>
+            <SortableContext
+              id={title}
+              items={reports.map((r) => r.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="flex flex-col space-y-4 min-h-[120px] pb-4 pr-1">
+                {reports.map((report) => (
+                  <div
+                    key={report.id}
+                    className={`transition-opacity ${
+                      report.id === activeReportId ? 'opacity-0' : 'opacity-100'
+                    }`}
+                  >
+                    <SortableReportCard
+                      report={report}
+                      onClickAction={() => handleClick(report.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </SortableContext>
+          </div>
         </div>
       )}
     </>
