@@ -10,7 +10,7 @@ function isValidStatus(status: string): status is Status {
   return ['Draft', 'In Progress', 'Resolved', 'Backlog'].includes(status);
 }
 
-function formatTanggal(dateInput: Date | string): string {
+export function formatTanggal(dateInput: Date | string): string {
   const date = new Date(dateInput);
 
   const options: Intl.DateTimeFormatOptions = {
