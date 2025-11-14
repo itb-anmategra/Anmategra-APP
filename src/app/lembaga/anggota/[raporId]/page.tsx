@@ -68,9 +68,9 @@ export default async function RaporIndividuLembagaPage({
         : [];
 
     return (
-      <main className="flex flex-col p-8 min-h-screen">
-        <div className="flex flex-col pb-7 border-b border-neutral-400 mb-8">
-          <h1 className="text-[32px] font-semibold mb-2 text-neutral-1000">
+      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
+        <div className="flex flex-col pb-4 sm:pb-6 md:pb-7 border-b border-neutral-400 mb-6 sm:mb-7 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2 text-neutral-1000">
             Rapor Individu
           </h1>
           <RaporBreadcrumb
@@ -81,14 +81,14 @@ export default async function RaporIndividuLembagaPage({
           />
         </div>
 
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-8 sm:gap-12 md:gap-16">
           <RaporIndividuHeader
             dataNilaiProfil={raporData}
             id={session?.user.lembagaId ?? ''}
             isLembaga={true}
           />
-          <div className="flex flex-col gap-y-4">
-            <h2 className="text-neutral-700 text-[20px] font-normal">
+          <div className="flex flex-col gap-y-3 sm:gap-y-4">
+            <h2 className="text-neutral-700 text-lg sm:text-xl md:text-[20px] font-normal">
               Profil Lembaga
             </h2>
             <ProfilTable
@@ -98,8 +98,8 @@ export default async function RaporIndividuLembagaPage({
             />
           </div>
 
-          <div className="flex flex-col gap-y-4">
-            <h2 className="text-neutral-700 text-[20px] font-normal">
+          <div className="flex flex-col gap-y-3 sm:gap-y-4">
+            <h2 className="text-neutral-700 text-lg sm:text-xl md:text-[20px] font-normal">
               Detail Pemetaan Profil Lembaga
             </h2>
             <ProfilTable
@@ -113,9 +113,9 @@ export default async function RaporIndividuLembagaPage({
     );
   } catch {
     return (
-      <main className="flex flex-col p-8 min-h-screen">
-        <div className="flex flex-col pb-7 border-b border-neutral-400 mb-8">
-          <h1 className="text-[32px] font-semibold mb-2 text-neutral-1000">
+      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
+        <div className="flex flex-col pb-4 sm:pb-6 md:pb-7 border-b border-neutral-400 mb-6 sm:mb-7 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2 text-neutral-1000">
             Rapor Individu
           </h1>
           <RaporBreadcrumb
@@ -125,8 +125,8 @@ export default async function RaporIndividuLembagaPage({
             ]}
           />
         </div>
-        <div className="text-center py-8">
-          <p className="text-neutral-500">Gagal memuat data rapor individu</p>
+        <div className="text-center py-6 sm:py-8">
+          <p className="text-sm sm:text-base text-neutral-500">Gagal memuat data rapor individu</p>
         </div>
       </main>
     );

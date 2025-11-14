@@ -96,9 +96,9 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-[133px] h-[50px] flex items-center justify-center bg-[#00B7B7] rounded-[16px] hover:bg-[#51c8c4]">
-          <Pencil size={40} className="!w-5 !h-5" />
-          <div className="text-white text-[18px] leading-[26px] font-[600] rounded-[26.1px]">
+        <Button className="w[133px] px-4 sm:px-6 h-10 sm:h-12 md:h-[50px] flex items-center justify-center gap-2 bg-[#00B7B7] rounded-xl sm:rounded-[16px] hover:bg-[#51c8c4]">
+          <Pencil size={40} className="!w-4 !h-4 sm:!w-5 sm:!h-5" />
+          <div className="text-white text-sm sm:text-base md:text-[18px] leading-tight sm:leading-[26px] font-semibold">
             Edit Nilai
           </div>
         </Button>
