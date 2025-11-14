@@ -13,7 +13,7 @@ export interface LaporanDetailProps extends Report {
   attachment?: Attachment[];
 }
 
-interface Attachment {
+export interface Attachment {
   name: string;
   //TODO: Add name in here maybe
 }
