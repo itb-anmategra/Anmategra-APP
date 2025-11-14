@@ -10,9 +10,11 @@ import NoAnggota from 'public/images/miscellaneous/not-found-anggota.png';
 import React from 'react';
 // Components Import
 import { Input } from '~/components/ui/input';
+import type { Session } from 'next-auth';
 
 const ProfileKegiatanComp = ({
   anggota,
+  session
 }: {
   anggota: {
     id: string;
@@ -23,6 +25,7 @@ const ProfileKegiatanComp = ({
     posisi: string | null;
     divisi: string | null;
   }[];
+  session?: Session | null;
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const [filteredAnggota, setFilteredAnggota] = React.useState<
@@ -54,10 +57,12 @@ const ProfileKegiatanComp = ({
     );
   }, [anggota, search]);
 
+  const isLembaga = session?.user.role === 'lembaga';
+
   return (
     <div>
-      <div className="mb-4 mt-8 flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-slate-600">Anggota</h2>
+      <div className="mb-4 sm:mt-8 flex items-center justify-between">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">Anggota</h2>
       </div>
       <div className="mb-4">
         <Input
@@ -86,22 +91,22 @@ const ProfileKegiatanComp = ({
                   height={48}
                 />
                 <div className="flex flex-col">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900">
                     {item.nama}
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-xs sm:text-sm text-slate-600">
                     {item.nim} - {item.jurusan}
                   </p>
                   <div className="flex items-center gap-x-2">
-                    <p className="text-sm text-slate-600">{item.posisi}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">{item.posisi}</p>
                     <p> | </p>
-                    <p className="text-sm text-slate-600">{item.divisi}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">{item.divisi}</p>
                   </div>
                 </div>
               </div>
               <div>
-                <button className="text-sky-600 font-semibold">
-                  <Link href={`/mahasiswa/profile-mahasiswa/${item.id}`}>
+                <button className="text-xs sm:text-sm md:text-base text-sky-600 font-semibold">
+                  <Link href={isLembaga ? `/lembaga/profile-mahasiswa/${item.id}` : `/mahasiswa/profile-mahasiswa/${item.id}`}>
                     {' '}
                     Lihat Profil
                   </Link>

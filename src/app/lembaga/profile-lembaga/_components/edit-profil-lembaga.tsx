@@ -82,29 +82,31 @@ const EditProfileLembaga = ({
     <div>
       {!isEdit && (
         <Button
-          className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none"
+          className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none h-8 md:h-10 text-sm md:text-base px-3 md:px-4"
           onClick={() => setIsEdit(true)}
         >
-          Edit Profil Lembaga <PencilLine />
+          <span className="hidden md:inline">Edit Profil Lembaga</span>
+          <span className="md:hidden">Edit Profil</span>
+          <PencilLine className="w-4 h-4 ml-1" />
         </Button>
       )}
       {isEdit && (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-2 min-w-[500px]"
+            className="space-y-2 min-w-full sm:min-w-[400px] md:min-w-[500px] w-full"
           >
             <FormField
               control={form.control}
               name="nama"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nama Lembaga</FormLabel>
+                  <FormLabel className="text-sm md:text-base">Nama Lembaga</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Masukkan nama lembaga"
                       {...field}
-                      className="border-neutral-400 focus-visible:ring-transparent"
+                      className="border-neutral-400 focus-visible:ring-transparent h-8 md:h-10 text-sm md:text-base"
                     />
                   </FormControl>
                   <FormMessage />
@@ -116,12 +118,12 @@ const EditProfileLembaga = ({
               name="deskripsi"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Deskripsi Lembaga</FormLabel>
+                  <FormLabel className="text-sm md:text-base">Deskripsi Lembaga</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Masukkan deskripsi lembaga"
                       {...field}
-                      className="border-neutral-400 focus-visible:ring-transparent"
+                      className="border-neutral-400 focus-visible:ring-transparent min-h-16 md:min-h-20 text-sm md:text-base resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -133,7 +135,7 @@ const EditProfileLembaga = ({
               name="gambar"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-start justify-start">
-                  <FormLabel>Upload Profil Lembaga</FormLabel>
+                  <FormLabel className="text-sm md:text-base">Upload Profil Lembaga</FormLabel>
                   <UploadButton
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {
@@ -155,17 +157,17 @@ const EditProfileLembaga = ({
                 </FormItem>
               )}
             />
-            <div className="w-full flex items-end justify-end gap-x-4 pt-4">
+            <div className="w-full flex flex-col md:flex-row items-center md:items-end justify-center md:justify-end gap-2 md:gap-x-4 pt-4">
               <Button
                 variant={'outline'}
-                className="border-Blue-Dark text-Blue-Dark"
+                className="border-Blue-Dark text-Blue-Dark w-full md:w-auto h-8 md:h-10 text-sm md:text-base"
                 onClick={() => setIsEdit(false)}
               >
                 Batal Edit
               </Button>
               <Button
                 type="submit"
-                className="bg-Blue-Dark hover:bg-Blue-Dark/80 text-white"
+                className="bg-Blue-Dark hover:bg-Blue-Dark/80 text-white w-full md:w-auto h-8 md:h-10 text-sm md:text-base"
               >
                 Simpan <PencilLine />
               </Button>

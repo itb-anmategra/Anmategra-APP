@@ -56,7 +56,7 @@ const DetailLembagaPage = async ({
     <div className="w-full flex min-h-screen flex-col items-center px-6">
       <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-600">Beranda</h1>
           <p className="text-slate-400">Beranda / Nama Lembaga</p>
         </div>
         <div className="w-full flex items-center justify-center gap-x-10 py-12 transition-all duration-500 ease-in-out min-w-[500px]">
@@ -69,10 +69,10 @@ const DetailLembagaPage = async ({
           />
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-3xl text-slate-600 font-semibold">
+              <p className="text-xl md:text-3xl text-slate-600 font-semibold">
                 {lembagaData?.name}
               </p>
-              <p className="text-xl text-slate-400">
+              <p className="text-sm md:text-xl text-slate-400">
                 {lembagaData?.description}
               </p>
             </div>
@@ -83,7 +83,7 @@ const DetailLembagaPage = async ({
         {/* Highlighted Event */}
         {highlightedEvent && (
           <div className="flex flex-col w-full gap-4 mb-8">
-            <h5 className="text-[24px] leading-[32px] font-semibold text-[#000000]">
+            <h5 className="text-lg sm:text-xl md:text-2xl leading-[32px] font-semibold text-slate-600">
               Highlighted Event
             </h5>
 
@@ -99,7 +99,7 @@ const DetailLembagaPage = async ({
           <div className="flex flex-col gap-12 w-full mb-8">
             <div className="flex flex-col gap-3 w-full">
               <div className="flex flex-row justify-between items-center">
-                <h2 className="text-2xl font-semibold">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
                   Best Staff Periode{' '}
                   {new Date(latestBestStaff.start_date).toLocaleDateString(
                     'id-ID',
@@ -141,7 +141,7 @@ const DetailLembagaPage = async ({
 
         {/* Kepanitiaan Terbaru */}
         <div className="space-y-4">
-          <h5 className="text-2xl font-semibold text-slate-600">
+          <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
             Kepanitiaan Terbaru
           </h5>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -159,7 +159,7 @@ const DetailLembagaPage = async ({
             )}
           </div>
         </div>
-        <ProfileKegiatanComp anggota={anggota ?? []} />
+        <ProfileKegiatanComp anggota={anggota ?? []} session={session}/>
       </div>
     </div>
   );

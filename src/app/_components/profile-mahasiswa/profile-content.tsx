@@ -41,17 +41,17 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-neutral-1000">Beranda</h1>
           <p className="text-neutral-1000">Beranda / Mahasiswa</p>
         </div>
 
         {/* Profil Mahasiswa */}
         {!isEdit && (
-          <div className="w-full flex items-center justify-center gap-x-6 pt-12 mb-6">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-6 pt-12 md:mb-6">
             <Avatar
               className={cn(
                 'rounded-full',
-                isLembagaView ? 'h-[180px] w-[180px]' : 'h-40 w-40',
+                isLembagaView ? 'h-20 w-20 sm:h-[120px] sm:w-[120px] md:h-[180px] md:w-[180px]' : 'h-52 w-52 md:h-40 md:w-40',
               )}
             >
               <AvatarImage
@@ -67,18 +67,18 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                   .join('')}
               </AvatarFallback>
             </Avatar>
-            <div className="space-y-1">
-              <p className="text-2xl text-[#181818] font-semibold mb-2">
+            <div className="space-y-1 flex-col items-center sm:items-start text-center sm:text-left">
+              <p className="text-xl md:text-2xl text-[#181818] font-semibold mb-2">
                 {mahasiswaData?.user.name}
               </p>
-              <p className="text-[18px] text-neutral-600">
+              <p className="text-base md:text-lg text-neutral-600">
                 {mahasiswaData?.mahasiswa.nim}
               </p>
-              <p className="text-[18px] text-neutral-600">
+              <p className="text-base md:text-lg text-neutral-600">
                 {mahasiswaData?.mahasiswa.jurusan} &#39;
                 {mahasiswaData?.mahasiswa.angkatan}
               </p>
-              <div className="flex items-center justify-start gap-x-10 pt-[18px]">
+              <div className="flex items-center justify-start gap-x-10 pt-[18px] text-sm md:text-base">
                 <div className="flex items-center gap-x-2">
                   <Image
                     src={LineIcon}
@@ -114,7 +114,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
           className={cn(
             'flex items-center justify-center w-full',
             isEdit ? '' : '',
-            isLembagaView ? '' : 'mt-6 mb-8',
+            isLembagaView ? '' : 'sm:mt-6 sm:mb-8',
           )}
         >
           {session?.user.id === userId && (
@@ -141,8 +141,8 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 
         {/* Kepanitiaan Terbaru */}
         {!isEdit && (
-          <div className="space-y-4 pb-12 mt-[50px]">
-            <h5 className="text-2xl font-semibold text-neutral-1000">
+          <div className="space-y-4 pb-12 md:mt-[50px]">
+            <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
               Kepanitiaan Terbaru
             </h5>
             {newestEvent && newestEvent.length !== 0 ? (
@@ -158,7 +158,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               <div className="w-full py-16 flex flex-col items-center gap-y-4">
                 {session?.user.id === userId ? (
                   <>
-                    <div className="text-center items-center flex flex-row gap-8">
+                    <div className="text-center items-center flex flex-col sm:flex-row gap-8">
                       <Image
                         src={NoKepanitiaan}
                         alt="Tidak Ada Anggota"
@@ -166,10 +166,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                         height={128}
                       />
                       <div className="max-w-[400px] text-left">
-                        <h5 className="text-2xl font-semibold text-slate-600">
+                        <h5 className="text-xl md:text-2xl font-semibold text-slate-600">
                           Tidak Ada Informasi Kepanitiaan
                         </h5>
-                        <p className="text-slate-400 mt-2">
+                        <p className="text-sm md:text-base text-slate-400 mt-2">
                           Kami tidak dapat menemukan informasi kepanitiaan yang
                           diikuti, silahkan menambahkan jika ada
                         </p>
@@ -179,7 +179,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                   </>
                 ) : (
                   <>
-                    <div className="text-center items-center flex flex-row gap-8">
+                    <div className="text-center items-center flex-col sm:flex-row gap-8">
                       <Image
                         src={NoKepanitiaan}
                         alt="Tidak Ada Anggota"
@@ -187,10 +187,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                         height={128}
                       />
                       <div className="max-w-[400px] text-left">
-                        <h5 className="text-2xl font-semibold text-slate-600">
+                        <h5 className="text-xl md:text-2xl font-semibold text-slate-600">
                           Tidak Ada Informasi Kepanitiaan
                         </h5>
-                        <p className="text-slate-400 mt-2">
+                        <p className="text-sm md:text-base text-slate-400 mt-2">
                           Kami tidak dapat menemukan informasi kepanitiaan yang
                           diikuti oleh mahasiswa ini
                         </p>
