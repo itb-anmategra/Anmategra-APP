@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+// import Image from 'next/image';
+// import PartyPopper from 'public/icons/party-popper.svg';
+import React, { useState, useEffect } from 'react';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -18,6 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { api } from '~/trpc/react';
+// import { useQueries } from '@tanstack/react-query';
+import { skipToken } from '@tanstack/query-core';
 
 export type Division = {
   name: string;
@@ -29,28 +34,28 @@ export type Month = {
   label: string;
 };
 
-const divisions: Division[] = [
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-  { name: 'Human Resources', candidates: ['Andi', 'Budi', 'Citra'] },
-  { name: 'Finance', candidates: ['Dewi', 'Eko', 'Fajar'] },
-  { name: 'Marketing', candidates: ['Gilang', 'Hana', 'Irfan'] },
-  { name: 'IT', candidates: ['Joko', 'Kiki', 'Lina'] },
-];
-
 const months: Month[] = [
   { value: '01', label: 'Januari' },
   { value: '02', label: 'Februari' },
   { value: '03', label: 'Maret' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'Mei' },
+  { value: '06', label: 'Juni' },
+  { value: '07', label: 'Juli' },
+  { value: '08', label: 'Agustus' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'Oktober' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'Desember' },
 ];
 
-const years: string[] = ['2024', '2025'];
+function generateYears(startYear: number, endYear: number): string[] {
+  const years: string[] = [];
+  for (let year = startYear; year <= endYear; year++) {
+    years.push(year.toString());
+  }
+  return years;
+}
 
 type PeriodSelectProps = {
   months: Month[];
@@ -208,9 +213,11 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
 
 type BestStaffProps = {
   trigger?: React.ReactNode;
+  lembagaId?: string;
+  eventId?: string;
 };
 
-const BestStaff = ({ trigger }: BestStaffProps) => {
+const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -230,9 +237,96 @@ const BestStaff = ({ trigger }: BestStaffProps) => {
     endYear: null,
   });
 
+  const { data: eventData } = api.event.getByID.useQuery(
+    eventId ? { id: eventId } : skipToken,
+    { enabled: !!eventId }
+  );
+
+  const years = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    
+    if (eventId && eventData) {
+      const startYear = new Date(eventData.start_date).getFullYear();
+      const endYear = eventData.end_date 
+        ? new Date(eventData.end_date).getFullYear() 
+        : currentYear;
+      return generateYears(startYear, endYear);
+    }
+    
+    // For lembaga: 1956 to current year
+    return generateYears(1956, currentYear);
+  }, [eventId, eventData]);
+
+  const chooseBestStaffLembagaMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
+    onSuccess: () => {
+      alert('Best Staff berhasil disimpan!');
+    },
+    onError: (err) => {
+      console.error(err);
+      alert('Terjadi kesalahan saat menyimpan Best Staff.');
+    },
+  });
+
+  const chooseBestStaffKegiatanMutation = api.lembaga.chooseBestStaffKegiatan.useMutation({
+    onSuccess: () => {
+      alert('Best Staff berhasil disimpan!');
+    },
+    onError: (err) => {
+      console.error(err);
+      alert('Terjadi kesalahan saat menyimpan Best Staff.');
+    },
+  });
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
+  const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>({}); 
+  const [divisionDataMapping, setDivisionDataMapping] = useState<
+    Record<string, { name: string; user_id: string }[]>
+  >({});
+
+  // Ambil divisions dari backend
+  const { data: divisionData } = eventId
+    ? api.lembaga.getAllKegiatanDivision.useQuery(
+        { event_id: eventId },
+        { enabled: !!eventId }
+      )
+    : api.lembaga.getAllLembagaDivision.useQuery(
+        lembagaId ? { lembaga_id: lembagaId } : skipToken,
+        { enabled: !!lembagaId }
+      );
+  
+  // Fetch all anggota once and group by division, then build staff options
+  const { data: anggotaData } = eventId
+    ? api.event.getAllAnggota.useQuery(
+        { event_id: eventId },
+        { enabled: !!eventId }
+      )
+    : api.lembaga.getAllAnggota.useQuery(
+        lembagaId ? { lembagaId: lembagaId } : skipToken,
+        { enabled: !!lembagaId }
+      );
+
+  useEffect(() => {
+    if (!anggotaData) return;
+
+    const fullMap: Record<string, { user_id: string; name: string }[]> = {};
+    for (const a of anggotaData) {
+      const div = a.divisi ?? 'Umum';
+      if (!fullMap[div]) fullMap[div] = [];
+      fullMap[div].push({ user_id: a.id, name: a.nama });
+    }
+
+    const optionsMap: Record<string, string[]> = {};
+    for (const k of Object.keys(fullMap)) {
+      const list = fullMap[k] ?? [];
+      optionsMap[k] = list.map((u) => u.name);
+    }
+
+    setStaffOptions((prev) => ({ ...prev, ...optionsMap }));
+    setDivisionDataMapping((prev) => ({ ...prev, ...fullMap }));
+  }, [anggotaData]);
+
 
   const handleSubmit = () => {
     const { startMonth, startYear, endMonth, endYear } = periode;
@@ -270,27 +364,60 @@ const BestStaff = ({ trigger }: BestStaffProps) => {
       return;
     }
 
-    const emptyDivisi = divisions.filter((d) => !selectedStaff[d.name]?.trim());
+    const emptyDivisi = (divisionData?.divisions ?? []).filter(
+      (d) => !(selectedStaff[d]?.trim()),
+    );
     if (emptyDivisi.length > 0) {
-      alert(
-        `Masih ada divisi yang belum dipilih: ${emptyDivisi
-          .map((d) => d.name)
-          .join(', ')}`,
-      );
+      alert(`Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`);
       return;
     }
 
-    const result = {
-      periode: {
-        start: { month: startMonth, year: startYear },
-        end: { month: endMonth, year: endYear },
-      },
-      staff: selectedStaff,
-    };
+    // Format tanggal: YYYY-MM-01
+    const start_date = (new Date(sYear, sMonth - 1, 1)).toISOString();
+    const end_date = (new Date(eYear, eMonth - 1, 1)).toISOString();
 
-    console.log('Data Best Staff:', result);
+    // divisionDataMapping is populated by the top-level anggota query effect
+
+
+    // Mapping selectedStaff ke best_staff_list[]
+    const best_staff_list = Object.entries(selectedStaff).map(
+      ([division, userName]) => {
+        const usersInDivision = divisionDataMapping[division] ?? []; // fallback ke array kosong
+        const userObj = usersInDivision.find((s) => s.name === userName);
+        return {
+          user_id: userObj?.user_id ?? '', // kasih fallback string kosong kalau undefined
+          division,
+        };
+      }
+    );
+
+    
+    if (eventId) {
+      // Event context
+      const payload = {
+        event_id: eventId,
+        start_date,
+        end_date,
+        best_staff_list,
+      };
+      console.log('Payload submit (Kegiatan):', payload);
+      chooseBestStaffKegiatanMutation.mutate(payload);
+    } else if (lembagaId) {
+      // Lembaga context
+      const payload = {
+        lembaga_id: lembagaId,
+        start_date,
+        end_date,
+        best_staff_list,
+      };
+      console.log('Payload submit (Lembaga):', payload);
+      chooseBestStaffLembagaMutation.mutate(payload);
+    } else {
+      alert('Missing lembaga_id or event_id - cannot submit');
+      return;
+    }
   };
-
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -321,7 +448,10 @@ const BestStaff = ({ trigger }: BestStaffProps) => {
         />
 
         <DivisionTable
-          divisions={divisions}
+          divisions={divisionData?.divisions.map((div) => ({
+            name: div,
+            candidates: staffOptions[div] ?? [],
+          })) ?? []} // fallback ke array kosong kalau undefined
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
           }

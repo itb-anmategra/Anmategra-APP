@@ -1,14 +1,32 @@
 import { Pencil } from 'lucide-react';
 import React from 'react';
 import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
-import BestStaff from '~/app/lembaga/kegiatan/[kegiatanId]/_components/best-staff-form';
+import BestStaff from '~/app/lembaga/_components/best-staff-form';
 import { Button } from '~/components/ui/button';
 
-import { dummyDate } from './_components/dummy-histori';
+// import { dummyDate } from './_components/dummy-histori';
+import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/trpc/server';
 import { HistoriBreadCrumb } from './_components/histori-breadcrumb';
 
-const HistoriBestStaffPage = () => {
-  const namaLembaga = 'HMIF ITB';
+interface Props {
+  params: {
+    lembagaId: string;
+  };
+}
+
+const HistoriBestStaffPage = async ({ params }: Props) => {
+  // const session = await getServerAuthSession();
+  const { lembagaId } = params;
+
+  const historyData = await api.lembaga.getAllHistoryBestStaffLembaga({
+    lembaga_id: lembagaId,
+  });
+
+  const lembagaInfo = await api.profile.getLembaga({ lembagaId: lembagaId });
+  const namaLembaga = lembagaInfo?.lembagaData?.name ?? 'Lembaga';
+
+  // const is_authorized = lembagaInfo.lembagaData?.users.id === session?.user?.id;
 
   return (
     <div className="w-full flex h-screen flex-col items-center overflow-y-hidden">
@@ -18,10 +36,10 @@ const HistoriBestStaffPage = () => {
           <HistoriBreadCrumb
             items={[
               { label: 'Beranda', href: '/lembaga' },
-              { label: 'Lembaga', href: `/lembaga/profile-lembaga/uuid-hmif` },
+              { label: 'Lembaga', href: `/lembaga/profile-lembaga/${lembagaId}` },
               {
                 label: 'Histori',
-                href: `/lembaga/profile-lembaga/uuid-hmif/histori`,
+                href: `/lembaga/profile-lembaga/${lembagaId}/histori`,
               },
             ]}
           />
@@ -31,13 +49,23 @@ const HistoriBestStaffPage = () => {
         [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {/*kalo bisa pake shadcn scrollbar biar bisa hidden*/}
-          {dummyDate.map((item, id) => (
+          {historyData.periode.length > 0 ? (
+            historyData.periode.map((periode, id) => {
+              const startDate = new Date(periode.start_date).toLocaleDateString('id-ID', {
+                month: 'long',
+                year: 'numeric',});
+              const endDate = new Date(periode.end_date).toLocaleDateString('id-ID', {
+                month: 'long',
+                year: 'numeric',
+              });
+              return (
             <div key={id} className="flex flex-col gap-3">
               <div className="flex flex-row justify-between items-center">
                 <h2 className="text-2xl font-semibold">
-                  Best Staff Periode {item.startDate}–{item.endDate} 2025
+                  Best Staff Periode {startDate}–{endDate}
                 </h2>
                 <BestStaff
+                  lembagaId={params.lembagaId}
                   trigger={
                     <Button
                       variant={'dark_blue'}
@@ -52,9 +80,15 @@ const HistoriBestStaffPage = () => {
                 />
               </div>
 
-              <CarouselBestStaff />
+              <CarouselBestStaff bestStaffList={periode.best_staff_list} />
             </div>
-          ))}
+          )})) : (
+            <div className="flex flex-col items-center justify-center h-[50vh]">
+              <h2 className="text-2xl font-semibold mb-4">
+                Belum ada histori Best Staff
+              </h2>
+            </div>
+          )}
         </div>
       </div>
     </div>

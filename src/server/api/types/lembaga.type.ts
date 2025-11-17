@@ -262,6 +262,7 @@ export const GetLatestBestStaffKegiatanOutputSchema = z.object({
     z.object({
       user_id: z.string(),
       name: z.string(),
+      image: z.string().nullable(),
       nim: z.string(),
       jurusan: z.string(),
       division: z.string(),
@@ -280,6 +281,7 @@ export const GetLatestBestStaffLembagaOutputSchema = z.object({
     z.object({
       user_id: z.string(),
       name: z.string(),
+      image: z.string().nullable(),
       nim: z.string(),
       jurusan: z.string(),
       division: z.string(),
@@ -300,6 +302,7 @@ export const GetAllHistoryBestStaffKegiatanOutputSchema = z.object({
         z.object({
           user_id: z.string(),
           name: z.string(),
+          image: z.string().nullable(),
           nim: z.string(),
           jurusan: z.string(),
           division: z.string(),
@@ -322,6 +325,7 @@ export const GetAllHistoryBestStaffLembagaOutputSchema = z.object({
         z.object({
           user_id: z.string(),
           name: z.string(),
+          image: z.string().nullable(),
           nim: z.string(),
           jurusan: z.string(),
           division: z.string(),

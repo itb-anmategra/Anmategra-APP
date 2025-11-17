@@ -43,8 +43,8 @@ export default function ProfilDialog({
   setProfil: (val: string) => void;
   deskripsi: string;
   setDeskripsi: (val: string) => void;
-  pemetaan: string;
-  setPemetaan: (val: string) => void;
+  pemetaan: string[];
+  setPemetaan: (val: string[]) => void;
   handleSimpanTambah: () => void;
   handleSimpanEdit: () => void;
   handleBatal: () => void;
@@ -55,9 +55,12 @@ export default function ProfilDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="lg:rounded-[26px]" aria-describedby={undefined}>
+      <DialogContent
+        className="rounded-xl lg:rounded-[26px] max-w-[90vw] sm:max-w-md"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {title ??
               (modalType === 'tambah'
                 ? 'Tambah Profil Kegiatan'
@@ -90,7 +93,7 @@ export default function ProfilDialog({
             <Select value={pemetaan} onValueChange={setPemetaan}>
               <SelectTrigger
                 id="pemetaan"
-                className="text-[#636A6D] max-w-[462.4px] truncate overflow-hidden whitespace-nowrap"
+                className="text-[#636A6D] max-w-full sm:max-w-[462.4px] truncate overflow-hidden whitespace-nowrap"
               >
                 <SelectValue
                   placeholder="Pilih Profil KM ITB"
@@ -111,17 +114,17 @@ export default function ProfilDialog({
             </Select>
           </div>
         </div>
-        <div className="flex justify-center gap-4 ">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-4">
           <Button
             variant="outline"
-            className="px-6 bg-[#F16350] text-white hover:bg-[#FF9185] hover:text-white rounded-xl"
+            className="px-6 bg-[#F16350] text-white hover:bg-[#FF9185] hover:text-white rounded-xl w-full sm:w-auto"
             onClick={handleBatal}
             type="button"
           >
             {cancelButtonText}
           </Button>
           <Button
-            className="px-6 bg-[#2B6282] text-white hover:bg-[#2B6282] hover:text-white rounded-xl"
+            className="px-6 bg-[#2B6282] text-white hover:bg-[#2B6282] hover:text-white rounded-xl w-full sm:w-auto"
             onClick={
               modalType === 'tambah' ? handleSimpanTambah : handleSimpanEdit
             }

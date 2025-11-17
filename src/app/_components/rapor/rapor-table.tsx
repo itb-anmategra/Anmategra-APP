@@ -8,6 +8,7 @@ import { api } from '~/trpc/react';
 import Pagination from '../layout/pagination-comp';
 import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
+import FormProfilKegiatan from './form-profil-kegiatan';
 import LinkButton from './link-button';
 import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
@@ -15,7 +16,12 @@ import RaporTableRow from './rapor-table-row';
 import TambahProfilButton from './tambah-profil-button';
 
 type Anggota = { nama: string; nim: string; profil: string[] };
-type ProfilData = { label: string; deskripsi: string; pemetaan: string };
+type ProfilData = {
+  id: string;
+  label: string;
+  deskripsi: string;
+  pemetaan: string[];
+};
 
 type ApiMahasiswaData = {
   user_id: string;
@@ -27,7 +33,8 @@ type ApiMahasiswaData = {
 interface ProfilItem {
   id: string;
   name: string;
-  description?: string;
+  description: string;
+  profil_km_id: string[];
 }
 
 interface TableProps {
@@ -81,7 +88,10 @@ export default function RaporTable({
   const editLembagaProfilMutation = api.profil.editProfilLembaga.useMutation();
   const editKegiatanProfilMutation =
     api.profil.editProfilKegiatan.useMutation();
-
+  const deleteLembagaProfilMutation =
+    api.profil.deleteProfilLembaga.useMutation();
+  const deleteKegiatanProfilMutation =
+    api.profil.deleteProfilKegiatan.useMutation();
   // Use appropriate query/mutation based on type
   const raporData = type === 'event' ? eventQuery.data : lembagaQuery.data;
   const isLoading =
@@ -103,7 +113,7 @@ export default function RaporTable({
   const [editColIdx, setEditColIdx] = useState<number | null>(null);
   const [profil, setProfil] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
-  const [pemetaan, setPemetaan] = useState('');
+  const [pemetaan, setPemetaan] = useState<string[]>([]);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteColIdx, setDeleteColIdx] = useState<number | null>(null);
   const [editNilaiMode, setEditNilaiMode] = useState(false);
@@ -129,9 +139,10 @@ export default function RaporTable({
         if (profils.length > 0) {
           const finalProfilIds = profils.map((p) => p.id);
           const profilData = profils.map((profil) => ({
+            id: profil.id,
             label: profil.name,
             deskripsi: profil.description ?? '',
-            pemetaan: profil.id,
+            pemetaan: profil.profil_km_id ?? [],
           }));
 
           setProfilIdMap(finalProfilIds);
@@ -164,9 +175,10 @@ export default function RaporTable({
       if (profils.length > 0) {
         const finalProfilIds = profils.map((p) => p.id);
         const profilData = profils.map((profil) => ({
+          id: profil.id,
           label: profil.name,
           deskripsi: profil.description ?? '',
-          pemetaan: profil.id,
+          pemetaan: profil.profil_km_id ?? [],
         }));
 
         setProfilIdMap(finalProfilIds);
@@ -227,7 +239,7 @@ export default function RaporTable({
     setModalType('tambah');
     setProfil('');
     setDeskripsi('');
-    setPemetaan('');
+    setPemetaan([]);
     setModalOpen(true);
   };
 
@@ -248,9 +260,9 @@ export default function RaporTable({
           : null;
 
     if (currentProfil?.profil_km_id && currentProfil.profil_km_id.length > 0) {
-      setPemetaan(currentProfil.profil_km_id[0] ?? '');
+      setPemetaan(currentProfil.profil_km_id ?? []);
     } else {
-      setPemetaan('');
+      setPemetaan([]);
     }
 
     setModalOpen(true);
@@ -267,16 +279,44 @@ export default function RaporTable({
   const handleConfirmDelete = () => {
     if (deleteColIdx === null) return;
 
-    setProfilHeaders((prev) => prev.filter((_, i) => i !== deleteColIdx));
-    setData((prev) =>
-      prev.map((row) => ({
-        ...row,
-        profil: row.profil.filter((_, i) => i !== deleteColIdx),
-      })),
+    const profilIdToDelete = profilIdMap[deleteColIdx];
+    if (!profilIdToDelete) return;
+
+    const mutation =
+      type === 'lembaga'
+        ? deleteLembagaProfilMutation
+        : deleteKegiatanProfilMutation;
+
+    mutation.mutate(
+      { profil_id: profilIdToDelete },
+      {
+        onSuccess: () => {
+          setProfilHeaders((prev) => prev.filter((_, i) => i !== deleteColIdx));
+          setData((prev) =>
+            prev.map((row) => ({
+              ...row,
+              profil: row.profil.filter((_, i) => i !== deleteColIdx),
+            })),
+          );
+          setProfilIdMap((prev) => prev.filter((_, i) => i !== deleteColIdx));
+          setDeleteColIdx(null);
+          setConfirmDeleteOpen(false);
+
+          void profilsQuery.refetch();
+
+          toast({
+            title: 'Profil berhasil dihapus',
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: 'Gagal menghapus profil',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      },
     );
-    setProfilIdMap((prev) => prev.filter((_, i) => i !== deleteColIdx));
-    setDeleteColIdx(null);
-    setConfirmDeleteOpen(false);
   };
 
   const handleCancelDelete = () => {
@@ -300,14 +340,14 @@ export default function RaporTable({
           lembaga_id: lembaga_id!,
           name: profil,
           description: deskripsi,
-          profil_km_id: pemetaan ? [pemetaan] : [],
+          profil_km_id: pemetaan,
         },
         {
           onSuccess: () => {
             setModalOpen(false);
             setProfil('');
             setDeskripsi('');
-            setPemetaan('');
+            setPemetaan([]);
 
             void profilsQuery.refetch();
 
@@ -331,14 +371,14 @@ export default function RaporTable({
           event_id: event_id!,
           name: profil,
           description: deskripsi,
-          profil_km_id: pemetaan ? [pemetaan] : [],
+          profil_km_id: pemetaan,
         },
         {
           onSuccess: () => {
             setModalOpen(false);
             setProfil('');
             setDeskripsi('');
-            setPemetaan('');
+            setPemetaan([]);
 
             void profilsQuery.refetch();
 
@@ -389,7 +429,7 @@ export default function RaporTable({
       profil_id: profilIdToUpdate,
       name: profil,
       description: deskripsi,
-      profil_km_id: pemetaan ? [pemetaan] : [],
+      profil_km_id: pemetaan,
     };
 
     mutation.mutate(payload, {
@@ -398,9 +438,10 @@ export default function RaporTable({
           prev.map((header, idx) =>
             idx === editColIdx
               ? {
+                  id: profilIdToUpdate,
                   label: profil,
                   deskripsi: deskripsi,
-                  pemetaan: profilIdToUpdate,
+                  pemetaan: pemetaan,
                 }
               : header,
           ),
@@ -554,8 +595,9 @@ export default function RaporTable({
   return (
     <div className="flex flex-col flex-1">
       <div className="flex-1">
-        <div className="flex justify-between mb-4">
-          <div className="flex gap-x-5">
+        {/* Action buttons - responsive layout */}
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-5">
             <TambahProfilButton onClick={handleTambahProfil}>
               Tambah Profil {type === 'event' ? 'Kegiatan' : 'Lembaga'}
             </TambahProfilButton>
@@ -575,7 +617,8 @@ export default function RaporTable({
           />
         </div>
 
-        <div className="w-full overflow-x-auto">
+        {/* Desktop Table View - hidden on mobile */}
+        <div className="hidden md:block w-full overflow-x-auto">
           <Table className="min-w-max">
             <RaporTableHeader
               profilHeaders={profilHeaders}
@@ -618,6 +661,100 @@ export default function RaporTable({
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile Card View - shown only on mobile */}
+        <div className="md:hidden space-y-4">
+          {profilHeaders.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border">
+              <div className="text-neutral-500">
+                <p className="text-lg mb-2">
+                  Belum ada profil {type === 'lembaga' ? 'lembaga' : 'kegiatan'}
+                </p>
+                <p className="text-sm">
+                  Klik tombol &quot;Tambah Profil{' '}
+                  {type === 'lembaga' ? 'Lembaga' : 'Kegiatan'}&quot; untuk
+                  memulai
+                </p>
+              </div>
+            </div>
+          ) : (
+            paginatedData.map((row, rowIdx) => {
+              const absoluteRowIdx = (currentPage - 1) * pageSize + rowIdx;
+              const displayData = editNilaiMode
+                ? (editedData?.[absoluteRowIdx] ?? row)
+                : row;
+
+              return (
+                <div
+                  key={`card-${absoluteRowIdx}-${row.nama}`}
+                  className="bg-white rounded-lg border p-4 shadow-sm"
+                >
+                  {/* Header - Name and NIM */}
+                  <div className="mb-4 pb-3 border-b">
+                    <h3 className="font-semibold text-lg text-neutral-700">
+                      {displayData.nama}
+                    </h3>
+                    <p className="text-sm text-neutral-500">
+                      {displayData.nim}
+                    </p>
+                  </div>
+
+                  {/* Profils Grid */}
+                  <div className="space-y-3">
+                    {profilHeaders.map((header, colIdx) => {
+                      const value = displayData.profil[colIdx] ?? '0';
+                      return (
+                        <div
+                          key={`${absoluteRowIdx}-${colIdx}`}
+                          className="flex justify-between items-center py-2"
+                        >
+                          <div className="flex-1 mr-3">
+                            <span className="text-sm font-medium text-neutral-700 block">
+                              {header.label}
+                            </span>
+                          </div>
+                          <div className="flex-shrink-0">
+                            {editNilaiMode ? (
+                              <input
+                                type="number"
+                                min={0}
+                                max={100}
+                                className="w-20 px-2 py-1 border rounded text-center"
+                                value={value}
+                                onChange={(e) => {
+                                  const newValue = e.target.value;
+                                  setEditedData((prev) => {
+                                    if (!prev) return prev;
+                                    const updated = [...prev];
+                                    if (updated[absoluteRowIdx]) {
+                                      updated[absoluteRowIdx] = {
+                                        ...updated[absoluteRowIdx],
+                                        profil: [
+                                          ...updated[absoluteRowIdx].profil,
+                                        ],
+                                      };
+                                      updated[absoluteRowIdx].profil[colIdx] =
+                                        newValue;
+                                    }
+                                    return updated;
+                                  });
+                                }}
+                              />
+                            ) : (
+                              <span className="text-base font-semibold text-neutral-700 bg-neutral-100 px-3 py-1 rounded">
+                                {value}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         <ProfilDialog
