@@ -595,8 +595,9 @@ export default function RaporTable({
   return (
     <div className="flex flex-col flex-1">
       <div className="flex-1">
-        <div className="flex justify-between mb-4">
-          <div className="flex gap-x-5">
+        {/* Action buttons - responsive layout */}
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-5">
             <TambahProfilButton onClick={handleTambahProfil}>
               Tambah Profil {type === 'event' ? 'Kegiatan' : 'Lembaga'}
             </TambahProfilButton>
@@ -616,7 +617,8 @@ export default function RaporTable({
           />
         </div>
 
-        <div className="w-full overflow-x-auto">
+        {/* Desktop Table View - hidden on mobile */}
+        <div className="hidden md:block w-full overflow-x-auto">
           <Table className="min-w-max">
             <RaporTableHeader
               profilHeaders={profilHeaders}
@@ -660,22 +662,102 @@ export default function RaporTable({
             </TableBody>
           </Table>
         </div>
-        {/* <ProfilDialog
-          open={modalOpen}
-          setOpen={setModalOpen}
-          modalType={modalType}
-          profil={profil}
-          setProfil={setProfil}
-          deskripsi={deskripsi}
-          setDeskripsi={setDeskripsi}
-          pemetaan={pemetaan}
-          setPemetaan={setPemetaan}
-          handleSimpanTambah={handleSimpanTambah}
-          handleSimpanEdit={handleSimpanEdit}
-          handleBatal={() => setModalOpen(false)}
-          selectOptions={selectOptions}
-        /> */}
-        <FormProfilKegiatan
+
+        {/* Mobile Card View - shown only on mobile */}
+        <div className="md:hidden space-y-4">
+          {profilHeaders.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border">
+              <div className="text-neutral-500">
+                <p className="text-lg mb-2">
+                  Belum ada profil {type === 'lembaga' ? 'lembaga' : 'kegiatan'}
+                </p>
+                <p className="text-sm">
+                  Klik tombol &quot;Tambah Profil{' '}
+                  {type === 'lembaga' ? 'Lembaga' : 'Kegiatan'}&quot; untuk
+                  memulai
+                </p>
+              </div>
+            </div>
+          ) : (
+            paginatedData.map((row, rowIdx) => {
+              const absoluteRowIdx = (currentPage - 1) * pageSize + rowIdx;
+              const displayData = editNilaiMode
+                ? (editedData?.[absoluteRowIdx] ?? row)
+                : row;
+
+              return (
+                <div
+                  key={`card-${absoluteRowIdx}-${row.nama}`}
+                  className="bg-white rounded-lg border p-4 shadow-sm"
+                >
+                  {/* Header - Name and NIM */}
+                  <div className="mb-4 pb-3 border-b">
+                    <h3 className="font-semibold text-lg text-neutral-700">
+                      {displayData.nama}
+                    </h3>
+                    <p className="text-sm text-neutral-500">
+                      {displayData.nim}
+                    </p>
+                  </div>
+
+                  {/* Profils Grid */}
+                  <div className="space-y-3">
+                    {profilHeaders.map((header, colIdx) => {
+                      const value = displayData.profil[colIdx] ?? '0';
+                      return (
+                        <div
+                          key={`${absoluteRowIdx}-${colIdx}`}
+                          className="flex justify-between items-center py-2"
+                        >
+                          <div className="flex-1 mr-3">
+                            <span className="text-sm font-medium text-neutral-700 block">
+                              {header.label}
+                            </span>
+                          </div>
+                          <div className="flex-shrink-0">
+                            {editNilaiMode ? (
+                              <input
+                                type="number"
+                                min={0}
+                                max={100}
+                                className="w-20 px-2 py-1 border rounded text-center"
+                                value={value}
+                                onChange={(e) => {
+                                  const newValue = e.target.value;
+                                  setEditedData((prev) => {
+                                    if (!prev) return prev;
+                                    const updated = [...prev];
+                                    if (updated[absoluteRowIdx]) {
+                                      updated[absoluteRowIdx] = {
+                                        ...updated[absoluteRowIdx],
+                                        profil: [
+                                          ...updated[absoluteRowIdx].profil,
+                                        ],
+                                      };
+                                      updated[absoluteRowIdx].profil[colIdx] =
+                                        newValue;
+                                    }
+                                    return updated;
+                                  });
+                                }}
+                              />
+                            ) : (
+                              <span className="text-base font-semibold text-neutral-700 bg-neutral-100 px-3 py-1 rounded">
+                                {value}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <ProfilDialog
           open={modalOpen}
           setOpen={setModalOpen}
           modalType={modalType}
