@@ -70,17 +70,17 @@ const ProfilTable = ({
   // Mapping
   const mappingList = profilData as ProfilMapping[];
   return (
-    <div className="w-full overflow-x-auto">
-      <Table className="w-full table-auto">
+    <div className="w-full overflow-x-scroll scrollbar-thin">
+      <Table className="w-full table-auto min-w-[700px]">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[35%]">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[35%] min-w-[200px]">
               Profil KM ITB
             </TableHead>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[25%]">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[25%] min-w-[150px]">
               Profil {isLembaga ? 'Lembaga' : 'Kegiatan'}
             </TableHead>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[40%]">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[40%] min-w-[250px]">
               Deskripsi
             </TableHead>
           </TableRow>

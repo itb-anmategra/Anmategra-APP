@@ -92,52 +92,52 @@ export default async function RaporIndividuLembagaPage({
             })),
           )
         : [
-            // {
-            //   profilKMDescription: 'Integritas dan Etika',
-            //   profilKegiatanName: 'Kepemimpinan',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            // },
-            // {
-            //   profilKMDescription: 'Berfikir Kritis dan Pemecahan Masalah',
-            //   profilKegiatanName: 'Kepemimpinan',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            // },
-            // {
-            //   profilKMDescription: 'Kolaborasi dan Komunikasi',
-            //   profilKegiatanName: 'Kerja Sama Tim',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk bekerja secara efektif dengan anggota tim lain, berbagi tanggung jawab, dan berkontribusi dalam mencapai tujuan kolektif.',
-            // },
-            // {
-            //   profilKMDescription: 'Kreativitas dan Inovasi',
-            //   profilKegiatanName: 'Kreativitas dan Inovasi',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk berpikir kreatif, menghasilkan ide-ide baru, dan menemukan solusi inovatif terhadap tantangan yang dihadapi.',
-            // },
-            // {
-            //   profilKMDescription: 'Kepemimpinan dan Tanggung Jawab Sosial',
-            //   profilKegiatanName: 'Kepemimpinan',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            // },
-            // {
-            //   profilKMDescription: 'Kolaborasi dan Komunikasi',
-            //   profilKegiatanName: 'Komunikasi',
-            //   profilKegiatanDescription:
-            //     'Kemampuan menyampaikan informasi dengan jelas dan efektif, baik secara lisan maupun tulisan, serta mendengarkan dengan baik.',
-            // },
-            // {
-            //   profilKMDescription: 'Manajemen Diri dan Pengembangan Pribadi',
-            //   profilKegiatanName: 'Manajemen Waktu',
-            //   profilKegiatanDescription:
-            //     'Kemampuan untuk mengatur dan memprioritaskan tugas dengan efisien, memenuhi deadline, dan mengoptimalkan produktivitas.',
-            // },
+            {
+              profilKMDescription: 'Integritas dan Etika',
+              profilKegiatanName: 'Kepemimpinan',
+              profilKegiatanDescription:
+                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            },
+            {
+              profilKMDescription: 'Berfikir Kritis dan Pemecahan Masalah',
+              profilKegiatanName: 'Kepemimpinan',
+              profilKegiatanDescription:
+                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            },
+            {
+              profilKMDescription: 'Kolaborasi dan Komunikasi',
+              profilKegiatanName: 'Kerja Sama Tim',
+              profilKegiatanDescription:
+                'Kemampuan untuk bekerja secara efektif dengan anggota tim lain, berbagi tanggung jawab, dan berkontribusi dalam mencapai tujuan kolektif.',
+            },
+            {
+              profilKMDescription: 'Kreativitas dan Inovasi',
+              profilKegiatanName: 'Kreativitas dan Inovasi',
+              profilKegiatanDescription:
+                'Kemampuan untuk berpikir kreatif, menghasilkan ide-ide baru, dan menemukan solusi inovatif terhadap tantangan yang dihadapi.',
+            },
+            {
+              profilKMDescription: 'Kepemimpinan dan Tanggung Jawab Sosial',
+              profilKegiatanName: 'Kepemimpinan',
+              profilKegiatanDescription:
+                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            },
+            {
+              profilKMDescription: 'Kolaborasi dan Komunikasi',
+              profilKegiatanName: 'Komunikasi',
+              profilKegiatanDescription:
+                'Kemampuan menyampaikan informasi dengan jelas dan efektif, baik secara lisan maupun tulisan, serta mendengarkan dengan baik.',
+            },
+            {
+              profilKMDescription: 'Manajemen Diri dan Pengembangan Pribadi',
+              profilKegiatanName: 'Manajemen Waktu',
+              profilKegiatanDescription:
+                'Kemampuan untuk mengatur dan memprioritaskan tugas dengan efisien, memenuhi deadline, dan mengoptimalkan produktivitas.',
+            },
           ];
 
     return (
-      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
+      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen w-full overflow-hidden">
         <div className="flex flex-col pb-4 sm:pb-6 md:pb-7 border-b border-neutral-400 mb-6 sm:mb-7 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2 text-neutral-1000">
             Rapor Individu
@@ -150,13 +150,13 @@ export default async function RaporIndividuLembagaPage({
           />
         </div>
 
-        <div className="flex flex-col gap-8 sm:gap-12 md:gap-16">
+        <div className="flex flex-col gap-8 sm:gap-12 md:gap-16 w-full">
           <RaporIndividuHeader
             dataNilaiProfil={raporData}
             id={session?.user.lembagaId ?? ''}
             isLembaga={true}
           />
-          <div className="flex flex-col gap-y-3 sm:gap-y-4">
+          <div className="flex flex-col gap-y-3 sm:gap-y-4 w-full min-w-0">
             <h2 className="text-neutral-700 text-lg sm:text-xl md:text-[20px] font-normal">
               Profil Lembaga
             </h2>
@@ -167,7 +167,7 @@ export default async function RaporIndividuLembagaPage({
             />
           </div>
 
-          <div className="flex flex-col gap-y-3 sm:gap-y-4">
+          <div className="flex flex-col gap-y-3 sm:gap-y-4 w-full min-w-0">
             <h2 className="text-neutral-700 text-lg sm:text-xl md:text-[20px] font-normal">
               Detail Pemetaan Profil Lembaga
             </h2>
@@ -182,7 +182,7 @@ export default async function RaporIndividuLembagaPage({
     );
   } catch {
     return (
-      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
+      <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen w-full overflow-hidden">
         <div className="flex flex-col pb-4 sm:pb-6 md:pb-7 border-b border-neutral-400 mb-6 sm:mb-7 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2 text-neutral-1000">
             Rapor Individu
