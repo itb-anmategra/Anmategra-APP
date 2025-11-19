@@ -43,13 +43,13 @@ const ProfilTable = ({
     const profilList = profilData as ProfilKegiatan[];
     return (
       <div className="w-full overflow-x-auto">
-        <Table className="min-w-[500px]">
+        <Table className="w-full table-auto">
           <TableHeader>
             <TableRow>
-              <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-1/4">
+              <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[30%]">
                 Profil {isLembaga ? 'Lembaga' : 'Kegiatan'}
               </TableHead>
-              <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-3/4">
+              <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[70%]">
                 Deskripsi
               </TableHead>
             </TableRow>
@@ -57,8 +57,8 @@ const ProfilTable = ({
           <TableBody className="font-normal text-neutral-700 text-sm sm:text-base md:text-lg leading-6 sm:leading-7 md:leading-8">
             {profilList.map((profil, index) => (
               <TableRow key={index}>
-                <TableCell className="align-top">{profil.name}</TableCell>
-                <TableCell className="align-top">{profil.description}</TableCell>
+                <TableCell className="align-top break-words">{profil.name}</TableCell>
+                <TableCell className="align-top break-words">{profil.description}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -71,16 +71,16 @@ const ProfilTable = ({
   const mappingList = profilData as ProfilMapping[];
   return (
     <div className="w-full overflow-x-auto">
-      <Table className="min-w-[700px]">
+      <Table className="w-full table-auto">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-2/5">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[35%]">
               Profil KM ITB
             </TableHead>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-1/5">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[25%]">
               Profil {isLembaga ? 'Lembaga' : 'Kegiatan'}
             </TableHead>
-            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-2/5">
+            <TableHead className="text-neutral-500 text-sm sm:text-base md:text-lg font-normal w-[40%]">
               Deskripsi
             </TableHead>
           </TableRow>
@@ -88,13 +88,13 @@ const ProfilTable = ({
         <TableBody className="font-normal text-neutral-700 text-sm sm:text-base md:text-lg leading-6 sm:leading-7 md:leading-8">
           {mappingList.map((mapping, index) => (
             <TableRow key={index}>
-              <TableCell className="align-top pr-4 sm:pr-6 md:pr-8">
+              <TableCell className="align-top break-words pr-2 sm:pr-4 md:pr-6">
                 {mapping.profilKMDescription}
               </TableCell>
-              <TableCell className="align-top">
+              <TableCell className="align-top break-words">
                 {mapping.profilKegiatanName}
               </TableCell>
-              <TableCell className="align-top">
+              <TableCell className="align-top break-words">
                 {mapping.profilKegiatanDescription}
               </TableCell>
             </TableRow>

@@ -138,7 +138,7 @@ export default function RaporIndividuHeader({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 sm:gap-x-8 md:gap-x-[50px] gap-y-3 sm:gap-y-4 items-start justify-start mb-3 sm:mb-[18px] w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-4 sm:gap-x-8 md:gap-x-[50px] gap-y-3 sm:gap-y-4 items-start justify-start mb-3 sm:mb-[18px] w-full">
               <div className="flex flex-col items-start justify-start min-w-0">
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">NIM</div>
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
