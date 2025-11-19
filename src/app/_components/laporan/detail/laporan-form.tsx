@@ -45,15 +45,23 @@ type LaporanSchema = z.infer<typeof laporanSchema>;
 interface CustomFormFieldProps {
   error?: string;
   children: React.ReactNode;
+  isPriority?: boolean;
 }
 
 const CustomFormField: React.FC<CustomFormFieldProps> = ({
   error,
   children,
+  isPriority = false, // mengecek apakah bagian prioritas urgensi
 }) => (
-  <div className="space-y-2">
+  <div className={isPriority ? "relative" : "space-y-2"}>
     {children}
-    {error && <p className="ml-3 text-[16px] text-red-600">{error}</p>}
+    {error && (
+        <p className={`
+           text-red-600 
+            ${isPriority ? 'absolute top-[45px] left-1/2 -translate-x-1/2 text-[13px] whitespace-nowrap' : 'text-[16px] ml-3 '}`}>
+          {error}
+        </p>
+    )}
   </div>
 );
 
@@ -286,7 +294,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                 <div className="flex items-center gap-3">
                   <ChevronRight className="w-5 h-5 text-[#000000]" />
                   <span className="text-[#636A6D] font-bold text-[16px] leading-[24px]">
-                    Laporan baru
+                    Laporan draft baru
                   </span>
                 </div>
 
@@ -325,62 +333,64 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                   )}
 
                   {/* Prioritas */}
-                  <div className="relative inline-block">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowPrioritas(!showPrioritas)}
-                      className="items-center box-border px-3 py-2 w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
-                      disabled={isAdmin}
-                    >
-                      {formData.prioritas
-                        ? `Prioritas: ${
-                            formData.prioritas.charAt(0).toUpperCase() +
-                            formData.prioritas.slice(1)
-                          }`
-                        : 'Prioritas Urgensi'}
-                      <ChevronDown className="!w-5 !h-6" />
-                    </Button>
+                  <CustomFormField error={getFieldError('prioritas')} isPriority={true}>
+                    <div className="relative inline-block">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowPrioritas(!showPrioritas)}
+                        className="items-center box-border px-3 py-2 w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
+                        disabled={isAdmin}
+                      >
+                        {formData.prioritas
+                          ? `Prioritas: ${
+                              formData.prioritas.charAt(0).toUpperCase() +
+                              formData.prioritas.slice(1)
+                            }`
+                          : 'Prioritas Urgensi'}
+                        <ChevronDown className="!w-5 !h-6" />
+                      </Button>
 
-                    {showPrioritas && !isAdmin && (
-                      <div className="absolute left-0 top-full mt-1 w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
-                        {[
-                          { label: 'Low', value: 'Low', color: 'bg-green-500' },
-                          { label: 'Medium', value: 'Medium', color: 'bg-yellow-400' },
-                          { label: 'High', value: 'High', color: 'bg-red-500' },
-                        ].map((option) => (
-                          <div
-                            key={option.value}
-                            onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                prioritas: option.value as LaporanSchema['prioritas'],
-                              }));
-                              setShowPrioritas(false);
-                              setErrors((prev) => {
-                                const newErrors = { ...prev };
-                                delete newErrors.prioritas;
-                                return newErrors;
-                              });
-                            }}
-                            className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 hover:rounded-[12px]"
-                          >
-                            <span
-                              className={`w-3 h-3 rounded-full ${option.color}`}
-                            />
-                            <span>{option.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                      {showPrioritas && !isAdmin && (
+                        <div className="absolute left-0 top-full mt-1 w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
+                          {[
+                            { label: 'Low', value: 'Low', color: 'bg-green-500' },
+                            { label: 'Medium', value: 'Medium', color: 'bg-yellow-400' },
+                            { label: 'High', value: 'High', color: 'bg-red-500' },
+                          ].map((option) => (
+                            <div
+                              key={option.value}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  prioritas: option.value as LaporanSchema['prioritas'],
+                                }));
+                                setShowPrioritas(false);
+                                setErrors((prev) => {
+                                  const newErrors = { ...prev };
+                                  delete newErrors.prioritas;
+                                  return newErrors;
+                                });
+                              }}
+                              className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 hover:rounded-[12px]"
+                            >
+                              <span
+                                className={`w-3 h-3 rounded-full ${option.color}`}
+                              />
+                              <span>{option.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CustomFormField>
                   
                   {/* Simpan Draf */}
                   <Button
                     variant="outline"
                     className="flex items-center justify-center box-border px-3 py-2 h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[10px]"
-                    disabled={!formData.judul && !formData.deskripsi}
+                    disabled={true}
                   >
-                    Simpan draf
+                    Draf
                   </Button>
 
                   {/* Maximize & Close */}
@@ -418,8 +428,8 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                     placeholder="Judul Laporan"
                     maxLength={50}
                     disabled={isAdmin}
-                    className="w-full h-[60px] text-[32px] leading-[40px] text-[#9DA4A8] font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
-                  />
+                    className="w-full h-[60px] text-[32px] leading-[40px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
+                  /> {/*text-[#9DA4A8] awalnya*/}
                 </CustomFormField>
 
                 <CustomFormField error={getFieldError('deskripsi')}>
@@ -432,7 +442,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                     maxLength={400}
                     rows={isMaximized ? 15 : 8}
                     disabled={isAdmin}
-                    className={`w-full !font-[400] !text-[24px] !leading-[32px] text-[#9DA4A8]
+                    className={`w-full !font-[400] !text-[24px] !leading-[32px] text-gray-600
                       border-none shadow-none focus-visible:ring-0 p-[10px] resize-none
                       ${isMaximized ? 'h-[180px]' : 'h-[120px]'}`}
                   />
@@ -446,7 +456,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                 onClick={handleSubmit}
                 variant="dark_blue"
                 disabled={isAdmin || isSubmitting}
-                className="px-6 py-3 rounded-[12px] font-bold w-[150px] h-[45px] text-[17px]"
+                className="px-6 py-3 rounded-[12px] font-bold w-[200px] h-[45px] text-[17px]"
               >
                 {isSubmitting ? (
                   <>
@@ -454,7 +464,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                     Membuat...
                   </>
                 ) : (
-                  'Buat laporan'
+                  'Buat draft laporan'
                 )}
               </Button>
             </div>
