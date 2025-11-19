@@ -18,16 +18,14 @@ export default function NilaiProfilComp({
         {isLembaga ? 'Nilai Profil Lembaga' : 'Nilai Profil Kegiatan'}
       </div>
 
-      <div className="w-full overflow-x-auto">
-        <div className="flex flex-row gap-4 sm:gap-6 px-4 sm:px-[25px] pb-2 min-w-min">
-          {nilaiProfils?.map((profil, index) => (
-            <NilaiProfilCard
-              key={index}
-              profil_id={'Profil ' + (index + 1)}
-              nilai={profil.nilai ?? 0}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4 md:gap-6">
+        {nilaiProfils?.map((profil, index) => (
+          <NilaiProfilCard
+            key={index}
+            profil_id={'Profil ' + (index + 1)}
+            nilai={profil.nilai ?? 0}
+          />
+        ))}
       </div>
     </div>
   );

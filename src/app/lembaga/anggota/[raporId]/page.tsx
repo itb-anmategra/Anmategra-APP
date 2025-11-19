@@ -92,48 +92,48 @@ export default async function RaporIndividuLembagaPage({
             })),
           )
         : [
-            {
-              profilKMDescription: 'Integritas dan Etika',
-              profilKegiatanName: 'Kepemimpinan',
-              profilKegiatanDescription:
-                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            },
-            {
-              profilKMDescription: 'Berfikir Kritis dan Pemecahan Masalah',
-              profilKegiatanName: 'Kepemimpinan',
-              profilKegiatanDescription:
-                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            },
-            {
-              profilKMDescription: 'Kolaborasi dan Komunikasi',
-              profilKegiatanName: 'Kerja Sama Tim',
-              profilKegiatanDescription:
-                'Kemampuan untuk bekerja secara efektif dengan anggota tim lain, berbagi tanggung jawab, dan berkontribusi dalam mencapai tujuan kolektif.',
-            },
-            {
-              profilKMDescription: 'Kreativitas dan Inovasi',
-              profilKegiatanName: 'Kreativitas dan Inovasi',
-              profilKegiatanDescription:
-                'Kemampuan untuk berpikir kreatif, menghasilkan ide-ide baru, dan menemukan solusi inovatif terhadap tantangan yang dihadapi.',
-            },
-            {
-              profilKMDescription: 'Kepemimpinan dan Tanggung Jawab Sosial',
-              profilKegiatanName: 'Kepemimpinan',
-              profilKegiatanDescription:
-                'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
-            },
-            {
-              profilKMDescription: 'Kolaborasi dan Komunikasi',
-              profilKegiatanName: 'Komunikasi',
-              profilKegiatanDescription:
-                'Kemampuan menyampaikan informasi dengan jelas dan efektif, baik secara lisan maupun tulisan, serta mendengarkan dengan baik.',
-            },
-            {
-              profilKMDescription: 'Manajemen Diri dan Pengembangan Pribadi',
-              profilKegiatanName: 'Manajemen Waktu',
-              profilKegiatanDescription:
-                'Kemampuan untuk mengatur dan memprioritaskan tugas dengan efisien, memenuhi deadline, dan mengoptimalkan produktivitas.',
-            },
+            // {
+            //   profilKMDescription: 'Integritas dan Etika',
+            //   profilKegiatanName: 'Kepemimpinan',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            // },
+            // {
+            //   profilKMDescription: 'Berfikir Kritis dan Pemecahan Masalah',
+            //   profilKegiatanName: 'Kepemimpinan',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            // },
+            // {
+            //   profilKMDescription: 'Kolaborasi dan Komunikasi',
+            //   profilKegiatanName: 'Kerja Sama Tim',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk bekerja secara efektif dengan anggota tim lain, berbagi tanggung jawab, dan berkontribusi dalam mencapai tujuan kolektif.',
+            // },
+            // {
+            //   profilKMDescription: 'Kreativitas dan Inovasi',
+            //   profilKegiatanName: 'Kreativitas dan Inovasi',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk berpikir kreatif, menghasilkan ide-ide baru, dan menemukan solusi inovatif terhadap tantangan yang dihadapi.',
+            // },
+            // {
+            //   profilKMDescription: 'Kepemimpinan dan Tanggung Jawab Sosial',
+            //   profilKegiatanName: 'Kepemimpinan',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk memimpin tim, mengambil keputusan strategis, dan menginspirasi anggota lainnya dalam mencapai tujuan bersama.',
+            // },
+            // {
+            //   profilKMDescription: 'Kolaborasi dan Komunikasi',
+            //   profilKegiatanName: 'Komunikasi',
+            //   profilKegiatanDescription:
+            //     'Kemampuan menyampaikan informasi dengan jelas dan efektif, baik secara lisan maupun tulisan, serta mendengarkan dengan baik.',
+            // },
+            // {
+            //   profilKMDescription: 'Manajemen Diri dan Pengembangan Pribadi',
+            //   profilKegiatanName: 'Manajemen Waktu',
+            //   profilKegiatanDescription:
+            //     'Kemampuan untuk mengatur dan memprioritaskan tugas dengan efisien, memenuhi deadline, dan mengoptimalkan produktivitas.',
+            // },
           ];
 
     return (
