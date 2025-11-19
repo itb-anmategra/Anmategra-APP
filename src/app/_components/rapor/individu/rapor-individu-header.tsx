@@ -32,15 +32,9 @@ export default function RaporIndividuHeader({
   isLembaga,
 }: HeaderDataProps) {
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
-    dataNilaiProfil?.nilai && dataNilaiProfil.nilai.length > 0
+    dataNilaiProfil?.nilai
       ? dataNilaiProfil.nilai
-      : [
-          { profil_id: '1', nilai: 85 },
-          { profil_id: '2', nilai: 90 },
-          { profil_id: '3', nilai: 78 },
-          { profil_id: '4', nilai: 92 },
-          { profil_id: '5', nilai: 88 },
-        ],
+      : [],
   );
 
   const upsertMutationLembaga =
