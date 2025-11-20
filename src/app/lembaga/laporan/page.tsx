@@ -12,6 +12,13 @@ const DummyData: ColumnProps[] = [
     ],
   },
   {
+    title: 'Backlog',
+    reports: [
+      { id: '7', name: 'Report 7', date: '15/07/2024', category: 'Kategori' },
+      { id: '8', name: 'Report 8', date: '15/07/2024', category: 'Kategori' },
+    ],
+  },
+  {
     title: 'In Progress',
     reports: [
       { id: '4', name: 'Report 4', date: '15/07/2024', category: 'Kategori' },

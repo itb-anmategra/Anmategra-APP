@@ -18,7 +18,7 @@ import DraftIcon from '/public/images/laporan/draft.svg';
 import InProgressIcon from '/public/images/laporan/in-progress.svg';
 import ResolvedIcon from '/public/images/laporan/resolved.svg';
 
-export type ColumnType = 'Draft' | 'In Progress' | 'Resolved';
+export type ColumnType = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
 
 export interface ColumnProps {
   title: ColumnType;
@@ -29,11 +29,14 @@ interface ReportColumnProps extends ColumnProps {
   displayedStatus: ColumnType[];
   hideColumn: (type: ColumnType) => void;
   activeReportId?: string;
+  isAdminView?: boolean;
 }
 
 export function getTypeImage(type: ColumnType) {
   switch (type) {
     case 'Draft':
+      return DraftIcon as StaticImageData;
+    case 'Backlog':
       return DraftIcon as StaticImageData;
     case 'In Progress':
       return InProgressIcon as StaticImageData;
@@ -48,6 +51,7 @@ export function ReportColumn({
   displayedStatus,
   hideColumn,
   activeReportId,
+  isAdminView = false,
 }: ReportColumnProps) {
   const router = useRouter();
 
@@ -102,17 +106,15 @@ export function ReportColumn({
             >
               <div className="flex flex-col space-y-4 min-h-[120px] pb-4 pr-1">
                 {reports.map((report) => (
-                  <div
+                  <SortableReportCard
                     key={report.id}
-                    className={`transition-opacity ${
-                      report.id === activeReportId ? 'opacity-0' : 'opacity-100'
-                    }`}
-                  >
-                    <SortableReportCard
-                      report={report}
-                      onClickAction={() => handleClick(report.id)}
-                    />
-                  </div>
+                    report={report}
+                    column={title}
+                    onClickAction={() => handleClick(report.id)}
+                    onEdit={() => {}}
+                    onDelete={() => {}}
+                    isAdminView={isAdminView}
+                  />
                 ))}
               </div>
             </SortableContext>

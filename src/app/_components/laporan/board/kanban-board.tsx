@@ -57,9 +57,21 @@ export const KanbanBoard = ({
     );
 
   const isForbiddenMove = (source?: ColumnType, dest?: ColumnType) => {
-    if (isAdminView) return false;
+    if (isAdminView) return false; 
 
-    if (source === 'Resolved' || dest === 'Resolved') {
+    if (source && dest && source === dest) return false;
+
+    if (!source || !dest) return true;
+
+    if (source === "Backlog" || source === "In Progress" || source === "Resolved") {
+      return true;
+    }
+
+    if (source === "Draft" && dest !== "Backlog") {
+      return true;
+    }
+
+    if (dest === "In Progress" || dest === "Resolved") {
       return true;
     }
 
@@ -168,7 +180,15 @@ export const KanbanBoard = ({
         </div>
 
         <DragOverlay>
-          {activeReport && <ReportCard report={activeReport} />}
+            {activeReport && (
+              <ReportCard
+                report={activeReport}
+                column={findColumnByReportId(activeReport.id) || "Draft"}
+                onClick={() => {}}
+                onEdit={() => {}}
+                onDelete={() => {}}
+              />
+            )}
         </DragOverlay>
       </DndContext>
     </div>

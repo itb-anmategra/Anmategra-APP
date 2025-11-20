@@ -22,6 +22,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
 
   const [status, setStatus] = useState<ColumnType[]>([
     'Draft',
+    'Backlog',
     'In Progress',
     'Resolved',
   ]);
