@@ -57,32 +57,41 @@ export const KanbanBoard = ({
     );
 
   const isForbiddenMove = (source?: ColumnType, dest?: ColumnType) => {
-    if (isAdminView) return false; 
-
-    if (source && dest && source === dest) return false;
+    if (isAdminView) return false;
 
     if (!source || !dest) return true;
 
-    if (source === "Backlog" || source === "In Progress" || source === "Resolved") {
-      return true;
+    if (source === dest) {
+      if (source === 'Draft' || source === 'Backlog') return false;
+      return true; 
     }
 
-    if (source === "Draft" && dest !== "Backlog") {
-      return true;
-    }
+    if (source === 'Draft' && dest === 'Backlog') return false;
 
-    if (dest === "In Progress" || dest === "Resolved") {
-      return true;
-    }
+    return true;
+  };
 
-    return false;
+  const submitReportApi = async (id: string) => {
+    return fetch('/api/reports/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+  };
+
+  const deleteDraftApi = async (id: string) => {
+    return fetch('/api/reports/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
   };
 
   const onDragOver = (_event: DragOverEvent) => {
     //empty
   };
 
-  const onDragEnd = (event: DragEndEvent) => {
+  const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveReport(null);
     if (!over) return;
@@ -94,8 +103,30 @@ export const KanbanBoard = ({
     const destinationColumn =
       findColumnByReportId(overId) ?? (overId as ColumnType);
 
-    if (isForbiddenMove(sourceColumn, destinationColumn)) return;
+    if (isForbiddenMove(sourceColumn, destinationColumn)) {
+      // debug
+      console.debug('drag blocked by isForbiddenMove', { activeId, overId, sourceColumn, destinationColumn, isAdminView });
+      return;
+    }
     if (!sourceColumn || !destinationColumn) return;
+
+    if (!isAdminView && sourceColumn === 'Draft' && destinationColumn === 'Backlog') {
+      try {
+        await submitReportApi(activeId); // ganti dengan trpc
+        setReports((prev) => {
+          const src = prev[sourceColumn].filter((r) => r.id !== activeId);
+          const moved = prev[sourceColumn].find((r) => r.id === activeId);
+          return {
+            ...prev,
+            [sourceColumn]: src,
+            [destinationColumn]: moved ? [...prev[destinationColumn], moved] : prev[destinationColumn],
+          };
+        });
+      } catch (e) {
+        console.error('submitReport failed', e);
+      }
+      return;
+    }
 
     const sourceItems = reports[sourceColumn];
     const destinationItems = reports[destinationColumn];
@@ -152,12 +183,8 @@ export const KanbanBoard = ({
         sensors={sensors}
         onDragStart={({ active }) => {
           const col = findColumnByReportId(active.id.toString());
-          if (!isAdminView && col === 'Resolved') {
-            return;
-          }
-          const item = col
-            ? reports[col].find((r) => r.id === active.id)
-            : null;
+          if (!isAdminView && col !== 'Draft' && col !== 'Backlog') return;
+          const item = col ? reports[col].find((r) => r.id === active.id.toString()) : null;
           setActiveReport(item ?? null);
         }}
         onDragOver={onDragOver}
@@ -175,6 +202,23 @@ export const KanbanBoard = ({
                 displayedStatus={displayedColumn}
                 activeReportId={activeReport?.id}
                 isAdminView={isAdminView}
+                onEditReport={(id) => {
+                  console.log('edit', id);
+                }}
+                onDeleteReport={async (id) => {
+                  try {
+                    await deleteDraftApi(id); 
+                    setReports((prev) => {
+                      const copy = { ...prev };
+                      (Object.keys(copy) as ColumnType[]).forEach((c) => {
+                        copy[c] = copy[c].filter((r) => r.id !== id);
+                      });
+                      return copy;
+                    });
+                  } catch (e) {
+                    console.error('delete failed', e);
+                  }
+                }}
               />
             </Droppable>
           ))}

@@ -30,6 +30,8 @@ interface ReportColumnProps extends ColumnProps {
   hideColumn: (type: ColumnType) => void;
   activeReportId?: string;
   isAdminView?: boolean;
+  onEditReport?: (id: string) => void;
+  onDeleteReport?: (id: string) => void;
 }
 
 export function getTypeImage(type: ColumnType) {
@@ -52,6 +54,8 @@ export function ReportColumn({
   hideColumn,
   activeReportId,
   isAdminView = false,
+  onEditReport,
+  onDeleteReport,
 }: ReportColumnProps) {
   const router = useRouter();
 
@@ -111,8 +115,8 @@ export function ReportColumn({
                     report={report}
                     column={title}
                     onClickAction={() => handleClick(report.id)}
-                    onEdit={() => {}}
-                    onDelete={() => {}}
+                    onEdit={() => onEditReport?.(report.id)}
+                    onDelete={() => onDeleteReport?.(report.id)}
                     isAdminView={isAdminView}
                   />
                 ))}

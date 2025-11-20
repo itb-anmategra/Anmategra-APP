@@ -40,8 +40,7 @@ export function SortableReportCard({
     opacity: isDragging ? 0 : 1,
   };
 
-  const canDrag = isAdminView || (column !== 'Resolved' && column !== 'In Progress');
-
+  const canDrag = Boolean(isAdminView) || column === 'Draft' || column === 'Backlog';
   return (
     <div
       ref={setNodeRef}
