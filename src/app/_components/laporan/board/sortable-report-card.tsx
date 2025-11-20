@@ -37,11 +37,9 @@ export function SortableReportCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    // buat yang sedang didrag jadi invisible (opacity 0)
     opacity: isDragging ? 0 : 1,
   };
 
-  // Non-admin tidak boleh drag/reorder di Resolved / In Progress
   const canDrag = isAdminView || (column !== 'Resolved' && column !== 'In Progress');
 
   return (

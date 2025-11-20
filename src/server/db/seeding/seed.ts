@@ -316,37 +316,37 @@ async function importAssociationRequestsLembaga() {
   }
 }
 
-// async function importSupport() {
-//   console.log('🎫 Importing support tickets...');
-//   const records = readCsvFile('support.csv');
+async function importSupport() {
+  console.log('🎫 Importing support tickets...');
+  const records = readCsvFile('support.csv');
 
-//   if (records.length === 0) return;
+  if (records.length === 0) return;
 
-//   const data = records
-//     .filter(
-//       (record) =>
-//         record.id &&
-//         record.subject &&
-//         record.topic &&
-//         record.description &&
-//         record.status,
-//     )
-//     .map((record) => ({
-//       id: record.id!,
-//       user_id: record.user_id ?? null,
-//       subject: record.subject!,
-//       topic: record.topic!,
-//       description: record.description!,
-//       status: record.status as 'Open' | 'In Progress' | 'Resolved' | 'Closed',
-//       created_at: parseDate(record.created_at) ?? new Date(),
-//       updated_at: parseDate(record.updated_at) ?? new Date(),
-//     }));
+  const data = records
+    .filter(
+      (record) =>
+        record.id &&
+        record.subject &&
+        record.topic &&
+        record.description &&
+        record.status,
+    )
+    .map((record) => ({
+      id: record.id!,
+      user_id: record.user_id ?? null,
+      subject: record.subject!,
+      topic: record.topic!,
+      description: record.description!,
+      status: record.status as 'Draft' | 'In Progress' | 'Resolved' | 'Backlog',
+      created_at: parseDate(record.created_at) ?? new Date(),
+      updated_at: parseDate(record.updated_at) ?? new Date(),
+    }));
 
-//   if (data.length > 0) {
-//     await db.insert(support).values(data);
-//     console.log(`✅ Imported ${data.length} support tickets`);
-//   }
-// }
+  if (data.length > 0) {
+    await db.insert(support).values(data);
+    console.log(`✅ Imported ${data.length} support tickets`);
+  }
+}
 
 async function importNotifications() {
   console.log('🔔 Importing notifications...');
@@ -743,7 +743,7 @@ export async function seedFromCsv() {
     await importAssociationRequestsLembaga();
     await importBestStaffKegiatan();
     await importBestStaffLembaga();
-    // await importSupport();
+    await importSupport();
     await importSupportReplies();
     await importNotifications();
     await importProfilKM();

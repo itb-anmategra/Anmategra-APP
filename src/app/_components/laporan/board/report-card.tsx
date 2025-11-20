@@ -30,7 +30,6 @@ export function ReportCard({ report, column, onClick, onEdit, onDelete }: Report
 
   return (
     <div className="relative w-full">
-      {/* Dropdown hanya muncul jika statusnya Draft */}
       {showMenu && (
         <div className="absolute right-3 top-3 z-10">
           <DropdownMenu>

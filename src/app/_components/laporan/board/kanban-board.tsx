@@ -174,6 +174,7 @@ export const KanbanBoard = ({
                 hideColumn={hideColumnAction}
                 displayedStatus={displayedColumn}
                 activeReportId={activeReport?.id}
+                isAdminView={isAdminView}
               />
             </Droppable>
           ))}

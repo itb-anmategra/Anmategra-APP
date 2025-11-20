@@ -20,13 +20,16 @@ interface LaporanProps {
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
 
-  const [status, setStatus] = useState<ColumnType[]>([
-    'Draft',
-    'Backlog',
-    'In Progress',
-    'Resolved',
-  ]);
+  const [status, setStatus] = useState<ColumnType[]>(() => {
+    const all: ColumnType[] = ["Draft", "Backlog", "In Progress", "Resolved"];
 
+    if (Laporan.isAdminView) {
+      return all.filter((col) => col !== "Draft");
+    }
+
+    return all;
+  });
+  
   const toggleStatus = (column: ColumnType) => {
     setStatus(
       (prev) =>

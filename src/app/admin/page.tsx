@@ -5,7 +5,7 @@ import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-con
 
 const DummyData: ColumnProps[] = [
   {
-    title: 'Draft',
+    title: 'Backlog',
     reports: [
       { id: '1', name: 'Report 1', date: '15/07/2024', category: 'Kategori' },
       { id: '2', name: 'Report 2', date: '15/07/2024', category: 'Kategori' },
