@@ -259,8 +259,8 @@ export const keanggotaan = createTable('keanggotaan', {
 // Association Request Table
 export const associationRequests = createTable('association_request', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  event_id: varchar('event_id', { length: 255 }).references(() => events.id),
-  user_id: varchar('user_id', { length: 255 }).references(() => users.id),
+  event_id: varchar('event_id', { length: 255 }).references(() => events.id, { onDelete: 'cascade' }),
+  user_id: varchar('user_id', { length: 255 }).references(() => users.id, { onDelete: 'cascade' }),
   position: varchar('position', { length: 255 }).notNull(),
   division: varchar('division', { length: 255 }).notNull(),
   status: associationRequestStatusEnum('status').notNull().default('Pending'),
