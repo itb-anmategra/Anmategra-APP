@@ -21,11 +21,13 @@ type PermintaanAsosiasiUser = {
 type InboxDetailContentProps = {
   id: string;
   data: PermintaanAsosiasiUser[];
+  lembagaId: string | undefined;
 };
 
 export default function InboxDetailContent({
   id,
   data,
+  lembagaId,
 }: InboxDetailContentProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
@@ -80,7 +82,7 @@ export default function InboxDetailContent({
         </div>
 
         <div>
-          <RequestTableAssociationsEntries id={id} data={data} />
+          <RequestTableAssociationsEntries id={id} data={data} lembagaId={lembagaId} />
         </div>
       </div>
     </div>

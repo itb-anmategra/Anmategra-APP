@@ -23,7 +23,8 @@ export default async function InboxPageWithParams({
   const session = await getServerAuthSession();
   let associationRequestEntries;
   if (params.slug === session?.user?.lembagaId) {
-    associationRequestEntries = await api.lembaga.getAllRequestAssociationLembaga({});
+    const res = await api.lembaga.getAllRequestAssociationLembaga({});
+    associationRequestEntries = res.requests;
   } else {
     associationRequestEntries = await api.lembaga.getAllRequestAssociation({event_id: params.slug });
   }
@@ -83,5 +84,5 @@ export default async function InboxPageWithParams({
 
 
   const id = params.slug;
-  return <InboxDetailContent id={id} data={associationRequestEntries} />;
+  return <InboxDetailContent id={id} data={associationRequestEntries} lembagaId={session?.user?.lembagaId} />;
 }

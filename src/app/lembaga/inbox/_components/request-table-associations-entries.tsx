@@ -18,7 +18,8 @@ type PermintaanAsosiasiUser = {
 const RequestTableAssociationsEntries: React.FC<{
   id: string;
   data: PermintaanAsosiasiUser[];
-}> = ({ id, data }) => {
+  lembagaId: string | undefined;
+}> = ({ id, data, lembagaId }) => {
   const router = useRouter();
 
   // penggunaan mutation baru untuk acc / decline lembaga
@@ -166,7 +167,7 @@ const RequestTableAssociationsEntries: React.FC<{
                 <div className="flex items-center justify-between md:justify-end gap-2 px-3 md:px-0 mt-2 md:mt-0">
                   <Button
                     onClick={() => {
-                      if (id === 'lembaga') {
+                      if (id === lembagaId) {
                         handleDeclineLembaga(
                           item.user_id,
                           item.division,
@@ -174,8 +175,8 @@ const RequestTableAssociationsEntries: React.FC<{
                         );
                       } else {
                         handleDeclineEvent(
-                          id,
                           item.user_id,
+                          id,
                           item.division,
                           item.position,
                         );
@@ -188,7 +189,7 @@ const RequestTableAssociationsEntries: React.FC<{
 
                   <Button
                     onClick={() => {
-                      if (id === 'lembaga') {
+                      if (id === lembagaId) {
                         handleAcceptLembaga(
                           item.user_id,
                           item.division,
@@ -196,8 +197,8 @@ const RequestTableAssociationsEntries: React.FC<{
                         );
                       } else {
                         handleAcceptEvent(
-                          id,
                           item.user_id,
+                          id,
                           item.division,
                           item.position,
                         );
