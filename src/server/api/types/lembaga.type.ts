@@ -160,6 +160,19 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationSummaryInputSchema = z.object({
+  name: z.string().optional(),
+});
+
+export const GetAllRequestedAssociationSummaryOutputSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    total_requests: z.number().min(0),
+    type: z.string(), // "Lembaga" or "Kegiatan"
+  }),
+);
+
 export const GetAllRequestAssociationInputSchema = z.object({
   division: z.string().optional(),
 });

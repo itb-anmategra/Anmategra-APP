@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -49,6 +49,8 @@ import {
   GetAllRequestAssociationInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
+  GetAllRequestAssociationSummaryInputSchema,
+  GetAllRequestedAssociationSummaryOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
   GetBestStaffLembagaOptionsOutputSchema,
   GetBestStaffOptionsInputSchema,
@@ -68,6 +70,7 @@ import {
   editAnggotaLembagaInputSchema,
   editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
+import { z } from 'zod';
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -150,6 +153,68 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Database Error',
         });
       }
+    }),
+  
+  getAllRequestAssociationSummary: lembagaProcedure
+    .input(GetAllRequestAssociationSummaryInputSchema)
+    .output(GetAllRequestedAssociationSummaryOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const conditions1 = [eq(lembaga.id, ctx.session?.user?.lembagaId ?? '')];
+      const conditions2 = [eq(events.org_id, ctx.session?.user?.lembagaId ?? '')];
+
+      if (input.name) {
+        conditions1.push(ilike(lembaga.name, `%${input.name}%`));
+        conditions2.push(ilike(events.name, `%${input.name}%`));
+      }
+
+      const res = [] as z.infer<typeof GetAllRequestedAssociationSummaryOutputSchema>;
+
+      const namalembaga = await ctx.db
+        .select({
+          name: lembaga.name,
+        })
+        .from(lembaga)
+        .where(and(...conditions1));
+      
+      if (namalembaga) {
+        const countLembagaRequests = await ctx.db
+          .select({
+            count: count(),
+          })
+          .from(associationRequestsLembaga)
+          .where(eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? ''));
+        
+        res.push({
+          id: ctx.session?.user?.lembagaId ?? '',
+          name: namalembaga[0]?.name ?? '',
+          total_requests: Number(countLembagaRequests[0]?.count ?? 0),
+          type: 'Lembaga',
+        })
+      }
+      
+      const eventslist = await ctx.db
+        .select({
+          id: events.id,
+          name: events.name,
+        })
+        .from(events)
+        .where(and(...conditions2));
+      
+      for (const event of eventslist) {
+        const countEventRequests = await ctx.db
+          .select({
+            count: count(),
+          })
+          .from(associationRequests)
+          .where(eq(associationRequests.event_id, event.id));
+        res.push({
+          id: event.id,
+          name: event.name ?? '',
+          total_requests: Number(countEventRequests[0]?.count ?? 0),
+          type: 'Kegiatan',
+        });
+      }
+      return res;
     }),
 
   // Fetch all associated events with lembaga
