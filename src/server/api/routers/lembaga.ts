@@ -182,16 +182,23 @@ export const lembagaRouter = createTRPCRouter({
             count: count(),
           })
           .from(associationRequestsLembaga)
-          .where(eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? ''));
+          .where(
+            and(
+              eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? ''), 
+              eq(associationRequestsLembaga.status, 'Pending')
+            )
+          );
         
-        res.push({
-          id: ctx.session?.user?.lembagaId ?? '',
-          name: namalembaga[0]?.name ?? '',
-          total_requests: Number(countLembagaRequests[0]?.count ?? 0),
-          type: 'Lembaga',
-        })
+        if(Number(countLembagaRequests[0]?.count ?? 0) > 0) {
+          res.push({
+            id: ctx.session?.user?.lembagaId ?? '',
+            name: namalembaga[0]?.name ?? '',
+            total_requests: Number(countLembagaRequests[0]?.count ?? 0),
+            type: 'Lembaga',
+          })
+        }
       }
-      
+
       const eventslist = await ctx.db
         .select({
           id: events.id,
@@ -206,7 +213,14 @@ export const lembagaRouter = createTRPCRouter({
             count: count(),
           })
           .from(associationRequests)
-          .where(eq(associationRequests.event_id, event.id));
+          .where(
+            and(
+              eq(associationRequests.event_id, event.id),
+              eq(associationRequests.status, 'Pending')
+            )
+          );
+
+        if (Number(countEventRequests[0]?.count ?? 0) === 0) continue;
         res.push({
           id: event.id,
           name: event.name ?? '',
