@@ -46,6 +46,7 @@ import {
   GetAllHistoryBestStaffMahasiswaOutputSchema,
   GetAllKegiatanDivisionInputSchema,
   GetAllLembagaDivisionInputSchema,
+  GetAllRequestAssociationInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetBestStaffLembagaOptionsInputSchema,
@@ -119,7 +120,7 @@ export const lembagaRouter = createTRPCRouter({
         }
 
         if (input.divisi) {
-          conditions.push(ilike(kehimpunan.division, `%${input.divisi}%`));
+          conditions.push(eq(kehimpunan.division, input.divisi));
         }
         const anggota = await ctx.db
           .select({
@@ -153,8 +154,19 @@ export const lembagaRouter = createTRPCRouter({
 
   // Fetch all associated events with lembaga
   getAllRequestAssociation: lembagaProcedure
+    .input(GetAllRequestAssociationInputSchema)
     .output(GetAllRequestAssociationOutputSchema)
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
+      const conditions = [eq(events.org_id, ctx.session?.user?.lembagaId ?? '')];
+
+      conditions.push(eq(associationRequests.status, 'Pending'));
+
+      if (input.division) {
+        conditions.push(
+          eq(associationRequests.division, input.division),
+        );
+      }
+
       const requests = await ctx.db
         .select({
           event_id: associationRequests.event_id,
@@ -167,7 +179,7 @@ export const lembagaRouter = createTRPCRouter({
         .from(associationRequests)
         .innerJoin(users, eq(associationRequests.user_id, users.id))
         .innerJoin(events, eq(associationRequests.event_id, events.id))
-        .where(eq(events.org_id, ctx.session?.user?.lembagaId ?? ''));
+        .where(and(...conditions));
 
       return requests.map((req) => ({
         event_id: req.event_id ?? '',
@@ -628,8 +640,19 @@ export const lembagaRouter = createTRPCRouter({
     }),
 
   getAllRequestAssociationLembaga: lembagaProcedure
+    .input(GetAllRequestAssociationInputSchema)
     .output(GetAllRequestAssociationLembagaOutputSchema)
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
+      const conditions = [eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? '',)];
+      
+      conditions.push(eq(associationRequestsLembaga.status, 'Pending'));
+
+      if (input.division) {
+        conditions.push(
+          eq(associationRequestsLembaga.division, input.division),
+        );
+      }
+
       const requests = await ctx.db
         .select({
           user_id: associationRequestsLembaga.user_id,
@@ -638,12 +661,7 @@ export const lembagaRouter = createTRPCRouter({
           position: associationRequestsLembaga.position,
         })
         .from(associationRequestsLembaga)
-        .where(
-          eq(
-            associationRequestsLembaga.lembagaId,
-            ctx.session?.user?.lembagaId ?? '',
-          ),
-        )
+        .where(and(...conditions))
         .innerJoin(users, eq(associationRequestsLembaga.user_id, users.id));
       return {
         requests: requests.map((req) => ({

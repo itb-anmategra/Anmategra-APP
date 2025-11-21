@@ -160,6 +160,10 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationInputSchema = z.object({
+  division: z.string().optional(),
+});
+
 export const GetAllRequestAssociationLembagaOutputSchema = z.object({
   requests: z.array(
     z.object({
