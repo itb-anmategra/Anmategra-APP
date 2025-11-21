@@ -61,7 +61,7 @@ const ProfileKegiatanComp = ({
 
   return (
     <div>
-      <div className="mb-4 sm:mt-8 flex items-center justify-between">
+      <div className="mb-4 mt-4 sm:mt-8 flex items-center justify-between">
         <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">Anggota</h2>
       </div>
       <div className="mb-4">

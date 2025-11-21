@@ -32,7 +32,8 @@ import { cn } from '~/lib/utils';
 import type { Lembaga } from '~/types/lembaga';
 
 // Assets Import
-import LogoAnmategra from '/public/images/logo/anmategra-logo-full.png';
+import LogoAnmategraFull from '/public/images/logo/anmategra-logo-full.png';
+import LogoAnmategra from '/public/images/logo/anmategra-logo.png';
 
 type SidebarItemType = {
   label: string;
@@ -131,7 +132,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
               )}
             >
               <Image
-                src={LogoAnmategra}
+                src={LogoAnmategraFull}
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
@@ -141,7 +142,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
               />
               {role === 'lembaga' && (
                 <Image
-                  src="/images/logo/anmategra-logo.png"
+                  src={LogoAnmategra}
                   alt="Logo Anmategra"
                   width={40}
                   height={40}
@@ -168,39 +169,27 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
             <Menu className="w-6 h-6 text-white" />
           </Button>
 
-          {/* Mobile Sidebar Overlay */}
           {isMobileSidebarOpen && (
             <>
-              {/* Background overlay */}
               <div
                 className="fixed inset-0 z-50 bg-black/40 sm:hidden"
                 onClick={() => setIsMobileSidebarOpen(false)}
               />
 
-              {/* Mobile Sidebar */}
-              <div className="fixed top-0 left-0 h-full w-64 bg-neutral-50 shadow-lg z-[60] border-r sm:hidden">
-                <nav className="w-full h-full flex flex-col justify-between p-6">
-                  <div className="space-y-[32px]">
-                    {/* Header with close button */}
-                    <div className="flex items-center justify-between">
-                      <Link href={'/'}>
+              <div className="fixed top-0 left-0 h-full w-20 bg-neutral-50 shadow-lg z-[60] border-r sm:hidden">
+                <nav className="w-full h-full flex flex-col justify-between p-3">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-center">
+                      <Link href={'/lembaga'}>
                         <Image
                           src={LogoAnmategra}
                           alt="Logo Anmategra"
-                          width={120}
+                          width={40}
                           height={40}
                           style={{ width: 'auto', height: 'auto' }}
                           priority
                         />
                       </Link>
-                      <Button
-                        onClick={() => setIsMobileSidebarOpen(false)}
-                        variant="ghost"
-                        size="icon"
-                        className="w-8 h-8"
-                      >
-                        <X className="w-5 h-5" />
-                      </Button>
                     </div>
                     <SidebarItems 
                       items={sidebarItems} 

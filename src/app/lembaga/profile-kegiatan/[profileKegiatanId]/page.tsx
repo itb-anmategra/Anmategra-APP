@@ -122,6 +122,7 @@ const ProfileKegiatan = async ({
               </div>
               <CarouselBestStaff
                 bestStaffList={latestBestStaff.best_staff_list}
+                isLembaga={true}
               />
             </div>
           </div>

@@ -14,10 +14,12 @@ type BestStaffMember = {
 
 type CarouselBestStaffProps = {
   bestStaffList: BestStaffMember[];
+  isLembaga;
 };
 
 export default function CarouselBestStaff({
   bestStaffList,
+  isLembaga,
 }: CarouselBestStaffProps) {
   // Handle empty or undefined list
   if (!bestStaffList || bestStaffList.length === 0) {
@@ -39,6 +41,7 @@ export default function CarouselBestStaff({
           profilePicture={staff.image ?? dummyProfile}
           divisi={staff.division}
           id_mahasiswa={staff.user_id}
+          isLembaga={isLembaga}
         />
       ))}
     </LayoutCarouselBestStaff>
