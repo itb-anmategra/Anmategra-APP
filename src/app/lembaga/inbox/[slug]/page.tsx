@@ -22,7 +22,7 @@ export default async function InboxPageWithParams({
   const lembagaAssociationRequestEntries =
     await api.lembaga.getAllRequestAssociationLembaga({});
   const eventAssociationRequestEntries =
-    await api.lembaga.getAllRequestAssociation({event_id: "event-44" });
+    await api.lembaga.getAllRequestAssociation({event_id: params.slug });
 
   const lembagaAssociationImage = (
     await Promise.all(

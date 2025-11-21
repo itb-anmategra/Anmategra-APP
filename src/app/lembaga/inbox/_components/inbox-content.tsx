@@ -11,7 +11,7 @@ import RequestTableEventsEntries from './request-table-events-entries';
 
 type PermintaanAsosiasi = {
   id: string;
-  image: string;
+  image: string | null;
   nama: string;
   jumlah: string;
   tujuan: string;
