@@ -18,7 +18,7 @@ export default function LinkButton({
     <Link href={href} passHref legacyBehavior>
       <Button
         asChild
-        className={`mb-4 rounded-2xl bg-[#00B7B7] text-white hover:bg-[#009999] hover:text-white ${className ?? ''}`}
+        className={`mb-4 rounded-2xl bg-[#00B7B7] text-white hover:bg-[#009999] hover:text-white w-full sm:w-auto ${className ?? ''}`}
         variant="ghost"
       >
         <a>

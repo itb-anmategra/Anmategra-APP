@@ -154,7 +154,7 @@ export const LaporanHeader = ({
 
         {/* Hide Tambah Laporan Button if current display is Board and Laporan is Empty (Move the Tambah Laporan in the middle of Screen) */}
         {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
-          <LaporanFormDialog />
+          <LaporanFormDialog isAdmin={isAdminView ?? false} />
         )}
       </div>
     </header>

@@ -63,7 +63,7 @@ export const AccordionDisplay = ({
               </div>
 
               {/* Kanan: Tombol Buat Laporan */}
-              {!isAdminView && <LaporanFormDialog />}
+              {!isAdminView && <LaporanFormDialog isAdmin={isAdminView ?? false} />}
             </div>
           </div>
         </div>

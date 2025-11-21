@@ -15,25 +15,13 @@ import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
+import { api } from '~/trpc/react';
+import { useUploadThing } from '~/utils/uploadthing';
 
 const fileSchema = z
-  .any()
-  .optional()
-  .refine((file): file is File => !file || file instanceof File, {
-    message: 'File tidak valid',
-  })
-  .refine((file) => file.size <= 5 * 1024 * 1024, {
-    message: 'Ukuran file maksimal 5MB',
-  })
-  .refine(
-    (file) =>
-      ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(
-        file.type,
-      ),
-    {
-      message: 'Format harus JPG, PNG, JPG, atau PDF',
-    },
-  );
+  .string()
+  .url({ message: 'URL file tidak valid' })
+  .optional();
 
 const laporanSchema = z.object({
   judul: z
@@ -46,74 +34,166 @@ const laporanSchema = z.object({
     .min(1, { message: 'Deskripsi laporan wajib diisi' })
     .min(10, { message: 'Deskripsi minimal 10 karakter' })
     .max(400, { message: 'Deskripsi maksimal 400 karakter' }),
-  file: fileSchema.optional(), // file opsional
-  prioritas: z.enum(['rendah', 'sedang', 'tinggi'], {
+  file: fileSchema.optional(), 
+  prioritas: z.enum(['Low', 'Medium', 'High'], {
     required_error: 'Prioritas urgensi wajib dipilih',
   }),
 });
 
 type LaporanSchema = z.infer<typeof laporanSchema>;
 
-// Custom Form Field
 interface CustomFormFieldProps {
   error?: string;
   children: React.ReactNode;
+  isPriority?: boolean;
 }
 
 const CustomFormField: React.FC<CustomFormFieldProps> = ({
   error,
   children,
+  isPriority = false, // mengecek apakah bagian prioritas urgensi
 }) => (
-  <div className="space-y-2">
+  <div className={isPriority ? "relative" : "space-y-2"}>
     {children}
-    {error && <p className="ml-3 text-[16px] text-red-600">{error}</p>}
+    {error && (
+        <p className={`
+           text-red-600 
+            ${isPriority ? 'absolute top-[45px] left-1/2 -translate-x-1/2 text-[13px] whitespace-nowrap' : 'text-[16px] ml-3 '}`}>
+          {error}
+        </p>
+    )}
   </div>
 );
 
-// Main Component
-const LaporanFormDialog: React.FC = () => {
+interface CustomUploadButtonProps {
+  onUploadSuccess: (url: string) => void;
+  onError: (message: string) => void;
+  isAdmin: boolean;
+  isFormSubmitting: boolean;
+}
+
+const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
+  onUploadSuccess,
+  onError,
+  isAdmin,
+  isFormSubmitting,
+}) => {
+  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+    onClientUploadComplete: (res) => {
+      const uploadedUrl = res[0]?.url;
+      if (uploadedUrl) {
+        onUploadSuccess(uploadedUrl);
+      } else {
+        onError('URL file tidak ditemukan setelah upload selesai.');
+      }
+    },
+    onUploadError: (error) => {
+      onError(`Gagal mengunggah file: ${error.message}`);
+    },
+  });
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileToUpload = files[0];
+      const validationResult = laporanSchema.shape.file.safeParse(fileToUpload);
+      void startUpload(Array.from(files));
+      e.target.value = '';
+    }
+  };
+
+  const isDisabled = isAdmin || isUploading || isFormSubmitting || isUploading;
+
+  return (
+    <>
+      {/* Input file tersembunyi yang akan dipicu oleh tombol */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFileChange}
+        accept=".jpg,.jpeg,.png,.pdf" 
+        disabled={isDisabled}
+      />
+
+      {/* Tombol Paperclip Custom */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="p-2 h-auto"
+        onClick={handleClick}
+        disabled={isDisabled}
+      >
+        {isUploading ? (
+          <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <Paperclip className="!w-6 !h-6 text-gray-600 rotate-45" />
+        )}
+      </Button>
+    </>
+  );
+};
+
+interface LaporanFormDialogProps {
+  isAdmin?: boolean;
+}
+
+const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
   const [formData, setFormData] = useState<LaporanSchema>({
     judul: '',
     deskripsi: '',
-    file: undefined,
+    file: undefined, 
     prioritas: undefined as unknown as LaporanSchema['prioritas'],
   });
 
   const [showPrioritas, setShowPrioritas] = useState(false);
-
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // tRPC mutation
+  const createDraftMutation = api.users.createDraft.useMutation();
+  const isSubmitting = createDraftMutation.isPending;
 
   const getFieldError = (field: string): string | undefined => errors[field];
 
   const handleInputChange = (
     field: keyof LaporanSchema,
-    value: string | File | undefined,
+    value: string | undefined, // value can be string or undefined
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value as any }));
     setErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[field];
-
-      if (field === 'judul' && typeof value === 'string') {
-        if (value.length >= 50) newErrors[field] = 'Judul maksimal 50 karakter';
-      }
-
-      if (field == 'deskripsi' && typeof value === 'string') {
-        if (value.length >= 400)
-          newErrors[field] = 'Deskripsi maksimal 400 karakter';
-      }
-
       return newErrors;
     });
   };
 
+  const handleFileUploadSuccess = (url: string) => {
+    handleInputChange('file', url);
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.file;
+      return newErrors;
+    });
+  };
+
+  const handleFileUploadError = (message: string) => {
+    setErrors((prev) => ({
+      ...prev,
+      file: message,
+    }));
+  };
+
   const handleSubmit = async () => {
     const result = laporanSchema.safeParse(formData);
-
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.issues.forEach((issue) => {
@@ -123,22 +203,34 @@ const LaporanFormDialog: React.FC = () => {
       setErrors(fieldErrors);
       return;
     }
+    if (isAdmin) {
+      return;
+    }
 
-    setIsSubmitting(true);
     setErrors({});
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await createDraftMutation.mutateAsync({
+        subject: formData.judul,
+        urgent: formData.prioritas,
+        description: formData.deskripsi,
+        attachment: formData.file, 
+      });
+
+      // Reset form
       setFormData({
         judul: '',
         deskripsi: '',
         file: undefined,
         prioritas: undefined as any,
       });
+
       setIsOpen(false);
     } catch (error) {
       console.error('Error submitting form:', error);
-    } finally {
-      setIsSubmitting(false);
+      setErrors({
+        general: 'Gagal membuat draf laporan, coba lagi nanti.',
+      });
     }
   };
 
@@ -152,6 +244,19 @@ const LaporanFormDialog: React.FC = () => {
     setErrors({});
     setIsOpen(false);
     setIsMaximized(false);
+  };
+
+  const getFileNameFromUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    try {
+      const urlObject = new URL(url);
+      const pathname = urlObject.pathname;
+      const parts = pathname.split('/');
+      const fileName = parts[parts.length - 1];
+      return fileName;
+    } catch (e) {
+      return url;
+    }
   };
 
   return (
@@ -179,127 +284,116 @@ const LaporanFormDialog: React.FC = () => {
           aria-describedby={undefined}
         >
           <div
-            className={`flex flex-col pt-8 pr-6 pb-4 pl-6 gap-[${isMaximized ? '400px' : '120px'}]`}
+            className={`flex flex-col pt-8 pr-6 pb-4 pl-6 gap-[${
+              isMaximized ? '400px' : '120px'
+            }]`}
           >
             {/* Header */}
-            <div
-              className={`flex flex-col gap-${isMaximized ? '4' : '3'} w-full`}
-            >
+            <div className={`flex flex-col gap-${isMaximized ? '4' : '3'} w-full`}>
               <div className="flex items-center justify-between w-full h-[36px]">
                 <div className="flex items-center gap-3">
                   <ChevronRight className="w-5 h-5 text-[#000000]" />
                   <span className="text-[#636A6D] font-bold text-[16px] leading-[24px]">
-                    Laporan baru
+                    Laporan draft baru
                   </span>
                 </div>
 
-                {/* Upload File */}
+                {/* Header Right Controls */}
                 <div className="flex items-center gap-4">
-                  <input
-                    type="file"
-                    id="file-upload"
-                    className="hidden"
-                    onChange={(e) =>
-                      handleInputChange('file', e.target.files?.[0])
-                    }
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 h-auto"
-                    onClick={() =>
-                      document.getElementById('file-upload')?.click()
-                    }
-                  >
-                    <Paperclip className="!w-6 !h-6 text-gray-600 rotate-45" />
-                  </Button>
+                  
+                  {getFieldError('file') && (
+                    <p className="text-sm text-red-600 max-w-[250px] leading-4">
+                        {getFieldError('file')}
+                    </p>
+                  )}
 
-                  {formData.file && (
-                    <div className="flex flex-col text-sm text-gray-600 max-w-[200px]">
-                      <span className="truncate">{formData.file.name}</span>
-                      {getFieldError('file') && (
-                        <p className="text-sm text-red-600">
-                          {getFieldError('file')}
-                        </p>
-                      )}
+                  {!formData.file ? (
+                    <CustomUploadButton
+                      onUploadSuccess={handleFileUploadSuccess}
+                      onError={handleFileUploadError}
+                      isAdmin={!!isAdmin}
+                      isFormSubmitting={isSubmitting}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 max-w-[200px]">
+                      <Paperclip className="!w-4 !h-4 text-gray-600 rotate-45" />
+                      <span className="truncate">
+                        {getFileNameFromUrl(formData.file) || 'File Terunggah'}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-auto"
+                        onClick={() => handleInputChange('file', undefined)}
+                        disabled={isAdmin}
+                      >
+                        <X className="w-4 h-4 text-red-500" />
+                      </Button>
                     </div>
                   )}
 
-                  {/* Prioritas Urgensi */}
-                  <div className="relative inline-block">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowPrioritas(!showPrioritas)}
-                      className="items-center box-border px-3 py-2 w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
-                    >
-                      {formData.prioritas
-                        ? `Prioritas: ${formData.prioritas.charAt(0).toUpperCase() + formData.prioritas.slice(1)}`
-                        : 'Prioritas Urgensi'}
-                      <ChevronDown className="!w-5 !h-6" />
-                    </Button>
+                  {/* Prioritas */}
+                  <CustomFormField error={getFieldError('prioritas')} isPriority={true}>
+                    <div className="relative inline-block">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowPrioritas(!showPrioritas)}
+                        className="items-center box-border px-3 py-2 w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
+                        disabled={isAdmin}
+                      >
+                        {formData.prioritas
+                          ? `Prioritas: ${
+                              formData.prioritas.charAt(0).toUpperCase() +
+                              formData.prioritas.slice(1)
+                            }`
+                          : 'Prioritas Urgensi'}
+                        <ChevronDown className="!w-5 !h-6" />
+                      </Button>
 
-                    {getFieldError('prioritas') && (
-                      <p className="absolute left-0 top-full mt-1 text-[13px] text-red-600">
-                        {getFieldError('prioritas')}
-                      </p>
-                    )}
-
-                    {showPrioritas && (
-                      <div className="absolute left-0 top-full mt-1 w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
-                        {[
-                          {
-                            label: 'Rendah',
-                            value: 'rendah',
-                            color: 'bg-green-500',
-                          },
-                          {
-                            label: 'Sedang',
-                            value: 'sedang',
-                            color: 'bg-yellow-400',
-                          },
-                          {
-                            label: 'Tinggi',
-                            value: 'tinggi',
-                            color: 'bg-red-500',
-                          },
-                        ].map((option) => (
-                          <div
-                            key={option.value}
-                            onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                prioritas:
-                                  option.value as LaporanSchema['prioritas'],
-                              }));
-                              setShowPrioritas(false);
-                              setErrors((prev) => {
-                                const newErrors = { ...prev };
-                                delete newErrors.prioritas;
-                                return newErrors;
-                              });
-                            }}
-                            className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 hover:rounded-[12px]"
-                          >
-                            <span
-                              className={`w-3 h-3 rounded-full ${option.color}`}
-                            />
-                            <span>{option.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
+                      {showPrioritas && !isAdmin && (
+                        <div className="absolute left-0 top-full mt-1 w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
+                          {[
+                            { label: 'Low', value: 'Low', color: 'bg-green-500' },
+                            { label: 'Medium', value: 'Medium', color: 'bg-yellow-400' },
+                            { label: 'High', value: 'High', color: 'bg-red-500' },
+                          ].map((option) => (
+                            <div
+                              key={option.value}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  prioritas: option.value as LaporanSchema['prioritas'],
+                                }));
+                                setShowPrioritas(false);
+                                setErrors((prev) => {
+                                  const newErrors = { ...prev };
+                                  delete newErrors.prioritas;
+                                  return newErrors;
+                                });
+                              }}
+                              className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 hover:rounded-[12px]"
+                            >
+                              <span
+                                className={`w-3 h-3 rounded-full ${option.color}`}
+                              />
+                              <span>{option.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CustomFormField>
+                  
                   {/* Simpan Draf */}
                   <Button
                     variant="outline"
                     className="flex items-center justify-center box-border px-3 py-2 h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[10px]"
-                    disabled={!formData.judul && !formData.deskripsi}
+                    disabled={true}
                   >
-                    Simpan draf
+                    Draf
                   </Button>
 
-                  {/* Maximize / Minimize */}
+                  {/* Maximize & Close */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -313,7 +407,6 @@ const LaporanFormDialog: React.FC = () => {
                     )}
                   </Button>
 
-                  {/* Close */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -325,7 +418,7 @@ const LaporanFormDialog: React.FC = () => {
                 </div>
               </div>
 
-              {/* Content Form Fields */}
+              {/* Form Content */}
               <div className="w-full h-full flex flex-col justify-between">
                 <CustomFormField error={getFieldError('judul')}>
                   <Input
@@ -334,8 +427,9 @@ const LaporanFormDialog: React.FC = () => {
                     onChange={(e) => handleInputChange('judul', e.target.value)}
                     placeholder="Judul Laporan"
                     maxLength={50}
-                    className="w-full h-[60px] text-[32px] leading-[40px] text-[#9DA4A8] font-bold border-none shadow-none focus-visible:ring-0 p-[10px] gap-[10px]"
-                  />
+                    disabled={isAdmin}
+                    className="w-full h-[60px] text-[32px] leading-[40px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
+                  /> {/*text-[#9DA4A8] awalnya*/}
                 </CustomFormField>
 
                 <CustomFormField error={getFieldError('deskripsi')}>
@@ -347,23 +441,22 @@ const LaporanFormDialog: React.FC = () => {
                     placeholder="Deskripsi"
                     maxLength={400}
                     rows={isMaximized ? 15 : 8}
-                    className={`
-                      w-full !font-[400] !text-[24px] !leading-[32px] text-[#9DA4A8] 
-                      border-none shadow-none focus-visible:ring-0 p-[10px] gap-[10px] resize-none
-                      ${isMaximized ? 'h-[180px]' : 'h-[120px]'}
-                    `}
+                    disabled={isAdmin}
+                    className={`w-full !font-[400] !text-[24px] !leading-[32px] text-gray-600
+                      border-none shadow-none focus-visible:ring-0 p-[10px] resize-none
+                      ${isMaximized ? 'h-[180px]' : 'h-[120px]'}`}
                   />
                 </CustomFormField>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-4 right-5 flex justify-end items-center w-full h-[56px] gap-[464px]">
+            <div className="absolute bottom-4 right-5 flex justify-end items-center w-full">
               <Button
                 onClick={handleSubmit}
                 variant="dark_blue"
-                disabled={isSubmitting}
-                className="px-6 py-3 rounded-[12px] font-bold w-[150px] h-[45px] text-[17px] leading-[32px]"
+                disabled={isAdmin || isSubmitting}
+                className="px-6 py-3 rounded-[12px] font-bold w-[200px] h-[45px] text-[17px]"
               >
                 {isSubmitting ? (
                   <>
@@ -371,7 +464,7 @@ const LaporanFormDialog: React.FC = () => {
                     Membuat...
                   </>
                 ) : (
-                  'Buat laporan'
+                  'Buat draft laporan'
                 )}
               </Button>
             </div>
