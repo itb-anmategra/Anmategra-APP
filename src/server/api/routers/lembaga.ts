@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ilike, lte, or, inArray } from 'drizzle-orm';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -47,6 +47,7 @@ import {
   GetAllKegiatanDivisionInputSchema,
   GetAllLembagaDivisionInputSchema,
   GetAllRequestAssociationInputSchema,
+  GetAllRequestAssociationKegiatanInputSchema,
   GetAllRequestAssociationLembagaOutputSchema,
   GetAllRequestAssociationOutputSchema,
   GetAllRequestAssociationSummaryInputSchema,
@@ -222,11 +223,11 @@ export const lembagaRouter = createTRPCRouter({
               eq(associationRequests.status, 'Pending'),
               // Only for events in our list
               eventIds.length === 1
-                ? eq(associationRequests.event_id, eventIds[0])
-                : associationRequests.event_id.in(eventIds)
+                ? eq(associationRequests.event_id, eventIds[0]!)
+                : inArray(associationRequests.event_id, eventIds)
             )
           )
-          .groupBy(associationRequests.event_id);
+          .groupBy(associationRequests.event_id) as { event_id: string, count: number }[];
       }
       // Map event_id to count
       const eventCountMap = new Map<string, number>();
@@ -248,17 +249,29 @@ export const lembagaRouter = createTRPCRouter({
 
   // Fetch all associated events with lembaga
   getAllRequestAssociation: lembagaProcedure
-    .input(GetAllRequestAssociationInputSchema)
+    .input(GetAllRequestAssociationKegiatanInputSchema)
     .output(GetAllRequestAssociationOutputSchema)
     .query(async ({ ctx, input }) => {
-      const conditions = [eq(events.org_id, ctx.session?.user?.lembagaId ?? '')];
+      const eventOrg = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
 
-      conditions.push(eq(associationRequests.status, 'Pending'));
+      if (!eventOrg) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (eventOrg.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      const conditions = [
+        eq(associationRequests.event_id, input.event_id),
+        eq(associationRequests.status, 'Pending'),
+      ];
 
       if (input.division) {
-        conditions.push(
-          eq(associationRequests.division, input.division),
-        );
+        conditions.push(eq(associationRequests.division, input.division));
       }
 
       const requests = await ctx.db

@@ -19,9 +19,9 @@ export default async function InboxPage() {
   const session = await getServerAuthSession();
 
   const lembagaAssociationRequestEntries =
-    await api.lembaga.getAllRequestAssociationLembaga();
+    await api.lembaga.getAllRequestAssociationLembaga({});
   const eventAssociationRequestEntries =
-    await api.lembaga.getAllRequestAssociation();
+    await api.lembaga.getAllRequestAssociation({event_id: "event-44" });
 
   let lembagaInfo = { nama: '', foto: '' };
   let eventInfo = {} as Record<string, string>;
