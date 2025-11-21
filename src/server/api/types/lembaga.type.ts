@@ -170,6 +170,7 @@ export const GetAllRequestedAssociationSummaryOutputSchema = z.array(
     name: z.string(),
     total_requests: z.number().min(0),
     type: z.string(), // "Lembaga" or "Kegiatan"
+    image: z.string().url().nullable(),
   }),
 );
 

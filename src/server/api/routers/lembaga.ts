@@ -170,14 +170,16 @@ export const lembagaRouter = createTRPCRouter({
 
       const res = [] as z.infer<typeof GetAllRequestedAssociationSummaryOutputSchema>;
 
-      const namalembaga = await ctx.db
+      const lembaga1 = await ctx.db
         .select({
           name: lembaga.name,
+          image: users.image,
         })
         .from(lembaga)
+        .innerJoin(users, eq(lembaga.userId, users.id))
         .where(and(...conditions1));
       
-      if (namalembaga) {
+      if (lembaga1) {
         const countLembagaRequests = await ctx.db
           .select({
             count: count(),
@@ -193,9 +195,10 @@ export const lembagaRouter = createTRPCRouter({
         if(Number(countLembagaRequests[0]?.count ?? 0) > 0) {
           res.push({
             id: ctx.session?.user?.lembagaId ?? '',
-            name: namalembaga[0]?.name ?? '',
+            name: lembaga1[0]?.name ?? '',
             total_requests: Number(countLembagaRequests[0]?.count ?? 0),
             type: 'Lembaga',
+            image: lembaga1[0]?.image ?? null,
           })
         }
       }
@@ -204,6 +207,7 @@ export const lembagaRouter = createTRPCRouter({
         .select({
           id: events.id,
           name: events.name,
+          image: events.image,
         })
         .from(events)
         .where(and(...conditions2));
@@ -242,6 +246,7 @@ export const lembagaRouter = createTRPCRouter({
           name: event.name ?? '',
           total_requests: count,
           type: 'Kegiatan',
+          image: event.image ?? null,
         });
       }
       return res;
