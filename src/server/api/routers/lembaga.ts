@@ -207,24 +207,39 @@ export const lembagaRouter = createTRPCRouter({
         .from(events)
         .where(and(...conditions2));
       
-      for (const event of eventslist) {
-        const countEventRequests = await ctx.db
+      // Get all pending requests for these events in a single grouped query
+      const eventIds = eventslist.map(e => e.id);
+      let eventRequestCounts: { event_id: string, count: number }[] = [];
+      if (eventIds.length > 0) {
+        eventRequestCounts = await ctx.db
           .select({
+            event_id: associationRequests.event_id,
             count: count(),
           })
           .from(associationRequests)
           .where(
             and(
-              eq(associationRequests.event_id, event.id),
-              eq(associationRequests.status, 'Pending')
+              eq(associationRequests.status, 'Pending'),
+              // Only for events in our list
+              eventIds.length === 1
+                ? eq(associationRequests.event_id, eventIds[0])
+                : associationRequests.event_id.in(eventIds)
             )
-          );
-
-        if (Number(countEventRequests[0]?.count ?? 0) === 0) continue;
+          )
+          .groupBy(associationRequests.event_id);
+      }
+      // Map event_id to count
+      const eventCountMap = new Map<string, number>();
+      for (const row of eventRequestCounts) {
+        eventCountMap.set(row.event_id, Number(row.count));
+      }
+      for (const event of eventslist) {
+        const count = eventCountMap.get(event.id) ?? 0;
+        if (count === 0) continue;
         res.push({
           id: event.id,
           name: event.name ?? '',
-          total_requests: Number(countEventRequests[0]?.count ?? 0),
+          total_requests: count,
           type: 'Kegiatan',
         });
       }
