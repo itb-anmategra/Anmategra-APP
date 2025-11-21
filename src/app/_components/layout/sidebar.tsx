@@ -104,20 +104,20 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
 
   return (
     <>
-      <div className={cn(role === 'lembaga' ? 'hidden lg:block lg:w-64' : 'w-64')} />
+      <div className={cn(role === 'lembaga' ? 'hidden sm:block sm:w-20 lg:w-64' : 'w-64')} />
 
-      {/* Desktop Sidebar */}
+      {/* Desktop and Tablet Sidebar */}
       <div
         className={cn(
           'border-r bg-neutral-50 fixed left-0 h-screen transition-all duration-300',
-          role === 'lembaga' ? 'hidden lg:block lg:w-64 lg:p-6' : 'w-64 p-6',
+          role === 'lembaga' ? 'hidden sm:block sm:w-20 lg:w-64 sm:p-3 lg:p-6' : 'w-64 p-6',
         )}
       >
         <nav className="w-full h-full flex flex-col justify-between">
           <div
             className={cn(
               role === 'lembaga'
-                ? 'space-y-[32px]'
+                ? 'space-y-6 lg:space-y-[32px]'
                 : 'space-y-[32px]',
             )}
           >
@@ -126,7 +126,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
               className={cn(
                 'flex items-center',
                 role === 'lembaga'
-                  ? 'justify-start'
+                  ? 'justify-center lg:justify-start'
                   : 'justify-start',
               )}
             >
@@ -135,11 +135,21 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
                 alt="Logo Anmategra"
                 width={150}
                 height={50}
-                className={cn(role === 'lembaga' ? 'block' : 'block')}
+                className={cn(role === 'lembaga' ? 'hidden lg:block' : 'block')}
                 style={{ width: 'auto', height: 'auto' }}
                 priority
               />
-              {/* Remove the mobile logo since sidebar is hidden on mobile for lembaga */}
+              {role === 'lembaga' && (
+                <Image
+                  src="/images/logo/anmategra-logo.png"
+                  alt="Logo Anmategra"
+                  width={40}
+                  height={40}
+                  className="lg:hidden"
+                  style={{ width: 'auto', height: 'auto' }}
+                  priority
+                />
+              )}
             </Link>
             <SidebarItems items={sidebarItems} role={role} />
           </div>
@@ -147,12 +157,12 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
         </nav>
       </div>
 
-      {/* Floating Action Button for Lembaga Mobile */}
+      {/* Floating Action Button for Lembaga Mobile Only */}
       {role === 'lembaga' && (
         <>
           <Button
             onClick={() => setIsMobileSidebarOpen(true)}
-            className="fixed bottom-6 right-6 lg:hidden z-40 w-14 h-14 rounded-full bg-[#00B7B7] hover:bg-[#00A5A5] shadow-lg"
+            className="fixed bottom-6 right-6 sm:hidden z-40 w-14 h-14 rounded-full bg-[#00B7B7] hover:bg-[#00A5A5] shadow-lg"
             size="icon"
           >
             <Menu className="w-6 h-6 text-white" />
@@ -163,12 +173,12 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
             <>
               {/* Background overlay */}
               <div
-                className="fixed inset-0 z-50 bg-black/40 lg:hidden"
+                className="fixed inset-0 z-50 bg-black/40 sm:hidden"
                 onClick={() => setIsMobileSidebarOpen(false)}
               />
 
               {/* Mobile Sidebar */}
-              <div className="fixed top-0 left-0 h-full w-64 bg-neutral-50 shadow-lg z-[60] border-r lg:hidden">
+              <div className="fixed top-0 left-0 h-full w-64 bg-neutral-50 shadow-lg z-[60] border-r sm:hidden">
                 <nav className="w-full h-full flex flex-col justify-between p-6">
                   <div className="space-y-[32px]">
                     {/* Header with close button */}
@@ -228,7 +238,7 @@ const SidebarItems = ({
     <div
       className={cn(
         'flex flex-col',
-        role === 'lembaga' ? 'gap-[16px]' : 'gap-[16px]',
+        role === 'lembaga' ? 'gap-3 lg:gap-[16px]' : 'gap-[16px]',
       )}
     >
       {items.map((item) => (
@@ -239,7 +249,7 @@ const SidebarItems = ({
                 className={cn(
                   'flex items-center h-12 hover:bg-[#DFE7EC] hover:text-[#2B6282] rounded-[8px] text-[#636A6D] text-[18px]',
                   role === 'lembaga'
-                    ? 'justify-start px-4'
+                    ? 'justify-center lg:justify-start px-3 lg:px-4'
                     : 'justify-start px-4',
                 )}
                 variant="ghost"
@@ -256,7 +266,7 @@ const SidebarItems = ({
                     <span className="w-5 h-5">{item.icon}</span>
                     <span
                       className={cn(
-                        role === 'lembaga' ? 'inline' : 'inline',
+                        role === 'lembaga' ? 'hidden lg:inline' : 'inline',
                       )}
                     >
                       {item.label}
@@ -265,7 +275,11 @@ const SidebarItems = ({
                 </Link>
               </Button>
             </TooltipTrigger>
-            {/* Remove tooltip since lembaga sidebar is hidden on mobile */}
+            {role === 'lembaga' && (
+              <TooltipContent side="right" className="lg:hidden">
+                <p>{item.label}</p>
+              </TooltipContent>
+            )}
           </Tooltip>
         </TooltipProvider>
       ))}
@@ -292,7 +306,7 @@ const SidebarProfile = ({
                 className={cn(
                   'flex items-center gap-3 lg:gap-4 px-1 py-2',
                   role === 'lembaga'
-                    ? 'justify-start'
+                    ? 'justify-center lg:justify-start'
                     : 'justify-start',
                 )}
               >
@@ -306,7 +320,7 @@ const SidebarProfile = ({
                 <div
                   className={cn(
                     'flex flex-col gap-0 min-w-0',
-                    role === 'lembaga' ? 'flex' : 'flex',
+                    role === 'lembaga' ? 'hidden lg:flex' : 'flex',
                   )}
                 >
                   <TooltipProvider>
@@ -326,7 +340,14 @@ const SidebarProfile = ({
               </div>
             </Link>
           </TooltipTrigger>
-          {/* Remove tooltip since lembaga sidebar is hidden on mobile */}
+          {role === 'lembaga' && (
+            <TooltipContent side="right" className="lg:hidden">
+              <div>
+                <p className="font-semibold">{profile.name}</p>
+                <p className="text-xs">{profile.label}</p>
+              </div>
+            </TooltipContent>
+          )}
         </Tooltip>
       </TooltipProvider>
 
@@ -338,7 +359,7 @@ const SidebarProfile = ({
               className={cn(
                 'flex items-center gap-3 bg-transparent py-2 text-base text-destructive shadow-none hover:text-destructive-foreground',
                 role === 'lembaga'
-                  ? 'justify-start px-3'
+                  ? 'justify-center lg:justify-start px-2 lg:px-3'
                   : 'justify-start px-3',
               )}
               onClick={async () => {
@@ -348,14 +369,18 @@ const SidebarProfile = ({
               <LogOut className="w-5 h-5 flex-shrink-0" />
               <span
                 className={cn(
-                  role === 'lembaga' ? 'inline' : 'inline',
+                  role === 'lembaga' ? 'hidden lg:inline' : 'inline',
                 )}
               >
                 Keluar
               </span>
             </Button>
           </TooltipTrigger>
-          {/* Remove tooltip since lembaga sidebar is hidden on mobile */}
+          {role === 'lembaga' && (
+            <TooltipContent side="right" className="lg:hidden">
+              <p>Keluar</p>
+            </TooltipContent>
+          )}
         </Tooltip>
       </TooltipProvider>
     </div>
