@@ -20,7 +20,7 @@ export const deleteEvent = lembagaProcedure
     if (!existingEvent) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: "Event not found or you don't have permission to delete it"
+        message: "Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya"
       });
     }
 
@@ -31,7 +31,7 @@ export const deleteEvent = lembagaProcedure
     if (existingKeanggotaan) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: "Cannot delete event with existing keanggotaan"
+        message: "Tidak dapat menghapus kegiatan yang memiliki panitia terdaftar."
       });
     }
 
@@ -43,10 +43,12 @@ export const deleteEvent = lembagaProcedure
     };
     
   } catch (error) {
-    console.error("Database Error:", error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: "An unexpected error occurred during event deletion."
+      message: "Terjadi kesalahan tak terduga saat menghapus kegiatan."
     });
   }
 })
