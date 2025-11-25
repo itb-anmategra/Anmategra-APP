@@ -44,6 +44,8 @@ export function getTypeImage(type: ColumnType) {
       return InProgressIcon as StaticImageData;
     case 'Resolved':
       return ResolvedIcon as StaticImageData;
+    case 'Backlog':
+      return DraftIcon as StaticImageData;
   }
 }
 

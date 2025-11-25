@@ -170,7 +170,7 @@ export const LaporanHeader = ({
 
         {/* Tambah Laporan */}
         {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
-          <LaporanFormDialog />
+          <LaporanFormDialog isAdmin={isAdminView ?? false} />
         )}
       </div>
     </header>

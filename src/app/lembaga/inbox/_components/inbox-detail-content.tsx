@@ -10,33 +10,35 @@ import { Input } from '~/components/ui/input';
 import RequestTableAssociationsEntries from './request-table-associations-entries';
 
 type PermintaanAsosiasiUser = {
-  id: string;
-  image: string;
-  nama: string;
+  // id: string;
+  image: string | null;
   user_id: string;
-  posisi: string;
-  divisi: string;
+  mahasiswa_name: string;
+  division: string;
+  position: string;
 };
 
 type InboxDetailContentProps = {
   id: string;
   data: PermintaanAsosiasiUser[];
+  lembagaId: string | undefined;
 };
 
 export default function InboxDetailContent({
   id,
   data,
+  lembagaId,
 }: InboxDetailContentProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const filterOptions: FilterOption[] = useMemo(() => {
     const uniqueDivisions = Array.from(
-      new Set(data.map((item) => item.divisi)),
+      new Set(data.map((item) => item.division)),
     ).filter(Boolean);
-    return uniqueDivisions.map((divisi) => ({
-      id: divisi,
-      label: divisi,
-      value: divisi,
+    return uniqueDivisions.map((division) => ({
+      id: division,
+      label: division,
+      value: division,
     }));
   }, [data]);
 
@@ -80,7 +82,7 @@ export default function InboxDetailContent({
         </div>
 
         <div>
-          <RequestTableAssociationsEntries id={id} data={data} />
+          <RequestTableAssociationsEntries id={id} data={data} lembagaId={lembagaId} />
         </div>
       </div>
     </div>

@@ -7,18 +7,19 @@ import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/react';
 
 type PermintaanAsosiasiUser = {
-  id: string;
-  image: string;
-  nama: string;
+  // id: string;
+  image: string | null;
   user_id: string;
-  posisi: string;
-  divisi: string;
+  mahasiswa_name: string;
+  division: string;
+  position: string;
 };
 
 const RequestTableAssociationsEntries: React.FC<{
   id: string;
   data: PermintaanAsosiasiUser[];
-}> = ({ id, data }) => {
+  lembagaId: string | undefined;
+}> = ({ id, data, lembagaId }) => {
   const router = useRouter();
 
   // penggunaan mutation baru untuk acc / decline lembaga
@@ -146,38 +147,38 @@ const RequestTableAssociationsEntries: React.FC<{
                     />
                   </div>
                   <span className="text-sm md:text-[18px] font-regular text-[#636A6D] line-clamp-2 flex-grow">
-                    {item?.nama ?? '-'}
+                    {item?.mahasiswa_name ?? '-'}
                   </span>
                 </div>
 
                 {/* Posisi */}
                 <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
                   <span className="md:hidden font-semibold">Posisi: </span>
-                  {item?.posisi ?? '-'}
+                  {item?.position ?? '-'}
                 </div>
 
                 {/* Divisi */}
                 <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
                   <span className="md:hidden font-semibold">Divisi: </span>
-                  {item?.divisi ?? '-'}
+                  {item?.division ?? '-'}
                 </div>
 
                 {/* Buttons */}
                 <div className="flex items-center justify-between md:justify-end gap-2 px-3 md:px-0 mt-2 md:mt-0">
                   <Button
                     onClick={() => {
-                      if (id === 'lembaga') {
+                      if (id === lembagaId) {
                         handleDeclineLembaga(
                           item.user_id,
-                          item.divisi,
-                          item.posisi,
+                          item.division,
+                          item.position,
                         );
                       } else {
                         handleDeclineEvent(
-                          id,
                           item.user_id,
-                          item.divisi,
-                          item.posisi,
+                          id,
+                          item.division,
+                          item.position,
                         );
                       }
                     }}
@@ -188,18 +189,18 @@ const RequestTableAssociationsEntries: React.FC<{
 
                   <Button
                     onClick={() => {
-                      if (id === 'lembaga') {
+                      if (id === lembagaId) {
                         handleAcceptLembaga(
                           item.user_id,
-                          item.divisi,
-                          item.posisi,
+                          item.division,
+                          item.position,
                         );
                       } else {
                         handleAcceptEvent(
-                          id,
                           item.user_id,
-                          item.divisi,
-                          item.posisi,
+                          id,
+                          item.division,
+                          item.position,
                         );
                       }
                     }}

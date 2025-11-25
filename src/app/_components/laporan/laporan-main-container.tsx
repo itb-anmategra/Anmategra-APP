@@ -93,7 +93,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           <h1 className="text-2xl font-semibold text-neutral-300">
             Buat laporan baru!
           </h1>
-          <LaporanFormDialog />
+          <LaporanFormDialog isAdmin={Laporan.isAdminView ?? false}/>
         </div>
       )}
     </div>
