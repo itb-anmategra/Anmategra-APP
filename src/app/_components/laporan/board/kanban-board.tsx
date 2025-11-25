@@ -11,7 +11,8 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { useState } from 'react';
-
+import { api } from '~/trpc/react';
+import { useToast } from '~/hooks/use-toast';
 import { Droppable } from './droppable';
 import { type Report, ReportCard } from './report-card';
 import {
@@ -25,6 +26,7 @@ export interface KanbanBoardProps {
   displayedColumn: ColumnType[];
   hideColumnAction: (type: ColumnType) => void;
   isAdminView?: boolean;
+  onEditReport?: (report: Report) => void;
 }
 
 export const KanbanBoard = ({
@@ -32,7 +34,9 @@ export const KanbanBoard = ({
   hideColumnAction,
   displayedColumn,
   isAdminView = false, // default: bukan admin
+  onEditReport,
 }: KanbanBoardProps) => {
+  const { toast } = useToast();
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, {
@@ -51,6 +55,37 @@ export const KanbanBoard = ({
   );
 
   const [activeReport, setActiveReport] = useState<Report | null>(null);
+
+  const submitReportMutation = api.users.submitReport.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Laporan berhasil diajukan',
+        description: 'Laporan telah berpindah ke status Backlog.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Gagal mengajukan laporan',
+        description: 'Terjadi kesalahan saat mengajukan laporan.',
+      });
+    },
+  })
+
+  const deleteReportMutation = api.users.deleteReport.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Laporan berhasil dihapus',
+        description: 'Laporan draft telah dihapus.',
+      });
+    },
+    onError: () =>{
+      toast({
+        title: 'Gagal menghapus laporan',
+        description: 'Terjadi kesalahan saat menghapus laporan.',
+      });
+    },
+  })
+
   const findColumnByReportId = (id: string): ColumnType | undefined =>
     (Object.keys(reports) as ColumnType[]).find((col) =>
       reports[col].some((r) => r.id === id),
@@ -69,22 +104,6 @@ export const KanbanBoard = ({
     if (source === 'Draft' && dest === 'Backlog') return false;
 
     return true;
-  };
-
-  const submitReportApi = async (id: string) => {
-    return fetch('/api/reports/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    });
-  };
-
-  const deleteDraftApi = async (id: string) => {
-    return fetch('/api/reports/delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    });
   };
 
   const onDragOver = (_event: DragOverEvent) => {
@@ -112,7 +131,7 @@ export const KanbanBoard = ({
 
     if (!isAdminView && sourceColumn === 'Draft' && destinationColumn === 'Backlog') {
       try {
-        await submitReportApi(activeId); // ganti dengan trpc
+        await submitReportMutation.mutateAsync({id:activeId});
         setReports((prev) => {
           const src = prev[sourceColumn].filter((r) => r.id !== activeId);
           const moved = prev[sourceColumn].find((r) => r.id === activeId);
@@ -177,6 +196,30 @@ export const KanbanBoard = ({
     }));
   };
 
+  const handleDelete = async (id:string) => {
+    try {
+      await deleteReportMutation.mutateAsync({id});
+      setReports((prev)=> {
+        const copy = {...prev};
+        (Object.keys(copy) as ColumnType[]).forEach((c) => {
+          copy[c] = copy[c].filter((r) => r.id !== id);
+        });
+        return copy;
+      })
+    } catch (e) {
+      console.error('deleteReport failed', e);
+    }
+  }
+
+  const handleEdit = (id: string) => {
+    const col = findColumnByReportId(id);
+    if (!col) return;
+    const report = reports[col].find((r) => r.id === id);
+    if (report && onEditReport) {
+      onEditReport(report);
+    }
+  }
+
   return (
     <div className="container mx-auto">
       <DndContext
@@ -207,7 +250,7 @@ export const KanbanBoard = ({
                 }}
                 onDeleteReport={async (id) => {
                   try {
-                    await deleteDraftApi(id); 
+                    await deleteReportMutation.mutateAsync({id});
                     setReports((prev) => {
                       const copy = { ...prev };
                       (Object.keys(copy) as ColumnType[]).forEach((c) => {
@@ -228,7 +271,7 @@ export const KanbanBoard = ({
             {activeReport && (
               <ReportCard
                 report={activeReport}
-                column={findColumnByReportId(activeReport.id) || "Draft"}
+                column={findColumnByReportId(activeReport.id) ?? "Draft"}
                 onClick={() => {}}
                 onEdit={() => {}}
                 onDelete={() => {}}

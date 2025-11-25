@@ -325,7 +325,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                     <div className="flex items-center gap-2 text-sm text-gray-600 max-w-[200px]">
                       <Paperclip className="!w-4 !h-4 text-gray-600 rotate-45" />
                       <span className="truncate">
-                        {getFileNameFromUrl(formData.file) || 'File Terunggah'}
+                        {getFileNameFromUrl(formData.file) ?? 'File Terunggah'}
                       </span>
                       <Button
                         variant="ghost"
@@ -462,7 +462,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
               <Button
                 onClick={handleSubmit}
                 variant="dark_blue"
-                disabled={isAdmin || isSubmitting}
+                disabled={isAdmin ?? isSubmitting}
                 className="px-6 py-3 rounded-[12px] font-bold w-[200px] h-[45px] text-[17px]"
               >
                 {isSubmitting ? (
