@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from 'next/image';
 import { Accordion, AccordionItem } from '~/components/ui/accordion';
+import { useRouter } from 'next/navigation';
 
 import { type Report } from '../board/report-card';
 import { type ColumnType } from '../board/report-column';
@@ -15,13 +16,19 @@ interface AccordionProps {
 
 type DataItem = Report;
 
-export const ListDisplayItem = ({ name, date, category }: DataItem) => {
+export const ListDisplayItem = ({ id, name, date, category }: DataItem) => {
+  const router = useRouter();
+
+  const handleClick = (id: string) => {
+    router.push(`/lembaga/laporan/${id}`);
+  }
+
   return (
     <li className="flex flex-row items-center justify-between gap-2 rounded-xl border-b p-4 text-[17px] text-[#636A6D] shadow-sm">
       <h1 className="">{name}</h1>
       <div className="flex flex-row items-center justify-evenly space-x-20">
         <h2>{date}</h2>
-        <span className="border-[#636A6D] rounded-full border px-4 py-2 text-sm">
+        <span onClick={() => handleClick(id)} className="border-[#636A6D] rounded-full border px-4 py-2 text-sm">
           {category}
         </span>
         <span className="h-4 w-4 rounded-full bg-[#F5CB69]"></span>

@@ -12,7 +12,7 @@ import DraftIcon from '/public/images/laporan/draft.svg';
 import InProgressIcon from '/public/images/laporan/in-progress.svg';
 import ResolvedIcon from '/public/images/laporan/resolved.svg';
 
-export type ColumnType = 'Draft' | 'In Progress' | 'Resolved';
+export type ColumnType = 'Draft' | 'In Progress' | 'Resolved' | 'Backlog';
 
 export interface ColumnProps {
   title: ColumnType;
@@ -32,6 +32,8 @@ export function getTypeImage(type: ColumnType) {
       return InProgressIcon as StaticImageData;
     case 'Resolved':
       return ResolvedIcon as StaticImageData;
+    case 'Backlog':
+      return DraftIcon as StaticImageData;
   }
 }
 

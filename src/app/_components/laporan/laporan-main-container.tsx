@@ -24,6 +24,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
     'Draft',
     'In Progress',
     'Resolved',
+    'Backlog',
   ]);
 
   const toggleStatus = (column: ColumnType) => {
