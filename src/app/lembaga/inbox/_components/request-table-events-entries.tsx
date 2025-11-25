@@ -7,7 +7,7 @@ import { Button } from '~/components/ui/button';
 
 type PermintaanAsosiasi = {
   id: string;
-  image: string;
+  image: string | null;
   nama: string;
   jumlah: string;
   tujuan: string;
@@ -42,7 +42,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
                 <div className="flex items-center gap-3">
                   <div className="rounded-full overflow-hidden w-12 h-12 md:w-14 md:h-14 flex-shrink-0">
                     <Image
-                      src={item.image}
+                      src={item.image ?? '/images/placeholder/rick1.jpg'}
                       alt={item.nama}
                       width={56}
                       height={56}

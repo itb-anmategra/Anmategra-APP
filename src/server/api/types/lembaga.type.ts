@@ -160,6 +160,29 @@ export const GetBestStaffOptionsOutputSchema = z.object({
   ),
 });
 
+export const GetAllRequestAssociationSummaryInputSchema = z.object({
+  name: z.string().optional(),
+});
+
+export const GetAllRequestedAssociationSummaryOutputSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    total_requests: z.number().min(0),
+    type: z.string(), // "Lembaga" or "Kegiatan"
+    image: z.string().url().nullable(),
+  }),
+);
+
+export const GetAllRequestAssociationKegiatanInputSchema = z.object({
+  event_id: z.string().nonempty(),
+  division: z.string().optional(),
+});
+
+export const GetAllRequestAssociationInputSchema = z.object({
+  division: z.string().optional(),
+});
+
 export const GetAllRequestAssociationLembagaOutputSchema = z.object({
   requests: z.array(
     z.object({

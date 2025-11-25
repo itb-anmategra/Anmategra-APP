@@ -280,12 +280,26 @@ export const userRouter = createTRPCRouter({
                 eq(associationRequests.user_id, ctx.session.user.id),
               ),
           });
+
         if (existingRequest) {
-          return {
-            success: false,
-            message: 'Anda sudah pernah membuat permintaan untuk event ini',
-          };
+          if(existingRequest.status === 'Pending' || existingRequest.status === 'Accepted'){
+            return {
+              success: false,
+              message: 'Anda sudah pernah membuat permintaan untuk event ini',
+            };
+          } else {
+            await ctx.db
+              .update(associationRequests)
+              .set({
+                status: 'Pending',
+                division: input.division,
+                position: input.position,
+              })
+              .where(eq(associationRequests.id, existingRequest.id));
+            return { success: true };
+          }
         }
+
         await ctx.db.insert(associationRequests).values({
           id: crypto.randomUUID(),
           event_id: input.event_id,

@@ -41,7 +41,7 @@ export const getAllAnggota = protectedProcedure
       }
 
       if (input.divisi) {
-        conditions.push(ilike(keanggotaan.division, `%${input.divisi}%`));
+        conditions.push(eq(keanggotaan.division, input.divisi));
       }
       const anggota = await ctx.db
         .select({
