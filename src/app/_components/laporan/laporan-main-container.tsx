@@ -20,13 +20,16 @@ interface LaporanProps {
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
 
-  const [status, setStatus] = useState<ColumnType[]>([
-    'Draft',
-    'In Progress',
-    'Resolved',
-    'Backlog',
-  ]);
+  const [status, setStatus] = useState<ColumnType[]>(() => {
+    const all: ColumnType[] = ["Draft", "Backlog", "In Progress", "Resolved"];
 
+    if (Laporan.isAdminView) {
+      return all.filter((col) => col !== "Draft");
+    }
+
+    return all;
+  });
+  
   const toggleStatus = (column: ColumnType) => {
     setStatus(
       (prev) =>
@@ -45,7 +48,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const isLaporanEmpty = Laporan.data.length === 0;
 
   return (
-    <div className="min-h-screen space-y-4 p-6">
+    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
@@ -72,6 +75,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           kanbanData={Laporan.data}
           hideColumnAction={hideStatus}
           displayedColumn={status}
+          isAdminView={Laporan.isAdminView ?? false}
         />
       )}
       {/* List Display */}

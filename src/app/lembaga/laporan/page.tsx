@@ -4,10 +4,10 @@ import { type Report } from '~/app/_components/laporan/board/report-card';
 import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-container';
 import { api } from '~/trpc/server';
 
-type Status = 'Draft' | 'In Progress' | 'Resolved' | 'Backlog';
+type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
 
 function isValidStatus(status: string): status is Status {
-  return ['Draft', 'In Progress', 'Resolved', 'Backlog'].includes(status);
+  return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
 }
 
 export function formatTanggal(dateInput: Date | string): string {
@@ -29,11 +29,11 @@ export function formatTanggal(dateInput: Date | string): string {
 export default async function LaporanPage() {
   const data = await api.users.getAllReportsUser({});
 
-  const reportsByStatus: { [key in Status]: Report[] } = {
+  const reportsByStatus: Record<Status, Report[]> = {
     'Draft': [],
+    'Backlog': [],
     'In Progress': [],
     'Resolved': [],
-    'Backlog': [],
   };
 
   (data.reports || []).forEach((report) => {
@@ -48,10 +48,10 @@ export default async function LaporanPage() {
   });
 
   const finalData: ColumnProps[] = [
-    { title: 'Draft', reports: reportsByStatus['Draft'] },
+    { title: 'Draft', reports: reportsByStatus.Draft },
     { title: 'In Progress', reports: reportsByStatus['In Progress'] },
-    { title: 'Resolved', reports: reportsByStatus['Resolved'] },
-    { title: 'Backlog', reports: reportsByStatus['Backlog'] },
+    { title: 'Resolved', reports: reportsByStatus.Resolved },
+    { title: 'Backlog', reports: reportsByStatus.Backlog },
   ];
 
   return <LaporanMainContainer data={finalData} isAdminView={false} />;

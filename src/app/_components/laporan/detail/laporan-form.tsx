@@ -260,12 +260,19 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
   };
 
   return (
-    <div className="p-8">
+    <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button
             variant="dark_blue"
-            className="w-[169px] h-[42px] rounded-[12px] px-3 py-2 inline-flex items-center gap-2 font-[600] text-[18px] leading-[26px]"
+            className="
+                flex h-[50px] items-center rounded-xl border 
+                px-3 py-2 font-semibold gap-2
+                gap-2 font-[600] text-[18px]
+                leading-[26px]
+                w-full
+                lg:w-[201px]
+              "
           >
             <Plus className="w-4 h-4" />
             Buat laporan
