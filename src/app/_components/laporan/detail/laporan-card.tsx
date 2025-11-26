@@ -13,7 +13,7 @@ export interface LaporanDetailProps extends Report {
   attachment?: Attachment[];
 }
 
-interface Attachment {
+export interface Attachment {
   name: string;
   //TODO: Add name in here maybe
 }
@@ -49,21 +49,26 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
           {Laporan.attachment && Laporan?.attachment.length > 0 && (
             <div className="flex flex-col gap-2">
               <span className="text-[20px]">
-                {Laporan.attachment?.length} Attachment:{' '}
+                Attachment:{' '}
               </span>
               <div className="inline">
                 {Laporan.attachment.map((attch, index) => (
-                  <div
+                  <a
                     key={index}
-                    className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white px-[24px] py-2"
+                    href={attch.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-fit flex-row items-center gap-2 rounded-3xl border border-neutral-400 bg-white px-[24px] py-2 transition-colors hover:bg-neutral-100 cursor-pointer"
                   >
                     <Image
                       className="h-5 w-5"
                       src={PDFIcon}
                       alt={'Attachment Icon'}
                     />
-                    <h1 className="text-[18px]">{attch.name}</h1>
-                  </div>
+                    <h1 className="text-[18px] max-w-[400px] truncate">
+                        {attch.name}
+                    </h1>
+                  </a>
                 ))}
               </div>
             </div>

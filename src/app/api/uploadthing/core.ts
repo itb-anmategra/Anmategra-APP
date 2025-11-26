@@ -33,6 +33,35 @@ export const ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
     }),
+
+    reportAttachment: f({
+      pdf: {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
+      "application/zip": {
+        maxFileSize: "32MB",
+        maxFileCount: 1,
+      },
+      "application/x-7z-compressed" : {
+        maxFileSize: "32MB",
+        maxFileCount: 1,
+      },
+      "application/x-zip-compressed" : {
+        maxFileSize: "32MB",
+        maxFileCount: 1,
+      },
+    })
+    .middleware(async() => {
+      const user = await getServerAuthSession();
+      if (!user) {
+        throw new UploadThingError("You must be logged in to upload report attachments") as Error;
+      }
+      return { userId: user.user.id };
+    })
+    .onUploadComplete(async({metadata, file})=> {
+      return { uploadedBy: metadata.userId, fileUrl: file.url, fileName: file.name };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
