@@ -16,7 +16,7 @@ const LembagaLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex">
       <Sidebar session={session} />
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 min-w-0 ">{children}</div>
     </div>
   );
 };

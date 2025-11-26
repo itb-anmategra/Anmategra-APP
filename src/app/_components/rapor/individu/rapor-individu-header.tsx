@@ -32,7 +32,9 @@ export default function RaporIndividuHeader({
   isLembaga,
 }: HeaderDataProps) {
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
-    dataNilaiProfil?.nilai ?? [],
+    dataNilaiProfil?.nilai
+      ? dataNilaiProfil.nilai
+      : [],
   );
 
   const upsertMutationLembaga =
@@ -98,8 +100,8 @@ export default function RaporIndividuHeader({
   }
 
   return (
-    <div className="flex flex-col items-start justify-center">
-      <div className="flex flex-row items-center justify-start w-full mt-1 gap-4 mb-8">
+    <div className="flex flex-col items-start justify-center w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start w-full mt-1 gap-2 sm:gap-4 mb-4 sm:mb-6 md:mb-8">
         <div className="flex w-fit items-center justify-center gap-2 rounded-full bg-primary-400 px-3 py-1 text-[0.7rem] text-white">
           <Avatar className="size-4 bg-white">
             <AvatarImage
@@ -112,15 +114,15 @@ export default function RaporIndividuHeader({
         </div>
 
         {!isLembaga && (
-          <div className="font-bold text-2xl text-[#2B6282] items-center justify-center">
+          <div className="font-bold text-lg sm:text-xl md:text-2xl text-[#2B6282] items-center justify-center">
             {kegiatanName ?? ''}
           </div>
         )}
       </div>
 
-      <div className="flex flex-row items-start justify-start w-full mb-16">
-        <div className="max-w-[866px] flex flex-row items-center justify-start gap-10 mx-[27px]">
-          <div className="flex flex-col min-w-40 max-w-40 min-h-40 max-h-40 rounded-full overflow-hidden">
+      <div className="flex flex-col lg:flex-row items-start justify-between w-full mb-8 sm:mb-12 md:mb-16 gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 sm:gap-6 md:gap-10 w-full lg:flex-1">
+          <div className="flex flex-col min-w-24 max-w-24 min-h-24 max-h-24 sm:min-w-32 sm:max-w-32 sm:min-h-32 sm:max-h-32 md:min-w-40 md:max-w-40 md:min-h-40 md:max-h-40 rounded-full overflow-hidden flex-shrink-0">
             <Image
               src={
                 mahasiswaOutput.data?.mahasiswaData.user.image ?? dummyProfile
@@ -131,46 +133,46 @@ export default function RaporIndividuHeader({
               className="object-cover w-full h-full"
             />
           </div>
-          <div className="flex flex-col items-start justify-start">
-            <div className="flex my-2 items-center justify-start">
-              <div className="text-2xl font-semibold text-[#181818]">
+          <div className="flex flex-col items-start justify-start w-full min-w-0">
+            <div className="flex my-1 sm:my-2 items-center justify-start">
+              <div className="text-lg sm:text-xl md:text-2xl font-semibold text-[#181818] text-wrap">
                 {dataNilaiProfil?.name}
               </div>
             </div>
 
-            <div className="flex flex-row gap-[50px] items-start justify-start mb-[18px]">
-              <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-neutral-500">NIM</div>
-                <div className="text-[18px] text-neutral-800">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-4 sm:gap-x-8 md:gap-x-[50px] gap-y-3 sm:gap-y-4 items-start justify-start mb-3 sm:mb-[18px] w-full">
+              <div className="flex flex-col items-start justify-start min-w-0">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">NIM</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.nim}
                 </div>
               </div>
 
-              <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-neutral-500">Jurusan</div>
-                <div className="text-[18px] text-neutral-800">
+              <div className="flex flex-col items-start justify-start min-w-0">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">Jurusan</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.jurusan}
                 </div>
               </div>
 
-              <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-neutral-500">Divisi</div>
-                <div className="text-[18px] text-neutral-800">
+              <div className="flex flex-col items-start justify-start min-w-0">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">Divisi</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.division}
                 </div>
               </div>
 
-              <div className="flex flex-col items-start justify-start">
-                <div className="text-[18px] text-neutral-500">Posisi</div>
-                <div className="text-[18px] text-neutral-800">
+              <div className="flex flex-col items-start justify-start min-w-0">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500 ">Posisi</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.position}
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-row items-start justify-start gap-20">
-              <div className="flex flex-row gap-[5px] items-center justify-start">
-                <div className="w-[18px] h-[18px] relative">
+            <div className="flex flex-col sm:flex-row items-start justify-start gap-3 sm:gap-8 md:gap-20 w-full">
+              <div className="flex flex-row gap-[5px] items-center justify-start min-w-0">
+                <div className="w-4 h-4 sm:w-[18px] sm:h-[18px] relative flex-shrink-0">
                   <Image
                     src={LineIcon}
                     alt="Line Icon"
@@ -180,12 +182,12 @@ export default function RaporIndividuHeader({
                     style={{ filter: 'brightness(0.5)' }}
                   />
                 </div>
-                <div className="text-[18px] text-neutral-600">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-600 text-wrap">
                   {dataNilaiProfil?.lineId ?? '-'}
                 </div>
               </div>
-              <div className="flex flex-row gap-[5px] items-center justify-start">
-                <div className="w-[18px] h-[18px] relative">
+              <div className="flex flex-row gap-[5px] items-center justify-start min-w-0">
+                <div className="w-4 h-4 sm:w-[18px] sm:h-[18px] relative flex-shrink-0">
                   <Image
                     src={WAIcon}
                     alt="WA Icon"
@@ -195,7 +197,7 @@ export default function RaporIndividuHeader({
                     style={{ filter: 'brightness(0.5)' }}
                   />
                 </div>
-                <div className="text-[18px] text-neutral-600">
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-600 text-wrap">
                   {dataNilaiProfil?.whatsapp ?? '-'}
                 </div>
               </div>
@@ -203,7 +205,7 @@ export default function RaporIndividuHeader({
           </div>
         </div>
 
-        <div className="ml-5">
+        <div className="w-full lg:w-auto flex-shrink-0">
           <FormNilaiProfil
             initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
               id: profil.profil_id,
@@ -220,7 +222,7 @@ export default function RaporIndividuHeader({
         </div>
       </div>
 
-      <div className="overflow-x-auto w-full">
+      <div className="w-full">
         <NilaiProfilComp nilaiProfils={nilaiProfilData} isLembaga={isLembaga} />
       </div>
     </div>
