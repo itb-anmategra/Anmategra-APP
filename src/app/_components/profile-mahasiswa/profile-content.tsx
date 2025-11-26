@@ -166,10 +166,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                         height={128}
                       />
                       <div className="max-w-[400px] text-left">
-                        <h5 className="text-xl md:text-2xl font-semibold text-slate-600">
+                        <h5 className="text-xl md:text-2xl font-semibold text-slate-600 md:text-left text-center">
                           Tidak Ada Informasi Kepanitiaan
                         </h5>
-                        <p className="text-sm md:text-base text-slate-400 mt-2">
+                        <p className="text-sm md:text-base text-slate-400 mt-2 md:text-left text-center">
                           Kami tidak dapat menemukan informasi kepanitiaan yang
                           diikuti, silahkan menambahkan jika ada
                         </p>
