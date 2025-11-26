@@ -49,9 +49,10 @@ export default async function LaporanPage() {
 
   const finalData: ColumnProps[] = [
     { title: 'Draft', reports: reportsByStatus.Draft },
+    { title: 'Backlog', reports: reportsByStatus.Backlog },
+    
     { title: 'In Progress', reports: reportsByStatus['In Progress'] },
     { title: 'Resolved', reports: reportsByStatus.Resolved },
-    { title: 'Backlog', reports: reportsByStatus.Backlog },
   ];
 
   return <LaporanMainContainer data={finalData} isAdminView={false} />;
