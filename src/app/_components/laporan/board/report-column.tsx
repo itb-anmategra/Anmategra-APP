@@ -44,8 +44,6 @@ export function getTypeImage(type: ColumnType) {
       return InProgressIcon as StaticImageData;
     case 'Resolved':
       return ResolvedIcon as StaticImageData;
-    case 'Backlog':
-      return DraftIcon as StaticImageData;
   }
 }
 
@@ -54,7 +52,7 @@ export function ReportColumn({
   reports,
   displayedStatus,
   hideColumn,
-  activeReportId,
+  // activeReportId,
   isAdminView = false,
   onEditReport,
   onDeleteReport,
@@ -68,7 +66,7 @@ export function ReportColumn({
   return (
     <>
       {displayedStatus.includes(title) && (
-        <div className="flex flex-col bg-gray-100 rounded-xl p-4 shadow-smw-full flex-shrink-0 h-auto md:h-[574px]">
+        <div className="flex flex-col bg-gray-100 rounded-xl p-4 shadow-sm w-full flex-shrink-0 h-auto md:h-[574px]">
           <div className="mb-4 flex flex-row items-center justify-between">
             <div className="flex flex-row items-center gap-3">
               <Image src={getTypeImage(title)} alt="Status" />

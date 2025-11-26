@@ -3,7 +3,7 @@
 import {
   DndContext,
   type DragEndEvent,
-  type DragOverEvent,
+  // type DragOverEvent,
   DragOverlay,
   MouseSensor,
   TouchSensor,
@@ -111,9 +111,9 @@ export const KanbanBoard = ({
     return true;
   };
 
-  const onDragOver = (_event: DragOverEvent) => {
-    //empty
-  };
+  // const onDragOver = (_event: DragOverEvent) => {
+  //   //empty
+  // };
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -129,7 +129,7 @@ export const KanbanBoard = ({
 
     if (isForbiddenMove(sourceColumn, destinationColumn)) {
       // debug
-      console.debug('drag blocked by isForbiddenMove', { activeId, overId, sourceColumn, destinationColumn, isAdminView });
+      // console.debug('drag blocked by isForbiddenMove', { activeId, overId, sourceColumn, destinationColumn, isAdminView });
       return;
     }
     if (!sourceColumn || !destinationColumn) return;
@@ -235,7 +235,7 @@ export const KanbanBoard = ({
           const item = col ? reports[col].find((r) => r.id === active.id.toString()) : null;
           setActiveReport(item ?? null);
         }}
-        onDragOver={onDragOver}
+        // onDragOver={onDragOver}
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveReport(null)}
       >

@@ -130,7 +130,7 @@ const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
     }
   };
 
-  const isDisabled = isAdmin || isUploading || isFormSubmitting || isUploading;
+  const isDisabled = isAdmin || isUploading || isFormSubmitting;
 
   return (
     <>
