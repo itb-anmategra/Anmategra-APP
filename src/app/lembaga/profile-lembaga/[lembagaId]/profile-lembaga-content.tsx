@@ -49,7 +49,9 @@ export default function ProfileLembagaContent({
           </div>
         </div>
       )}
-      
+
+      <div className="flex max-w-7xl w-full flex-col gap-4">
+
       {!isEditMode && (
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
@@ -87,90 +89,92 @@ export default function ProfileLembagaContent({
               )}
             </div>
           </div>
-
-          {/* Highlighted Event */}
-          {highlightedEvent && (
-            <div className="flex flex-col w-full gap-4 mb-8">
-              <h5 className="text-lg sm:text-xl md:text-2xl leading-[32px] font-semibold text-slate-600">
-                Highlighted Event
-              </h5>
-
-              <HighlightedEventCard
-                event={highlightedEvent}
-                lembagaData={lembagaData}
-              />
-            </div>
-          )}
-
-          {/* Best Staff Section */}
-          {latestBestStaff && (
-            <div className="flex flex-col gap-12 w-full mb-8">
-              <div className="flex flex-col gap-3 w-full">
-                <div className="flex flex-row justify-between items-center">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
-                    Best Staff Periode{' '}
-                    {new Date(latestBestStaff.start_date).toLocaleDateString(
-                      'id-ID',
-                      {
-                        month: 'long',
-                        year: 'numeric',
-                      },
-                    )}
-                    –
-                    {new Date(latestBestStaff.end_date).toLocaleDateString(
-                      'id-ID',
-                      {
-                        month: 'long',
-                        year: 'numeric',
-                      },
-                    )}
-                  </h2>
-                  {is_user_owner && (
-                    <Button asChild variant="ghost">
-                      <Link
-                        href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
-                        className="flex items-center gap-2 text-lg"
-                      >
-                        <span>Lihat Histori </span>
-                        <ChevronRight
-                          className="!w-4 !h-4 text-slate-1000"
-                          aria-hidden
-                        />
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-                <CarouselBestStaff
-                  bestStaffList={latestBestStaff.best_staff_list}
-                  isLembaga={isLembaga}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Kepanitiaan Terbaru */}
-          <div className="space-y-4">
-            <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
-              Kepanitiaan Terbaru
-            </h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {newestEvent && newestEvent.length !== 0 ? (
-                newestEvent.map((item) => (
-                  <Link
-                    href={`/lembaga/profile-kegiatan/${item.id}`}
-                    key={item.id}
-                  >
-                    <KepanitiaanCard kepanitiaan={item} />
-                  </Link>
-                ))
-              ) : (
-                <p className="text-slate-600">Belum ada kepanitiaan</p>
-              )}
-            </div>
-          </div>
-          <ProfileKegiatanComp anggota={anggota ?? []} session={session}/>
         </div>
       )}
+
+        {/* Highlighted Event */}
+        {highlightedEvent && (
+          <div className="flex flex-col w-full gap-4 mb-8">
+            <h5 className="text-lg sm:text-xl md:text-2xl leading-[32px] font-semibold text-slate-600">
+              Highlighted Event
+            </h5>
+
+            <HighlightedEventCard
+              event={highlightedEvent}
+              lembagaData={lembagaData}
+            />
+          </div>
+        )}
+
+        {/* Best Staff Section */}
+        {latestBestStaff && (
+          <div className="flex flex-col gap-12 w-full mb-8">
+            <div className="flex flex-col gap-3 w-full">
+              <div className="flex flex-row justify-between items-center">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+                  Best Staff Periode{' '}
+                  {new Date(latestBestStaff.start_date).toLocaleDateString(
+                    'id-ID',
+                    {
+                      month: 'long',
+                      year: 'numeric',
+                    },
+                  )}
+                  –
+                  {new Date(latestBestStaff.end_date).toLocaleDateString(
+                    'id-ID',
+                    {
+                      month: 'long',
+                      year: 'numeric',
+                    },
+                  )}
+                </h2>
+                {is_user_owner && (
+                  <Button asChild variant="ghost">
+                    <Link
+                      href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
+                      className="flex items-center gap-2 text-lg"
+                    >
+                      <span>Lihat Histori </span>
+                      <ChevronRight
+                        className="!w-4 !h-4 text-slate-1000"
+                        aria-hidden
+                      />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+              <CarouselBestStaff
+                bestStaffList={latestBestStaff.best_staff_list}
+                isLembaga={isLembaga}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Kepanitiaan Terbaru */}
+        <div className="space-y-4">
+          <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+            Kepanitiaan Terbaru
+          </h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {newestEvent && newestEvent.length !== 0 ? (
+              newestEvent.map((item) => (
+                <Link
+                  href={`/lembaga/profile-kegiatan/${item.id}`}
+                  key={item.id}
+                >
+                  <KepanitiaanCard kepanitiaan={item} />
+                </Link>
+              ))
+            ) : (
+              <p className="text-slate-600">Belum ada kepanitiaan</p>
+            )}
+          </div>
+        </div>
+        <ProfileKegiatanComp anggota={anggota ?? []} session={session}/>
+      </div>
+      
     </div>
   );
 };
