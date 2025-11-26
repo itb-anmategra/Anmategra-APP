@@ -12,11 +12,14 @@ import {
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
 import { api } from '~/trpc/react';
 import { useUploadThing } from '~/utils/uploadthing';
+import { type Report } from '../board/report-card';
+import { useToast } from '~/hooks/use-toast';
+import { useWindowRect } from '@dnd-kit/core/dist/hooks/utilities';
 
 const fileSchema = z
   .string()
@@ -61,7 +64,7 @@ const CustomFormField: React.FC<CustomFormFieldProps> = ({
             ${isPriority ? 'absolute top-[45px] left-1/2 -translate-x-1/2 text-[13px] whitespace-nowrap' : 'text-[16px] ml-3 '}`}>
           {error}
         </p>
-    )}
+    )}
   </div>
 );
 
@@ -78,7 +81,7 @@ const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
   isAdmin,
   isFormSubmitting,
 }) => {
-  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+  const { startUpload, isUploading } = useUploadThing('reportAttachment', {
     onClientUploadComplete: (res) => {
       const uploadedUrl = res[0]?.url;
       if (uploadedUrl) {
@@ -102,7 +105,26 @@ const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
     const files = e.target.files;
     if (files && files.length > 0) {
       const fileToUpload = files[0];
-      const validationResult = laporanSchema.shape.file.safeParse(fileToUpload);
+      const validTypes = ['application/pdf', 'application/zip', "application/x-7z-compressed", "application/x-zip-compressed"];
+      if (fileToUpload && !validTypes.includes(fileToUpload.type)) {
+        onError('Tipe file tidak didukung. Hanya PDF dan ZIP yang diizinkan.');
+        e.target.value = '';
+        return;
+      }
+      if (!fileToUpload) {
+        onError('File tidak boleh kosong');
+        return;
+      }
+
+      const maxSize = fileToUpload.type === 'application/pdf' ? 16 * 1024 * 1024 : 32 * 1024 * 1024;
+      if (fileToUpload && fileToUpload.size > maxSize) {
+        onError(
+          `Ukuran file terlalu besar. Maksimal ${
+            fileToUpload.type === 'application/pdf' ? '16MB' : '32MB'
+          }.`,
+        );
+        return;
+      }
       void startUpload(Array.from(files));
       e.target.value = '';
     }
@@ -118,7 +140,7 @@ const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileChange}
-        accept=".jpg,.jpeg,.png,.pdf" 
+        accept=".pdf,.zip" 
         disabled={isDisabled}
       />
 
@@ -142,25 +164,74 @@ const CustomUploadButton: React.FC<CustomUploadButtonProps> = ({
 
 interface LaporanFormDialogProps {
   isAdmin?: boolean;
+  editMode?: boolean;
+  reportToEdit?: Report;
+  onEditComplete?: () => void;
 }
 
-const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
+const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ 
+  isAdmin, 
+  editMode = false,
+  reportToEdit,
+  onEditComplete,
+}) => {
+  const toast = useToast();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
   const [formData, setFormData] = useState<LaporanSchema>({
-    judul: '',
-    deskripsi: '',
-    file: undefined, 
-    prioritas: undefined as unknown as LaporanSchema['prioritas'],
+    judul: editMode && reportToEdit ? reportToEdit.name : '',
+    deskripsi: editMode && reportToEdit?.description ? reportToEdit.description : '',
+    file: editMode && reportToEdit ? reportToEdit.attachment : undefined,
+    prioritas: editMode && reportToEdit ? (reportToEdit.urgent as LaporanSchema['prioritas']) : undefined as unknown as LaporanSchema['prioritas'],
   });
+
+  React.useEffect(() => {
+    if (editMode && reportToEdit) {
+      setFormData({
+        judul: reportToEdit.name,
+        deskripsi: reportToEdit.description ?? '',
+        file: reportToEdit.attachment,
+        prioritas: reportToEdit.urgent as LaporanSchema['prioritas'],
+      });
+      setIsOpen(true);
+    }
+  }, [editMode, reportToEdit]);
 
   const [showPrioritas, setShowPrioritas] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // tRPC mutation
-  const createDraftMutation = api.users.createDraft.useMutation();
-  const isSubmitting = createDraftMutation.isPending;
+  // tRPC mutations
+  const createDraftMutation = api.users.createDraft.useMutation({
+    onSuccess: () => {
+      toast.toast({
+        title: 'Draf laporan berhasil dibuat',
+        description: 'Laporan draft telah disimpan.',
+      });
+    },
+    onError: () => {
+      toast.toast({
+        title: 'Gagal membuat draf laporan',
+        description: 'Coba lagi nanti.',
+      });
+    },
+  });
+  const editDraftMutation = api.users.editDraft.useMutation({
+    onSuccess: () => {
+      toast.toast({
+        title: 'Draf laporan berhasil diperbarui',
+        description: 'Laporan draft telah diperbarui.',
+      });
+    },
+    onError: () => {
+      toast.toast({
+        title: 'Gagal memperbarui draf laporan',
+        description: 'Coba lagi nanti.',
+      });
+    },
+  });
+  const isSubmitting = createDraftMutation.isPending || editDraftMutation.isPending;
 
   const getFieldError = (field: string): string | undefined => errors[field];
 
@@ -210,12 +281,24 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
     setErrors({});
 
     try {
-      await createDraftMutation.mutateAsync({
-        subject: formData.judul,
-        urgent: formData.prioritas,
-        description: formData.deskripsi,
-        attachment: formData.file, 
-      });
+      if (editMode && reportToEdit) {
+        // Edit existing draft
+        await editDraftMutation.mutateAsync({
+          id: reportToEdit.id,
+          subject: formData.judul,
+          urgent: formData.prioritas,
+          description: formData.deskripsi,
+          attachment: formData.file,
+        });
+      } else {
+        // Create new draft
+        await createDraftMutation.mutateAsync({
+          subject: formData.judul,
+          urgent: formData.prioritas,
+          description: formData.deskripsi,
+          attachment: formData.file, 
+        });
+      }
 
       // Reset form
       setFormData({
@@ -226,10 +309,15 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
       });
 
       setIsOpen(false);
+      window.location.reload();
+      // Notify parent of edit completion
+      if (editMode && onEditComplete) {
+        onEditComplete();
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
       setErrors({
-        general: 'Gagal membuat draf laporan, coba lagi nanti.',
+        general: editMode ? 'Gagal memperbarui draf laporan, coba lagi nanti.' : 'Gagal membuat draf laporan, coba lagi nanti.',
       });
     }
   };
@@ -244,6 +332,9 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
     setErrors({});
     setIsOpen(false);
     setIsMaximized(false);
+    if (editMode && onEditComplete) {
+      onEditComplete();
+    }
   };
 
   const getFileNameFromUrl = (url: string | undefined): string | undefined => {
@@ -254,7 +345,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
       const parts = pathname.split('/');
       const fileName = parts[parts.length - 1];
       return fileName;
-    } catch (e) {
+    } catch {
       return url;
     }
   };
@@ -262,22 +353,24 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="dark_blue"
-            className="
-                flex h-[50px] items-center rounded-xl border 
-                px-3 py-2 font-semibold gap-2
-                gap-2 font-[600] text-[18px]
-                leading-[26px]
-                w-full
-                lg:w-[201px]
-              "
-          >
-            <Plus className="w-4 h-4" />
-            Buat laporan
-          </Button>
-        </DialogTrigger>
+        {!editMode && (
+          <DialogTrigger asChild>
+            <Button
+              variant="dark_blue"
+              className="
+                  flex h-[50px] items-center rounded-xl border 
+                  px-3 py-2 font-semibold gap-2
+                  gap-2 font-[600] text-[18px]
+                  leading-[26px]
+                  w-full
+                  lg:w-[201px]
+                "
+            >
+              <Plus className="w-4 h-4" />
+              Buat laporan
+            </Button>
+          </DialogTrigger>
+        )}
 
         <DialogContent
           className={`
@@ -290,6 +383,9 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
           `}
           aria-describedby={undefined}
         >
+          <DialogTitle className="sr-only">
+            {editMode ? 'Edit Laporan' : 'Buat Laporan Baru'}
+          </DialogTitle>
           <div
             className={`flex flex-col pt-8 pr-6 pb-4 pl-6 gap-[${
               isMaximized ? '400px' : '120px'
@@ -301,7 +397,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                 <div className="flex items-center gap-3">
                   <ChevronRight className="w-5 h-5 text-[#000000]" />
                   <span className="text-[#636A6D] font-bold text-[16px] leading-[24px]">
-                    Laporan draft baru
+                    {editMode ? 'Edit Laporan' : 'Laporan draft baru'}
                   </span>
                 </div>
 
@@ -468,10 +564,10 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({ isAdmin }) => {
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Membuat...
+                    Menyimpan...
                   </>
                 ) : (
-                  'Buat draft laporan'
+                  editMode ? 'Update Draft' : 'Buat draft laporan'
                 )}
               </Button>
             </div>

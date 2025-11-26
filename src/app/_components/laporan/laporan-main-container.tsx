@@ -3,11 +3,13 @@
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '~/components/ui/input';
 
 // Components Import
 import { KanbanBoard } from './board/kanban-board';
 import { type ColumnProps, type ColumnType } from './board/report-column';
+import { type Report } from './board/report-card';
 import LaporanFormDialog from './detail/laporan-form';
 import { type CurrentDisplay, LaporanHeader } from './laporan-header';
 import { ListDisplay } from './list/list-display';
@@ -17,8 +19,13 @@ interface LaporanProps {
   isAdminView?: boolean;
 }
 
+type ReportData = Report;
+
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
+  const router = useRouter();
+
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
+  const [editingReport, setEditingReport] = useState<ReportData | null>(null);
 
   const [status, setStatus] = useState<ColumnType[]>(() => {
     const all: ColumnType[] = ["Draft", "Backlog", "In Progress", "Resolved"];
@@ -44,6 +51,19 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       prev.includes(column) ? prev.filter((item) => item !== column) : prev,
     );
   };
+
+  const handleEditReport = (report: ReportData) => {
+    setEditingReport(report);
+
+  };
+
+  const handleEditComplete = () => {
+    setEditingReport(null);
+  };
+
+  const handleRefresh = () => {
+    router.refresh();
+  }
 
   const isLaporanEmpty = Laporan.data.length === 0;
 
@@ -76,6 +96,8 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           hideColumnAction={hideStatus}
           displayedColumn={status}
           isAdminView={Laporan.isAdminView ?? false}
+          onEditReport={handleEditReport}
+          onRefresh={handleRefresh}
         />
       )}
       {/* List Display */}
@@ -85,6 +107,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           hideColumnAction={hideStatus}
           displayedColumn={status}
           isAdminView={Laporan.isAdminView}
+          onEditReport={handleEditReport}
         />
       )}
       {/* Show Tambah Laporan Button in the middle of Screen */}
@@ -95,6 +118,15 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           </h1>
           <LaporanFormDialog isAdmin={Laporan.isAdminView ?? false}/>
         </div>
+      )}
+      {/* Edit Mode Dialog */}
+      {editingReport && (
+        <LaporanFormDialog
+          isAdmin={Laporan.isAdminView ?? false}
+          editMode={true}
+          reportToEdit={editingReport}
+          onEditComplete={handleEditComplete}
+        />
       )}
     </div>
   );

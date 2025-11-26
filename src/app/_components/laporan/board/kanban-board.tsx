@@ -27,6 +27,7 @@ export interface KanbanBoardProps {
   hideColumnAction: (type: ColumnType) => void;
   isAdminView?: boolean;
   onEditReport?: (report: Report) => void;
+  onRefresh?: () => void;
 }
 
 export const KanbanBoard = ({
@@ -35,6 +36,7 @@ export const KanbanBoard = ({
   displayedColumn,
   isAdminView = false, // default: bukan admin
   onEditReport,
+  onRefresh,
 }: KanbanBoardProps) => {
   const { toast } = useToast();
   const sensors = useSensors(
@@ -62,12 +64,14 @@ export const KanbanBoard = ({
         title: 'Laporan berhasil diajukan',
         description: 'Laporan telah berpindah ke status Backlog.',
       });
+      onRefresh?.();
     },
     onError: () => {
       toast({
         title: 'Gagal mengajukan laporan',
         description: 'Terjadi kesalahan saat mengajukan laporan.',
       });
+      onRefresh?.();
     },
   })
 
@@ -77,6 +81,7 @@ export const KanbanBoard = ({
         title: 'Laporan berhasil dihapus',
         description: 'Laporan draft telah dihapus.',
       });
+      onRefresh?.();
     },
     onError: () =>{
       toast({
@@ -209,7 +214,7 @@ export const KanbanBoard = ({
     } catch (e) {
       console.error('deleteReport failed', e);
     }
-  }
+  };
 
   const handleEdit = (id: string) => {
     const col = findColumnByReportId(id);
@@ -218,7 +223,7 @@ export const KanbanBoard = ({
     if (report && onEditReport) {
       onEditReport(report);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto">
@@ -245,23 +250,8 @@ export const KanbanBoard = ({
                 displayedStatus={displayedColumn}
                 activeReportId={activeReport?.id}
                 isAdminView={isAdminView}
-                onEditReport={(id) => {
-                  console.log('edit', id);
-                }}
-                onDeleteReport={async (id) => {
-                  try {
-                    await deleteReportMutation.mutateAsync({id});
-                    setReports((prev) => {
-                      const copy = { ...prev };
-                      (Object.keys(copy) as ColumnType[]).forEach((c) => {
-                        copy[c] = copy[c].filter((r) => r.id !== id);
-                      });
-                      return copy;
-                    });
-                  } catch (e) {
-                    console.error('delete failed', e);
-                  }
-                }}
+                onEditReport={handleEdit}
+                onDeleteReport={handleDelete}
               />
             </Droppable>
           ))}
@@ -272,9 +262,9 @@ export const KanbanBoard = ({
               <ReportCard
                 report={activeReport}
                 column={findColumnByReportId(activeReport.id) ?? "Draft"}
-                onClick={() => {}}
-                onEdit={() => {}}
-                onDelete={() => {}}
+                // onClick={() => {}}
+                // onEdit={() => {}}
+                // onDelete={() => {}}
               />
             )}
         </DragOverlay>

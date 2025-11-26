@@ -9,13 +9,16 @@ import {
 } from '~/components/ui/dropdown-menu';
 
 import { type ColumnType } from './report-column';
-import Link from 'next/link';
+// import Link from 'next/link';
 
 export interface Report {
   id: string;
   name: string;
   date: string;
   category: string;
+  description?: string;
+  urgent?: string;
+  attachment?: string;
 }
 
 export interface ReportCardProps {

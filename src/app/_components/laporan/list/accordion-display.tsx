@@ -12,6 +12,7 @@ interface AccordionProps {
   reports: Report[];
   selectedStatus: ColumnType[];
   isAdminView?: boolean;
+  onEditReport?: (report: Report) => void;
 }
 
 type DataItem = Report;
@@ -63,7 +64,7 @@ export const AccordionDisplay = ({
               </div>
 
               {/* Kanan: Tombol Buat Laporan */}
-              {!isAdminView && <LaporanFormDialog isAdmin={isAdminView ?? false} />}
+              {(!isAdminView && title === "Draft") && <LaporanFormDialog isAdmin={isAdminView ?? false} />}
             </div>
           </div>
         </div>
