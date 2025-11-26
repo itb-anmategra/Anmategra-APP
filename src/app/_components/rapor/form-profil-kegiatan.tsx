@@ -1,9 +1,7 @@
 'use client';
 
-import { set } from 'date-fns';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
-import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -20,23 +18,18 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
-import {
-  CreateProfilLembagaInputSchema,
-  EditProfilInputSchema,
-} from '~/server/api/types/profil.type';
-import { api } from '~/trpc/react';
 
-interface FormProfilKegiatanProps {
-  profilId?: string;
-  lembagaId?: string;
-  isTambah?: boolean;
-  customClassName?: string;
-  isOpen?: boolean;
-  onClose?: () => void;
-  defaultName?: string;
-  defaultDescription?: string;
-  defaultProfilKM?: string[];
-}
+// interface FormProfilKegiatanProps {
+//   profilId?: string;
+//   lembagaId?: string;
+//   isTambah?: boolean;
+//   customClassName?: string;
+//   isOpen?: boolean;
+//   onClose?: () => void;
+//   defaultName?: string;
+//   defaultDescription?: string;
+//   defaultProfilKM?: string[];
+// }
 
 type SelectOption = { value: string; label: string };
 
@@ -54,7 +47,7 @@ export default function FormProfilKegiatan({
   handleSimpanEdit,
   handleBatal,
   selectOptions,
-  title,
+  // title,
   saveButtonText = 'Simpan Perubahan',
   cancelButtonText = 'Batal',
   customClassName,

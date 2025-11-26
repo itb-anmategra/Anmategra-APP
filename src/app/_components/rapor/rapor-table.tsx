@@ -10,7 +10,6 @@ import DeleteProfilDialog from './delete-profil-dialog';
 import EditNilaiButton from './edit-nilai-button';
 import FormProfilKegiatan from './form-profil-kegiatan';
 import LinkButton from './link-button';
-import ProfilDialog from './profil-dialog';
 import RaporTableHeader from './rapor-table-header';
 import RaporTableRow from './rapor-table-row';
 import TambahProfilButton from './tambah-profil-button';
@@ -757,7 +756,22 @@ export default function RaporTable({
           )}
         </div>
 
-        <ProfilDialog
+        {/* <ProfilDialog
+          open={modalOpen}
+          setOpen={setModalOpen}
+          modalType={modalType}
+          profil={profil}
+          setProfil={setProfil}
+          deskripsi={deskripsi}
+          setDeskripsi={setDeskripsi}
+          pemetaan={pemetaan}
+          setPemetaan={setPemetaan}
+          handleSimpanTambah={handleSimpanTambah}
+          handleSimpanEdit={handleSimpanEdit}
+          handleBatal={() => setModalOpen(false)}
+          selectOptions={selectOptions}
+        /> */}
+        <FormProfilKegiatan
           open={modalOpen}
           setOpen={setModalOpen}
           modalType={modalType}
