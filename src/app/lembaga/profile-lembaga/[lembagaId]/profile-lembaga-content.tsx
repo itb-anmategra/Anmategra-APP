@@ -58,34 +58,38 @@ export default function ProfileLembagaContent({
             <h1 className="text-xl md:text-2xl font-semibold text-slate-600">Beranda</h1>
             <p className="text-slate-400">Beranda / Nama Lembaga</p>
           </div>
-          <div className="w-full flex flex-col md:flex-row items-center justify-center gap-6 md:gap-x-10 py-12 transition-all duration-500 ease-in-out">
-            <div className="flex-shrink-0">
-              <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-gray-200">
-                <Image
-                  src={lembagaData?.users.image ?? DummyFotoLembaga}
-                  alt="Foto Lembaga"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 224px"
-                  priority
-                />
-              </div>
-            </div>
-            <div className="space-y-4 text-center md:text-left flex-1">
-              <div className="space-y-2">
-                <p className="text-xl md:text-3xl text-slate-600 font-semibold">
-                  {lembagaData?.name}
-                </p>
-                <p className="text-sm md:text-xl text-slate-400">
-                  {lembagaData?.description}
-                </p>
+          <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-x-10 py-12 transition-all duration-500 ease-in-out">
+            <div className='w-full md:w-3/4 flex flex-col gap-8 items-center justify-center'>
+              <div className='w-full flex flex-col sm:flex-row gap-8 items-center justify-center'>
+                <div className="flex-shrink-0">
+                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-gray-200">
+                  <Image
+                    src={lembagaData?.users.image ?? DummyFotoLembaga}
+                    alt="Foto Lembaga"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 224px"
+                    priority
+                  />
+                  </div>
+                </div>
+                <div className="space-y-4 text-center md:text-left flex-1">
+                  <div className="space-y-2">
+                  <p className="text-xl md:text-3xl text-slate-600 font-semibold">
+                    {lembagaData?.name}
+                  </p>
+                  <p className="text-sm md:text-xl text-slate-400">
+                    {lembagaData?.description}
+                  </p>
+                  </div>
+                </div>
               </div>
               {is_user_owner && (
-                <EditProfileLembaga 
-                  lembagaData={lembagaData} 
-                  isEdit={false}
-                  setIsEdit={setIsEditMode}
-                />
+              <EditProfileLembaga 
+                lembagaData={lembagaData} 
+                isEdit={false}
+                setIsEdit={setIsEditMode}
+              />
               )}
             </div>
           </div>
