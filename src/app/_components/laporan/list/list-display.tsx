@@ -11,6 +11,7 @@ export const ListDisplay = ({
   displayedColumn,
   isAdminView,
   onEditReport,
+  onRefresh,
 }: ListDisplayProps) => {
   return (
     <div className="flex flex-col gap-2 overflow-y-visible">
@@ -25,6 +26,7 @@ export const ListDisplay = ({
             selectedStatus={displayedColumn}
             isAdminView={isAdminView}
             onEditReport={onEditReport}
+            onRefresh={onRefresh}
           />
         ))}
     </div>

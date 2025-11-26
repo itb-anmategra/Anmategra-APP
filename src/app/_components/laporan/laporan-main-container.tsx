@@ -2,7 +2,7 @@
 
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '~/components/ui/input';
 
@@ -23,9 +23,24 @@ type ReportData = Report;
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
   const [editingReport, setEditingReport] = useState<ReportData | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem('laporan-display-mode');
+    if (saved === 'List' || saved === 'Board') {
+      setCurrentDisplay(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('laporan-display-mode', display);
+    }
+  }, [display, isMounted]);
 
   const [status, setStatus] = useState<ColumnType[]>(() => {
     const all: ColumnType[] = ["Draft", "Backlog", "In Progress", "Resolved"];
@@ -108,6 +123,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           displayedColumn={status}
           isAdminView={Laporan.isAdminView}
           onEditReport={handleEditReport}
+          onRefresh={handleRefresh}
         />
       )}
       {/* Show Tambah Laporan Button in the middle of Screen */}
