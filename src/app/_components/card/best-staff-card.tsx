@@ -30,8 +30,8 @@ export default async function BestStaffCard({
   divisi = 'UI/UX',
   id_mahasiswa = '1',
 }: BestStaffCardProps) {
-  const session = await getServerAuthSession();
-  const isLembaga = session?.user.role === 'lembaga';
+  // const session = await getServerAuthSession();
+  // const isLembaga = session?.user.role === 'lembaga';
 
   const namaSliced = nama.length > 22 ? nama.slice(0, 20) + '...' : nama;
   const divisiSliced =
@@ -40,9 +40,7 @@ export default async function BestStaffCard({
   return (
     <Link
       href={
-        isLembaga
-          ? `/lembaga/profile-mahasiswa/${id_mahasiswa}`
-          : `/mahasiswa/profile-mahasiswa/${id_mahasiswa}`
+        `/profile-mahasiswa/${id_mahasiswa}`
       }
       className="no-underline"
     >

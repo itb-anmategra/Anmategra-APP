@@ -126,7 +126,7 @@ const columns: ColumnDef<MemberKegiatan>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          href={`/lembaga/kegiatan/${row.original.event_id}/panitia/${row.original.id}`}
+          href={`/kegiatan/${row.original.event_id}/panitia/${row.original.id}`}
         >
           <Button
             variant="outline"

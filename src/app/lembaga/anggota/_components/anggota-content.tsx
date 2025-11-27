@@ -40,7 +40,7 @@ export default function AnggotaContent({
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
   const router = useRouter();
-  const isAnggota = pathname === '/lembaga/anggota';
+  const isAnggota = pathname === '/anggota';
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
   let tableData;
@@ -110,7 +110,7 @@ export default function AnggotaContent({
                     variant="light_blue"
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
                     onClick={() => {
-                      router.push('/lembaga/anggota/rapor');
+                      router.push('/anggota/rapor');
                     }}
                   >
                     <Image

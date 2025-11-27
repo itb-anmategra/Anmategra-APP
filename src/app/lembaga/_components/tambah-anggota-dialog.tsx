@@ -34,7 +34,7 @@ export function TambahAnggotaDialog({
   const [isOpen, setIsOpen] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
-  const isAnggota = pathname === '/lembaga/anggota';
+  const isAnggota = pathname === '/anggota';
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

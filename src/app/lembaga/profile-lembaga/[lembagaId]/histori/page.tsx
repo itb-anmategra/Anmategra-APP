@@ -35,11 +35,11 @@ const HistoriBestStaffPage = async ({ params }: Props) => {
           <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
           <HistoriBreadCrumb
             items={[
-              { label: 'Beranda', href: '/lembaga' },
-              { label: 'Lembaga', href: `/lembaga/profile-lembaga/${lembagaId}` },
+              { label: 'Beranda', href: '/' },
+              { label: 'Lembaga', href: `/profile-lembaga/${lembagaId}` },
               {
                 label: 'Histori',
-                href: `/lembaga/profile-lembaga/${lembagaId}/histori`,
+                href: `/profile-lembaga/${lembagaId}/histori`,
               },
             ]}
           />

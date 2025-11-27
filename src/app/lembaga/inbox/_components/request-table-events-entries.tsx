@@ -19,7 +19,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
   const router = useRouter();
 
   const handleButtonClick = (id: string) => {
-    router.push(`/lembaga/inbox/${id}`);
+    router.push(`/inbox/${id}`);
   };
 
   return (

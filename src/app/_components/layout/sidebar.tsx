@@ -49,13 +49,13 @@ type SidebarProfileData = {
 };
 
 const SIDEBAR_ITEMS_LEMBAGA: SidebarItemType[] = [
-  { label: 'Beranda', href: '/lembaga', icon: <HomeIcon /> },
-  { label: 'Kegiatan', href: '/lembaga/kegiatan', icon: <CalendarIcon /> },
-  { label: 'Anggota', href: '/lembaga/anggota', icon: <PersonIcon /> },
-  { label: 'Inbox', href: '/lembaga/inbox', icon: <EnvelopeOpenIcon /> },
+  { label: 'Beranda', href: '/', icon: <HomeIcon /> },
+  { label: 'Kegiatan', href: '/kegiatan', icon: <CalendarIcon /> },
+  { label: 'Anggota', href: '/anggota', icon: <PersonIcon /> },
+  { label: 'Inbox', href: '/inbox', icon: <EnvelopeOpenIcon /> },
   {
     label: 'Laporan',
-    href: '/lembaga/laporan',
+    href: '/laporan',
     icon: <ExclamationTriangleIcon />,
   },
 ];
@@ -89,7 +89,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
       name: lembaga.name,
       profilePicture: lembaga.profilePicture ?? '',
       label: 'Lembaga',
-      href: `/lembaga/profile-lembaga/${lembaga.id ?? ''}`,
+      href: `/profile-lembaga/${lembaga.id ?? ''}`,
     };
   } else {
     profileData = {
@@ -97,7 +97,7 @@ export const Sidebar = ({ session }: { session: Session | null }) => {
       name: user?.name ?? '',
       profilePicture: user?.image ?? '',
       label: 'Mahasiswa',
-      href: `/mahasiswa/profile-mahasiswa/${user?.id ?? ''}`,
+      href: `/profile-mahasiswa/${user?.id ?? ''}`,
     };
   }
 

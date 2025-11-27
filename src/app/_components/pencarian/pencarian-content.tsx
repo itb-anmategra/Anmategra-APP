@@ -41,16 +41,10 @@ const PencarianContent = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
-  const path = usePathname();
-  const isLembaga = path.includes('/lembaga');
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      if (isLembaga) {
-        void router.push(`/lembaga/pencarian/${searchQuery}`);
-      } else {
-        void router.push(`/mahasiswa/pencarian/${searchQuery}`);
-      }
+      void router.push(`/pencarian/${searchQuery}`);
     }
   };
 
@@ -93,9 +87,7 @@ const PencarianContent = ({
                   <Link
                     key={item.userId}
                     href={
-                      isLembaga
-                        ? '/lembaga/profile-mahasiswa/' + item.userId
-                        : '/mahasiswa/profile-mahasiswa/' + item.userId
+                      '/profile-mahasiswa/' + item.userId
                     }
                   >
                     <MahasiswaCard
@@ -118,9 +110,7 @@ const PencarianContent = ({
                   <Link
                     key={item.lembaga.id}
                     href={
-                      isLembaga
-                        ? `/lembaga/profile-lembaga/${item.lembaga.id}`
-                        : `/mahasiswa/profile-lembaga/${item.lembaga.id}`
+                      `/profile-lembaga/${item.lembaga.id}`
                     }
                   >
                     <LembagaCard
@@ -143,9 +133,7 @@ const PencarianContent = ({
                   <Link
                     key={item.name}
                     href={
-                      isLembaga
-                        ? `/lembaga/profile-kegiatan/${item.id}`
-                        : `/mahasiswa/profile-kegiatan/${item.id}`
+                      `/profile-kegiatan/${item.id}`
                     }
                   >
                     <KepanitiaanCard kepanitiaan={item} />

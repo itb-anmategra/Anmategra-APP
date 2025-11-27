@@ -34,8 +34,8 @@ export default async function RaporPage() {
       </h1>
       <RaporBreadcrumb
         items={[
-          { label: 'Anggota', href: '/lembaga/anggota' },
-          { label: 'Rapor', href: '/lembaga/anggota/rapor' },
+          { label: 'Anggota', href: '/anggota' },
+          { label: 'Rapor', href: '/anggota/rapor' },
         ]}
       />
       <div className="mb-4" />

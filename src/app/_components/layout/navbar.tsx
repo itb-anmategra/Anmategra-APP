@@ -36,11 +36,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
     }
   };
 
-  useEffect(() => {
-    if (session?.user.role === 'lembaga') {
-      router.push('/lembaga');
-    }
-  });
+  // useEffect(() => {
+  //   if (session?.user.role === 'lembaga') {
+  //     router.push('/lembaga');
+  //   }
+  // });
 
   return (
     <>

@@ -300,7 +300,7 @@ export default function ActivityList({
                     {activity.start_date}
                   </div>
                   <div className="w-[110px] flex-shrink-0 flex items-center justify-center text-gray-500">
-                    <Link href={`/lembaga/kegiatan/${activity.id}/panitia`}>
+                    <Link href={`/kegiatan/${activity.id}/panitia`}>
                       <Button
                         variant={'outline'}
                         className="rounded-lg text-base"
@@ -321,7 +321,7 @@ export default function ActivityList({
                     </span>
                   </div>
                   <div className="w-[94px] flex-shrink-0 flex items-center justify-center text-gray-500">
-                    <Link href={`/lembaga/kegiatan/${activity.id}/rapor`}>
+                    <Link href={`/kegiatan/${activity.id}/rapor`}>
                       <Button
                         variant={'outline'}
                         className="rounded-lg text-base"

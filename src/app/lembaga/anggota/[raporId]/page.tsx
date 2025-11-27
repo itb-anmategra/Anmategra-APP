@@ -75,8 +75,8 @@ export default async function RaporIndividuLembagaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Anggota', href: '/lembaga/anggota' },
-              { label: 'Rapor Individu', href: '/lembaga/anggota' },
+              { label: 'Anggota', href: '/anggota' },
+              { label: 'Rapor Individu', href: '/anggota' },
             ]}
           />
         </div>
@@ -120,8 +120,8 @@ export default async function RaporIndividuLembagaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Anggota', href: '/lembaga/anggota' },
-              { label: 'Rapor Individu', href: '/lembaga/anggota' },
+              { label: 'Anggota', href: '/anggota' },
+              { label: 'Rapor Individu', href: '/anggota' },
             ]}
           />
         </div>

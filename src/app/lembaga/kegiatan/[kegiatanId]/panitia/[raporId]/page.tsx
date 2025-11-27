@@ -69,9 +69,9 @@ export default async function RaporIndividuPanitiaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-              { label: 'Panitia', href: '/lembaga/kegiatan' },
-              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+              { label: 'Kegiatan', href: '/kegiatan' },
+              { label: 'Panitia', href: '/kegiatan' },
+              { label: 'Rapor Individu', href: '/kegiatan' },
             ]}
           />
         </div>
@@ -116,9 +116,9 @@ export default async function RaporIndividuPanitiaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-              { label: 'Panitia', href: '/lembaga/kegiatan' },
-              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+              { label: 'Kegiatan', href: '/kegiatan' },
+              { label: 'Panitia', href: '/kegiatan' },
+              { label: 'Rapor Individu', href:'/kegiatan' },
             ]}
           />
         </div>

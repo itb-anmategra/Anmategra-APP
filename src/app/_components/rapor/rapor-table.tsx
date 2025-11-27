@@ -588,8 +588,8 @@ export default function RaporTable({
 
   const linkHref =
     type === 'event'
-      ? `/lembaga/kegiatan/${event_id}/profil`
-      : `/lembaga/profil`;
+      ? `/kegiatan/${event_id}/profil`
+      : `/profil`;
 
   return (
     <div className="flex flex-col flex-1">

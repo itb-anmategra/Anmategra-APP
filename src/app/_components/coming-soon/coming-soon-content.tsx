@@ -40,7 +40,7 @@ export default function ComingSoonContent({
               Kami sedang membangun sesuatu yang menarik untuk Anda
             </p>
             {session?.user.role === 'lembaga' ? (
-              <Link href="/lembaga">
+              <Link href="/">
                 <Button variant="dark_blue" className="px-8 py-6 text-lg">
                   Kembali ke Beranda
                 </Button>

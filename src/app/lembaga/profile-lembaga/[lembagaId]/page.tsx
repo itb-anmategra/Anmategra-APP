@@ -120,7 +120,7 @@ const DetailLembagaPage = async ({
                 {is_user_owner && (
                   <Button asChild variant="ghost">
                     <Link
-                      href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
+                      href={`/profile-lembaga/${lembagaId}/histori`}
                       className="flex items-center gap-2 text-lg"
                     >
                       <span>Lihat Histori </span>
@@ -148,7 +148,7 @@ const DetailLembagaPage = async ({
             {newestEvent && newestEvent.length !== 0 ? (
               newestEvent.map((item) => (
                 <Link
-                  href={`/lembaga/profile-kegiatan/${item.id}`}
+                  href={`/profile-kegiatan/${item.id}`}
                   key={item.id}
                 >
                   <KepanitiaanCard kepanitiaan={item} />

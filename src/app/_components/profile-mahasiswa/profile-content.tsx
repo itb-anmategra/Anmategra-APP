@@ -27,9 +27,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 }) => {
   const [isEdit, setIsEdit] = useState(false);
 
-  const baseHref = isLembagaView
-    ? '/lembaga/profile-kegiatan'
-    : 'mahasiswa/profile-kegiatan';
+  const baseHref = 'profile-kegiatan';
 
   return (
     <div
