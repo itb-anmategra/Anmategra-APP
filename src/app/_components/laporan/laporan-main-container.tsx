@@ -83,7 +83,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const isLaporanEmpty = Laporan.data.length === 0;
 
   return (
-    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
+    <div className="flex w-full flex-col gap-4 pt-[40px] pl-[42px] pr-[36px]">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}

@@ -31,7 +31,7 @@ export default function RootLayout({
           <div className="flex-1">
             <TRPCReactProvider>{children}</TRPCReactProvider>
           </div>
-          <div className="sticky z-[100]">
+          <div className="sticky z-[10]">
             <Footer />
           </div>
         </div>
