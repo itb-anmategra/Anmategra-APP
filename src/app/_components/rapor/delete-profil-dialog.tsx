@@ -18,19 +18,22 @@ export default function DeleteProfilDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onCancel}>
-      <DialogContent className="lg:rounded-[26px]" aria-describedby={undefined}>
-        <div className="text-center">{title}</div>
-        <div className="flex justify-center gap-4">
+      <DialogContent
+        className="lg:rounded-[26px] max-w-[90vw] sm:max-w-md"
+        aria-describedby={undefined}
+      >
+        <div className="text-center text-sm sm:text-base">{title}</div>
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
           <Button
             variant="outline"
-            className="px-6 bg-[#F16350] text-white hover:bg-[#FF9185] hover:text-white rounded-xl"
+            className="px-6 bg-[#F16350] text-white hover:bg-[#FF9185] hover:text-white rounded-xl w-full sm:w-auto"
             onClick={onCancel}
             type="button"
           >
             {cancelButtonText}
           </Button>
           <Button
-            className="px-6 bg-[#2B6282] text-white hover:bg-[#2B6282] hover:text-white rounded-xl"
+            className="px-6 bg-[#2B6282] text-white hover:bg-[#2B6282] hover:text-white rounded-xl w-full sm:w-auto"
             onClick={onConfirm}
             type="button"
           >

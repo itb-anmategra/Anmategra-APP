@@ -1,23 +1,37 @@
-import { adminProcedure } from "../../trpc";
-import { events } from "~/server/db/schema";
+import { lembagaProcedure } from "../../trpc";
+import { events, keanggotaan } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { DeleteEventInputSchema, DeleteEventOutputSchema } from "../../types/event.type";
 
-export const deleteEvent = adminProcedure
+export const deleteEvent = lembagaProcedure
 .input(DeleteEventInputSchema)
 .output(DeleteEventOutputSchema)
 .mutation(async ({ ctx, input }) => {
   try {
 
     const existingEvent = await ctx.db.query.events.findFirst({
-      where: eq(events.id, input.id)
+      where: and(
+        eq(events.id, input.id),
+        eq(events.org_id, ctx.session.user.lembagaId!)
+      )
     });
 
     if (!existingEvent) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: "Event not found"
+        message: "Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya"
+      });
+    }
+
+    const existingKeanggotaan = await ctx.db.query.keanggotaan.findFirst({
+      where: eq(keanggotaan.event_id, input.id)
+    });
+
+    if (existingKeanggotaan) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: "Tidak dapat menghapus kegiatan yang memiliki panitia terdaftar."
       });
     }
 
@@ -29,10 +43,12 @@ export const deleteEvent = adminProcedure
     };
     
   } catch (error) {
-    console.error("Database Error:", error);
+    if (error instanceof TRPCError) {
+      throw error;
+    }
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: "An unexpected error occurred during event deletion."
+      message: "Terjadi kesalahan tak terduga saat menghapus kegiatan."
     });
   }
 })

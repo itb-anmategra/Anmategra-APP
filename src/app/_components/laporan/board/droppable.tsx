@@ -1,5 +1,5 @@
-import React from "react";
-import { useDroppable } from "@dnd-kit/core";
+import { useDroppable } from '@dnd-kit/core';
+import React from 'react';
 
 interface Props {
   id: string;
@@ -11,11 +11,11 @@ export function Droppable(props: Props) {
     id: props.id,
   });
   const style = {
-    color: isOver ? "green" : undefined,
+    color: isOver ? 'green' : undefined,
   };
 
   return (
-    <div className="h-fit w-fit" ref={setNodeRef} style={style}>
+    <div className="h-fit w-full" ref={setNodeRef} style={style}>
       {props.children}
     </div>
   );

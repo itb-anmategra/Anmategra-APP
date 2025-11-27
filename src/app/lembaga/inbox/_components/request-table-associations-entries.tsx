@@ -7,18 +7,19 @@ import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/react';
 
 type PermintaanAsosiasiUser = {
-  id: string;
-  image: string;
-  nama: string;
+  // id: string;
+  image: string | null;
   user_id: string;
-  posisi: string;
-  divisi: string;
+  mahasiswa_name: string;
+  division: string;
+  position: string;
 };
 
 const RequestTableAssociationsEntries: React.FC<{
   id: string;
   data: PermintaanAsosiasiUser[];
-}> = ({ id, data }) => {
+  lembagaId: string | undefined;
+}> = ({ id, data, lembagaId }) => {
   const router = useRouter();
 
   // penggunaan mutation baru untuk acc / decline lembaga
@@ -115,108 +116,121 @@ const RequestTableAssociationsEntries: React.FC<{
   };
 
   return (
-    <div className="flex flex-col rounded-xl pl-1 pb-1 p-4 font-sans">
+    <div className="flex flex-col rounded-xl font-sans">
       {Array.isArray(data) && data.length > 0 ? (
         <>
-          <div className="grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-10 border-b border-[#E7E9EC] p-4 font-regular weight-400 text-[18px] text-[#9DA4A8]">
-            <div>Nama</div>
-            <div className="text-center -ml-[40px]">Posisi</div>
-            <div className="text-center -ml-[20px]">Divisi</div>
-            <div className="justify-self-end mr-[110px]">Request</div>
+          {/* Header: hidden on small screens, visible on md+ */}
+          <div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-4 border-b border-[#E7E9EC] p-4 text-sm md:text-[18px] text-[#9DA4A8]">
+            <div className="font-semibold">Nama</div>
+            <div className="text-center font-semibold">Posisi</div>
+            <div className="text-center font-semibold">Divisi</div>
+            <div className="text-center font-semibold">Aksi</div>
           </div>
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className={
-                'grid grid-cols-[2fr_1fr_1fr_1.5fr] items-center gap-4 p-4 border-b border-[#E7E9EC]'
-              }
-            >
-              <div className="flex items-center gap-4">
-                <div className="rounded-full overflow-hidden w-[60px] h-[60px] flex-shrink-0">
-                  <Image
-                    src={
-                      item?.image ??
-                      '/images/miscellaneous/empty-profile-picture.svg'
-                    }
-                    alt="Profile Picture"
-                    width={60}
-                    height={60}
-                  />
-                </div>
-                <span className="pl-[20px] text-[18px] font-regular weight-400 text-[#636A6D] flex-grow">
-                  {item?.nama ?? '-'}
-                </span>
-              </div>
-              <div className="text-[18px] pr-[55px] font-regular weight-400 text-center text-[#636A6D]">
-                {item?.posisi ?? '-'}
-              </div>
-              <div className="text-[18px] sm:-ml-[20px] font-regular weight-400 text-center text-[#636A6D]">
-                {item?.divisi ?? '-'}
-              </div>
-              <div className="flex items-center justify-end gap-2 weight-700">
-                <Button
-                  onClick={() => {
-                    if (id === 'lembaga') {
-                      handleDeclineLembaga(
-                        item.user_id,
-                        item.divisi,
-                        item.posisi,
-                      );
-                    } else {
-                      handleDeclineEvent(
-                        id,
-                        item.user_id,
-                        item.divisi,
-                        item.posisi,
-                      );
-                    }
-                  }}
-                  className="border-none px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#FF0000] hover:bg-[#FF0000] hover:text-white active:bg-[#FF0000] active:text-white"
-                >
-                  DECLINE
-                </Button>
 
-                <Button
-                  onClick={() => {
-                    if (id === 'lembaga') {
-                      handleAcceptLembaga(
-                        item.user_id,
-                        item.divisi,
-                        item.posisi,
-                      );
-                    } else {
-                      handleAcceptEvent(
-                        id,
-                        item.user_id,
-                        item.divisi,
-                        item.posisi,
-                      );
-                    }
-                  }}
-                  variant="outline"
-                  className="rounded-2px border-[#29BC5B] border-[2px] px-4 py-2 bg-[#FAFAFA] text-[14px] text-[#29BC5B] hover:bg-[#29BC5B] hover:text-white"
-                >
-                  ACCEPT
-                </Button>
+          {/* Rows */}
+          {data.map((item, index) => (
+            <div key={index} className="border-b border-[#E7E9EC] p-3 md:p-4">
+              {/* Mobile: stacked, Desktop: grid */}
+              <div className="flex flex-col md:grid md:grid-cols-[2fr_1fr_1fr_1.5fr] md:items-center md:gap-4 gap-2">
+                {/* Nama + Avatar */}
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full overflow-hidden w-12 h-12 md:w-14 md:h-14 flex-shrink-0">
+                    <Image
+                      src={
+                        item?.image ??
+                        '/images/miscellaneous/empty-profile-picture.svg'
+                      }
+                      alt="Profile Picture"
+                      width={56}
+                      height={56}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <span className="text-sm md:text-[18px] font-regular text-[#636A6D] line-clamp-2 flex-grow">
+                    {item?.mahasiswa_name ?? '-'}
+                  </span>
+                </div>
+
+                {/* Posisi */}
+                <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
+                  <span className="md:hidden font-semibold">Posisi: </span>
+                  {item?.position ?? '-'}
+                </div>
+
+                {/* Divisi */}
+                <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
+                  <span className="md:hidden font-semibold">Divisi: </span>
+                  {item?.division ?? '-'}
+                </div>
+
+                {/* Buttons */}
+                <div className="flex items-center justify-between md:justify-end gap-2 px-3 md:px-0 mt-2 md:mt-0">
+                  <Button
+                    onClick={() => {
+                      if (id === lembagaId) {
+                        handleDeclineLembaga(
+                          item.user_id,
+                          item.division,
+                          item.position,
+                        );
+                      } else {
+                        handleDeclineEvent(
+                          item.user_id,
+                          id,
+                          item.division,
+                          item.position,
+                        );
+                      }
+                    }}
+                    className="border-none px-3 py-1.5 md:py-2 bg-[#FAFAFA] text-xs md:text-sm text-[#FF0000] hover:bg-[#FF0000] hover:text-white active:bg-[#FF0000] active:text-white flex-1 md:flex-none"
+                  >
+                    DECLINE
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      if (id === lembagaId) {
+                        handleAcceptLembaga(
+                          item.user_id,
+                          item.division,
+                          item.position,
+                        );
+                      } else {
+                        handleAcceptEvent(
+                          item.user_id,
+                          id,
+                          item.division,
+                          item.position,
+                        );
+                      }
+                    }}
+                    variant="outline"
+                    className="border-[2px] border-[#29BC5B] px-3 py-1.5 md:py-2 bg-[#FAFAFA] text-xs md:text-sm text-[#29BC5B] hover:bg-[#29BC5B] hover:text-white flex-1 md:flex-none"
+                  >
+                    ACCEPT
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
         </>
       ) : (
         <>
-          <Image
-            src="/images/miscellaneous/not-found-association.svg"
-            alt="No Data"
-            width={140}
-            height={140}
-            className="mx-auto mt-20"
-          />
-          <div className="p-4 pb-0 text-center weight-600 font-semibold text-[32px] text-[#768085]">
-            Tidak ada permintaan asosiasi
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <Image
+              src="/images/miscellaneous/not-found-association.svg"
+              alt="No Data"
+              width={120}
+              height={120}
+              className="mb-6"
+            />
+            <div className="text-xl md:text-[32px] font-semibold text-[#768085] mb-2">
+              Tidak ada permintaan asosiasi
+            </div>
+            <p className="text-sm md:text-[24px] text-[#C4CACE] max-w-xs md:max-w-md">
+              Maaf, belum ada permintaan asosiasi yang masuk
+            </p>
           </div>
-          <p className="p-4 pt-0 text-center weight-600 font-regular text-[24px] text-[#C4CACE]">
-            Maaf, belum ada permintaan asosiasi yang masuk
-          </p>
         </>
       )}
     </div>
