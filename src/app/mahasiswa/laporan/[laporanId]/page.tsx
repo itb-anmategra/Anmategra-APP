@@ -2,9 +2,9 @@ import {
   type Attachment,
   LaporanCard,
 } from "~/app/_components/laporan/detail/laporan-card";
-// import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/server";
 import { formatTanggal } from "../page";
+import { RaporBreadcrumb } from "~/app/_components/breadcrumb";
 
 export default async function ReportDetail({params}: {params: { laporanId: string }}) {
   const data = await api.users.getAllReportsUser({});
@@ -25,9 +25,12 @@ export default async function ReportDetail({params}: {params: { laporanId: strin
 
   return (
     <div className="flex flex-col gap-3 p-8">
-      {/* <Button onClick={} variant={"ghost"}>
-        {"< Kembali"}
-      </Button> */}
+      <RaporBreadcrumb
+        items={[
+          { label: "Laporan", href: "/laporan" },
+          { label: "Detail Laporan", href: `/laporan/${report.id}` },
+        ]}
+      />
       <LaporanCard
         status={report.status}
         content={report.description}

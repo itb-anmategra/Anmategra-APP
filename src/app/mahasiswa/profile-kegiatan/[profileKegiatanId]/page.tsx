@@ -6,6 +6,7 @@ import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { api } from '~/trpc/server';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 
 const ProfileKegiatan = async ({
   params,
@@ -19,10 +20,16 @@ const ProfileKegiatan = async ({
 
   return (
     <div>
-      <div className="w-full flex min-h-screen flex-col items-center pt-14">
+      <div className="w-full flex min-h-screen flex-col items-center">
         <div className="w-full max-w-7xl bg-slate-50 py-6">
           <div className="mb-4">
             <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+            <RaporBreadcrumb
+              items={[
+                {label: 'Beranda', href: '/'},
+                {label:'Profil Kegiatan', href:`/profile-kegiatan/${query}`}
+              ]}
+            />
           </div>
           <EventHeader
             title={kegiatan?.name ?? 'null'}

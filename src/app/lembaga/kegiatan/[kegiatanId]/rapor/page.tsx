@@ -1,5 +1,5 @@
 import { SearchBar } from '~/app/_components/placeholder/search-bar';
-import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import RaporTable from '~/app/_components/rapor/rapor-table';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
