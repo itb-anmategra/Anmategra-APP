@@ -6,6 +6,7 @@ import FilterDropdown, {
   type FilterOption,
 } from '~/app/_components/filter/filter-dropdown';
 import { Input } from '~/components/ui/input';
+import search from 'public/icons/search.svg';
 
 import RequestTableEventsEntries from './request-table-events-entries';
 
@@ -55,7 +56,7 @@ export default function InboxContent({ entries }: InboxContentProps) {
               className="w-full pl-12 border border-[#C4CACE] rounded-[20px] bg-white h-11 sm:h-12 text-[16px] sm:text-[18px] text-[#636A6D]"
             />
             <Image
-              src="/icons/search.svg"
+              src={search}
               alt="Search Icon"
               width={20}
               height={20}

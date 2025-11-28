@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '~/components/ui/button';
-
+import arrow from 'public/icons/call_made.svg'
 type PermintaanAsosiasi = {
   id: string;
   image: string | null;
@@ -75,7 +75,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
                   >
                     <span>Lihat</span>
                     <Image
-                      src="/icons/call_made.svg"
+                      src={arrow}
                       alt="Arrow"
                       width={16}
                       height={16}
