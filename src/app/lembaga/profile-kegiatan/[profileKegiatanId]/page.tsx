@@ -48,7 +48,7 @@ const ProfileKegiatan = async ({
     <div className="w-full flex min-h-screen flex-col items-center px-6">
       <div className="w-full max-w-7xl bg-slate-50 py-6">
         <div className="mb-4">
-          <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-600">Kegiatan</h1>
         </div>
         <EventHeader
           title={kegiatan?.name ?? 'null'}
@@ -62,10 +62,11 @@ const ProfileKegiatan = async ({
             '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
           }
           ajuanAsosiasi={Boolean(kegiatan?.id)}
+          session={session}
         />
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-slate-600">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-600">
               Penyelenggara
             </h2>
           </div>
@@ -121,12 +122,13 @@ const ProfileKegiatan = async ({
               </div>
               <CarouselBestStaff
                 bestStaffList={latestBestStaff.best_staff_list}
+                isLembaga={true}
               />
             </div>
           </div>
         )}
 
-        <ProfileKegiatanComp anggota={participant ?? []} />
+        <ProfileKegiatanComp anggota={participant ?? []} session={session} />
       </div>
     </div>
   );

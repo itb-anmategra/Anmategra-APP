@@ -121,16 +121,16 @@ const EditProfileDialog = ({
     <div className="w-full px-18 min-h-screen">
       {!isEdit && (
         <Button
-          className="w-full bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-0 px-6 py-6 text-xl rounded-3xl"
+          className="w-full bg-secondary-400 hover:bg-secondary-500 space-x-6 -translate-y-0 px-6 py-6 text-base sm:text-lg md:text-xl rounded-3xl"
           onClick={() => setIsEdit(true)}
         >
           <Pencil /> Edit Profile Info
         </Button>
       )}
       {isEdit && (
-        <div className="w-full items-center px-[72px] pb-2">
+        <div className="w-full items-center md:px-[72px] pb-2">
           <div className="mb-6">
-            <h2 className="text-[32px] font-semibold text-neutral-1000">
+            <h2 className="text-xl sm:text-2xl md:text-[32px] font-semibold text-neutral-1000">
               Edit Profile
             </h2>
           </div>
@@ -141,7 +141,7 @@ const EditProfileDialog = ({
               className="space-y-6 w-full"
             >
               {/* Profile Section with Avatar and Personal Info */}
-              <div className="flex items-start gap-x-[52px]">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-x-[52px]">
                 {/* Avatar with Upload Button */}
                 <div className="flex flex-col items-start">
                   <FormField
@@ -150,7 +150,7 @@ const EditProfileDialog = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-64 h-64 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
+                          <div className="relative w-30 h-30 sm:w-40 sm:h-40 md:w-64 md:h-64 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
                             {/* Display the image */}
                             {field.value ? (
                               <Image
@@ -219,21 +219,21 @@ const EditProfileDialog = ({
                 </div>
 
                 {/* Personal Information */}
-                <div className="flex-1 space-y-4 gap-3">
+                <div className="flex-1 space-y-4 gap-3 w-full">
                   {/* Nama */}
                   <FormField
                     control={form.control}
                     name="nama"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal text-neutral-1000 text-[20px]">
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
                           Nama
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Masukkan nama lengkap"
                             {...field}
-                            className="border rounded-xl border-neutral-400 bg-neutral-200"
+                            className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm md:text-lg"
                           />
                         </FormControl>
                         <FormMessage />
@@ -247,7 +247,7 @@ const EditProfileDialog = ({
                     name="nim"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
                           NIM
                         </FormLabel>
                         <FormControl>
@@ -256,7 +256,7 @@ const EditProfileDialog = ({
                             {...field}
                             readOnly
                             disabled
-                            className="bg-gray-100 cursor-not-allowed text-gray-600"
+                            className="bg-gray-100 cursor-not-allowed text-gray-600 text-sm md:text-lg"
                           />
                         </FormControl>
                         <FormMessage />
@@ -270,14 +270,14 @@ const EditProfileDialog = ({
                     name="jurusanAngkatan"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal text-neutral-1000 text-lg">
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
                           Jurusan&apos;Angkatan
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g. Teknik Informatika'2022"
                             {...field}
-                            className="border border-neutral-400 bg-neutral-200"
+                            className="border border-neutral-400 bg-neutral-200 text-sm md:text-lg"
                           />
                         </FormControl>
                         <FormMessage />
@@ -289,10 +289,10 @@ const EditProfileDialog = ({
 
               {/* Contact Information Section */}
               <div className="space-y-4">
-                <h3 className="text-[28px] font-semibold text-neutral-1000">
+                <h3 className="text-xl sm:text-2xl md:text-[28px] font-semibold text-neutral-1000">
                   Contact Info
                 </h3>
-                <div className="flex gap-x-4">
+                <div className="flex flex-col sm:flex-row gap-x-4 gap-y-4">
                   {/* ID Line */}
                   <FormField
                     control={form.control}
@@ -306,7 +306,7 @@ const EditProfileDialog = ({
                             width={20}
                             height={20}
                           />
-                          <p className="font-normal text-xl">ID Line</p>
+                          <p className="font-normal text-sm sm:text-md md:text-xl">ID Line</p>
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="e.g. @johndoe" {...field} />
@@ -329,7 +329,7 @@ const EditProfileDialog = ({
                             width={20}
                             height={20}
                           />
-                          <p className="font-normal text-xl">Nomor WhatsApp</p>
+                          <p className="font-normal text-sm sm:text-md md:text-xl">Nomor WhatsApp</p>
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="e.g. 08123456789" {...field} />
@@ -342,7 +342,7 @@ const EditProfileDialog = ({
               </div>
 
               {/* Submit Button */}
-              <div className="w-full gap-x-4 flex justify-end items-end pt-4">
+              <div className="w-full gap-x-4 flex justify-center items-center sm:justify-end sm:items-end pt-4">
                 <Button
                   variant={'outline'}
                   className="border-Blue-Dark text-Blue-Dark"

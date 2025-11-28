@@ -6,6 +6,7 @@ import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { api } from '~/trpc/server';
+import { getServerAuthSession } from '~/server/auth';
 
 const ProfileKegiatan = async ({
   params,
@@ -17,12 +18,14 @@ const ProfileKegiatan = async ({
     kegiatanId: query,
   });
 
+  const session = await getServerAuthSession();
+
   return (
     <div>
-      <div className="w-full flex min-h-screen flex-col items-center pt-14">
+      <div className="w-full flex min-h-screen flex-col items-center pt-14 px-[14px]">
         <div className="w-full max-w-7xl bg-slate-50 py-6">
           <div className="mb-4">
-            <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">Kegiatan</h1>
           </div>
           <EventHeader
             title={kegiatan?.name ?? 'null'}
@@ -36,9 +39,10 @@ const ProfileKegiatan = async ({
               '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
             }
             linkDaftar={kegiatan?.oprec_link}
+            session={session}
           />
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-slate-600">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
               Penyelenggara
             </h2>
           </div>
@@ -52,7 +56,7 @@ const ProfileKegiatan = async ({
               }
             />
           </Link>
-          <ProfileKegiatanComp anggota={participant ?? []} />
+          <ProfileKegiatanComp anggota={participant ?? []} session={session} />
         </div>
       </div>
     </div>

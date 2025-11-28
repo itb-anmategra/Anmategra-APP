@@ -146,7 +146,7 @@ const AjuanAsosiasiForm = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
-        className="w-[880px] h-fit max-w-none mx-auto p-0 bg-white rounded-xl overflow-hidden [&>button]:right-6 [&>button]:top-7"
+        className="w-4/5 lg:w-[880px] h-fit max-w-none mx-auto p-0 bg-white rounded-xl overflow-hidden [&>button]:right-6 [&>button]:top-7"
         aria-describedby={undefined}
       >
         {/* Header */}
@@ -161,20 +161,20 @@ const AjuanAsosiasiForm = ({
         {/* Event Info */}
         <div className="px-6 pb-4">
           <div className="flex items-center justify-center gap-4">
-            <div className="relative w-32 h-32 rounded-full overflow-hidden">
+            <div className="relative w-20 h-20 md:w-32 md:h-32 rounded-full overflow-hidden aspect-square flex-shrink-0 self-center md:self-auto">
               <Image
                 src={eventLogo}
                 alt={eventName}
-                width={128}
-                height={128}
+                fill
                 className="rounded-full object-cover"
+                sizes='sizes="(max-width: 640px) 80px, 128px'
               />
             </div>
             <div>
-              <h3 className="text-2xl font-semibold text-gray-700">
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-700">
                 {eventName}
               </h3>
-              <p className="text-gray-400 text-xl">{organizationName}</p>
+              <p className="text-gray-400 text-lg md:text-xl">{organizationName}</p>
             </div>
           </div>
         </div>
