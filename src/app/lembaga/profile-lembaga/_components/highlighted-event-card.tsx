@@ -47,60 +47,60 @@ const HighlightedEventCard: FC<HighlightedEventCardProps> = ({
 }) => {
   return (
     <Link href={`/lembaga/profile-kegiatan/${event.id}`}>
-      <Card className="flex flex-row items-center w-full max-w-7xl min-h-[180px] border-[0.86px] border-[#C4CACE] rounded-[28px] overflow-hidden bg-white transition-all hover:shadow-md">
+      <Card className="flex flex-col md:flex-row items-start md:items-center w-full max-w-7xl min-h-[180px] md:min-h-[180px] border-[0.86px] border-[#C4CACE] rounded-[16px] md:rounded-[28px] overflow-hidden bg-white transition-all hover:shadow-md">
         {/* Event Image */}
-        <div className="w-[245px] h-[210px] flex-shrink-0 relative">
+        <div className="w-full md:w-[245px] h-[160px] md:h-[210px] flex-shrink-0 relative">
           <Image
             src={event.image ?? DummyFotoEvent}
             alt="Poster Event Highlight"
             fill
-            className="object-cover rounded-l-[28px] opacity-100"
-            sizes="245px"
+            className="object-cover rounded-t-[16px] md:rounded-t-none md:rounded-l-[28px] opacity-100"
+            sizes="(max-width: 768px) 100vw, 245px"
           />
         </div>
 
         {/* Info Content */}
-        <div className="flex flex-col justify-center items-start px-[30.96px] gap-[10.32px] flex-1 h-[122.4px] bg-white">
+        <div className="flex flex-col justify-center items-start p-4 md:px-[30.96px] gap-3 md:gap-[10.32px] flex-1 min-h-[120px] md:h-[122.4px] bg-white">
           {/* Badge & Participant */}
-          <div className="flex flex-row justify-between items-center w-full">
-            <Badge className="flex flex-row items-center gap-[6.88px] bg-[#2B6282] py-[3.44px] px-[10.32px] rounded-[13.76px]">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full gap-2 md:gap-0">
+            <Badge className="flex flex-row items-center gap-2 md:gap-[6.88px] bg-[#2B6282] py-2 md:py-[3.44px] px-3 md:px-[10.32px] rounded-xl md:rounded-[13.76px]">
               <Image
                 src={lembagaData?.users.image ?? LogoHMIFKecil}
                 alt="Logo Lembaga"
-                width={21}
-                height={21}
-                className="rounded-full object-cover"
+                width={18}
+                height={18}
+                className="rounded-full object-cover md:w-[21px] md:h-[21px]"
               />
-              <p className="text-[12px] leading-[16px] font-bold text-white">
+              <p className="text-xs md:text-[12px] leading-4 md:leading-[16px] font-bold text-white">
                 {lembagaData?.name}
               </p>
             </Badge>
 
-            <div className="flex flex-row items-center gap-[6.88px] text-[#768085] text-[14px] leading-[20px]">
+            <div className="flex flex-row items-center gap-2 md:gap-[6.88px] text-[#768085] text-sm md:text-[14px] leading-5 md:leading-[20px]">
               <Users
-                width={21}
-                height={21}
-                className="fill-current text-[#768085]"
+                width={18}
+                height={18}
+                className="fill-current text-[#768085] md:w-[21px] md:h-[21px]"
               />
               <p className="font-normal">{event.participant_count}</p>
             </div>
           </div>
 
           {/* Title & Description */}
-          <div className="flex flex-col gap-[6.88px] w-full">
-            <p className="text-[18px] font-bold leading-[26px] text-[#2B6282]">
+          <div className="flex flex-col gap-2 md:gap-[6.88px] w-full">
+            <p className="text-base md:text-[18px] font-bold leading-6 md:leading-[26px] text-[#2B6282] line-clamp-2 md:line-clamp-1">
               {event.name}
             </p>
             {event.description && (
-              <p className="text-[14px] leading-[20px] text-[#1E1E1E] line-clamp-1">
+              <p className="text-sm md:text-[14px] leading-5 md:leading-[20px] text-[#1E1E1E] line-clamp-2 md:line-clamp-1">
                 {event.description}
               </p>
             )}
           </div>
 
           {/* Date, Location & Status */}
-          <div className="flex flex-row items-center gap-[6.88px] text-[14px] leading-[20px] text-[#768085]">
-            <CalendarIcon width={21} height={21} />
+          <div className="flex flex-row items-center gap-2 md:gap-[6.88px] text-sm md:text-[14px] leading-5 md:leading-[20px] text-[#768085]">
+            <CalendarIcon width={18} height={18} className="md:w-[21px] md:h-[21px]" />
             <p>
               {event.start_date.toLocaleDateString('id-ID', {
                 month: 'short',

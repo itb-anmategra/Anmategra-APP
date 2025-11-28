@@ -20,6 +20,7 @@ interface BestStaffCardProps {
   profilePicture: StaticImageData | string;
   divisi: string;
   id_mahasiswa: string;
+  isLembaga?: boolean;
 }
 
 export default async function BestStaffCard({
@@ -29,6 +30,7 @@ export default async function BestStaffCard({
   profilePicture = dummyProfile,
   divisi = 'UI/UX',
   id_mahasiswa = '1',
+  isLembaga = false
 }: BestStaffCardProps) {
   // const session = await getServerAuthSession();
   // const isLembaga = session?.user.role === 'lembaga';
@@ -68,13 +70,13 @@ export default async function BestStaffCard({
               </div>
 
               <div className="text-center">
-                <h1 className="font-bold text-lg text-[#009292] group-hover:text-white">
+                <h1 className="font-bold text-xl text-[#009292] group-hover:text-white">
                   {namaSliced}
                 </h1>
-                <p className="text-[10px] text-[#141718] group-hover:text-white">
+                <p className="text-xs text-[#141718] group-hover:text-white">
                   {NIM} - {jurusan}
                 </p>
-                <h2 className="text-[16px] text-[#9DA4A8] font-semibold group-hover:text-white">
+                <h2 className="text-[#9DA4A8] font-semibold group-hover:text-white">
                   {divisiSliced}
                 </h2>
               </div>

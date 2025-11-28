@@ -16,6 +16,7 @@ import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { Card } from '~/components/ui/card';
 // TRPC Import
 import { api } from '~/trpc/server';
+import { getServerAuthSession } from '~/server/auth';
 
 const DetailLembagaPage = async ({
   params,
@@ -26,9 +27,10 @@ const DetailLembagaPage = async ({
   const { lembagaData, newestEvent, highlightedEvent, anggota } =
     await api.profile.getLembaga({ lembagaId: lembagaId });
 
+  const session = await getServerAuthSession();
   return (
     <>
-      <div className="w-full flex min-h-screen flex-col items-center">
+      <div className="w-full flex min-h-screen flex-col items-center px-[14px]">
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold text-slate-600">Lembaga</h1>
@@ -39,28 +41,28 @@ const DetailLembagaPage = async ({
               ]}
             />
           </div>
-          <div className="w-full flex items-center justify-center gap-x-6 py-12">
+            <div className="w-full flex items-center justify-center gap-6 sm:py-12">
             <Image
               src={lembagaData?.users.image ?? DummyFotoLembaga}
               alt="Foto Lembaga"
               width={200}
               height={100}
-              className="rounded-full"
+              className="rounded-full w-32 h-32 md:w-48 md:h-48 object-cover"
             />
             <div className="space-y-1">
-              <p className="text-3xl text-slate-600 font-semibold">
-                {lembagaData?.name}
+              <p className="text-xl sm:text-2xl md:text-3xl text-slate-600 font-semibold">
+              {lembagaData?.name}
               </p>
-              <p className="text-xl text-slate-400">
-                {lembagaData?.description}
+              <p className="text-sm sm:text-lg md:text-xl text-slate-400">
+              {lembagaData?.description}
               </p>
             </div>
-          </div>
+            </div>
 
           {highlightedEvent && (
             <Link href={`/mahasiswa/profile-kegiatan/${highlightedEvent.id}`}>
               <div className="space-y-4 pb-12">
-                <h5 className="text-2xl font-semibold text-slate-600">
+                <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
                   Highlighed Event
                 </h5>
                 <Card className="transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center">
@@ -100,8 +102,8 @@ const DetailLembagaPage = async ({
           )}
 
           {/* Kepanitiaan Terbaru */}
-          <div className="space-y-4 pb-12">
-            <h5 className="text-2xl font-semibold text-slate-600">
+          <div className="space-y-4 sm:pb-12">
+            <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
               Kepanitiaan Terbaru
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -121,7 +123,7 @@ const DetailLembagaPage = async ({
           </div>
 
           {/* Anggota Section */}
-          <ProfileKegiatanComp anggota={anggota ?? []} />
+          <ProfileKegiatanComp anggota={anggota ?? []} session={session} />
         </div>
       </div>
     </>

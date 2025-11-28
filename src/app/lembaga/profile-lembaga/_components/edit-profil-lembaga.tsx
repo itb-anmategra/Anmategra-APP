@@ -1,8 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PencilLine } from 'lucide-react';
-import React, { useState } from 'react';
+import { Camera, Pencil } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
 // Form Import
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -37,6 +38,8 @@ type profileLembagaSchemaType = z.infer<typeof profileLembagaSchema>;
 
 const EditProfileLembaga = ({
   lembagaData,
+  isEdit,
+  setIsEdit,
 }: {
   lembagaData: {
     id: string;
@@ -46,8 +49,9 @@ const EditProfileLembaga = ({
       image: string | null;
     };
   };
+  isEdit: boolean;
+  setIsEdit: (isEdit: boolean) => void;
 }) => {
-  const [isEdit, setIsEdit] = useState(false);
   const mutation = api.lembaga.editProfil.useMutation();
   const toast = useToast();
   const form = useForm<profileLembagaSchemaType>({
@@ -79,99 +83,164 @@ const EditProfileLembaga = ({
   }
 
   return (
-    <div>
+    <div className="w-full px-18">
       {!isEdit && (
         <Button
-          className="bg-secondary-500 hover:bg-secondary-600 text-white hover:text-white shadow-none"
+          className="w-full bg-secondary-500 hover:bg-secondary-600 space-x-6 -translate-y-0 px-6 py-6 text-base sm:text-lg md:text-xl rounded-3xl text-white hover:text-white shadow-none"
           onClick={() => setIsEdit(true)}
         >
-          Edit Profil Lembaga <PencilLine />
+          <Pencil /> Edit Profile Lembaga
         </Button>
       )}
       {isEdit && (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-2 min-w-[500px]"
-          >
-            <FormField
-              control={form.control}
-              name="nama"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Lembaga</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan nama lembaga"
-                      {...field}
-                      className="border-neutral-400 focus-visible:ring-transparent"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="deskripsi"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deskripsi Lembaga</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Masukkan deskripsi lembaga"
-                      {...field}
-                      className="border-neutral-400 focus-visible:ring-transparent"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gambar"
-              render={({ field }) => (
-                <FormItem className="flex flex-col items-start justify-start">
-                  <FormLabel>Upload Profil Lembaga</FormLabel>
-                  <UploadButton
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      if (res && res.length > 0) {
-                        // @ts-expect-error because the type of field is not compatible with the type of res
-                        field.onChange(res[0].url);
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
-                      alert(`ERROR! ${error.message}`);
-                    }}
-                    appearance={{
-                      button:
-                        'bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-md',
-                    }}
-                    className="w-full"
+        <div className="w-full items-center pb-2">
+          <div className="mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-[32px] font-semibold text-slate-600">
+              Edit Profile Lembaga
+            </h2>
+          </div>
+
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 w-full"
+            >
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-x-[52px]">
+                <div className="flex flex-col items-start">
+                  <FormField
+                    control={form.control}
+                    name="gambar"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="relative w-30 h-30 sm:w-40 sm:h-40 md:w-64 md:h-64 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
+                            {field.value ? (
+                              <Image
+                                src={field.value}
+                                alt="Profile Picture Lembaga"
+                                width={128}
+                                height={128}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                <Camera className="w-8 h-8 mb-2" />
+                                <span className="text-xs text-center">
+                                  Click to upload
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center opacity-100 transition-opacity">
+                              <Image
+                                src={'/icons/photo-camera.svg'}
+                                alt="Camera Icon"
+                                height={24}
+                                width={24}
+                              />
+                              <span className="text-neutral-300 text-xs text-center font-semibold ">
+                                {field.value
+                                  ? 'Click to change photo'
+                                  : 'Click to upload'}
+                              </span>
+                            </div>
+
+                            <div className="absolute inset-0">
+                              <UploadButton
+                                endpoint="imageUploader"
+                                onClientUploadComplete={(res) => {
+                                  if (res && res.length > 0 && res[0]) {
+                                    field.onChange(res[0].url);
+                                  }
+                                }}
+                                onUploadError={(error: Error) => {
+                                  alert(`ERROR! ${error.message}`);
+                                }}
+                                appearance={{
+                                  button:
+                                    'w-full h-full bg-transparent border-none cursor-pointer p-0 m-0',
+                                  container: 'w-full h-full',
+                                  allowedContent: 'hidden',
+                                }}
+                                content={{
+                                  button: () => (
+                                    <div className="w-full h-full bg-transparent" />
+                                  ),
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="w-full flex items-end justify-end gap-x-4 pt-4">
-              <Button
-                variant={'outline'}
-                className="border-Blue-Dark text-Blue-Dark"
-                onClick={() => setIsEdit(false)}
-              >
-                Batal Edit
-              </Button>
-              <Button
-                type="submit"
-                className="bg-Blue-Dark hover:bg-Blue-Dark/80 text-white"
-              >
-                Simpan <PencilLine />
-              </Button>
-            </div>
-          </form>
-        </Form>
+                </div>
+
+                <div className="flex-1 space-y-4 gap-3 w-full">
+                  <FormField
+                    control={form.control}
+                    name="nama"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
+                          Nama Lembaga
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Masukkan nama lembaga"
+                            {...field}
+                            className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm md:text-base"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Deskripsi Lembaga */}
+                  <FormField
+                    control={form.control}
+                    name="deskripsi"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
+                          Deskripsi Lembaga
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Masukkan deskripsi lembaga"
+                            {...field}
+                            className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm resize-none md:text-base min-h-40 sm:min-h-60"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="w-full gap-x-4 flex justify-center items-center sm:justify-end sm:items-end pt-4">
+                <Button
+                  variant={'outline'}
+                  className="border-Blue-Dark text-Blue-Dark"
+                  onClick={() => setIsEdit(false)}
+                  type="button"
+                >
+                  Batal Edit
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-Blue-Dark text-white px-6 py-3"
+                >
+                  Simpan
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       )}
     </div>
   );

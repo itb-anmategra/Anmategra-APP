@@ -7,6 +7,7 @@ import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-c
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { api } from '~/trpc/server';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
+import { getServerAuthSession } from '~/server/auth';
 
 const ProfileKegiatan = async ({
   params,
@@ -17,6 +18,8 @@ const ProfileKegiatan = async ({
   const { kegiatan, lembaga, participant } = await api.profile.getKegiatan({
     kegiatanId: query,
   });
+
+  const session = await getServerAuthSession();
 
   return (
     <div>
@@ -43,9 +46,10 @@ const ProfileKegiatan = async ({
               '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
             }
             linkDaftar={kegiatan?.oprec_link}
+            session={session}
           />
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-slate-600">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
               Penyelenggara
             </h2>
           </div>
@@ -59,7 +63,7 @@ const ProfileKegiatan = async ({
               }
             />
           </Link>
-          <ProfileKegiatanComp anggota={participant ?? []} />
+          <ProfileKegiatanComp anggota={participant ?? []} session={session} />
         </div>
       </div>
     </div>

@@ -79,7 +79,10 @@ const HistoriBestStaffPage = async ({ params }: Props) => {
                 />
               </div>
 
-              <CarouselBestStaff bestStaffList={periode.best_staff_list} />
+              <CarouselBestStaff 
+                bestStaffList={periode.best_staff_list} 
+                isLembaga={true}
+              />
             </div>
           )})) : (
             <div className="flex flex-col items-center justify-center h-[50vh]">
