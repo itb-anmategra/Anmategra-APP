@@ -6,24 +6,16 @@ import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '~/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import { useToast } from '~/hooks/use-toast';
 import { api } from '~/trpc/react';
+import { EditAssociationDialog } from './edit-association';
+import { DeleteAssociationDialog } from './delete-association-dialog';
 
 type AssociationRequest = {
   id: string;
@@ -46,17 +38,17 @@ const statusConfig = {
   Pending: {
     label: 'REQUESTED',
     className:
-      'border-2 border-[#F5CB69] text-[#F5CB69] bg-white hover:bg-[#F5CB69] hover:text-white',
+      'border-2 border-[#F5CB69] text-[#F5CB69] bg-transparent hover:bg-[#F5CB69] hover:text-white',
   },
   Accepted: {
     label: 'ACCEPTED',
     className:
-      'border-2 border-[#29BC5B] text-[#29BC5B] bg-white hover:bg-[#29BC5B] hover:text-white',
+      'border-2 border-[#29BC5B] text-[#29BC5B] bg-transparent hover:bg-[#29BC5B] hover:text-white',
   },
   Declined: {
     label: 'DECLINED',
     className:
-      'border-2 border-[#F16350] text-[#F16350] bg-white hover:bg-[#F16350] hover:text-white',
+      'border-2 border-[#F16350] text-[#F16350] bg-transparent hover:bg-[#F16350] hover:text-white',
   },
 };
 
@@ -184,6 +176,8 @@ export default function InboxTable({
         position: editPosition,
       });
     }
+    window.location.reload();
+
   };
 
   const confirmDelete = () => {
@@ -194,6 +188,7 @@ export default function InboxTable({
     } else if ('type' in selectedRequest && selectedRequest.type === 'lembaga' && selectedRequest.lembaga_id) {
       deleteLembagaMutation.mutate({ lembaga_id: selectedRequest.lembaga_id });
     }
+    window.location.reload();
   };
 
   const getInitials = (name: string) => {
@@ -212,11 +207,11 @@ export default function InboxTable({
             {/* Header: hidden on small screens, visible on md+ */}
             <div className="hidden md:grid grid-cols-[0.5fr_2fr_1fr_1fr_1fr_1fr_0.5fr] items-center gap-4 border-b border-[#E7E9EC] p-4 text-sm md:text-[18px] text-[#9DA4A8]">
               <div></div>
-              <div className="font-semibold">Nama</div>
-              <div className="text-center font-semibold">Lembaga</div>
-              <div className="text-center font-semibold">Divisi</div>
-              <div className="text-center font-semibold">Posisi</div>
-              <div className="text-center font-semibold">Status</div>
+              <div>Nama</div>
+              <div className="text-center">Lembaga</div>
+              <div className="text-center">Divisi</div>
+              <div className="text-center">Posisi</div>
+              <div className="text-center">Status</div>
               <div></div>
             </div>
 
@@ -290,12 +285,7 @@ export default function InboxTable({
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="p-1">
-                              <Image
-                                src="/icons/more-vert.svg"
-                                alt="More"
-                                width={24}
-                                height={24}
-                              />
+                              <p className='text-bold text-2xl'>...</p>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
@@ -339,98 +329,34 @@ export default function InboxTable({
               Tidak ada permintaan asosiasi
             </div>
             <p className="text-sm md:text-[24px] text-[#C4CACE] max-w-xs md:max-w-md">
-              Maaf, belum ada permintaan asosiasi yang masuk
+              Belum ada permintaan asosiasi yang Anda ajukan
             </p>
           </div>
         )}
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Permintaan Asosiasi</DialogTitle>
-            <DialogDescription>
-              Ubah divisi dan posisi yang Anda inginkan
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="division">Divisi</Label>
-              <Input
-                id="division"
-                value={editDivision}
-                onChange={(e) => setEditDivision(e.target.value)}
-                placeholder="Masukkan divisi"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="position">Posisi</Label>
-              <Input
-                id="position"
-                value={editPosition}
-                onChange={(e) => setEditPosition(e.target.value)}
-                placeholder="Masukkan posisi"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setEditDialogOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              onClick={confirmEdit}
-              disabled={
-                editEventMutation.isPending || editLembagaMutation.isPending
-              }
-            >
-              {editEventMutation.isPending || editLembagaMutation.isPending
-                ? 'Menyimpan...'
-                : 'Simpan'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditAssociationDialog
+        editDialogOpen={editDialogOpen}
+        setEditDialogOpen={setEditDialogOpen}
+        editDivision={editDivision}
+        setEditDivision={setEditDivision}
+        editPosition={editPosition}
+        setEditPosition={setEditPosition}
+        editEventMutation={editEventMutation}
+        editLembagaMutation={editLembagaMutation}
+        confirmEdit={confirmEdit}
+      />
 
       {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Hapus Permintaan Asosiasi</DialogTitle>
-            <DialogDescription>
-              Apakah Anda yakin ingin menghapus permintaan asosiasi ke{' '}
-              <span className="font-semibold">
-                {selectedRequest?.event_name ?? selectedRequest?.lembaga_name}
-              </span>
-              ? Tindakan ini tidak dapat dibatalkan.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              variant="warning"
-              onClick={confirmDelete}
-              disabled={
-                deleteEventMutation.isPending ||
-                deleteLembagaMutation.isPending
-              }
-            >
-              {deleteEventMutation.isPending ||
-              deleteLembagaMutation.isPending
-                ? 'Menghapus...'
-                : 'Hapus'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteAssociationDialog
+        deleteDialogOpen={deleteDialogOpen}
+        setDeleteDialogOpen={setDeleteDialogOpen}
+        name={selectedRequest?.event_name ?? selectedRequest?.lembaga_name}
+        deleteEventMutation={deleteEventMutation}
+        deleteLembagaMutation={deleteLembagaMutation}
+        confirmDelete={confirmDelete}
+      />
     </>
   );
 }
