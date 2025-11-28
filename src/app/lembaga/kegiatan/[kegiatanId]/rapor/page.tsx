@@ -1,5 +1,5 @@
 import { SearchBar } from '~/app/_components/placeholder/search-bar';
-import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import RaporTable from '~/app/_components/rapor/rapor-table';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -38,8 +38,8 @@ export default async function RaporPage({ params }: RaporPageProps) {
       <h1 className="text-[32px] font-semibold mb-2">Rapor Panitia</h1>
       <RaporBreadcrumb
         items={[
-          { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-          { label: 'Rapor', href: `/lembaga/kegiatan/${event_id}/rapor` },
+          { label: 'Kegiatan', href: '/kegiatan' },
+          { label: 'Rapor', href: `/kegiatan/${event_id}/rapor` },
         ]}
       />
       <div className="mb-4" />

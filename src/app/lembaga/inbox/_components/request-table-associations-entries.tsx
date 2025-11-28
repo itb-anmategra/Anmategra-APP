@@ -27,10 +27,10 @@ const RequestTableAssociationsEntries: React.FC<{
   const acceptLembagaMutation =
     api.lembaga.acceptRequestAssociationLembaga.useMutation({
       onSuccess: () => {
-        router.push('/lembaga/inbox');
+        router.push('/inbox');
       },
       onError: () => {
-        router.push('/lembaga/anggota');
+        router.push('/anggota');
       },
     });
   const handleAcceptLembaga = (
@@ -49,10 +49,10 @@ const RequestTableAssociationsEntries: React.FC<{
   const declineLembagaMutation =
     api.lembaga.declineRequestAssociationLembaga.useMutation({
       onSuccess: () => {
-        router.push('/lembaga/inbox');
+        router.push('/inbox');
       },
       onError: () => {
-        router.push('/lembaga/anggota');
+        router.push('/anggota');
       },
     });
   const handleDeclineLembaga = (
@@ -70,10 +70,10 @@ const RequestTableAssociationsEntries: React.FC<{
 
   const acceptEventMutation = api.lembaga.acceptRequestAssociation.useMutation({
     onSuccess: () => {
-      router.push('/lembaga/inbox');
+      router.push('/inbox');
     },
     onError: () => {
-      router.push('/lembaga/anggota');
+      router.push('/anggota');
     },
   });
   const handleAcceptEvent = (
@@ -94,10 +94,10 @@ const RequestTableAssociationsEntries: React.FC<{
   const declineEventMutation =
     api.lembaga.declineRequestAssociation.useMutation({
       onSuccess: () => {
-        router.push('/lembaga/inbox');
+        router.push('/inbox');
       },
       onError: () => {
-        router.push('/lembaga/anggota');
+        router.push('/anggota');
       },
     });
   const handleDeclineEvent = (

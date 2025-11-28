@@ -14,6 +14,8 @@ import LaporanFormDialog from '../detail/laporan-form';
 import Link from 'next/link';
 import { api } from '~/trpc/react';
 import { useToast } from '~/hooks/use-toast';
+import { getToken } from 'next-auth/jwt';
+
 
 interface AccordionProps {
   title: ColumnType;
@@ -38,7 +40,7 @@ export const ListDisplayItem = ({ id, name, date, category, onEdit, onDelete, co
     <li className="relative flex flex-row items-center justify-between gap-2 rounded-xl border-b p-4 text-[17px] text-[#636A6D] shadow-sm">
       
 
-      <Link href={`/lembaga/laporan/${id}`} className="flex items-center justify-between w-full">
+      <Link href={`/laporan/${id}`} className="flex items-center justify-between w-full">
         <h1 className="">{name}</h1>
         <div className="flex flex-row items-center justify-evenly space-x-20">
           <h2>{date}</h2>

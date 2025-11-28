@@ -1,7 +1,7 @@
 import React from 'react';
 import { type z } from 'zod';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
-import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
 import { type GetNilaiLembagaIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { getServerAuthSession } from '~/server/auth';
@@ -75,8 +75,8 @@ export default async function RaporIndividuLembagaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Anggota', href: '/lembaga/anggota' },
-              { label: 'Rapor Individu', href: '/lembaga/anggota' },
+              { label: 'Anggota', href: '/anggota' },
+              { label: 'Rapor Individu', href: '/anggota' },
             ]}
           />
         </div>
@@ -120,8 +120,8 @@ export default async function RaporIndividuLembagaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Anggota', href: '/lembaga/anggota' },
-              { label: 'Rapor Individu', href: '/lembaga/anggota' },
+              { label: 'Anggota', href: '/anggota' },
+              { label: 'Rapor Individu', href: '/anggota' },
             ]}
           />
         </div>

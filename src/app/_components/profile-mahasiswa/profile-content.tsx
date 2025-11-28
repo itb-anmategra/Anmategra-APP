@@ -15,7 +15,7 @@ import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
-
+import { RaporBreadcrumb } from '../breadcrumb';
 import { type ProfileMahasiswaContentProps } from './constant';
 
 const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
@@ -27,22 +27,21 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 }) => {
   const [isEdit, setIsEdit] = useState(false);
 
-  const baseHref = isLembagaView
-    ? '/lembaga/profile-kegiatan'
-    : 'mahasiswa/profile-kegiatan';
+  const baseHref = 'profile-kegiatan';
 
   return (
     <div
-      className={cn(
-        'w-full flex min-h-screen flex-col items-center',
-        isLembagaView ? 'px-6' : 'pt-14 px-6',
-      )}
-    >
+      className='w-full flex min-h-screen flex-col items-center px-6'>
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
-          <h1 className="text-xl md:text-2xl font-semibold text-neutral-1000">Beranda</h1>
-          <p className="text-neutral-1000">Beranda / Mahasiswa</p>
+          <h1 className="text-2xl font-semibold text-neutral-1000">Beranda</h1>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Beranda', href: '/' },
+              { label: 'Mahasiswa', href: `/profile-mahasiswa/${userId}` },
+            ]}
+          />
         </div>
 
         {/* Profil Mahasiswa */}

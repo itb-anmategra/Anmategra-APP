@@ -70,7 +70,7 @@ const ProfileKegiatan = async ({
               Penyelenggara
             </h2>
           </div>
-          <Link href={`/lembaga/profile-lembaga/${lembaga?.id}`}>
+          <Link href={`/profile-lembaga/${lembaga?.id}`}>
             <PenyelenggaraCard
               title={lembaga?.name ?? 'Tidak ada nama'}
               category={lembaga?.type ?? 'Tidak ada kategori'}
@@ -108,7 +108,7 @@ const ProfileKegiatan = async ({
                 {is_user_owner && (
                   <Button asChild variant="ghost">
                     <Link
-                      href={`/lembaga/profile-lembaga/${lembaga?.id}/histori`}
+                      href={`/profile-lembaga/${lembaga?.id}/histori`}
                       className="flex items-center gap-2 text-lg"
                     >
                       <span>Lihat Histori</span>

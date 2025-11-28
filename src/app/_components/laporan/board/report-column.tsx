@@ -60,7 +60,7 @@ export function ReportColumn({
   const router = useRouter();
 
   const handleClick = (id: string) => {
-    router.push(`/lembaga/laporan/${id}`);
+    router.push(`/laporan/${id}`);
   };
 
   return (

@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 import RaporIndividuHeader from '~/app/_components/rapor/individu/rapor-individu-header';
-import { RaporBreadcrumb } from '~/app/_components/rapor/rapor-breadcrumb';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import ProfilTable from '~/app/_components/table/event-profil-table';
 import { type GetAllProfilOutputSchema } from '~/server/api/types/profil.type';
 import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
@@ -69,9 +69,9 @@ export default async function RaporIndividuPanitiaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-              { label: 'Panitia', href: '/lembaga/kegiatan' },
-              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+              { label: 'Kegiatan', href: '/kegiatan' },
+              { label: 'Panitia', href: '/kegiatan' },
+              { label: 'Rapor Individu', href: '/kegiatan' },
             ]}
           />
         </div>
@@ -116,9 +116,9 @@ export default async function RaporIndividuPanitiaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
-              { label: 'Panitia', href: '/lembaga/kegiatan' },
-              { label: 'Rapor Individu', href: '/lembaga/kegiatan' },
+              { label: 'Kegiatan', href: '/kegiatan' },
+              { label: 'Panitia', href: '/kegiatan' },
+              { label: 'Rapor Individu', href:'/kegiatan' },
             ]}
           />
         </div>

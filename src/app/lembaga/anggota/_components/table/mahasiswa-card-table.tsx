@@ -121,7 +121,7 @@ const columns: ColumnDef<Member>[] = [
     accessorKey: 'rapor',
     header: 'Rapor',
     cell: ({ row }) => (
-      <Link href={`/lembaga/anggota/${row.original.id}`}>
+      <Link href={`/anggota/${row.original.id}`}>
         <Button
           variant="outline"
           className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"

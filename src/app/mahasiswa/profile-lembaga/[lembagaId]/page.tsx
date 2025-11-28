@@ -11,6 +11,7 @@ import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { Badge } from '~/components/ui/badge';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 // Components Import
 import { Card } from '~/components/ui/card';
 // TRPC Import
@@ -29,11 +30,16 @@ const DetailLembagaPage = async ({
   const session = await getServerAuthSession();
   return (
     <>
-      <div className="w-full flex min-h-screen flex-col items-center pt-14 px-[14px]">
+      <div className="w-full flex min-h-screen flex-col items-center px-[14px]">
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-semibold text-slate-600">Beranda</h1>
-            <p className="text-slate-400">Beranda / Nama Lembaga</p>
+            <h1 className="text-2xl font-semibold text-slate-600">Lembaga</h1>
+            <RaporBreadcrumb
+              items={[
+                { label: 'Beranda', href: '/' },
+                { label: 'Profil Lembaga', href: `/profile-lembaga/${lembagaId}` },
+              ]}
+            />
           </div>
             <div className="w-full flex items-center justify-center gap-6 sm:py-12">
             <Image

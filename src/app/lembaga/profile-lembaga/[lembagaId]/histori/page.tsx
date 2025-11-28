@@ -5,7 +5,6 @@ import BestStaff from '~/app/lembaga/_components/best-staff-form';
 import { Button } from '~/components/ui/button';
 
 // import { dummyDate } from './_components/dummy-histori';
-import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 import { HistoriBreadCrumb } from './_components/histori-breadcrumb';
 
@@ -35,11 +34,11 @@ const HistoriBestStaffPage = async ({ params }: Props) => {
           <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
           <HistoriBreadCrumb
             items={[
-              { label: 'Beranda', href: '/lembaga' },
-              { label: 'Lembaga', href: `/lembaga/profile-lembaga/${lembagaId}` },
+              { label: 'Beranda', href: '/' },
+              { label: 'Lembaga', href: `/profile-lembaga/${lembagaId}` },
               {
                 label: 'Histori',
-                href: `/lembaga/profile-lembaga/${lembagaId}/histori`,
+                href: `/profile-lembaga/${lembagaId}/histori`,
               },
             ]}
           />

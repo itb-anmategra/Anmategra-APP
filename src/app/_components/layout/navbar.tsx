@@ -45,6 +45,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
     }
   };
 
+  // useEffect(() => {
+  //   if (session?.user.role === 'lembaga') {
+  //     router.push('/lembaga');
+  //   }
+  // });
   const handleSearchSubmit = () => {
     if (session?.user.role === 'lembaga') {
       void router.push(`/lembaga/pencarian/${searchQuery}`);
