@@ -1,7 +1,7 @@
 import React from 'react';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
-
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import ProfilTable from '../../_components/table/event-profil-table';
 
 const ProfilLembaga = async () => {
@@ -16,7 +16,13 @@ const ProfilLembaga = async () => {
             <h1 className="text-neutral-1000 text-[32px] font-semibold">
               Profil Lembaga
             </h1>
-            <p>BreadCrumbs</p>
+            <RaporBreadcrumb
+              items={[
+                { label: 'Anggota', href: '/lembaga/anggota' },
+                { label: 'Rapor Komunal', href: '/lembaga/anggota/rapor' },
+                { label: 'Profil Lembaga', href: '/lembaga/profil' },
+              ]}
+            />
           </div>
           <div className="text-center py-8">
             <p className="text-neutral-500">Session tidak ditemukan</p>
@@ -59,7 +65,13 @@ const ProfilLembaga = async () => {
           <h1 className="text-neutral-1000 text-[32px] font-semibold">
             Profil Lembaga
           </h1>
-          <p>BreadCrumbs</p>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Anggota', href: '/lembaga/anggota' },
+              { label: 'Rapor Komunal', href: '/lembaga/anggota/rapor' },
+              { label: 'Profil Lembaga', href: '/lembaga/profil' },
+            ]}
+          />
         </div>
 
         <div className="flex flex-col gap-y-4">
