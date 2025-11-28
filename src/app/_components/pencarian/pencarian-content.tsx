@@ -2,22 +2,22 @@
 
 // Library Import
 // Icon Import
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+// import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Session Import
 import { type Session } from 'next-auth';
 // Image Import
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import dummyLembaga from 'public/images/logo/hmif-logo.png';
 import NotFound from 'public/images/miscellaneous/not-found-general.png';
 // Dummy Asset Import
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
-import React, { useState } from 'react';
+import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import LembagaCard from '~/app/_components/card/lembaga-card';
 import MahasiswaCard from '~/app/_components/card/mahasiswa-card';
-import { Input } from '~/components/ui/input';
+// import { Input } from '~/components/ui/input';
 import { cn } from '~/lib/utils';
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan';
@@ -39,27 +39,27 @@ const PencarianContent = ({
     kegiatan: Kepanitiaan[];
   };
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
+  // const [searchQuery, setSearchQuery] = useState('');
+  // const router = useRouter();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      void router.push(`/pencarian/${searchQuery}`);
-    }
-  };
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === 'Enter') {
+  //     void router.push(`/pencarian/${searchQuery}`);
+  //   }
+  // };
 
   return (
     <div
       className={cn(
-        'flex w-full flex-col overflow-hidden pt-0 pb-16 gap-4',
+        'flex w-full flex-col overflow-hidden pt-10 gap-4',
         session?.user.role === 'lembaga' && 'p-6',
       )}
     >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           <h1 className="text-2xl font-semibold text-slate-600">
             Hasil Pencarian
           </h1>
-          <Input
+          {/* <Input
             placeholder="Cari lembaga, kegiatan, atau mahasiswa"
             className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
             startAdornment={
@@ -68,12 +68,12 @@ const PencarianContent = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-          />
+          /> */}
         </div>
       <div
         className={cn(
           'flex flex-col items-center w-full',
-          session?.user.role === 'mahasiswa' && 'mt-24',
+          session?.user.role === 'mahasiswa' && 'mt-0',
         )}
       >
         <div className="w-full space-y-8 max-w-7xl">
@@ -146,7 +146,7 @@ const PencarianContent = ({
           {data?.mahasiswa.length === 0 &&
             data?.lembaga.length === 0 &&
             data?.kegiatan.length === 0 && (
-              <div className="w-full flex flex-col justify-center items-center gap-6 p-12 mt-20">
+              <div className="w-full flex flex-col justify-center items-center gap-6 p-12">
                 <Image
                   src={NotFound}
                   alt="Not Found Icon"
