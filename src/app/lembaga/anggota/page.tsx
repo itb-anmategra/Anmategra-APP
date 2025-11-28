@@ -24,6 +24,7 @@ export default async function Home() {
         session={session}
         data={anggota}
         dataAddAnggota={addAnggotaProps}
+        pageAnggota={true}
       />
     </main>
   );

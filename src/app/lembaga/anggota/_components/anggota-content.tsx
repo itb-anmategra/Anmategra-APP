@@ -27,6 +27,7 @@ export default function AnggotaContent({
   session,
   data,
   dataAddAnggota,
+  pageAnggota,
 }: {
   session: Session | null;
   data: Member[];
@@ -36,11 +37,12 @@ export default function AnggotaContent({
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
+  pageAnggota?: boolean;
 }) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
   const router = useRouter();
-  const isAnggota = pathname === '/anggota';
+  const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
   let tableData;
