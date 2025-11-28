@@ -41,7 +41,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
         void router.push(`/mahasiswa/pencarian/${searchQuery}`);
       }
       setIsSearchOpen(false);
-      setSearchQuery('');
+      // setSearchQuery('');
     }
   };
 
@@ -57,7 +57,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
       void router.push(`/mahasiswa/pencarian/${searchQuery}`);
     }
     setIsSearchOpen(false);
-    setSearchQuery('');
+    // setSearchQuery('');
   }
 
   useEffect(() => {
