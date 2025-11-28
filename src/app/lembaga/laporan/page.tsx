@@ -43,6 +43,9 @@ export default async function LaporanPage() {
         name: report.subject,
         date: formatTanggal(report.created_at),
         category: report.urgent,
+        description: report.description,
+        urgent: report.urgent,
+        attachment: report.attachment,
       });
     }
   });
@@ -50,7 +53,6 @@ export default async function LaporanPage() {
   const finalData: ColumnProps[] = [
     { title: 'Draft', reports: reportsByStatus.Draft },
     { title: 'Backlog', reports: reportsByStatus.Backlog },
-    
     { title: 'In Progress', reports: reportsByStatus['In Progress'] },
     { title: 'Resolved', reports: reportsByStatus.Resolved },
   ];

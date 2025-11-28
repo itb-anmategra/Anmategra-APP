@@ -2,9 +2,10 @@
 
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '~/components/ui/input';
+import { api } from '~/trpc/react';
 
 // Components Import
 import { KanbanBoard } from './board/kanban-board';
@@ -20,13 +21,90 @@ interface LaporanProps {
 }
 
 type ReportData = Report;
+type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
+
+function isValidStatus(status: string): status is Status {
+  return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
+}
+
+export function formatTanggal(dateInput: Date | string): string {
+  const date = new Date(dateInput);
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'Asia/Jakarta',
+  };
+
+  return new Intl.DateTimeFormat('id-ID', options).format(date);
+}
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
   const [editingReport, setEditingReport] = useState<ReportData | null>(null);
+
+  const { data: searchData } = api.users.getAllReportsUser.useQuery(
+    {
+      search: debouncedSearch,
+    },
+    {
+      enabled: debouncedSearch.length > 0,
+    }
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const displayData = useMemo(() => {
+    if (debouncedSearch.length === 0) {
+      return Laporan.data;
+    }
+    if (!searchData){
+      return [];
+    }
+
+    const reportsByStatus: Record<Status, Report[]> = {
+      'Draft': [],
+      'Backlog': [],
+      'In Progress': [],
+      'Resolved': [],
+    };
+
+    searchData.reports.forEach((report) => {
+      if (isValidStatus(report.status)) {
+        reportsByStatus[report.status].push({
+          id: report.id,
+          name: report.subject,
+          date: formatTanggal(report.created_at),
+          category: report.urgent,
+          description: report.description,
+          urgent: report.urgent,
+          attachment: report.attachment,
+        });
+      }
+    });
+
+    return [
+      { title: 'Draft' as const, reports: reportsByStatus.Draft },
+      { title: 'Backlog' as const, reports: reportsByStatus.Backlog },
+      { title: 'In Progress' as const, reports: reportsByStatus['In Progress'] },
+      { title: 'Resolved' as const, reports: reportsByStatus.Resolved },
+    ];
+  }, [debouncedSearch, searchData, Laporan.data]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -69,21 +147,25 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
 
   const handleEditReport = (report: ReportData) => {
     setEditingReport(report);
-
   };
 
   const handleEditComplete = () => {
     setEditingReport(null);
+    router.refresh();
   };
 
   const handleRefresh = () => {
     router.refresh();
-  }
+  };
 
-  const isLaporanEmpty = Laporan.data.length === 0;
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const isLaporanEmpty = displayData.length === 0 || displayData.every(col => col.reports.length === 0);
 
   return (
-    <div className="flex w-full flex-col gap-4 pt-[40px] pl-[42px] pr-[36px]">
+    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
@@ -94,20 +176,20 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
         isAdminView={Laporan.isAdminView ?? false}
       />
       {/* Input */}
-      {!isLaporanEmpty && (
-        <Input
-          placeholder="Cari laporan"
-          className="rounded-3xl py-5 h-[60px] text-[18px] bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
-          startAdornment={
-            <MagnifyingGlassIcon className="size-5 text-gray-500" />
-          }
-        />
-      )}
+      <Input
+        placeholder="Cari laporan"
+        value={searchQuery}
+        onChange={handleSearchChange}
+        className="rounded-3xl py-5 h-[60px] text-[18px] bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+        startAdornment={
+          <MagnifyingGlassIcon className="size-5 text-gray-500" />
+        }
+      />
 
       {/* Board Display */}
       {display === 'Board' && !isLaporanEmpty && (
         <KanbanBoard
-          kanbanData={Laporan.data}
+          kanbanData={displayData}
           hideColumnAction={hideStatus}
           displayedColumn={status}
           isAdminView={Laporan.isAdminView ?? false}
@@ -118,7 +200,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       {/* List Display */}
       {display === 'List' && !isLaporanEmpty && (
         <ListDisplay
-          kanbanData={Laporan.data}
+          kanbanData={displayData}
           hideColumnAction={hideStatus}
           displayedColumn={status}
           isAdminView={Laporan.isAdminView}
@@ -126,13 +208,17 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
           onRefresh={handleRefresh}
         />
       )}
-      {/* Show Tambah Laporan Button in the middle of Screen */}
+
       {isLaporanEmpty && (
         <div className="flex h-4/5 flex-col items-center justify-center gap-3">
           <h1 className="text-2xl font-semibold text-neutral-300">
-            Buat laporan baru!
+            {searchQuery ? 'Tidak ada laporan yang ditemukan' : 'Buat laporan baru!'}
           </h1>
-          <LaporanFormDialog isAdmin={Laporan.isAdminView ?? false}/>
+          {!searchQuery && (
+            <LaporanFormDialog 
+              isAdmin={Laporan.isAdminView ?? false}
+            />
+          )}
         </div>
       )}
       {/* Edit Mode Dialog */}
