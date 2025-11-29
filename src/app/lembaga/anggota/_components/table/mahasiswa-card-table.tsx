@@ -13,9 +13,9 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
-import MoreVertIcon from 'public/icons/more-vert.svg';
 import * as React from 'react';
 import CustomPagination from '~/app/_components/layout/pagination-comp';
+import { EditAnggotaDialog } from '~/app/_components/form/edit-anggota-dialog';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -46,6 +46,79 @@ export type Member = {
   posisiColor: string;
 };
 
+function ActionCell({ member, lembagaId }: { member: Member; lembagaId?: string }) {
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const mutation = api.lembaga.removeAnggota.useMutation();
+
+  const onDelete = (id: string) => {
+    mutation.mutate(
+      { user_id: id },
+      {
+        onSuccess: () => {
+          mutation.reset();
+          window.location.reload();
+        },
+      },
+    );
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setEditOpen(true)}
+        className="border-blue-400 text-blue-400 hover:border-blue-500 hover:text-blue-500"
+      >
+        Edit
+      </Button>
+      <EditAnggotaDialog
+        isOpen={editOpen}
+        setIsOpen={setEditOpen}
+        memberId={member.id}
+        currentPosition={member.posisi}
+        currentDivision={member.divisi}
+        lembagaId={lembagaId}
+      />
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
+          >
+            Hapus
+          </Button>
+        </DialogTrigger>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>Hapus Anggota</DialogTitle>
+            <DialogDescription>
+              Apakah kamu yakin ingin menghapus anggota ini?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full flex items-center justify-center gap-x-4">
+            <Button onClick={() => setDeleteOpen(false)}>
+              Tidak, Batalkan
+            </Button>
+            <Button
+              onClick={() => {
+                onDelete(member.id);
+                setDeleteOpen(false);
+              }}
+              variant="warning"
+            >
+              Ya, Hapus
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+
 const columns: ColumnDef<Member>[] = [
   {
     accessorKey: 'nama',
@@ -65,57 +138,7 @@ const columns: ColumnDef<Member>[] = [
   {
     accessorKey: 'posisi',
     header: 'Posisi',
-    cell: ({ row }) => {
-      const mutation = api.lembaga.removeAnggota.useMutation();
-      const onDelete = (id: string) => {
-        mutation.mutate(
-          { user_id: id },
-          {
-            onSuccess: () => {
-              mutation.reset();
-              window.location.reload();
-            },
-          },
-        );
-      };
-
-      return (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {row.getValue('posisi')}
-          </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              {/* <Button
-                // onClick={() => onDelete(row.original.id)}
-                variant={'outline'}
-                size={'sm'}
-                className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
-              >
-                Hapus
-              </Button> */}
-            </DialogTrigger>
-            <DialogContent aria-describedby={undefined}>
-              <DialogHeader>
-                <DialogTitle>Hapus Anggota</DialogTitle>
-                <DialogDescription>
-                  Apakah kamu yakin ingin menghapus anggota ini?
-                </DialogDescription>
-              </DialogHeader>
-              <div className="w-full flex items-center justify-center gap-x-4">
-                <Button>Tidak, Batalkan</Button>
-                <Button
-                  onClick={() => onDelete(row.original.id)}
-                  variant={'warning'}
-                >
-                  Ya, Hapus
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      );
-    },
+    cell: ({ row }) => <span>{row.getValue('posisi')}</span>,
   },
   {
     accessorKey: 'rapor',
@@ -139,24 +162,12 @@ const columns: ColumnDef<Member>[] = [
   },
   {
     id: 'actions',
-    header: '',
-    cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0 hover:bg-gray-100"
-        onClick={() => {
-          // Handle more actions
-          console.log('More actions for:', row.original.id);
-        }}
-      >
-        <Image src={MoreVertIcon} alt="More Options" width={20} height={20} />
-      </Button>
-    ),
+    header: 'Actions',
+    cell: ({ row, table }) => <ActionCell member={row.original} lembagaId={(table.options.meta as any)?.lembagaId} />,
   },
 ];
 
-export function MahasiswaCardTable({ data }: { data: Member[] }) {
+export function MahasiswaCardTable({ data, lembagaId }: { data: Member[]; lembagaId?: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10; // You can make this configurable
@@ -175,6 +186,7 @@ export function MahasiswaCardTable({ data }: { data: Member[] }) {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    meta: { lembagaId },
   });
 
   return (
