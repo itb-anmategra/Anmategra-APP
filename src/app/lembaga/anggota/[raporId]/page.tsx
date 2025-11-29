@@ -62,8 +62,8 @@ export default async function RaporIndividuLembagaPage({
             lembaga.profil_km_id.map((kmId) => ({
               profilKMDescription: profilKMMap.get(kmId) ?? 'Unknown',
               profilKegiatanName: lembaga.name,
-              profilKegiatanDescription: lembaga.description,
-            })),
+              description: lembaga.description,
+            }))
           )
         : [];
 

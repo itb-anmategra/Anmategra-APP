@@ -56,8 +56,8 @@ export default async function RaporIndividuPanitiaPage({
             kegiatan.profil_km_id.map((kmId) => ({
               profilKMDescription: profilKMMap.get(kmId) ?? 'Unknown',
               profilKegiatanName: kegiatan.name,
-              profilKegiatanDescription: kegiatan.description,
-            })),
+              description: kegiatan.description,
+            }))
           )
         : [];
 
