@@ -36,7 +36,7 @@ export function ReportCard({ report, column, onClick, onEdit, onDelete }: Report
     <div className="relative w-full">
       {showMenu && (
         <div className="absolute right-3 top-3 z-10">
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="text-2xl select-none">
               ...
             </DropdownMenuTrigger>

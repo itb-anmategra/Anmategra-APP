@@ -51,7 +51,7 @@ export const ListDisplayItem = ({ id, name, date, category, onEdit, onDelete, co
       </Link>
       {showMenu && (
         <div>
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="text-2xl select-none" onClick={(e) => e.stopPropagation()}>
               ...
             </DropdownMenuTrigger>

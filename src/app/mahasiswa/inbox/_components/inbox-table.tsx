@@ -282,7 +282,7 @@ export default function InboxTable({
                     {/* Actions */}
                     <div className="flex items-center justify-center">
                       {isPending && (
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="p-1">
                               <p className='text-bold text-2xl'>...</p>

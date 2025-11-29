@@ -76,7 +76,7 @@ export function ReportColumn({
               </span>
             </div>
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="mb-2 text-2xl select-none">
                 ...
               </DropdownMenuTrigger>
