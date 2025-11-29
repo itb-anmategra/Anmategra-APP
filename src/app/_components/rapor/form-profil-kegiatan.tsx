@@ -132,11 +132,19 @@ export default function FormProfilKegiatan({
                     />
                   </SelectTrigger>
                   <SelectContent side="bottom" className="max-w-[759px]">
-                    {selectOptions.map((profil) => (
-                      <SelectItem key={profil.value} value={profil.value}>
-                        {profil.label}
-                      </SelectItem>
-                    ))}
+                    {selectOptions
+                      .filter((option) => {
+                        const isAlreadySelected = pemetaan.some(
+                          (selectedValue, index) =>
+                            index !== id && selectedValue === option.value
+                        );
+                        return !isAlreadySelected;
+                      })
+                      .map((profil) => (
+                        <SelectItem key={profil.value} value={profil.value}>
+                          {profil.label}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
                 <Button
