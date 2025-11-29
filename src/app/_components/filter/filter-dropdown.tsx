@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -45,7 +46,7 @@ export default function FilterDropdown({
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button className="bg-neutral-50 hover:bg-neutral-300 border border-neutral-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg">
           <Image src={Filter} alt="Filter icon" width={24} height={24} />
@@ -73,6 +74,7 @@ export default function FilterDropdown({
                 onCheckedChange={(checked) =>
                   handleFilterToggle(option.value, checked)
                 }
+                onSelect={(e) => e.preventDefault()}
               >
                 {option.label}
               </DropdownMenuCheckboxItem>
@@ -80,12 +82,12 @@ export default function FilterDropdown({
             {selectedFilters.length > 0 && (
               <>
                 <DropdownMenuSeparator />
-                <button
-                  onClick={handleClearAll}
-                  className="w-full px-2 py-2 text-sm text-left text-red-600 hover:bg-red-50 rounded-sm"
+                <DropdownMenuItem
+                  onSelect={handleClearAll}
+                  className="w-full cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
                 >
                   Hapus semua filter
-                </button>
+                </DropdownMenuItem>
               </>
             )}
           </>
