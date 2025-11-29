@@ -1,20 +1,17 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '~/components/ui/command';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '~/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,375 +21,190 @@ import {
   FormMessage,
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover';
-import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 const EditAnggotaSchema = z.object({
   nama: z.string().min(1, 'Nama wajib diisi'),
   nim: z.string().min(1, 'NIM wajib diisi'),
-  division: z.string().min(1, 'Divisi wajib diisi'),
   position: z.string().min(1, 'Posisi wajib diisi'),
+  division: z.string().min(1, 'Divisi wajib diisi'),
 });
 
 type EditAnggotaSchemaType = z.infer<typeof EditAnggotaSchema>;
 
-export type EditComboboxDataType = {
-  value: string;
-  label: string;
+type EditAnggotaKegiatanFormProps = {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  memberId: string;
+  eventId: string;
+  currentNama: string;
+  currentNim: string;
+  currentPosition: string;
+  currentDivision: string;
 };
 
-type EditAnggotaProps = {
-  defaultValues: {
-    nama: string;
-    nim: string;
-    division: string;
-    position: string;
-    user_id: string;
-    event_id: string;
-  };
-  divisiList: EditComboboxDataType[];
-  posisiList: EditComboboxDataType[];
-  setIsOpen: (param: boolean) => void;
-  onUpdate?: (data: any) => void;
-};
-
-const EditAnggotaKegiatanForm: React.FC<EditAnggotaProps> = ({
-  defaultValues,
-  divisiList,
-  posisiList,
+const EditAnggotaKegiatanForm: React.FC<EditAnggotaKegiatanFormProps> = ({
+  isOpen,
   setIsOpen,
-  onUpdate,
+  memberId,
+  eventId,
+  currentNama,
+  currentNim,
+  currentPosition,
+  currentDivision,
 }) => {
-  const [divisiOpen, setDivisiOpen] = useState(false);
-  const [posisiOpen, setPosisiOpen] = useState(false);
-  const [divisiOptions, setDivisiOptions] = useState(divisiList);
-  const [posisiOptions, setPosisiOptions] = useState(posisiList);
-  const [customDivisi, setCustomDivisi] = useState('');
-  const [customPosisi, setCustomPosisi] = useState('');
-
   const mutation = api.event.editPanitia.useMutation();
-
   const form = useForm<EditAnggotaSchemaType>({
     resolver: zodResolver(EditAnggotaSchema),
     defaultValues: {
-      nama: defaultValues.nama,
-      nim: defaultValues.nim,
-      division: defaultValues.division,
-      position: defaultValues.position,
+      nama: currentNama,
+      nim: currentNim,
+      position: currentPosition,
+      division: currentDivision,
     },
   });
 
+  // Reset form when dialog opens or values change
   useEffect(() => {
-    form.reset({
-      nama: defaultValues.nama,
-      nim: defaultValues.nim,
-      division: defaultValues.division,
-      position: defaultValues.position,
-    });
-  }, [defaultValues, form]);
+    if (isOpen) {
+      form.reset({
+        nama: currentNama,
+        nim: currentNim,
+        position: currentPosition,
+        division: currentDivision,
+      });
+    }
+  }, [isOpen, currentNama, currentNim, currentPosition, currentDivision, form]);
 
   const onSubmit = (values: EditAnggotaSchemaType) => {
+    if (!eventId) {
+      console.error('eventId is required');
+      return;
+    }
+    
     mutation.mutate(
       {
-        event_id: defaultValues.event_id,
-        user_id: defaultValues.user_id,
-        division: values.division,
+        user_id: memberId,
+        event_id: eventId,
         position: values.position,
+        division: values.division,
       },
       {
         onSuccess: () => {
-          if (onUpdate) {
-            onUpdate({
-              division: values.division,
-              position: values.position,
-            });
-          }
           setIsOpen(false);
-          console.log('Form submitted successfully!');
+          form.reset();
+          window.location.reload();
+          toast({
+            title: 'Berhasil mengedit panitia',
+            description: 'Data panitia telah diperbarui.',
+          })
         },
         onError: (error) => {
-          console.error('Mutation Error:', error);
-          console.error('Error message:', error.message);
-          console.error('Error data:', error.data);
-          alert(`Error: ${error.message}`);
+          toast({
+            title: 'Gagal mengedit panitia',
+            description: error.message,
+            variant: 'destructive',
+          })
         },
       },
     );
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-center">
-          Edit Anggota Kegiatan
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="w-full max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-semibold text-center text-[#00B7B7]">
+            Edit Panitia
+          </DialogTitle>
+          <DialogDescription className="text-center text-[#98A2B3]">
+            Ubah posisi atau divisi panitia
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 w-full"
-            autoComplete="off"
-          >
-            {/* Nama */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="nama"
               render={({ field }) => (
-                <FormItem className="w-full flex items-center gap-16">
-                  <FormLabel className="w-24 text-xl font-normal">
-                    Nama
-                  </FormLabel>
+                <FormItem>
+                  <FormLabel>Nama</FormLabel>
                   <FormControl>
                     <Input
-                      className="text-neutral-700 rounded-[12px] h-12"
-                      placeholder="Masukkan nama"
+                      placeholder="Masukkan nama..."
                       {...field}
-                      autoComplete="off"
+                      className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
+                      disabled
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* NIM */}
             <FormField
               control={form.control}
               name="nim"
               render={({ field }) => (
-                <FormItem className="w-full flex items-center gap-16">
-                  <FormLabel className="w-24 text-xl font-normal">
-                    NIM
-                  </FormLabel>
+                <FormItem>
+                  <FormLabel>NIM</FormLabel>
                   <FormControl>
                     <Input
-                      className="text-neutral-700 rounded-[12px] h-12"
-                      placeholder="Masukkan NIM"
+                      placeholder="Masukkan NIM..."
                       {...field}
-                      autoComplete="off"
+                      className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
+                      disabled
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Divisi */}
-            <FormField
-              control={form.control}
-              name="division"
-              render={({ field }) => (
-                <FormItem className="w-full flex items-center gap-16">
-                  <FormLabel className="w-24 text-xl font-normal">
-                    Divisi
-                  </FormLabel>
-                  <FormControl>
-                    <Popover open={divisiOpen} onOpenChange={setDivisiOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
-                        >
-                          {field.value
-                            ? divisiOptions.find((b) => b.value === field.value)
-                                ?.label
-                            : 'Pilih Divisi'}
-                          <ChevronsUpDown className="opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0 PopoverContent">
-                        <Command>
-                          <CommandInput placeholder="Cari Divisi" />
-                          <CommandList>
-                            <CommandEmpty>Divisi Tidak Ditemukan.</CommandEmpty>
-                            <CommandGroup>
-                              {divisiOptions.map((b) => (
-                                <CommandItem
-                                  key={b.value}
-                                  value={b.value}
-                                  onSelect={() => {
-                                    field.onChange(b.value);
-                                    setDivisiOpen(false);
-                                  }}
-                                >
-                                  {b.label}
-                                  <Check
-                                    className={cn(
-                                      'ml-auto',
-                                      field.value === b.value
-                                        ? 'opacity-100'
-                                        : 'opacity-0',
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                              <CommandItem>
-                                <Input
-                                  className="w-full focus-visible:ring-transparent bg-white"
-                                  value={customDivisi}
-                                  onChange={(e) =>
-                                    setCustomDivisi(e.target.value)
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === 'Enter' &&
-                                      customDivisi.trim() !== ''
-                                    ) {
-                                      const newDivisi = {
-                                        value: customDivisi,
-                                        label: customDivisi,
-                                      };
-                                      if (
-                                        !divisiOptions.some(
-                                          (b) => b.value === customDivisi,
-                                        )
-                                      ) {
-                                        setDivisiOptions([
-                                          ...divisiOptions,
-                                          newDivisi,
-                                        ]);
-                                      }
-                                      field.onChange(customDivisi);
-                                      setCustomDivisi('');
-                                      setDivisiOpen(false);
-                                    }
-                                  }}
-                                  placeholder="Tambah Divisi baru"
-                                />
-                              </CommandItem>
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Posisi */}
             <FormField
               control={form.control}
               name="position"
               render={({ field }) => (
-                <FormItem className="w-full flex items-center gap-16">
-                  <FormLabel className="w-24 text-xl font-normal">
-                    Posisi
-                  </FormLabel>
+                <FormItem>
+                  <FormLabel>Posisi</FormLabel>
                   <FormControl>
-                    <Popover open={posisiOpen} onOpenChange={setPosisiOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-between text-neutral-700 rounded-[12px] h-12"
-                        >
-                          {field.value
-                            ? posisiOptions.find((p) => p.value === field.value)
-                                ?.label
-                            : 'Pilih Posisi'}
-                          <ChevronsUpDown className="opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0 PopoverContent">
-                        <Command>
-                          <CommandInput placeholder="Cari Posisi" />
-                          <CommandList>
-                            <CommandEmpty>Posisi Tidak Ditemukan.</CommandEmpty>
-                            <CommandGroup>
-                              {posisiOptions.map((p) => (
-                                <CommandItem
-                                  key={p.value}
-                                  value={p.value}
-                                  onSelect={() => {
-                                    field.onChange(p.value);
-                                    setPosisiOpen(false);
-                                  }}
-                                >
-                                  {p.label}
-                                  <Check
-                                    className={cn(
-                                      'ml-auto',
-                                      field.value === p.value
-                                        ? 'opacity-100'
-                                        : 'opacity-0',
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                              <CommandItem>
-                                <Input
-                                  className="w-full focus-visible:ring-transparent bg-white"
-                                  value={customPosisi}
-                                  onChange={(e) =>
-                                    setCustomPosisi(e.target.value)
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === 'Enter' &&
-                                      customPosisi.trim() !== ''
-                                    ) {
-                                      const newPosisi = {
-                                        value: customPosisi,
-                                        label: customPosisi,
-                                      };
-                                      if (
-                                        !posisiOptions.some(
-                                          (p) => p.value === customPosisi,
-                                        )
-                                      ) {
-                                        setPosisiOptions([
-                                          ...posisiOptions,
-                                          newPosisi,
-                                        ]);
-                                      }
-                                      field.onChange(customPosisi);
-                                      setCustomPosisi('');
-                                      setPosisiOpen(false);
-                                    }
-                                  }}
-                                  placeholder="Tambah posisi baru"
-                                />
-                              </CommandItem>
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <Input
+                      placeholder="Masukkan posisi..."
+                      {...field}
+                      className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Buttons */}
-            <div className="flex gap-4 justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsOpen(false)}
-                className="w-fit px-6 py-3 bg-[#F16350] hover:bg-[#FF9185] text-white hover:text-white"
-              >
-                Batal
-              </Button>
-              <Button
-                type="submit"
-                className="w-fit px-6 py-3 bg-[#2B6282] hover:bg-[#2B6282] text-white"
-                disabled={mutation.isPending}
-              >
-                Simpan Perubahan
-              </Button>
-            </div>
+            <FormField
+              control={form.control}
+              name="division"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Divisi</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan divisi..."
+                      {...field}
+                      className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full bg-[#00B7B7] hover:bg-[#00B7B7]/85 text-white"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
+            </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 };
 
