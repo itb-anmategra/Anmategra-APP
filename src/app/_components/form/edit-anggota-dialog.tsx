@@ -22,6 +22,7 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 const EditAnggotaSchema = z.object({
   position: z.string().min(1, 'Posisi wajib diisi'),
@@ -45,7 +46,24 @@ export function EditAnggotaDialog({
   currentDivision: string;
   lembagaId?: string;
 }) {
-  const mutation = api.lembaga.editAnggota.useMutation();
+  const mutation = api.lembaga.editAnggota.useMutation({
+    onError: (error) => {
+        toast({
+            title: 'Gagal mengedit anggota',
+            description: error.message,
+            variant: 'destructive',
+        })
+    },
+    onSuccess: () => {
+        setIsOpen(false);
+        mutation.reset();
+        window.location.reload();
+        toast({
+            title: 'Berhasil mengedit anggota',
+            description: 'Data anggota telah diperbarui.',
+        })
+    }
+  });
   const form = useForm<EditAnggotaSchemaType>({
     resolver: zodResolver(EditAnggotaSchema),
     defaultValues: {
@@ -77,16 +95,6 @@ export function EditAnggotaDialog({
         position: values.position,
         division: values.division,
       },
-      {
-        onSuccess: () => {
-          setIsOpen(false);
-          form.reset();
-          window.location.reload();
-        },
-        onError: (error) => {
-          console.error('Edit failed:', error);
-        },
-      },
     );
   };
 
@@ -105,13 +113,13 @@ export function EditAnggotaDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="position"
+              name="division"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Posisi</FormLabel>
+                  <FormLabel>Divisi</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Masukkan posisi..."
+                      placeholder="Masukkan divisi..."
                       {...field}
                       className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
                     />
@@ -122,13 +130,13 @@ export function EditAnggotaDialog({
             />
             <FormField
               control={form.control}
-              name="division"
+              name="position"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Divisi</FormLabel>
+                  <FormLabel>Posisi</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Masukkan divisi..."
+                      placeholder="Masukkan posisi..."
                       {...field}
                       className="h-10 w-full rounded-[5px] border-[#DDE3EA]"
                     />

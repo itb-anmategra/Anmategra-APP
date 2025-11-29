@@ -36,6 +36,7 @@ import {
 } from '~/components/ui/table';
 // TRPC Import
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 export type Member = {
   id: string;
@@ -58,7 +59,18 @@ function ActionCell({ member, lembagaId }: { member: Member; lembagaId?: string 
         onSuccess: () => {
           mutation.reset();
           window.location.reload();
+          toast({
+            title: 'Berhasil menghapus anggota',
+            description: 'Data anggota telah dihapus.',
+          })
         },
+        onError: (error) => {
+          toast({
+            title: 'Gagal menghapus anggota',
+            description: error.message,
+            variant: 'destructive',
+          })
+        }
       },
     );
   };

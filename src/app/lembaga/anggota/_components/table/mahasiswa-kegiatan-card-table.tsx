@@ -15,7 +15,7 @@ import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
 import * as React from 'react';
 import CustomPagination from '~/app/_components/layout/pagination-comp';
-import { EditAnggotaKegiatanDialog } from '~/app/_components/form/edit-anggota-kegiatan-dialog';
+import EditAnggotaKegiatanForm from '~/app/_components/form/edit-anggota-kegiatan-form';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -36,6 +36,7 @@ import {
 } from '~/components/ui/table';
 // TRPC Import
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 export type MemberKegiatan = {
   id: string;
@@ -59,6 +60,17 @@ function ActionCellKegiatan({ member }: { member: MemberKegiatan }) {
         onSuccess: () => {
           mutation.reset();
           window.location.reload();
+          toast({
+            title: 'Berhasil menghapus panitia',
+            description: 'Data panitia telah dihapus.',
+          })
+        },
+        onError: (error) => {
+          toast({
+            title: 'Gagal menghapus panitia',
+            description: error.message,
+            variant: 'destructive',
+          })
         },
       },
     );
@@ -74,11 +86,13 @@ function ActionCellKegiatan({ member }: { member: MemberKegiatan }) {
       >
         Edit
       </Button>
-      <EditAnggotaKegiatanDialog
+      <EditAnggotaKegiatanForm
         isOpen={editOpen}
         setIsOpen={setEditOpen}
         memberId={member.id}
         eventId={member.event_id}
+        currentNama={member.nama}
+        currentNim={member.nim}
         currentPosition={member.posisi}
         currentDivision={member.divisi}
       />
