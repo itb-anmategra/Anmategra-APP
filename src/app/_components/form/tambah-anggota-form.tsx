@@ -35,6 +35,7 @@ import {
 // Utils Import
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 // ✅ Schema Validasi dengan Zod
 const AnggotaSchema = z.object({
@@ -75,7 +76,21 @@ const TambahAnggotaForm = ({
   const [posisiOpen, setPosisiOpen] = useState(false);
   const [bidangOpen, setBidangOpen] = useState(false);
 
-  const mutation = api.lembaga.addAnggota.useMutation();
+  const mutation = api.lembaga.addAnggota.useMutation({
+    onSuccess:() => {
+      toast({
+        title: 'Berhasil menambahkan anggota',
+        description: 'Anggota baru telah ditambahkan ke lembaga.',
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Gagal menambahkan anggota',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  });
   const form = useForm<AnggotaSchemaType>({
     resolver: zodResolver(AnggotaSchema),
     defaultValues: {
@@ -282,10 +297,7 @@ const TambahAnggotaForm = ({
                         className="w-full justify-between"
                       >
                         <span className={cn(!field.value && 'text-[#98A2B3]')}>
-                          {field.value
-                            ? posisiList.find((b) => b.value === field.value)
-                                ?.label
-                            : 'Masukkan posisi...'}
+                          {field.value || 'Masukkan posisi...'}
                         </span>
                         <ChevronsUpDown
                           className={cn(!field.value && 'text-[#636A6D]')}
@@ -293,12 +305,24 @@ const TambahAnggotaForm = ({
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0 PopoverContent">
-                      <Command>
-                        <CommandInput placeholder="Cari Posisi" />
+                      <Command shouldFilter={false}>
+                        <CommandInput 
+                          placeholder="Cari atau ketik posisi baru" 
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
                         <CommandList>
-                          <CommandEmpty>Posisi tidak ditemukan</CommandEmpty>
+                          <CommandEmpty>
+                            <div className="py-2 px-3 text-sm">
+                              Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                            </div>
+                          </CommandEmpty>
                           <CommandGroup>
-                            {(posisiList ?? []).map((p) => (
+                            {(posisiList ?? []).filter(p => 
+                              p.label.toLowerCase().includes(field.value.toLowerCase())
+                            ).map((p) => (
                               <CommandItem
                                 key={p.value}
                                 value={p.value}
@@ -353,10 +377,7 @@ const TambahAnggotaForm = ({
                         className="w-full justify-between"
                       >
                         <span className={cn(!field.value && 'text-[#98A2B3]')}>
-                          {field.value
-                            ? bidangList.find((b) => b.value === field.value)
-                                ?.label
-                            : 'Masukkan bidang...'}
+                          {field.value || 'Masukkan bidang...'}
                         </span>
                         <ChevronsUpDown
                           className={cn(!field.value && 'text-[#636A6D]')}
@@ -364,12 +385,24 @@ const TambahAnggotaForm = ({
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0 PopoverContent">
-                      <Command>
-                        <CommandInput placeholder="Cari Bidang" />
+                      <Command shouldFilter={false}>
+                        <CommandInput 
+                          placeholder="Cari atau ketik bidang baru" 
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
                         <CommandList>
-                          <CommandEmpty>Bidang tidak ditemukan</CommandEmpty>
+                          <CommandEmpty>
+                            <div className="py-2 px-3 text-sm">
+                              Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                            </div>
+                          </CommandEmpty>
                           <CommandGroup>
-                            {bidangList.map((b) => (
+                            {bidangList.filter(b => 
+                              b.label.toLowerCase().includes(field.value.toLowerCase())
+                            ).map((b) => (
                               <CommandItem
                                 key={b.value}
                                 value={b.value}

@@ -26,7 +26,6 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
 import {
   Popover,
   PopoverContent,
@@ -35,12 +34,13 @@ import {
 // Utils Import
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 // ✅ Schema Validasi dengan Zod
 const AnggotaSchema = z.object({
   user_id: z.string().min(1, 'User ID wajib diisi'),
   position: z.string().min(1, 'Posisi wajib diisi'),
-  division: z.string().min(1, 'Bidang wajib diisi'),
+  division: z.string().min(1, 'Divisi wajib diisi'),
 });
 
 // ✅ Type inference dari schema
@@ -67,8 +67,22 @@ const TambahAnggotaKegiatanForm = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [posisiOpen, setPosisiOpen] = useState(false);
-  const [bidangOpen, setBidangOpen] = useState(false);
-  const mutation = api.event.addNewPanitia.useMutation();
+  const [divisiOpen, setdivisiOpen] = useState(false);
+  const mutation = api.event.addNewPanitia.useMutation({
+      onError: (error) => {
+        toast({
+          title: 'Gagal',
+          description: `Terjadi kesalahan: ${error.message}`,
+          variant: 'destructive',
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Berhasil',
+          description: 'Anggota berhasil ditambahkan ke kegiatan.',
+        });
+      }
+  });
   const form = useForm<AnggotaSchemaType>({
     resolver: zodResolver(AnggotaSchema),
     defaultValues: {
@@ -78,9 +92,8 @@ const TambahAnggotaKegiatanForm = ({
     },
   });
   const [mahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa);
-  const [posisiList, setPosisiList] = useState<comboboxDataType[]>(data.posisi);
-  const [bidangList, setBidangList] = useState<comboboxDataType[]>(data.bidang);
-  const [customValue, setCustomValue] = useState('');
+  const [posisiList] = useState<comboboxDataType[]>(data.posisi);
+  const [divisiList] = useState<comboboxDataType[]>(data.bidang);
   const kegiatanId = pathname.split('/').pop();
 
   const onSubmit = (values: AnggotaSchemaType) => {
@@ -158,7 +171,6 @@ const TambahAnggotaKegiatanForm = ({
           )}
         />
 
-        {/* Posisi Anggota */}
         <FormField
           control={form.control}
           name="position"
@@ -172,19 +184,29 @@ const TambahAnggotaKegiatanForm = ({
                       variant="outline"
                       className="w-full justify-between"
                     >
-                      {field.value
-                        ? posisiList.find((p) => p.value === field.value)?.label
-                        : 'Pilih Posisi'}
+                      {field.value || 'Pilih Posisi'}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 PopoverContent">
-                    <Command>
-                      <CommandInput placeholder="Cari Posisi" />
+                    <Command shouldFilter={false}>
+                      <CommandInput 
+                        placeholder="Cari atau ketik posisi baru" 
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                      />
                       <CommandList>
-                        <CommandEmpty>Posisi Tidak Ditemukan.</CommandEmpty>
+                        <CommandEmpty>
+                          <div className="py-2 px-3 text-sm">
+                            Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                          </div>
+                        </CommandEmpty>
                         <CommandGroup>
-                          {posisiList.map((p) => (
+                          {posisiList.filter(p => 
+                            p.label.toLowerCase().includes(field.value.toLowerCase())
+                          ).map((p) => (
                             <CommandItem
                               key={p.value}
                               value={p.value}
@@ -204,36 +226,6 @@ const TambahAnggotaKegiatanForm = ({
                               />
                             </CommandItem>
                           ))}
-                          <CommandItem>
-                            <Input
-                              className="w-full focus-visible:ring-transparent bg-white"
-                              value={customValue}
-                              onChange={(e) => setCustomValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (
-                                  e.key === 'Enter' &&
-                                  customValue.trim() !== ''
-                                ) {
-                                  const newPosisi = {
-                                    value: customValue,
-                                    label: customValue,
-                                  };
-
-                                  if (
-                                    !posisiList.some(
-                                      (p) => p.value === customValue,
-                                    )
-                                  ) {
-                                    setPosisiList([...posisiList, newPosisi]);
-                                  }
-
-                                  field.onChange(customValue);
-                                  setCustomValue('');
-                                  setOpen(false);
-                                }
-                              }}
-                            />
-                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -245,39 +237,48 @@ const TambahAnggotaKegiatanForm = ({
           )}
         />
 
-        {/* Bidang */}
         <FormField
           control={form.control}
           name="division"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Bidang</FormLabel>
+              <FormLabel>Divisi</FormLabel>
               <FormControl>
-                <Popover open={bidangOpen} onOpenChange={setBidangOpen}>
+                <Popover open={divisiOpen} onOpenChange={setdivisiOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className="w-full justify-between"
                     >
-                      {field.value
-                        ? bidangList.find((b) => b.value === field.value)?.label
-                        : 'Pilih Bidang'}
+                      {field.value || 'Pilih divisi'}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 PopoverContent">
-                    <Command>
-                      <CommandInput placeholder="Cari Bidang" />
+                    <Command shouldFilter={false}>
+                      <CommandInput 
+                        placeholder="Cari atau ketik divisi baru" 
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                      />
                       <CommandList>
-                        <CommandEmpty>Bidang Tidak Ditemukan.</CommandEmpty>
+                        <CommandEmpty>
+                          <div className="py-2 px-3 text-sm">
+                            Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                          </div>
+                        </CommandEmpty>
                         <CommandGroup>
-                          {bidangList.map((b) => (
+                          {divisiList.filter(b => 
+                            b.label.toLowerCase().includes(field.value.toLowerCase())
+                          ).map((b) => (
                             <CommandItem
                               key={b.value}
                               value={b.value}
                               onSelect={() => {
                                 field.onChange(b.value);
-                                setBidangOpen(false);
+                                setdivisiOpen(false);
                               }}
                             >
                               {b.label}
@@ -291,36 +292,6 @@ const TambahAnggotaKegiatanForm = ({
                               />
                             </CommandItem>
                           ))}
-                          <CommandItem>
-                            <Input
-                              className="w-full focus-visible:ring-transparent bg-white"
-                              value={customValue}
-                              onChange={(e) => setCustomValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (
-                                  e.key === 'Enter' &&
-                                  customValue.trim() !== ''
-                                ) {
-                                  const newBidang = {
-                                    value: customValue,
-                                    label: customValue,
-                                  };
-
-                                  if (
-                                    !bidangList.some(
-                                      (b) => b.value === customValue,
-                                    )
-                                  ) {
-                                    setBidangList([...bidangList, newBidang]);
-                                  }
-
-                                  field.onChange(customValue);
-                                  setCustomValue('');
-                                  setOpen(false);
-                                }
-                              }}
-                            />
-                          </CommandItem>
                         </CommandGroup>
                       </CommandList>
                     </Command>

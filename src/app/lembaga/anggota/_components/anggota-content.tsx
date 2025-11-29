@@ -106,6 +106,7 @@ export default function AnggotaContent({
                 <TambahAnggotaDialog
                   session={session}
                   dataAddAnggota={dataAddAnggota}
+                  pageAnggota={isAnggota}
                 />
                 {isAnggota && (
                   <Button
@@ -144,7 +145,7 @@ export default function AnggotaContent({
               </div>
               <div className="flex gap-x-2">
                 <FilterDropdown
-                  filterTitle="Divisi"
+                  filterTitle="Bidang"
                   filterOptions={filterOptions}
                   selectedFilters={selectedFilters}
                   onFilterChange={handleFilterChange}

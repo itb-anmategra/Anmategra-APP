@@ -106,7 +106,7 @@ export function EditAnggotaDialog({
             Edit Anggota
           </DialogTitle>
           <DialogDescription className="text-center text-[#98A2B3]">
-            Ubah posisi atau divisi anggota
+            Ubah posisi atau bidang anggota
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -116,7 +116,7 @@ export function EditAnggotaDialog({
               name="division"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Divisi</FormLabel>
+                  <FormLabel>Bidang</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Masukkan divisi..."
