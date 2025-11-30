@@ -13,9 +13,9 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
-import MoreVertIcon from 'public/icons/more-vert.svg';
 import * as React from 'react';
 import CustomPagination from '~/app/_components/layout/pagination-comp';
+import EditAnggotaKegiatanForm from '~/app/_components/form/edit-anggota-kegiatan-form';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -36,6 +36,7 @@ import {
 } from '~/components/ui/table';
 // TRPC Import
 import { api } from '~/trpc/react';
+import { toast } from '~/hooks/use-toast';
 
 export type MemberKegiatan = {
   id: string;
@@ -46,6 +47,92 @@ export type MemberKegiatan = {
   posisiColor: string;
   event_id: string;
 };
+
+function ActionCellKegiatan({ member }: { member: MemberKegiatan }) {
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const mutation = api.event.removePanitia.useMutation();
+
+  const onDelete = (id: string, event_id: string) => {
+    mutation.mutate(
+      { id: id, event_id: event_id },
+      {
+        onSuccess: () => {
+          mutation.reset();
+          window.location.reload();
+          toast({
+            title: 'Berhasil menghapus panitia',
+            description: 'Data panitia telah dihapus.',
+          })
+        },
+        onError: (error) => {
+          toast({
+            title: 'Gagal menghapus panitia',
+            description: error.message,
+            variant: 'destructive',
+          })
+        },
+      },
+    );
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setEditOpen(true)}
+        className="border-blue-400 text-blue-400 hover:border-blue-500 hover:text-blue-500"
+      >
+        Edit
+      </Button>
+      <EditAnggotaKegiatanForm
+        isOpen={editOpen}
+        setIsOpen={setEditOpen}
+        memberId={member.id}
+        eventId={member.event_id}
+        currentNama={member.nama}
+        currentNim={member.nim}
+        currentPosition={member.posisi}
+        currentDivision={member.divisi}
+      />
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
+          >
+            Hapus
+          </Button>
+        </DialogTrigger>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>Hapus Panitia</DialogTitle>
+            <DialogDescription>
+              Apakah kamu yakin ingin menghapus panitia ini?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full flex items-center justify-center gap-x-4">
+            <Button onClick={() => setDeleteOpen(false)}>
+              Tidak, Batalkan
+            </Button>
+            <Button
+              onClick={() => {
+                onDelete(member.id, member.event_id);
+                setDeleteOpen(false);
+              }}
+              variant="warning"
+            >
+              Ya, Hapus
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 
 const columns: ColumnDef<MemberKegiatan>[] = [
   {
@@ -66,59 +153,7 @@ const columns: ColumnDef<MemberKegiatan>[] = [
   {
     accessorKey: 'posisi',
     header: 'Posisi',
-    cell: ({ row }) => {
-      const mutation = api.event.removePanitia.useMutation();
-      const onDelete = (id: string, event_id: string) => {
-        mutation.mutate(
-          { id: id, event_id: event_id },
-          {
-            onSuccess: () => {
-              mutation.reset();
-              window.location.reload();
-            },
-          },
-        );
-      };
-
-      return (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {row.getValue('posisi')}
-          </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              {/* <Button
-                // onClick={() => onDelete(row.original.id)}
-                variant={'outline'}
-                size={'sm'}
-                className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
-              >
-                Hapus
-              </Button> */}
-            </DialogTrigger>
-            <DialogContent aria-describedby={undefined}>
-              <DialogHeader>
-                <DialogTitle>Hapus Anggota</DialogTitle>
-                <DialogDescription>
-                  Apakah kamu yakin ingin menghapus anggota ini?
-                </DialogDescription>
-              </DialogHeader>
-              <div className="w-full flex items-center justify-center gap-x-4">
-                <Button>Tidak, Batalkan</Button>
-                <Button
-                  onClick={() =>
-                    onDelete(row.original.id, row.original.event_id)
-                  }
-                  variant={'warning'}
-                >
-                  Ya, Hapus
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      );
-    },
+    cell: ({ row }) => <span>{row.getValue('posisi')}</span>,
   },
   {
     accessorKey: 'rapor',
@@ -146,20 +181,8 @@ const columns: ColumnDef<MemberKegiatan>[] = [
   },
   {
     id: 'actions',
-    header: '',
-    cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0 hover:bg-gray-100"
-        onClick={() => {
-          // Handle more actions
-          console.log('More actions for:', row.original.id);
-        }}
-      >
-        <Image src={MoreVertIcon} alt="More Options" width={20} height={20} />
-      </Button>
-    ),
+    header: 'Actions',
+    cell: ({ row }) => <ActionCellKegiatan member={row.original} />,
   },
 ];
 
@@ -170,7 +193,7 @@ export function MahasiswaKegiatanCardTable({
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const itemsPerPage = 10; // You can make this configurable
+  const itemsPerPage = 10;
 
   // Calculate pagination
   const totalPages = Math.ceil(data.length / itemsPerPage);

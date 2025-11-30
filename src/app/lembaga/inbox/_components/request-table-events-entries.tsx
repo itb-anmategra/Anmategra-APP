@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '~/components/ui/button';
-
+import arrow from 'public/icons/call_made.svg'
 type PermintaanAsosiasi = {
   id: string;
   image: string | null;
@@ -42,7 +42,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
                 <div className="flex items-center gap-3">
                   <div className="rounded-full overflow-hidden w-12 h-12 md:w-14 md:h-14 flex-shrink-0">
                     <Image
-                      src={item.image ?? '/images/placeholder/rick1.jpg'}
+                      src={item.image ?? ''}
                       alt={item.nama}
                       width={56}
                       height={56}
@@ -75,7 +75,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
                   >
                     <span>Lihat</span>
                     <Image
-                      src="/icons/call_made.svg"
+                      src={arrow}
                       alt="Arrow"
                       width={16}
                       height={16}

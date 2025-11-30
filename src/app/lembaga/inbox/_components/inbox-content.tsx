@@ -1,12 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import FilterDropdown, {
   type FilterOption,
 } from '~/app/_components/filter/filter-dropdown';
 import { Input } from '~/components/ui/input';
-
+import search from 'public/icons/search.svg';
+import { api } from '~/trpc/react';
 import RequestTableEventsEntries from './request-table-events-entries';
 
 type PermintaanAsosiasi = {
@@ -21,8 +22,48 @@ type InboxContentProps = {
   entries: PermintaanAsosiasi[];
 };
 
-export default function InboxContent({ entries }: InboxContentProps) {
+export default function InboxContent({ entries: initialEntries }: InboxContentProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const {data: searchData, isFetching} = api.lembaga.getAllRequestAssociationSummary.useQuery(
+    {name: debouncedSearch,},
+    {enabled: debouncedSearch.length > 0,
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    }
+  );
+
+  const entries = useMemo(()=> {
+    if (debouncedSearch.length === 0){
+      return initialEntries;
+    }
+    if (isFetching) {
+      return [];
+    }
+    if (searchData) {
+        return searchData.map((item)=>{
+          const normtujuan=item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase() 
+        : '';
+        return {        
+        id: item.id,
+        image: item.image,
+        nama: item.name,
+        jumlah: item.total_requests.toString(),
+        tujuan: normtujuan,
+      }});
+    }
+    return [];
+    
+  }, [debouncedSearch, initialEntries, searchData, isFetching]);
 
   const filterOptions: FilterOption[] = useMemo(() => {
     const uniqueTujuan = Array.from(
@@ -35,9 +76,26 @@ export default function InboxContent({ entries }: InboxContentProps) {
     }));
   }, [entries]);
 
+  const filteredData = useMemo(() => {
+    let filtered = entries;
+
+    if (selectedFilters.length>0){
+      const filterValue = selectedFilters[0];
+      if (filterValue?.toLowerCase() == 'lembaga') {
+        filtered = entries.filter((item) => item.tujuan.toLowerCase() === 'lembaga');
+      } else if (filterValue == 'Kegiatan') {
+        filtered = entries.filter((item) => item.tujuan.toLowerCase() !== 'lembaga');
+      }
+    }
+    return filtered;
+  }, [entries, selectedFilters]);
+
   const handleFilterChange = useCallback((filters: string[]) => {
     setSelectedFilters(filters);
-    // TODO: Implement server-side filtering when BE is ready
+  }, []);
+  
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   }, []);
 
   return (
@@ -52,10 +110,12 @@ export default function InboxContent({ entries }: InboxContentProps) {
             <Input
               type="text"
               placeholder="Cari nama lembaga atau kegiatan"
+              value={searchQuery}
+              onChange={handleSearchChange}
               className="w-full pl-12 border border-[#C4CACE] rounded-[20px] bg-white h-11 sm:h-12 text-[16px] sm:text-[18px] text-[#636A6D]"
             />
             <Image
-              src="/icons/search.svg"
+              src={search}
               alt="Search Icon"
               width={20}
               height={20}
@@ -74,7 +134,7 @@ export default function InboxContent({ entries }: InboxContentProps) {
         </div>
 
         <div className="overflow-x-auto">
-          <RequestTableEventsEntries data={entries} />
+          <RequestTableEventsEntries data={filteredData} />
         </div>
       </div>
     </div>

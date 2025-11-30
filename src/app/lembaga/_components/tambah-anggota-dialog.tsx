@@ -22,6 +22,7 @@ import {
 export function TambahAnggotaDialog({
   session,
   dataAddAnggota,
+  pageAnggota,
 }: {
   session: Session | null;
   dataAddAnggota: {
@@ -30,14 +31,22 @@ export function TambahAnggotaDialog({
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
+  pageAnggota?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const pathname = usePathname();
-  const isAnggota = pathname === '/anggota';
+  const isAnggota = pageAnggota ?? false;
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setManualMode(false);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           variant="light_blue"

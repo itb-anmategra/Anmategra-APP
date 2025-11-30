@@ -332,7 +332,7 @@ export default function ActivityList({
                     </Link>
                   </div>
                   <div className="w-[24px] flex-shrink-0 flex justify-center">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="lg" className="p-1">
                           <MoreVertical className="h-4 w-4" />

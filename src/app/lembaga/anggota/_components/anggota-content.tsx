@@ -27,6 +27,7 @@ export default function AnggotaContent({
   session,
   data,
   dataAddAnggota,
+  pageAnggota,
 }: {
   session: Session | null;
   data: Member[];
@@ -36,11 +37,12 @@ export default function AnggotaContent({
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
+  pageAnggota?: boolean;
 }) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
   const router = useRouter();
-  const isAnggota = pathname === '/anggota';
+  const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
   let tableData;
@@ -104,6 +106,7 @@ export default function AnggotaContent({
                 <TambahAnggotaDialog
                   session={session}
                   dataAddAnggota={dataAddAnggota}
+                  pageAnggota={isAnggota}
                 />
                 {isAnggota && (
                   <Button
@@ -122,22 +125,6 @@ export default function AnggotaContent({
                     Rapor Komunal
                   </Button>
                 )}
-                {/* <Button
-                  variant="light_blue"
-                  className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
-                  onClick={() => {
-                    // Empty function - add best staff functionality here
-                    console.log('Pilih Best Staff clicked');
-                  }}
-                >
-                  <Image
-                    src={Best}
-                    alt="Pilih Best Staff"
-                    width={24}
-                    height={24}
-                  />
-                  Pilih Best Staff
-                </Button> */}
                 <BestStaff
                   lembagaId={lembagaId}
                   eventId={eventId}
@@ -158,7 +145,7 @@ export default function AnggotaContent({
               </div>
               <div className="flex gap-x-2">
                 <FilterDropdown
-                  filterTitle="Divisi"
+                  filterTitle="Bidang"
                   filterOptions={filterOptions}
                   selectedFilters={selectedFilters}
                   onFilterChange={handleFilterChange}
@@ -186,7 +173,7 @@ export default function AnggotaContent({
           <div className="mt-6">
             {/* Integrate MahasiswaCardTable here */}
             {isAnggota ? (
-              <MahasiswaCardTable data={data} />
+              <MahasiswaCardTable data={data} lembagaId={lembagaId} />
             ) : (
               <MahasiswaKegiatanCardTable data={tableData} />
             )}

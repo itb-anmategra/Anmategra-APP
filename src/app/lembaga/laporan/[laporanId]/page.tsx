@@ -2,9 +2,9 @@ import {
   LaporanCard,
   type Attachment,
 } from "~/app/_components/laporan/detail/laporan-card";
-import { SearchBar } from "~/app/_components/placeholder/search-bar";
 import { api } from "~/trpc/server";
 import { formatTanggal } from "../page";
+import { RaporBreadcrumb } from "~/app/_components/breadcrumb";
 
 export default async function ReportDetail({ params }: { params: { laporanId: string } }) {  
   const data = await api.users.getAllReportsUser({});
@@ -15,27 +15,25 @@ export default async function ReportDetail({ params }: { params: { laporanId: st
     return (
       <div className="flex flex-col gap-3 p-8">
         <h1>Laporan Tidak Ditemukan</h1>
-        <p>Laporan dengan ID "{params.laporanId}" tidak dapat ditemukan.</p>
+        <p>Laporan dengan ID {params.laporanId} tidak dapat ditemukan.</p>
       </div>
     );
   }
 
-  let attachment: Attachment[] = [];
+  const attachment: Attachment[] = [];
   if (report.attachment && typeof report.attachment === 'string') {
     attachment.push({ name: report.attachment });
   }
 
   return (
     <div className="flex flex-col gap-3 p-8">
-      <h1>Beranda</h1>
-      <span>
-        <a className="underline">Beranda</a>
-        {" /"}
-        <a className="underline">Kegiatan</a>
-        {" / "}
-        <a className="underline">Detail</a>
-      </span>
-      <SearchBar placeholder={"Cari laporan"} />
+      <h1 className='text-[28px] font-semibold lg:text-[32px]'>Detail Laporan</h1>
+      <RaporBreadcrumb
+        items={[
+          {label:'Laporan', href:'/lembaga/laporan'},
+          {label:'Detail', href:`/lembaga/laporan/${params.laporanId}`}
+        ]}
+      />
 
       <LaporanCard
         status={report.status}

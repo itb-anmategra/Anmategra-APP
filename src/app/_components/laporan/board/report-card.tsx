@@ -36,7 +36,7 @@ export function ReportCard({ report, column, onClick, onEdit, onDelete }: Report
     <div className="relative w-full">
       {showMenu && (
         <div className="absolute right-3 top-3 z-10">
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="text-2xl select-none">
               ...
             </DropdownMenuTrigger>
@@ -67,9 +67,9 @@ export function ReportCard({ report, column, onClick, onEdit, onDelete }: Report
         </h3>
 
         <div className="flex items-center justify-between text-secondary-1100">
-          <span className="text-[18px] text-gray-500">{report.date}</span>
+          <span className="text-[13px] text-gray-500">{report.date.slice(0, 11)}</span>
 
-          <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[18px]">
+          <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[13px]">
             {report.category}
           </span>
         </div>

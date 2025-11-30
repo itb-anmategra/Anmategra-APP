@@ -54,7 +54,7 @@ export const LaporanHeader = ({
         "
       >
         {/* Dropdown Display */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
@@ -104,7 +104,7 @@ export const LaporanHeader = ({
         </DropdownMenu>
 
         {/* Dropdown Status */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"

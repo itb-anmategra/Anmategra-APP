@@ -1,6 +1,6 @@
 import React from 'react';
 import { api } from '~/trpc/server';
-
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import ProfilTable from '../../../../_components/table/event-profil-table';
 
 interface ProfilEventProps {
@@ -34,18 +34,24 @@ const ProfilEvent = async ({ params }: ProfilEventProps) => {
             kegiatan.profil_km_id.map((kmId) => ({
               profilKMDescription: profilKMMap.get(kmId) ?? 'Unknown',
               profilKegiatanName: kegiatan.name,
-              profilKegiatanDescription: kegiatan.description,
-            })),
+              description: kegiatan.description,
+            }))
           )
         : [];
 
     return (
-      <div className="flex flex-col gap-y-6 pt-16 px-9 md:px-11">
+      <div className="flex flex-col gap-y-6 pt-10 px-9 md:px-11">
         <div className="gap-y-2">
           <h1 className="text-neutral-1000 text-[32px] font-semibold">
             Profil Kegiatan
           </h1>
-          <p>BreadCrumbs</p>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
+              { label: 'Rapor Komunal', href: `/lembaga/kegiatan/${params.kegiatanId}/rapor` },
+              { label: 'Profil Kegiatan', href: `/lembaga/kegiatan/${params.kegiatanId}/profil` },
+            ]}
+          />
         </div>
 
         <div className="flex flex-col gap-y-4">
@@ -65,12 +71,18 @@ const ProfilEvent = async ({ params }: ProfilEventProps) => {
     );
   } catch {
     return (
-      <div className="flex flex-col gap-y-6 pt-16 px-9 md:px-11">
+      <div className="flex flex-col gap-y-6 pt-10 px-9 md:px-11">
         <div className="gap-y-2">
           <h1 className="text-neutral-1000 text-[32px] font-semibold">
             Profil Kegiatan
           </h1>
-          <p>BreadCrumbs</p>
+          <RaporBreadcrumb
+            items={[
+              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
+              { label: 'Rapor Komunal', href: `/lembaga/kegiatan/${params.kegiatanId}/rapor` },
+              { label: 'Profil Kegiatan', href: `/lembaga/kegiatan/${params.kegiatanId}/profil` },
+            ]}
+          />
         </div>
         <div className="text-center py-8">
           <p className="text-neutral-500">Gagal memuat data profil kegiatan</p>
