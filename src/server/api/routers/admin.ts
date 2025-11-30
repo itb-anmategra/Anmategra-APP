@@ -82,10 +82,9 @@ export const adminRouter = createTRPCRouter({
           })),
         };
       } catch (error) {
-        console.error('Error fetching reports:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch reports',
+          message: 'Gagal fetch laporan',
         });
       }
     }),
@@ -101,12 +100,12 @@ export const adminRouter = createTRPCRouter({
       if (!existingReport) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Report not found',
+          message: 'Laporan tidak ditemukan',
         });
       }
 
       if (existingReport.status === input.status) {     
-        return { success: true, message: 'Report status is already set to the desired value' };
+        return { success: true, message: 'Status laporan sudah diatur ke nilai yang diinginkan' };
       }
       
       const statusOrder = {
@@ -123,13 +122,13 @@ export const adminRouter = createTRPCRouter({
       if (newOrder < currentOrder) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `Cannot move report backward from ${existingReport.status} to ${input.status}`,
+          message: `Tidak dapat mengubah status laporan mundur dari ${existingReport.status} ke ${input.status}`,
         });
       }
       await ctx.db
         .update(support)
         .set({ status: input.status })
         .where(eq(support.id, input.id));
-      return { success: true, message: 'Report status updated successfully' };
+      return { success: true, message: 'Status laporan berhasil diperbarui' };
     }),
 });
