@@ -457,31 +457,30 @@ export const userRouter = createTRPCRouter({
     .input(DeleteRequestAssociationInputSchema)
     .output(EditRequestAssociationOutputSchema) // Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequests.findFirst({
-            where: (associationRequests, { eq, and }) =>
-              and(
-                eq(associationRequests.event_id, input.event_id),
-                eq(associationRequests.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .delete(associationRequests)
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequests.findFirst({
+          where: (associationRequests, { eq, and }) =>
             and(
               eq(associationRequests.event_id, input.event_id),
               eq(associationRequests.user_id, ctx.session.user.id),
+              eq(associationRequests.status, 'Pending'), // can only delete Pending requests
             ),
-          );
-        return { success: true, message: 'Request berhasil dihapus' };
-      } catch (error) {
-        console.error('Error deleting association request:', error);
-        return { success: false, message: 'Failed to delete request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Request not found or cannot be deleted',
+        });
       }
+      await ctx.db
+        .delete(associationRequests)
+        .where(
+          and(
+            eq(associationRequests.event_id, input.event_id),
+            eq(associationRequests.user_id, ctx.session.user.id),
+          ),
+        );
+      return { success: true, message: 'Request berhasil dihapus' };
     }),
 
   /*
@@ -492,31 +491,30 @@ export const userRouter = createTRPCRouter({
     .input(DeleteRequestAssociationLembagaInputSchema)
     .output(EditRequestAssociationOutputSchema) //Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequestsLembaga.findFirst({
-            where: (associationRequestsLembaga, { eq, and }) =>
-              and(
-                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
-                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .delete(associationRequestsLembaga)
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequestsLembaga.findFirst({
+          where: (associationRequestsLembaga, { eq, and }) =>
             and(
               eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
               eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              eq(associationRequestsLembaga.status, 'Pending'), // can only delete Pending requests
             ),
-          );
-        return { success: true, message: 'Request lembaga berhasil dihapus' };
-      } catch (error) {
-        console.error('Error deleting association request:', error);
-        return { success: false, message: 'Failed to delete request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Request not found or cannot be deleted',
+        });
       }
+      await ctx.db
+        .delete(associationRequestsLembaga)
+        .where(
+          and(
+            eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+            eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+          ),
+        );
+      return { success: true, message: 'Request lembaga berhasil dihapus' };
     }),
 
   requestAssociationLembaga: protectedProcedure
