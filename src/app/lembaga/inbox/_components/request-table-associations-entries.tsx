@@ -8,7 +8,7 @@ import { api } from '~/trpc/react';
 
 type PermintaanAsosiasiUser = {
   // id: string;
-  image?: string;
+  image?: string | null;
   user_id: string;
   mahasiswa_name: string;
   division: string;
