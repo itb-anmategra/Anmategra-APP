@@ -94,7 +94,7 @@ const TambahAnggotaKegiatanForm = ({
   const [mahasiswaList] = useState<comboboxDataType[]>(data.mahasiswa);
   const [posisiList] = useState<comboboxDataType[]>(data.posisi);
   const [divisiList] = useState<comboboxDataType[]>(data.bidang);
-  const kegiatanId = pathname.split('/').pop();
+  const kegiatanId = pathname.split('/')[3];
 
   const onSubmit = (values: AnggotaSchemaType) => {
     const query = {
