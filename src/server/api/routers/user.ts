@@ -882,10 +882,10 @@ export const userRouter = createTRPCRouter({
           .returning();
 
         if (!submittedReport) {
-          return {
-            success: false,
+          throw new TRPCError({
+            code: 'NOT_FOUND',
             message: 'Draft tidak ditemukan atau sudah dikirim',
-          };
+          });
         }
 
         return {

@@ -63,7 +63,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       if (!eventExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Event not found',
+          message: 'Kegiatan tidak ditemukan.',
         });
       }
 
@@ -135,7 +135,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Profil Kegiatan not found',
+          message: 'Profil Kegiatan tidak ditemukan.',
         });
       }
 
@@ -180,7 +180,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Profil Kegiatan not found',
+          message: 'Profil Kegiatan tidak ditemukan.',
         });
       }
 
@@ -216,7 +216,7 @@ export const profilKegiatanRouter = createTRPCRouter({
       } else {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update profil kegiatan',
+          message: 'Gagal memperbarui profil kegiatan',
         });
       }
     }),

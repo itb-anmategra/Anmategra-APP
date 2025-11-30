@@ -59,7 +59,7 @@ export const profileRouter = createTRPCRouter({
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Mahasiswa not found',
+          message: 'Mahasiswa tidak ditemukan.',
         });
       }
 
@@ -97,7 +97,7 @@ export const profileRouter = createTRPCRouter({
       if (!lembaga) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan.',
         });
       }
 
@@ -175,14 +175,14 @@ export const profileRouter = createTRPCRouter({
       if (!kegiatan) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Kegiatan tidak ditemukan.',
         });
       }
 
       if (kegiatan.org_id === null) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Kegiatan tidak ditemukan.',
         });
       }
 
@@ -205,7 +205,7 @@ export const profileRouter = createTRPCRouter({
       if (lembagaRes.length === 0 || !lembagaRes[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan.',
         });
       }
 
