@@ -177,11 +177,11 @@ export const GetAllRequestedAssociationSummaryOutputSchema = z.array(
 
 export const GetAllRequestAssociationKegiatanInputSchema = z.object({
   event_id: z.string().nonempty(),
-  division: z.string().optional(),
+  division: z.array(z.string()).optional(),
 });
 
 export const GetAllRequestAssociationInputSchema = z.object({
-  division: z.string().optional(),
+  division: z.array(z.string()).optional(),
 });
 
 export const GetAllRequestAssociationLembagaOutputSchema = z.object({

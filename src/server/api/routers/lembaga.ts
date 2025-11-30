@@ -275,8 +275,10 @@ export const lembagaRouter = createTRPCRouter({
         eq(associationRequests.status, 'Pending'),
       ];
 
-      if (input.division) {
-        conditions.push(eq(associationRequests.division, input.division));
+      if (input.division && input.division.length > 0) {
+        conditions.push(
+          inArray(associationRequests.division, input.division),
+        );
       }
 
       const requests = await ctx.db
@@ -762,9 +764,9 @@ export const lembagaRouter = createTRPCRouter({
       
       conditions.push(eq(associationRequestsLembaga.status, 'Pending'));
 
-      if (input.division) {
+      if (input.division && input.division.length > 0) {
         conditions.push(
-          eq(associationRequestsLembaga.division, input.division),
+          inArray(associationRequestsLembaga.division, input.division),
         );
       }
 
