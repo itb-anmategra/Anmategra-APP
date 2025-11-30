@@ -39,6 +39,7 @@ const AssociationSchema = z.object({
   event_id: z.string(),
   event_name: z.string(),
   user_id: z.string(),
+  image: z.string().url().nullable(),
   mahasiswa_name: z.string(),
   division: z.string(),
   position: z.string(),
@@ -187,6 +188,7 @@ export const GetAllRequestAssociationLembagaOutputSchema = z.object({
   requests: z.array(
     z.object({
       user_id: z.string(),
+      image: z.string().url().nullable(),
       mahasiswa_name: z.string(),
       division: z.string(),
       position: z.string(),

@@ -327,14 +327,16 @@ export const userRouter = createTRPCRouter({
         .select({
           id: associationRequests.id,
           event_id: associationRequests.event_id,
+          image: events.image,
+          event_name: events.name,
           status: associationRequests.status,
           position: associationRequests.position,
           division: associationRequests.division,
-          event_name: events.name,
         })
         .from(associationRequests)
         .leftJoin(events, eq(associationRequests.event_id, events.id))
-        .where(eq(associationRequests.user_id, ctx.session.user.id));
+        .where(eq(associationRequests.user_id, ctx.session.user.id))
+        .orderBy(desc(associationRequests.created_at));
 
       return result;
     }),
@@ -350,6 +352,7 @@ export const userRouter = createTRPCRouter({
         .select({
           id: associationRequestsLembaga.id,
           lembaga_id: associationRequestsLembaga.lembagaId,
+          image: users.image,
           lembaga_name: lembaga.name,
           position: associationRequestsLembaga.position,
           division: associationRequestsLembaga.division,
@@ -357,7 +360,9 @@ export const userRouter = createTRPCRouter({
         })
         .from(associationRequestsLembaga)
         .leftJoin(lembaga, eq(associationRequestsLembaga.lembagaId, lembaga.id))
-        .where(eq(associationRequestsLembaga.user_id, ctx.session.user.id));
+        .leftJoin(users, eq(lembaga.userId, users.id))
+        .where(eq(associationRequestsLembaga.user_id, ctx.session.user.id))
+        .orderBy(desc(associationRequestsLembaga.created_at));
 
       return result;
     }),

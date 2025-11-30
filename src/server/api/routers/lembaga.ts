@@ -284,6 +284,7 @@ export const lembagaRouter = createTRPCRouter({
           event_id: associationRequests.event_id,
           event_name: events.name,
           user_id: associationRequests.user_id,
+          image: users.image,
           mahasiswa_name: users.name,
           division: associationRequests.division,
           position: associationRequests.position,
@@ -291,12 +292,14 @@ export const lembagaRouter = createTRPCRouter({
         .from(associationRequests)
         .innerJoin(users, eq(associationRequests.user_id, users.id))
         .innerJoin(events, eq(associationRequests.event_id, events.id))
-        .where(and(...conditions));
+        .where(and(...conditions))
+        .orderBy(desc(associationRequests.created_at));
 
       return requests.map((req) => ({
         event_id: req.event_id ?? '',
         event_name: req.event_name ?? '',
         user_id: req.user_id ?? '',
+        image: req.image ?? null,
         mahasiswa_name: req.mahasiswa_name ?? '',
         division: req.division ?? '',
         position: req.position ?? '',
@@ -768,16 +771,19 @@ export const lembagaRouter = createTRPCRouter({
       const requests = await ctx.db
         .select({
           user_id: associationRequestsLembaga.user_id,
+          image: users.image,
           mahasiswa_name: users.name,
           division: associationRequestsLembaga.division,
           position: associationRequestsLembaga.position,
         })
         .from(associationRequestsLembaga)
         .where(and(...conditions))
-        .innerJoin(users, eq(associationRequestsLembaga.user_id, users.id));
+        .innerJoin(users, eq(associationRequestsLembaga.user_id, users.id))
+        .orderBy(desc(associationRequestsLembaga.created_at));
       return {
         requests: requests.map((req) => ({
           user_id: req.user_id ?? '',
+          image: req.image ?? null,
           mahasiswa_name: req.mahasiswa_name ?? '',
           division: req.division ?? '',
           position: req.position ?? '',

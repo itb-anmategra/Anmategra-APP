@@ -75,6 +75,7 @@ export const RequestAssociationOutputSchema = z.object({
 export const GetMyRequestAssociationOutputSchema = z.object({
   id: z.string(),
   event_id: z.string().nullable(),
+  image: z.string().url().nullable(),
   event_name: z.string().nullable(),
   position: z.string(),
   division: z.string(),
