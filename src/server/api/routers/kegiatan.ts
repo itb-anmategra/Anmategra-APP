@@ -46,14 +46,8 @@ export const kegiatanRouter = createTRPCRouter({
     // lembaga procedure
     getAllByLembaga: lembagaProcedure
         .query(async ({ctx}) => {
-            const userLembaga = await ctx.db.query.lembaga.findFirst({
-                where: (lembaga, {eq}) => eq(lembaga.userId, ctx.session.user.id),
-            });
-            if (!userLembaga) {
-                throw new Error("Lembaga not found");
-            }
             const kegiatan = await ctx.db.query.events.findMany({
-                where: (events, {eq}) => eq(events.org_id, userLembaga.id),
+                where: (events, {eq}) => eq(events.org_id, ctx.session.user.lembagaId!),
                 orderBy: (events, {desc}) => desc(events.start_date),
                 columns: {
                     org_id: false,

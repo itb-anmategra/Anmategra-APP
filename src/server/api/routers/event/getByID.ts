@@ -69,7 +69,6 @@ export const getAllAnggota = protectedProcedure
 
       return formatted_anggota;
     } catch (error) {
-      console.error(error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Internal server error',

@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { events, keanggotaan } from '~/server/db/schema';
 
-import { protectedProcedure } from '../../trpc';
+import { lembagaProcedure, protectedProcedure } from '../../trpc';
 import {
   AddNewPanitiaKegiatanInputSchema,
   AddNewPanitiaKegiatanOutputSchema,
@@ -14,19 +14,15 @@ import {
   UpdateEventOutputSchema,
 } from '../../types/event.type';
 
-export const updateEvent = protectedProcedure
+export const updateEvent = lembagaProcedure
   .input(UpdateEventInputSchema)
   .output(UpdateEventOutputSchema)
   .mutation(async ({ ctx, input }) => {
     try {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const eventToUpdate = await ctx.db.query.events.findFirst({
         where: and(
           eq(events.id, input.id),
-          eq(events.org_id, ctx.session.user.lembagaId),
+          eq(events.org_id, ctx.session.user.lembagaId!),
         ),
         columns: {
           id: true,
@@ -36,7 +32,7 @@ export const updateEvent = protectedProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Event not found.',
+          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -54,33 +50,31 @@ export const updateEvent = protectedProcedure
       if (!updatedEvent[0]) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update event.',
+          message: 'Gagal memperbarui kegiatan.',
         });
       }
 
       return updatedEvent[0];
     } catch (error) {
-      console.error('Database Error:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred during event update.',
+        message: 'Terjadi kesalahan tak terduga saat memperbarui kegiatan.',
       });
     }
   });
 
-export const addNewPanitia = protectedProcedure
+export const addNewPanitia = lembagaProcedure
   .input(AddNewPanitiaKegiatanInputSchema)
   .output(AddNewPanitiaKegiatanOutputSchema)
   .mutation(async ({ ctx, input }) => {
     try {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const eventToUpdate = await ctx.db.query.events.findFirst({
         where: and(
           eq(events.id, input.event_id),
-          eq(events.org_id, ctx.session.user.lembagaId),
+          eq(events.org_id, ctx.session.user.lembagaId!),
         ),
         columns: {
           id: true,
@@ -90,7 +84,8 @@ export const addNewPanitia = protectedProcedure
 
       if (!eventToUpdate) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'NOT_FOUND',
+          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -113,30 +108,28 @@ export const addNewPanitia = protectedProcedure
 
       return {
         success: true,
-        message: 'Panitia added successfully.',
+        message: 'Panitia berhasil ditambahkan.',
       };
     } catch (error) {
-      console.error('Database Error:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred during event creation.',
+        message: 'Terjadi kesalahan tak terduga saat menambahkan panitia.',
       });
     }
   });
 
-export const removePanitia = protectedProcedure
+export const removePanitia = lembagaProcedure
   .input(RemovePanitiaKegiatanInputSchema)
   .output(RemovePanitiaKegiatanOutputSchema)
   .mutation(async ({ ctx, input }) => {
     try {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const eventToUpdate = await ctx.db.query.events.findFirst({
         where: and(
           eq(events.id, input.event_id),
-          eq(events.org_id, ctx.session.user.lembagaId),
+          eq(events.org_id, ctx.session.user.lembagaId!),
         ),
         columns: {
           id: true,
@@ -146,7 +139,8 @@ export const removePanitia = protectedProcedure
 
       if (!eventToUpdate) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'NOT_FOUND',
+          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -163,30 +157,28 @@ export const removePanitia = protectedProcedure
 
       return {
         success: true,
-        message: 'Panitia removed successfully.',
+        message: 'Panitia berhasil dihapus.',
       };
     } catch (error) {
-      console.error('Database Error:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred during event creation.',
+        message: 'Terjadi kesalahan tak terduga saat menghapus panitia.',
       });
     }
   });
 
-export const editPanitia = protectedProcedure
+export const editPanitia = lembagaProcedure
   .input(EditPanitiaKegiatanInputSchema)
   .output(EditPanitiaKegiatanOutputSchema)
   .mutation(async ({ ctx, input }) => {
     try {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const eventToUpdate = await ctx.db.query.events.findFirst({
         where: and(
           eq(events.id, input.event_id),
-          eq(events.org_id, ctx.session.user.lembagaId),
+          eq(events.org_id, ctx.session.user.lembagaId!),
         ),
         columns: {
           id: true,
@@ -196,7 +188,8 @@ export const editPanitia = protectedProcedure
 
       if (!eventToUpdate) {
         throw new TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'NOT_FOUND',
+          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -212,10 +205,12 @@ export const editPanitia = protectedProcedure
         success: true,
       };
     } catch (error) {
-      console.error('Database Error:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred during event creation.',
+        message: 'Terjadi kesalahan tak terduga saat mengubah panitia.',
       });
     }
   });

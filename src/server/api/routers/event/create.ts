@@ -1,4 +1,4 @@
-import {protectedProcedure} from "../../trpc";
+import {lembagaProcedure} from "../../trpc";
 import {events} from "~/server/db/schema";
 import {TRPCError} from "@trpc/server";
 import { CreateEventInputSchema, CreateEventOutputSchema } from "../../types/event.type";
@@ -9,15 +9,11 @@ function generateShortId(length = 10) {
     return Array.from(array, byte => byte.toString(16).padStart(2, "0")).join("").slice(0, length);
 }
 
-export const createEvent = protectedProcedure
+export const createEvent = lembagaProcedure 
     .input(CreateEventInputSchema)
     .output(CreateEventOutputSchema)
     .mutation(async ({ctx, input}) => {
         try {
-            if(!ctx.session.user.lembagaId){
-                throw new TRPCError({ code: "UNAUTHORIZED" });
-            }
-
             const newEvent = await ctx.db.insert(events).values({
                 id: generateShortId(),
                 org_id: ctx.session.user.lembagaId,
@@ -29,17 +25,19 @@ export const createEvent = protectedProcedure
             if (!newEvent[0]) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: "Failed to create event."
+                    message: "Gagal membuat kegiatan."
                 });
             }
 
             return newEvent[0];
 
         } catch (error) {
-            console.error("Database Error:", error);
+            if (error instanceof TRPCError) {
+                throw error;
+            }
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
-                message: "An unexpected error occurred during event creation."
+                message: "Terjadi kesalahan tak terduga saat membuat kegiatan."
             });
         }
     })
