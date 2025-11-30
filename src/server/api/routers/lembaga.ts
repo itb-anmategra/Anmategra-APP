@@ -82,14 +82,18 @@ export const lembagaRouter = createTRPCRouter({
       const lembaga = await ctx.db.query.lembaga.findFirst({
         where: (lembaga, { eq }) => eq(lembaga.id, input.lembagaId),
         with: {
-          users: {},
+          users: {
+            columns: {
+              image: true,
+            },
+          },
         },
       });
 
       if (!lembaga) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan',
         });
       }
 
@@ -148,10 +152,9 @@ export const lembagaRouter = createTRPCRouter({
           posisiColor: 'blue',
         }));
       } catch (error) {
-        console.error('Database Error:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Database Error',
+          message: 'Gagal mengambil data anggota lembaga.',
         });
       }
     }),
@@ -160,8 +163,8 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllRequestAssociationSummaryInputSchema)
     .output(GetAllRequestedAssociationSummaryOutputSchema)
     .query(async ({ ctx, input }) => {
-      const conditions1 = [eq(lembaga.id, ctx.session?.user?.lembagaId ?? '')];
-      const conditions2 = [eq(events.org_id, ctx.session?.user?.lembagaId ?? '')];
+      const conditions1 = [eq(lembaga.id, ctx.session.user.lembagaId!)];
+      const conditions2 = [eq(events.org_id, ctx.session.user.lembagaId!)];
 
       if (input.name) {
         conditions1.push(ilike(lembaga.name, `%${input.name}%`));
@@ -187,14 +190,14 @@ export const lembagaRouter = createTRPCRouter({
           .from(associationRequestsLembaga)
           .where(
             and(
-              eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? ''), 
+              eq(associationRequestsLembaga.lembagaId, ctx.session.user.lembagaId!), 
               eq(associationRequestsLembaga.status, 'Pending')
             )
           );
         
         if(Number(countLembagaRequests[0]?.count ?? 0) > 0) {
           res.push({
-            id: ctx.session?.user?.lembagaId ?? '',
+            id: ctx.session.user.lembagaId!,
             name: lembaga1[0]?.name ?? '',
             total_requests: Number(countLembagaRequests[0]?.count ?? 0),
             type: 'Lembaga',
@@ -263,11 +266,11 @@ export const lembagaRouter = createTRPCRouter({
       });
 
       if (!eventOrg) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Kegiatan tidak ditemukan' });
       }
 
-      if (eventOrg.org_id !== ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      if (eventOrg.org_id !== ctx.session.user.lembagaId!) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Anda tidak memiliki izin untuk mengakses data ini.' });
       }
 
       const conditions = [
@@ -367,20 +370,14 @@ export const lembagaRouter = createTRPCRouter({
     }),
 
   // Add new anggota to lembaga
-  addAnggota: protectedProcedure
+  addAnggota: lembagaProcedure
     .input(AddAnggotaLembagaInputSchema)
     .output(AddAnggotaLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const lembagaUserId = ctx.session.user.id;
-
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-
         await ctx.db.insert(kehimpunan).values({
-          id: input.user_id + '_' + lembagaUserId,
-          lembagaId: ctx.session.user.lembagaId,
+          id: input.user_id + '_' + ctx.session.user.id,
+          lembagaId: ctx.session.user.lembagaId!,
           userId: input.user_id,
           division: input.division,
           position: input.position,
@@ -390,20 +387,29 @@ export const lembagaRouter = createTRPCRouter({
           success: true,
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-          error: 'Database Error',
-        };
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal menambahkan anggota',
+        });
       }
     }),
 
-  removeAnggota: protectedProcedure
+  removeAnggota: lembagaProcedure
     .input(RemoveAnggotaLembagaInputSchema)
     .output(RemoveAnggotaLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      const existingKehimpunan = await ctx.db.query.kehimpunan.findFirst({
+        where: and(
+          eq(kehimpunan.userId, input.user_id),
+          eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
+        ),
+      });
+
+      if (!existingKehimpunan) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Anggota tidak ditemukan',
+        });
       }
 
       await ctx.db
@@ -411,7 +417,7 @@ export const lembagaRouter = createTRPCRouter({
         .where(
           and(
             eq(kehimpunan.userId, input.user_id),
-            eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+            eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
           ),
         );
 
@@ -425,11 +431,6 @@ export const lembagaRouter = createTRPCRouter({
     .output(editAnggotaLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const lembagaUserId = ctx.session.user.id;
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-
         const updated = await ctx.db
           .update(kehimpunan)
           .set({
@@ -438,48 +439,44 @@ export const lembagaRouter = createTRPCRouter({
           })
           .where(
             and(
-              eq(kehimpunan.id, input.user_id + '_' + lembagaUserId),
-              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+              eq(kehimpunan.id, input.user_id + '_' + ctx.session.user.id),
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
             ),
           )
           .returning({ id: kehimpunan.id });
 
         if (updated.length === 0) {
-          return {
-            success: false,
-            error: 'Anggota tidak ditemukan atau data tidak berubah',
-          };
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Anggota tidak ditemukan',
+            });
         }
 
         return {
           success: true,
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-          error: 'Database Error',
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Gagal mengedit anggota' 
+        });
       }
     }),
 
-  editProfil: protectedProcedure
+  editProfil: lembagaProcedure
     .input(EditProfilLembagaInputSchema)
     .output(EditProfilLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      const user_id = ctx.session.user.id;
-
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       if (input.gambar) {
         await ctx.db
           .update(users)
           .set({
             image: input.gambar,
           })
-          .where(eq(users.id, user_id));
+          .where(eq(users.id, ctx.session.user.id));
       }
 
       await ctx.db
@@ -488,7 +485,7 @@ export const lembagaRouter = createTRPCRouter({
           name: input.nama,
           description: input.deskripsi,
         })
-        .where(eq(lembaga.id, ctx.session.user.lembagaId));
+        .where(eq(lembaga.id, ctx.session.user.lembagaId!));
 
       return {
         success: true,
@@ -500,13 +497,6 @@ export const lembagaRouter = createTRPCRouter({
     .output(AcceptRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'FORBIDDEN' });
-        }
-
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
           .from(associationRequests)
@@ -514,7 +504,7 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              eq(events.org_id, ctx.session.user.lembagaId),
+              eq(events.org_id, ctx.session.user.lembagaId!),
             ),
           )
           .where(
@@ -529,7 +519,7 @@ export const lembagaRouter = createTRPCRouter({
         if (isExistAndAuthorized.length === 0) {
           throw new TRPCError({
             code: 'NOT_FOUND',
-            message: 'Association request not found.',
+            message: 'Permintaan asosiasi tidak ditemukan.',
           });
         }
 
@@ -544,17 +534,16 @@ export const lembagaRouter = createTRPCRouter({
           )
           .limit(1);
         if (isUserAlreadyParticipant.length > 0) {
-          return {
-            success: false,
-            error:
-              'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.',
-          };
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.',
+          });
         }
 
         const eventToUpdate = await ctx.db.query.events.findFirst({
           where: and(
             eq(events.id, input.event_id),
-            eq(events.org_id, ctx.session.user.lembagaId),
+            eq(events.org_id, ctx.session.user.lembagaId!),
           ),
           columns: {
             id: true,
@@ -601,10 +590,13 @@ export const lembagaRouter = createTRPCRouter({
           success: true,
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.' 
+        });
       }
     }),
 
@@ -613,13 +605,6 @@ export const lembagaRouter = createTRPCRouter({
     .output(DeclineRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'FORBIDDEN' });
-        }
-
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequests.id })
           .from(associationRequests)
@@ -627,7 +612,7 @@ export const lembagaRouter = createTRPCRouter({
             events,
             and(
               eq(associationRequests.event_id, events.id),
-              eq(events.org_id, ctx.session.user.lembagaId),
+              eq(events.org_id, ctx.session.user.lembagaId!),
             ),
           )
           .where(
@@ -642,7 +627,7 @@ export const lembagaRouter = createTRPCRouter({
         if (isExistAndAuthorized.length === 0) {
           throw new TRPCError({
             code: 'NOT_FOUND',
-            message: 'Association request not found.',
+            message: 'Permintaan asosiasi tidak ditemukan.',
           });
         }
 
@@ -662,21 +647,20 @@ export const lembagaRouter = createTRPCRouter({
           success: true,
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.' 
+        });
       }
     }),
 
-  getAllLembagaDivision: protectedProcedure
+  getAllLembagaDivision: lembagaProcedure
     .input(GetAllLembagaDivisionInputSchema)
     .output(GetAllDivisionOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       if (ctx.session.user.lembagaId !== input.lembaga_id) {
         throw new TRPCError({ code: 'FORBIDDEN' });
       }
@@ -693,14 +677,10 @@ export const lembagaRouter = createTRPCRouter({
       return { divisions: uniqueDivisions };
     }),
 
-  getAllKegiatanDivision: protectedProcedure
+  getAllKegiatanDivision: lembagaProcedure
     .input(GetAllKegiatanDivisionInputSchema)
     .output(GetAllDivisionOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const orgId = await ctx.db.query.events.findFirst({
         where: eq(events.id, input.event_id),
         columns: { org_id: true },
@@ -726,12 +706,21 @@ export const lembagaRouter = createTRPCRouter({
       return { divisions: uniqueDivisions };
     }),
 
-  getBestStaffOptions: protectedProcedure
+  getBestStaffOptions: lembagaProcedure
     .input(GetBestStaffOptionsInputSchema)
     .output(GetBestStaffOptionsOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      const orgId = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (!orgId) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+
+      if (orgId.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
       const staffOptions = await ctx.db
@@ -798,19 +787,6 @@ export const lembagaRouter = createTRPCRouter({
     .output(AcceptRequestAssociationLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'FORBIDDEN' });
-        }
-
-        // Check if the request exists and is pending
-        console.log('Checking request for:', {
-          lembagaId: ctx.session.user.lembagaId,
-          user_id: input.user_id,
-        });
-
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequestsLembaga.id })
           .from(associationRequestsLembaga)
@@ -818,7 +794,7 @@ export const lembagaRouter = createTRPCRouter({
             and(
               eq(
                 associationRequestsLembaga.lembagaId,
-                ctx.session.user.lembagaId,
+                ctx.session.user.lembagaId!,
               ),
               eq(associationRequestsLembaga.user_id, input.user_id),
               eq(associationRequestsLembaga.status, 'Pending'),
@@ -827,10 +803,10 @@ export const lembagaRouter = createTRPCRouter({
           .limit(1);
 
         if (isExistAndAuthorized.length === 0) {
-          return {
-            success: false,
-            message: 'Association request tidak ditemukan atau sudah diproses.',
-          };
+          throw new TRPCError({ 
+            code: 'NOT_FOUND', 
+            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.' 
+          });
         }
 
         // Check if user is already a member of the lembaga
@@ -839,77 +815,70 @@ export const lembagaRouter = createTRPCRouter({
           .from(kehimpunan)
           .where(
             and(
-              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId),
+              eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
               eq(kehimpunan.userId, input.user_id),
             ),
           )
           .limit(1);
 
         if (isUserAlreadyMember.length > 0) {
-          return {
-            success: false,
-            message:
-              'User sudah terdaftar di dalam lembaga, silahkan edit posisi dan divisi di halaman anggota.',
-          };
-        }
-
-        try {
-          await ctx.db.transaction(async (tx) => {
-            // Add user to kehimpunan
-            await tx.insert(kehimpunan).values({
-              lembagaId: ctx.session.user.lembagaId!,
-              userId: input.user_id,
-              position: input.position,
-              division: input.division,
-            });
-
-            // Update the association request status to 'Accepted'
-            await tx
-              .update(associationRequestsLembaga)
-              .set({
-                status: 'Accepted',
-              })
-              .where(
-                and(
-                  eq(
-                    associationRequestsLembaga.lembagaId,
-                    ctx.session.user.lembagaId!,
-                  ),
-                  eq(associationRequestsLembaga.user_id, input.user_id),
-                ),
-              );
-
-            // Increment lembaga member count
-            const currentLembaga = await tx.query.lembaga.findFirst({
-              where: eq(lembaga.id, ctx.session.user.lembagaId!),
-              columns: { memberCount: true },
-            });
-
-            await tx
-              .update(lembaga)
-              .set({
-                memberCount: (currentLembaga?.memberCount ?? 0) + 1,
-              })
-              .where(eq(lembaga.id, ctx.session.user.lembagaId!));
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'User sudah terdaftar di dalam lembaga, silahkan edit posisi dan divisi di halaman anggota.',
           });
-        } catch (dbError) {
-          console.error('Transaction Error:', dbError);
-          return {
-            success: false,
-            message: 'Failed to process request. Please try again.',
-          };
         }
+
+        await ctx.db.transaction(async (tx) => {
+          // Add user to kehimpunan
+          await tx.insert(kehimpunan).values({
+            lembagaId: ctx.session.user.lembagaId!,
+            userId: input.user_id,
+            position: input.position,
+            division: input.division,
+          });
+
+          // Update the association request status to 'Accepted'
+          await tx
+            .update(associationRequestsLembaga)
+            .set({
+              status: 'Accepted',
+            })
+            .where(
+              and(
+                eq(
+                  associationRequestsLembaga.lembagaId,
+                  ctx.session.user.lembagaId!,
+                ),
+                eq(associationRequestsLembaga.user_id, input.user_id),
+              ),
+            );
+
+          // Increment lembaga member count
+          const currentLembaga = await tx.query.lembaga.findFirst({
+            where: eq(lembaga.id, ctx.session.user.lembagaId!),
+            columns: { memberCount: true },
+          });
+
+          await tx
+            .update(lembaga)
+            .set({
+              memberCount: (currentLembaga?.memberCount ?? 0) + 1,
+            })
+            .where(eq(lembaga.id, ctx.session.user.lembagaId!));
+        });
 
         return {
           success: true,
-          message: 'Request berhasil diterima.',
+          message: 'Permintaan asosiasi berhasil diterima.',
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-          message: 'Database Error',
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.' 
+        });
       }
     }),
 
@@ -918,13 +887,6 @@ export const lembagaRouter = createTRPCRouter({
     .output(DeclineRequestAssociationLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (!ctx.session.user) {
-          throw new TRPCError({ code: 'UNAUTHORIZED' });
-        }
-        if (!ctx.session.user.lembagaId) {
-          throw new TRPCError({ code: 'FORBIDDEN' });
-        }
-
         // Check if the request exists and is pending
         const isExistAndAuthorized = await ctx.db
           .select({ id: associationRequestsLembaga.id })
@@ -933,7 +895,7 @@ export const lembagaRouter = createTRPCRouter({
             and(
               eq(
                 associationRequestsLembaga.lembagaId,
-                ctx.session.user.lembagaId,
+                ctx.session.user.lembagaId!,
               ),
               eq(associationRequestsLembaga.user_id, input.user_id),
               eq(associationRequestsLembaga.status, 'Pending'),
@@ -942,10 +904,10 @@ export const lembagaRouter = createTRPCRouter({
           .limit(1);
 
         if (isExistAndAuthorized.length === 0) {
-          return {
-            success: false,
-            message: 'Association request tidak ditemukan atau sudah diproses.',
-          };
+          throw new TRPCError({ 
+            code: 'NOT_FOUND', 
+            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.' 
+          });
         }
 
         // Update the association request status to 'Declined'
@@ -958,7 +920,7 @@ export const lembagaRouter = createTRPCRouter({
             and(
               eq(
                 associationRequestsLembaga.lembagaId,
-                ctx.session.user.lembagaId,
+                ctx.session.user.lembagaId!,
               ),
               eq(associationRequestsLembaga.user_id, input.user_id),
             ),
@@ -966,14 +928,16 @@ export const lembagaRouter = createTRPCRouter({
 
         return {
           success: true,
-          message: 'Request berhasil ditolak.',
+          message: 'Permintaan asosiasi berhasil ditolak.',
         };
       } catch (error) {
-        console.error('Database Error:', error);
-        return {
-          success: false,
-          message: 'Database Error',
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.' 
+        });
       }
     }),
 
@@ -981,17 +945,13 @@ export const lembagaRouter = createTRPCRouter({
     .input(ChooseBestStaffKegiatanInputSchema)
     .output(ChooseBestStaffKegiatanOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       // Verify that the event belongs to the lembaga
       const eventOrg = await ctx.db.query.events.findFirst({
         where: eq(events.id, input.event_id),
         columns: { org_id: true },
       });
 
-      if (ctx.session.user.lembagaId !== eventOrg?.org_id) {
+      if (ctx.session.user.lembagaId! !== eventOrg?.org_id) {
         throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
@@ -1040,14 +1000,10 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  getBestStaffLembagaOptions: protectedProcedure
+  getBestStaffLembagaOptions: lembagaProcedure
     .input(GetBestStaffLembagaOptionsInputSchema)
     .output(GetBestStaffLembagaOptionsOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const staffOptions = await ctx.db
         .select({
           user_id: users.id,
@@ -1074,12 +1030,8 @@ export const lembagaRouter = createTRPCRouter({
     .input(ChooseBestStaffLembagaInputSchema)
     .output(ChooseBestStaffLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       // Verify that lembaga id matches
-      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+      if (ctx.session.user.lembagaId! !== input.lembaga_id) {
         throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
@@ -1232,16 +1184,12 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllHistoryBestStaffKegiatanInputSchema)
     .output(GetAllHistoryBestStaffKegiatanOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const eventOrg = await ctx.db.query.events.findFirst({
         where: eq(events.id, input.event_id),
         columns: { org_id: true },
       });
 
-      if (ctx.session.user.lembagaId !== eventOrg?.org_id) {
+      if (ctx.session.user.lembagaId! !== eventOrg?.org_id) {
         throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
@@ -1317,11 +1265,7 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllHistoryBestStaffLembagaInputSchema)
     .output(GetAllHistoryBestStaffLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user.lembagaId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
-      if (ctx.session.user.lembagaId !== input.lembaga_id) {
+      if (ctx.session.user.lembagaId! !== input.lembaga_id) {
         throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
@@ -1397,10 +1341,6 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllHistoryBestStaffMahasiswaInputSchema)
     .output(GetAllHistoryBestStaffMahasiswaOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (!ctx.session.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
-      }
-
       const kegiatanRecords = await ctx.db
         .select({
           event_id: events.id,
