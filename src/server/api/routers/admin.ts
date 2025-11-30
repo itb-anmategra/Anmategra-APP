@@ -9,7 +9,6 @@ import {
   SetReportStatusInputSchema,
   SetReportStatusOutputSchema,
 } from '~/server/api/types/admin.type';
-import { getServerAuthSession } from '~/server/auth';
 import { users, verifiedUsers } from '~/server/db/schema';
 import { support } from '~/server/db/schema';
 
@@ -17,11 +16,6 @@ export const adminRouter = createTRPCRouter({
   addVerifiedEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      if (session?.user.role !== 'admin') {
-        throw new Error('Unauthorized');
-      }
-
       const user = await ctx.db
         .insert(verifiedUsers)
         .values({
@@ -34,11 +28,6 @@ export const adminRouter = createTRPCRouter({
   deleteVerifiedEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const session = await getServerAuthSession();
-      if (session?.user.role !== 'admin') {
-        throw new Error('Unauthorized');
-      }
-
       const verified_user = await ctx.db.query.verifiedUsers.findFirst({
         where: eq(verifiedUsers.email, input.email),
       });
@@ -105,22 +94,42 @@ export const adminRouter = createTRPCRouter({
     .input(SetReportStatusInputSchema)
     .output(SetReportStatusOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        const report = await ctx.db
-          .update(support)
-          .set({ status: input.status })
-          .where(eq(support.id, input.id))
-          .returning();
-        if (report.length === 0) {
-          return { success: false, message: 'Report not found' };
-        }
-        return { success: true, message: 'Report status updated successfully' };
-      } catch (error) {
-        console.error('Error updating report status:', error);
+      const existingReport = await ctx.db.query.support.findFirst({
+        where: eq(support.id, input.id),
+      });
+
+      if (!existingReport) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update report status',
+          code: 'NOT_FOUND',
+          message: 'Report not found',
         });
       }
+
+      if (existingReport.status === input.status) {     
+        return { success: true, message: 'Report status is already set to the desired value' };
+      }
+      
+      const statusOrder = {
+        'Draft': 0,
+        'Backlog': 1,
+        'In Progress': 2,
+        'Resolved': 3,
+      } as const;
+
+      const currentOrder = statusOrder[existingReport.status];
+      const newOrder = statusOrder[input.status];
+
+      // Prevent going backward 
+      if (newOrder < currentOrder) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Cannot move report backward from ${existingReport.status} to ${input.status}`,
+        });
+      }
+      await ctx.db
+        .update(support)
+        .set({ status: input.status })
+        .where(eq(support.id, input.id));
+      return { success: true, message: 'Report status updated successfully' };
     }),
 });
