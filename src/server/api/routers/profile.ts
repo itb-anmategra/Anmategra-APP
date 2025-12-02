@@ -36,14 +36,17 @@ export const profileRouter = createTRPCRouter({
           .select()
           .from(events)
           .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
+          .innerJoin(lembaga, eq(events.org_id, lembaga.id))
+          .innerJoin(users, eq(lembaga.userId, users.id))
           .where(eq(keanggotaan.user_id, input.mahasiswaId))
           .orderBy(desc(events.start_date)),
       ]);
 
       const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
         lembaga: {
-          name: item.event.name,
-          profilePicture: item.event.image,
+          id: item.lembaga.id,
+          name: item.lembaga.name,
+          profilePicture: item.user.image,
         },
         id: item.event.id,
         name: item.event.name,
@@ -108,9 +111,9 @@ export const profileRouter = createTRPCRouter({
 
       const formattedEvents: Kepanitiaan[] = newestEvent.map((item) => ({
         lembaga: {
-          id: item.id,
-          name: item.name,
-          profilePicture: item.image,
+          id: lembaga.id,
+          name: lembaga.name,
+          profilePicture: lembaga.users.image,
         },
         id: item.id,
         name: item.name,
