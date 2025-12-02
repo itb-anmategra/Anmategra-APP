@@ -25,6 +25,7 @@ export const CreateEventInputSchema = z.object({
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
   background_image: z.string().url('Harus berupa URL yang valid').optional(),
+  organogram_image: z.string().url('Harus berupa URL yang valid').optional(),
 });
 
 export const CreateEventOutputSchema = z.custom<Event>();
