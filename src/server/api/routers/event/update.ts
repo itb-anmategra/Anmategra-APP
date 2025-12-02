@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { events, keanggotaan } from '~/server/db/schema';
 
-import { lembagaProcedure, protectedProcedure } from '../../trpc';
+import { lembagaProcedure } from '../../trpc';
 import {
   AddNewPanitiaKegiatanInputSchema,
   AddNewPanitiaKegiatanOutputSchema,

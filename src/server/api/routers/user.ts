@@ -465,6 +465,7 @@ export const userRouter = createTRPCRouter({
           and(
             eq(associationRequests.event_id, input.event_id),
             eq(associationRequests.user_id, ctx.session.user.id),
+            eq(associationRequests.status, 'Pending'), // ensure only Pending requests are deleted
           ),
         );
       return { success: true, message: 'Permintaan asosiasi berhasil dihapus' };
@@ -499,6 +500,7 @@ export const userRouter = createTRPCRouter({
           and(
             eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
             eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+            eq(associationRequestsLembaga.status, 'Pending'), // ensure only Pending requests are deleted
           ),
         );
       return { success: true, message: 'Permintaan asosiasi berhasil dihapus' };
