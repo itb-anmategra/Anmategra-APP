@@ -21,6 +21,7 @@ import {
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+
 import BestStaff from '../../_components/best-staff-form';
 
 export default function AnggotaContent({
@@ -45,15 +46,21 @@ export default function AnggotaContent({
   const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
-  let tableData;
-  if (!isAnggota && pathname) {
-    tableData = data.map((member) => {
-      return {
-        ...member,
-        event_id: pathname.split('/')[3],
-      };
-    });
-  }
+
+  const tableData = useMemo(() => {
+    if (!isAnggota && pathname) {
+      const eventIdFromPath = pathname.split('/')[3];
+      if (eventIdFromPath) {
+        return data.map((member) => {
+          return {
+            ...member,
+            event_id: eventIdFromPath,
+          };
+        });
+      }
+    }
+    return undefined;
+  }, [isAnggota, pathname, data]);
 
   const filterOptions: FilterOption[] = useMemo(
     () =>
@@ -131,14 +138,15 @@ export default function AnggotaContent({
                   trigger={
                     <Button
                       variant="light_blue"
-                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg">
-                        <Image
-                          src={Best}
-                          alt="Pilih Best Staff"
-                          width={24}
-                          height={24}
-                        />
-                        Pilih Best Staff
+                      className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+                    >
+                      <Image
+                        src={Best}
+                        alt="Pilih Best Staff"
+                        width={24}
+                        height={24}
+                      />
+                      Pilih Best Staff
                     </Button>
                   }
                 />
@@ -175,7 +183,7 @@ export default function AnggotaContent({
             {isAnggota ? (
               <MahasiswaCardTable data={data} lembagaId={lembagaId} />
             ) : (
-              <MahasiswaKegiatanCardTable data={tableData} />
+              tableData && <MahasiswaKegiatanCardTable data={tableData} />
             )}
           </div>
         </div>

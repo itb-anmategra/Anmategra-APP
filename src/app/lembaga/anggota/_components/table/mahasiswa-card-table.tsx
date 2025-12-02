@@ -182,13 +182,17 @@ const columns: ColumnDef<Member>[] = [
 export function MahasiswaCardTable({ data, lembagaId }: { data: Member[]; lembagaId?: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const itemsPerPage = 10; // You can make this configurable
+  const itemsPerPage = 10;
 
-  // Calculate pagination
+  const paginatedData = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage]);
+
+  const tableMeta = React.useMemo(() => ({ lembagaId }), [lembagaId]);
+
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = data.slice(startIndex, endIndex);
 
   const table = useReactTable({
     data: paginatedData,
@@ -198,7 +202,7 @@ export function MahasiswaCardTable({ data, lembagaId }: { data: Member[]; lembag
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    meta: { lembagaId },
+    meta: tableMeta,
   });
 
   return (

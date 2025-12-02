@@ -14,8 +14,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
 import * as React from 'react';
-import CustomPagination from '~/app/_components/layout/pagination-comp';
 import EditAnggotaKegiatanForm from '~/app/_components/form/edit-anggota-kegiatan-form';
+import CustomPagination from '~/app/_components/layout/pagination-comp';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -34,9 +34,9 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
+import { toast } from '~/hooks/use-toast';
 // TRPC Import
 import { api } from '~/trpc/react';
-import { toast } from '~/hooks/use-toast';
 
 export type MemberKegiatan = {
   id: string;
@@ -63,14 +63,14 @@ function ActionCellKegiatan({ member }: { member: MemberKegiatan }) {
           toast({
             title: 'Berhasil menghapus panitia',
             description: 'Data panitia telah dihapus.',
-          })
+          });
         },
         onError: (error) => {
           toast({
             title: 'Gagal menghapus panitia',
             description: error.message,
             variant: 'destructive',
-          })
+          });
         },
       },
     );
@@ -133,7 +133,6 @@ function ActionCellKegiatan({ member }: { member: MemberKegiatan }) {
   );
 }
 
-
 const columns: ColumnDef<MemberKegiatan>[] = [
   {
     accessorKey: 'nama',
@@ -195,11 +194,13 @@ export function MahasiswaKegiatanCardTable({
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
 
-  // Calculate pagination
+  const paginatedData = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage]);
+
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = data.slice(startIndex, endIndex);
 
   const table = useReactTable({
     data: paginatedData,
