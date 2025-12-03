@@ -47,6 +47,7 @@ export default async function RaporPage({ params }: RaporPageProps) {
       <div className="mb-6" />
 
       <RaporTable
+        session={session}
         event_id={event_id}
         type="event"
         selectOptions={selectOptions}

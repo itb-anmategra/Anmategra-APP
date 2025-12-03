@@ -2,7 +2,8 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
@@ -21,6 +22,7 @@ import {
 import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import { toast } from '~/hooks/use-toast';
 
 import BestStaff from '../../_components/best-staff-form';
 
@@ -42,7 +44,6 @@ export default function AnggotaContent({
 }) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const pathname = usePathname();
-  const router = useRouter();
   const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
@@ -76,6 +77,47 @@ export default function AnggotaContent({
     setSelectedFilters(filters);
     // TODO: Implement server-side filtering when BE is ready
   }, []);
+
+  const handleExport = async () => {
+    try {
+      const endpoint = isAnggota
+        ? `/api/lembaga/${session?.user.lembagaId}/anggota`
+        : `/api/lembaga/kegiatan/${eventId}/anggota`;
+      const response = await fetch(endpoint);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `anggota-${isAnggota ? 'lembaga' : 'kegiatan'}-${isAnggota ? lembagaId : eventId}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        toast({
+          title: 'Rapor berhasil diekspor',
+        });
+      } else {
+        const result = (await response.json()) as {
+          message?: string;
+          data?: any;
+          error?: string;
+          details?: string;
+        };
+        toast({
+          title: 'Gagal mengekspor rapor',
+          description: result.error,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Gagal mengekspor rapor',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <main className="flex flex-row bg-[#FAFAFA] w-full p-6">
@@ -115,13 +157,14 @@ export default function AnggotaContent({
                   dataAddAnggota={dataAddAnggota}
                   pageAnggota={isAnggota}
                 />
-                {isAnggota && (
+                <Link
+                  href={
+                    isAnggota ? '/anggota/rapor' : `/kegiatan/${eventId}/rapor`
+                  }
+                >
                   <Button
                     variant="light_blue"
                     className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
-                    onClick={() => {
-                      router.push('/anggota/rapor');
-                    }}
                   >
                     <Image
                       src={Rapor}
@@ -131,7 +174,7 @@ export default function AnggotaContent({
                     />
                     Rapor Komunal
                   </Button>
-                )}
+                </Link>
                 <BestStaff
                   lembagaId={lembagaId}
                   eventId={eventId}
@@ -158,14 +201,7 @@ export default function AnggotaContent({
                   selectedFilters={selectedFilters}
                   onFilterChange={handleFilterChange}
                 />
-                <Button
-                  variant="ghost"
-                  className="p-2"
-                  onClick={() => {
-                    // Empty function - add upload functionality here
-                    console.log('Upload clicked');
-                  }}
-                >
+                <Button variant="ghost" className="p-2" onClick={handleExport}>
                   <Image
                     src={Upload}
                     alt="Upload icon"
