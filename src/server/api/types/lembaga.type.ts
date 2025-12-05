@@ -84,6 +84,13 @@ export const AddAnggotaLembagaInputSchema = z.object({
   position: z.string().nonempty(),
 });
 
+export const AddAnggotaManualLembagaInputSchema = z.object({
+  name: z.string().nonempty(),
+  nim: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
 export const AddAnggotaLembagaOutputSchema = z.object({
   success: z.boolean(),
   error: z.string().optional(),

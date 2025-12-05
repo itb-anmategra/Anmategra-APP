@@ -23,7 +23,7 @@ import {
 
 import daftarProdi from './db/kode-program-studi.json';
 
-interface Prodi {
+export interface Prodi {
   kode: number;
   jurusan: string;
 }
@@ -94,7 +94,16 @@ export const authOptions: NextAuthOptions = {
 
           // asumsi cuma ada angkatan 2000-an
           const angkatan = parseInt(nim!.substring(3, 5)) + 2000;
-          await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+
+          // Check if mahasiswa record already exists (from add manual)
+          const existingMahasiswa = await db.query.mahasiswa.findFirst({
+            where: eq(mahasiswa.userId, user.id),
+          });
+
+          if (!existingMahasiswa) {
+            // Only insert if not added manually
+            await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+          }
 
           token.role = user.role;
         }
@@ -186,14 +195,20 @@ export const authOptions: NextAuthOptions = {
           const nim = user.email.split('@')[0];
           if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
 
-          // cari jurusan
-          // const kodeProdi = parseInt(nim.substring(0, 3));
-          // const jurusan = daftarProdi.find(
-          //   (item: Prodi) => item.kode === kodeProdi,
-          // )?.jurusan;
+          // Update emailVerified if user was added manually
+          if (user.id) {
+            const existingUser = await db.query.users.findFirst({
+              where: eq(users.id, user.id),
+            });
 
-          // // cek jurusan valid
-          // return !!jurusan;
+            if (existingUser && !existingUser.emailVerified) {
+              await db
+                .update(users)
+                .set({ emailVerified: new Date() })
+                .where(eq(users.id, user.id));
+            }
+          }
+
           return true;
         }
         return false;
@@ -225,11 +240,30 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
       // tenantId: env.AZURE_AD_TENANT_ID,
 
-      profile: (profile: AzureADProfile) => {
+      profile: async (profile: AzureADProfile) => {
+        const email = profile.preferred_username ?? profile.email;
+        
+        // Check if user was added manually
+        const existingUser = await db.query.users.findFirst({
+          where: eq(users.email, email),
+        });
+
+        if (existingUser) {
+          // Don't create new user record, return existing user
+          // adapter will link account to this user
+          return {
+            id: existingUser.id,
+            name: profile.name,
+            email: email,
+            image: undefined,
+            role: 'mahasiswa' as const,
+          };
+        }
+
         return {
           id: profile.sub,
           name: profile.name,
-          email: profile.preferred_username ?? profile.email,
+          email: email,
           image: undefined,
           role: 'mahasiswa' as const,
         };

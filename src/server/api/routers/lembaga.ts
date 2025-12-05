@@ -25,6 +25,7 @@ import {
   AcceptRequestAssociationOutputSchema,
   AddAnggotaLembagaInputSchema,
   AddAnggotaLembagaOutputSchema,
+  AddAnggotaManualLembagaInputSchema,
   ChooseBestStaffKegiatanInputSchema,
   ChooseBestStaffKegiatanOutputSchema,
   ChooseBestStaffLembagaInputSchema,
@@ -72,6 +73,8 @@ import {
   editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
 import { z } from 'zod';
+import daftarProdi from '../../db/kode-program-studi.json';
+import { Prodi } from '~/server/auth';
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -390,6 +393,76 @@ export const lembagaRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal menambahkan anggota',
+        });
+      }
+    }),
+
+  addAnggotaManual: lembagaProcedure
+    .input(AddAnggotaManualLembagaInputSchema)
+    .output(AddAnggotaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // Check if user already exists by email (primary identifier)
+        const email = `${input.nim}@mahasiswa.itb.ac.id`;
+        const existingUser = await ctx.db.query.users.findFirst({
+          where: eq(users.email, email),
+        });
+
+        if (existingUser) {
+          // User exists, just add them to kehimpunan
+          await ctx.db.insert(kehimpunan).values({
+            id: existingUser.id + '_' + ctx.session.user.lembagaId!,
+            lembagaId: ctx.session.user.lembagaId!,
+            userId: existingUser.id,
+            division: input.division,
+            position: input.position,
+          });
+
+          return { success: true };
+        }
+
+        const kodeProdi = parseInt(input.nim.substring(0, 3));
+        const jurusan =
+          daftarProdi.find((item: Prodi) => item.kode === kodeProdi)
+            ?.jurusan ?? 'TPB';
+
+        // asumsi cuma ada angkatan 2000-an
+        const angkatan = parseInt(input.nim.substring(3, 5)) + 2000;
+
+        await ctx.db.transaction(async (tx) => {
+          const user = await tx
+            .insert(users)
+            .values({
+              name: input.name,
+              email: email,
+              role: 'mahasiswa',
+                emailVerified: null, // Not verified yet
+            })
+            .returning({ id: users.id });
+        
+          await tx.insert(mahasiswa).values({
+            userId: user[0]!.id,
+            nim: Number(input.nim),
+            jurusan: jurusan,
+            angkatan: angkatan,
+          });
+
+          await tx.insert(kehimpunan).values({
+            id: user[0]!.id + '_' + ctx.session.user.id,
+            lembagaId: ctx.session.user.lembagaId!,
+            userId: user[0]!.id,
+            division: input.division,
+            position: input.position,
+          });
+        });
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal menambahkan anggota secara manual',
         });
       }
     }),
