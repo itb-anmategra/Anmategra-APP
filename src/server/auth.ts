@@ -159,59 +159,57 @@ export const authOptions: NextAuthOptions = {
         const isVerified = await isEmailInVerifiedUsers(user.email);
 
         if (!isValidLembaga && !isVerified) return false;
-        const existingUser = await db.query.users.findFirst({
-          where: (u) => eq(u.email, user.email),
-        });
-
-        if (existingUser) {
-          // Check if account row already exists
-          const existingAccount = await db.query.accounts.findFirst({
-            where: (a) =>
-              eq(a.provider, account.provider) &&
-              eq(a.providerAccountId, account.providerAccountId),
-          });
-
-          if (!existingAccount) {
-            // Insert new account entry
-            await db.insert(accounts).values({
-              userId: existingUser.id,
-              provider: account.provider,
-              providerAccountId: account.providerAccountId,
-              type: 'oauth',
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              id_token: account.id_token,
-            });
-          }
-          return true;
-        }
-      }
-
+      } 
       // signin mahasiswa
       else if (account?.provider === 'azure-ad') {
         // cek email mahasiswa
-        if (user.email?.endsWith('@mahasiswa.itb.ac.id')) {
-          // cek nim valid
-          const nim = user.email.split('@')[0];
-          if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
+        if (!user.email?.endsWith('@mahasiswa.itb.ac.id')) return false;
+        // cek nim valid
+        const nim = user.email.split('@')[0];
+        if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
+      } 
+      else {
+        return true; 
+      }
 
-          // Update emailVerified if user was added manually
-          if (user.id) {
-            const existingUser = await db.query.users.findFirst({
-              where: eq(users.id, user.id),
-            });
+      const existingUser = await db.query.users.findFirst({
+        where: (u) => eq(u.email, user.email),
+      });
 
-            if (existingUser && !existingUser.emailVerified) {
-              await db
-                .update(users)
-                .set({ emailVerified: new Date() })
-                .where(eq(users.id, user.id));
-            }
-          }
+      if (existingUser) {
+        // Check if account row already exists
+        const existingAccount = await db.query.accounts.findFirst({
+          where: (a) =>
+            eq(a.provider, account.provider) &&
+            eq(a.providerAccountId, account.providerAccountId),
+        });
 
-          return true;
+        if (!existingAccount) {
+          // Insert new account entry
+          await db.insert(accounts).values({
+            userId: existingUser.id,
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            type: 'oauth',
+            access_token: account.access_token,
+            refresh_token: account.refresh_token,
+            id_token: account.id_token,
+          });
         }
-        return false;
+
+        // Update emailVerified if user was added manually
+        if (account.provider === 'azure-ad' && !existingUser.emailVerified) {
+          await db
+            .update(users)
+            .set({ emailVerified: new Date() })
+            .where(eq(users.id, existingUser.id));
+        }
+
+        user.id = existingUser.id;
+        user.name = existingUser.name ?? user.name;
+        user.role = (existingUser.role as 'admin' | 'lembaga' | 'mahasiswa') ?? user.role;
+
+        return true;
       }
 
       return true;
@@ -240,30 +238,11 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
       // tenantId: env.AZURE_AD_TENANT_ID,
 
-      profile: async (profile: AzureADProfile) => {
-        const email = profile.preferred_username ?? profile.email;
-        
-        // Check if user was added manually
-        const existingUser = await db.query.users.findFirst({
-          where: eq(users.email, email),
-        });
-
-        if (existingUser) {
-          // Don't create new user record, return existing user
-          // adapter will link account to this user
-          return {
-            id: existingUser.id,
-            name: profile.name,
-            email: email,
-            image: undefined,
-            role: 'mahasiswa' as const,
-          };
-        }
-
+      profile: (profile: AzureADProfile) => {
         return {
           id: profile.sub,
           name: profile.name,
-          email: email,
+          email: profile.preferred_username ?? profile.email,
           image: undefined,
           role: 'mahasiswa' as const,
         };
