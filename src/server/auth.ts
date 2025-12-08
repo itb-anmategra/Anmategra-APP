@@ -197,16 +197,18 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        // Update emailVerified if user was added manually
+        // Update emailVerified and name if user was added manually
         if (account.provider === 'azure-ad' && !existingUser.emailVerified) {
           await db
             .update(users)
-            .set({ emailVerified: new Date() })
+            .set({ 
+              emailVerified: new Date(), 
+              name: user.name
+            })
             .where(eq(users.id, existingUser.id));
         }
 
         user.id = existingUser.id;
-        user.name = existingUser.name ?? user.name;
         user.role = (existingUser.role as 'admin' | 'lembaga' | 'mahasiswa') ?? user.role;
 
         return true;
@@ -266,7 +268,7 @@ const isEmailInVerifiedUsers = async (email: string) => {
   });
 
   return user !== undefined;
-};
+``};
 
 const insertMahasiswa = async (
   id: string,

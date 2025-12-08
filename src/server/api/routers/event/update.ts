@@ -248,6 +248,13 @@ export const addNewPanitiaManual = lembagaProcedure
       });
 
       if (existingUser) {
+        // Name doesn't match
+        if (existingUser.name !== input.name) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Sudah ada mahasiswa dengan NIM ${input.nim} bernama ${existingUser.name}`,
+          });
+        }
         // User exists, just add them to keanggotaan
         await ctx.db.transaction(async (tx) => {
           await tx.insert(keanggotaan).values({
