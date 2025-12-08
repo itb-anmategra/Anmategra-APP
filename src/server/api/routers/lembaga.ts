@@ -409,6 +409,14 @@ export const lembagaRouter = createTRPCRouter({
         });
 
         if (existingUser) {
+          // Name doesn't match
+          if (existingUser.name !== input.name) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `Sudah ada mahasiswa dengan NIM ${input.nim} bernama ${existingUser.name}`,
+            });
+          }
+
           // User exists, just add them to kehimpunan
           await ctx.db.insert(kehimpunan).values({
             id: existingUser.id + '_' + ctx.session.user.lembagaId!,
