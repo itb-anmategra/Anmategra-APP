@@ -100,7 +100,9 @@ export const raporRouter = createTRPCRouter({
 
         return { mahasiswa: formattedMahasiswaList };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengambil data nilai profil kegiatan',
@@ -189,7 +191,9 @@ export const raporRouter = createTRPCRouter({
           nilai: formattedNilaiList,
         };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengambil nilai individu',
@@ -258,7 +262,9 @@ export const raporRouter = createTRPCRouter({
 
         return { success: true };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengupdate nilai mahasiswa.',
@@ -330,7 +336,9 @@ export const raporRouter = createTRPCRouter({
 
         return { mahasiswa: formattedAnggotaList };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengambil data anggota lembaga',
@@ -414,7 +422,9 @@ export const raporRouter = createTRPCRouter({
           nilai: formattedNilaiList,
         };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengambil nilai individu lembaga',
@@ -471,7 +481,9 @@ export const raporRouter = createTRPCRouter({
 
         return { success: true };
       } catch (error) {
-        console.error('Database Error:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengupdate nilai mahasiswa.',

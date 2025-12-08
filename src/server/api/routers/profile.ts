@@ -36,14 +36,17 @@ export const profileRouter = createTRPCRouter({
           .select()
           .from(events)
           .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
+          .innerJoin(lembaga, eq(events.org_id, lembaga.id))
+          .innerJoin(users, eq(lembaga.userId, users.id))
           .where(eq(keanggotaan.user_id, input.mahasiswaId))
           .orderBy(desc(events.start_date)),
       ]);
 
       const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
         lembaga: {
-          name: item.event.name,
-          profilePicture: item.event.image,
+          id: item.lembaga.id,
+          name: item.lembaga.name,
+          profilePicture: item.user.image,
         },
         id: item.event.id,
         name: item.event.name,
@@ -59,7 +62,7 @@ export const profileRouter = createTRPCRouter({
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Mahasiswa not found',
+          message: 'Mahasiswa tidak ditemukan.',
         });
       }
 
@@ -97,7 +100,7 @@ export const profileRouter = createTRPCRouter({
       if (!lembaga) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan.',
         });
       }
 
@@ -108,9 +111,9 @@ export const profileRouter = createTRPCRouter({
 
       const formattedEvents: Kepanitiaan[] = newestEvent.map((item) => ({
         lembaga: {
-          id: item.id,
-          name: item.name,
-          profilePicture: item.image,
+          id: lembaga.id,
+          name: lembaga.name,
+          profilePicture: lembaga.users.image,
         },
         id: item.id,
         name: item.name,
@@ -175,14 +178,14 @@ export const profileRouter = createTRPCRouter({
       if (!kegiatan) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Kegiatan tidak ditemukan.',
         });
       }
 
       if (kegiatan.org_id === null) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan not found',
+          message: 'Kegiatan tidak ditemukan.',
         });
       }
 
@@ -205,7 +208,7 @@ export const profileRouter = createTRPCRouter({
       if (lembagaRes.length === 0 || !lembagaRes[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan.',
         });
       }
 

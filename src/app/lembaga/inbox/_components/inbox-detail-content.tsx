@@ -38,12 +38,12 @@ export default function InboxDetailContent({
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: lembagaFilteredData } = api.lembaga.getAllRequestAssociationLembaga.useQuery(
-    {division: selectedFilters.length > 0 ? selectedFilters[0] : undefined,},
+    {division: selectedFilters.length > 0 ? selectedFilters : undefined,},
     {enabled: isLembagaRequest && selectedFilters.length > 0,}
   );
 
   const { data: eventFilteredData } = api.lembaga.getAllRequestAssociation.useQuery(
-    {event_id: id,division: selectedFilters.length > 0 ? selectedFilters[0] : undefined,},
+    {event_id: id,division: selectedFilters.length > 0 ? selectedFilters : undefined,},
     {enabled: !isLembagaRequest && selectedFilters.length > 0,}
   );
 

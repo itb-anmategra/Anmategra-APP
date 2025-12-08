@@ -63,7 +63,7 @@ export const profileLembagaRouter = createTRPCRouter({
       if (!lembagaExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Lembaga not found',
+          message: 'Lembaga tidak ditemukan.',
         });
       }
 
@@ -134,7 +134,7 @@ export const profileLembagaRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Profil Lembaga not found',
+          message: 'Profil Lembaga tidak ditemukan.',
         });
       }
 
@@ -179,7 +179,7 @@ export const profileLembagaRouter = createTRPCRouter({
       if (!profilExists) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Profil Lembaga not found',
+          message: 'Profil Lembaga tidak ditemukan.',
         });
       }
 
@@ -213,7 +213,7 @@ export const profileLembagaRouter = createTRPCRouter({
       } else {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update profil lembaga',
+          message: 'Gagal memperbarui profil lembaga',
         });
       }
     }),

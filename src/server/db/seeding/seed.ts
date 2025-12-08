@@ -222,6 +222,7 @@ async function importEvents() {
       is_organogram: parseBoolean(record.is_organogram),
       created_at: parseDate(record.created_at) ?? new Date(),
       updated_at: parseDate(record.updated_at) ?? new Date(),
+      organogram_image: null,
     }));
 
   if (data.length > 0) {
@@ -337,7 +338,7 @@ async function importSupport() {
       subject: record.subject!,
       topic: record.topic!,
       description: record.description!,
-      status: record.status as 'Draft' | 'In Progress' | 'Resolved' | 'Backlog',
+      status: 'In Progress',
       created_at: parseDate(record.created_at) ?? new Date(),
       updated_at: parseDate(record.updated_at) ?? new Date(),
     }));

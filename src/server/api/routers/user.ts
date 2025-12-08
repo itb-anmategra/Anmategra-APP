@@ -19,7 +19,6 @@ import {
   users,
 } from '~/server/db/schema';
 
-import { CreateEventOutputSchema } from '../types/event.type';
 import {
   CreateDraftInputSchema,
   DeleteRequestAssociationInputSchema,
@@ -270,50 +269,44 @@ export const userRouter = createTRPCRouter({
     .input(RequestAssociationInputSchema)
     .output(RequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // Input Sukses
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequests.findFirst({
-            where: (associationRequests, { eq, and }) =>
-              and(
-                eq(associationRequests.event_id, input.event_id),
-                eq(associationRequests.user_id, ctx.session.user.id),
-              ),
-          });
-
-        if (existingRequest) {
-          if(existingRequest.status === 'Pending' || existingRequest.status === 'Accepted'){
-            return {
-              success: false,
-              message: 'Anda sudah pernah membuat permintaan untuk event ini',
-            };
-          } else {
-            await ctx.db
-              .update(associationRequests)
-              .set({
-                status: 'Pending',
-                division: input.division,
-                position: input.position,
-              })
-              .where(eq(associationRequests.id, existingRequest.id));
-            return { success: true };
-          }
-        }
-
-        await ctx.db.insert(associationRequests).values({
-          id: crypto.randomUUID(),
-          event_id: input.event_id,
-          user_id: ctx.session.user.id,
-          division: input.division,
-          position: input.position,
-          status: 'Pending', // Pending Status
+      const existingRequest =
+        await ctx.db.query.associationRequests.findFirst({
+          where: (associationRequests, { eq, and }) =>
+            and(
+              eq(associationRequests.event_id, input.event_id),
+              eq(associationRequests.user_id, ctx.session.user.id),
+            ),
         });
 
-        return { success: true };
-      } catch (error) {
-        console.error('Error creating association request:', error);
-        return { success: false };
+      if (existingRequest) {
+        if(existingRequest.status === 'Pending' || existingRequest.status === 'Accepted'){
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Anda sudah pernah membuat permintaan untuk kegiatan ini',
+          });
+        } else {
+          await ctx.db
+            .update(associationRequests)
+            .set({
+              status: 'Pending',
+              division: input.division,
+              position: input.position,
+            })
+            .where(eq(associationRequests.id, existingRequest.id));
+          return { success: true };
+        }
       }
+
+      await ctx.db.insert(associationRequests).values({
+        id: crypto.randomUUID(),
+        event_id: input.event_id,
+        user_id: ctx.session.user.id,
+        division: input.division,
+        position: input.position,
+        status: 'Pending', // Pending Status
+      });
+
+      return { success: true };
     }),
 
   /*
@@ -327,14 +320,16 @@ export const userRouter = createTRPCRouter({
         .select({
           id: associationRequests.id,
           event_id: associationRequests.event_id,
+          image: events.image,
+          event_name: events.name,
           status: associationRequests.status,
           position: associationRequests.position,
           division: associationRequests.division,
-          event_name: events.name,
         })
         .from(associationRequests)
         .leftJoin(events, eq(associationRequests.event_id, events.id))
-        .where(eq(associationRequests.user_id, ctx.session.user.id));
+        .where(eq(associationRequests.user_id, ctx.session.user.id))
+        .orderBy(desc(associationRequests.created_at));
 
       return result;
     }),
@@ -350,6 +345,7 @@ export const userRouter = createTRPCRouter({
         .select({
           id: associationRequestsLembaga.id,
           lembaga_id: associationRequestsLembaga.lembagaId,
+          image: users.image,
           lembaga_name: lembaga.name,
           position: associationRequestsLembaga.position,
           division: associationRequestsLembaga.division,
@@ -357,7 +353,9 @@ export const userRouter = createTRPCRouter({
         })
         .from(associationRequestsLembaga)
         .leftJoin(lembaga, eq(associationRequestsLembaga.lembagaId, lembaga.id))
-        .where(eq(associationRequestsLembaga.user_id, ctx.session.user.id));
+        .leftJoin(users, eq(lembaga.userId, users.id))
+        .where(eq(associationRequestsLembaga.user_id, ctx.session.user.id))
+        .orderBy(desc(associationRequestsLembaga.created_at));
 
       return result;
     }),
@@ -370,37 +368,34 @@ export const userRouter = createTRPCRouter({
     .input(RequestAssociationInputSchema) // Input skema sama seperti RequestAssociationInputSchema (requestAssociation))
     .output(EditRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // Input Sukses
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequests.findFirst({
-            where: (associationRequests, { eq, and }) =>
-              and(
-                eq(associationRequests.event_id, input.event_id),
-                eq(associationRequests.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .update(associationRequests)
-          .set({
-            division: input.division,
-            position: input.position,
-            status: 'Pending', // Reset status to Pending
-          })
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequests.findFirst({
+          where: (associationRequests, { eq, and }) =>
             and(
               eq(associationRequests.event_id, input.event_id),
               eq(associationRequests.user_id, ctx.session.user.id),
             ),
-          );
-        return { success: true, message: 'Request berhasil diubah' };
-      } catch (error) {
-        console.error('Error updating association request:', error);
-        return { success: false, message: 'Failed to update request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Permintaan asosiasi tidak ditemukan',
+        });
       }
+      await ctx.db
+        .update(associationRequests)
+        .set({
+          division: input.division,
+          position: input.position,
+          status: 'Pending', // Reset status to Pending
+        })
+        .where(
+          and(
+            eq(associationRequests.event_id, input.event_id),
+            eq(associationRequests.user_id, ctx.session.user.id),
+          ),
+        );
+      return { success: true, message: 'Permintaan asosiasi berhasil diubah' };
     }),
 
   /*
@@ -411,37 +406,34 @@ export const userRouter = createTRPCRouter({
     .input(RequestAssociationLembagaInputSchema) // Input skema sama seperti RequestAssociationLembagaInputSchema (requestAssociationLembaga ada di issue sebelah)
     .output(EditRequestAssociationOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // Input Sukses
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequestsLembaga.findFirst({
-            where: (associationRequestsLembaga, { eq, and }) =>
-              and(
-                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
-                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .update(associationRequestsLembaga)
-          .set({
-            division: input.division,
-            position: input.position,
-            status: 'Pending', // Reset status to Pending
-          })
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequestsLembaga.findFirst({
+          where: (associationRequestsLembaga, { eq, and }) =>
             and(
               eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
               eq(associationRequestsLembaga.user_id, ctx.session.user.id),
             ),
-          );
-        return { success: true, message: 'Request berhasil diubah' };
-      } catch (error) {
-        console.error('Error updating association request:', error);
-        return { success: false, message: 'Failed to update request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Permintaan asosiasi tidak ditemukan',
+        });
       }
+      await ctx.db
+        .update(associationRequestsLembaga)
+        .set({
+          division: input.division,
+          position: input.position,
+          status: 'Pending', // Reset status to Pending
+        })
+        .where(
+          and(
+            eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+            eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+          ),
+        );
+      return { success: true, message: 'Permintaan asosiasi berhasil diubah' };
     }),
 
   /*
@@ -452,31 +444,31 @@ export const userRouter = createTRPCRouter({
     .input(DeleteRequestAssociationInputSchema)
     .output(EditRequestAssociationOutputSchema) // Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequests.findFirst({
-            where: (associationRequests, { eq, and }) =>
-              and(
-                eq(associationRequests.event_id, input.event_id),
-                eq(associationRequests.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .delete(associationRequests)
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequests.findFirst({
+          where: (associationRequests, { eq, and }) =>
             and(
               eq(associationRequests.event_id, input.event_id),
               eq(associationRequests.user_id, ctx.session.user.id),
+              eq(associationRequests.status, 'Pending'), // can only delete Pending requests
             ),
-          );
-        return { success: true, message: 'Request berhasil dihapus' };
-      } catch (error) {
-        console.error('Error deleting association request:', error);
-        return { success: false, message: 'Failed to delete request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Permintaan asosiasi tidak ditemukan atau tidak dapat dihapus',
+        });
       }
+      await ctx.db
+        .delete(associationRequests)
+        .where(
+          and(
+            eq(associationRequests.event_id, input.event_id),
+            eq(associationRequests.user_id, ctx.session.user.id),
+            eq(associationRequests.status, 'Pending'), // ensure only Pending requests are deleted
+          ),
+        );
+      return { success: true, message: 'Permintaan asosiasi berhasil dihapus' };
     }),
 
   /*
@@ -487,67 +479,60 @@ export const userRouter = createTRPCRouter({
     .input(DeleteRequestAssociationLembagaInputSchema)
     .output(EditRequestAssociationOutputSchema) //Karena edit outputnya sama seperti delete
     .mutation(async ({ ctx, input }) => {
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequestsLembaga.findFirst({
-            where: (associationRequestsLembaga, { eq, and }) =>
-              and(
-                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
-                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
-              ),
-          });
-        if (!existingRequest) {
-          return { success: false, message: 'Request not found' };
-        }
-        await ctx.db
-          .delete(associationRequestsLembaga)
-          .where(
+      const existingRequest =
+        await ctx.db.query.associationRequestsLembaga.findFirst({
+          where: (associationRequestsLembaga, { eq, and }) =>
             and(
               eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
               eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+              eq(associationRequestsLembaga.status, 'Pending'), // can only delete Pending requests
             ),
-          );
-        return { success: true, message: 'Request lembaga berhasil dihapus' };
-      } catch (error) {
-        console.error('Error deleting association request:', error);
-        return { success: false, message: 'Failed to delete request' };
+        });
+      if (!existingRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Permintaan asosiasi tidak ditemukan atau tidak dapat dihapus',
+        });
       }
+      await ctx.db
+        .delete(associationRequestsLembaga)
+        .where(
+          and(
+            eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+            eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+            eq(associationRequestsLembaga.status, 'Pending'), // ensure only Pending requests are deleted
+          ),
+        );
+      return { success: true, message: 'Permintaan asosiasi berhasil dihapus' };
     }),
 
   requestAssociationLembaga: protectedProcedure
     .input(RequestAssociationLembagaInputSchema)
     .output(RequestAssociationLembagaOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      // Input Sukses
-      try {
-        const existingRequest =
-          await ctx.db.query.associationRequestsLembaga.findFirst({
-            where: (associationRequestsLembaga, { eq, and }) =>
-              and(
-                eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
-                eq(associationRequestsLembaga.user_id, ctx.session.user.id),
-              ),
-          });
-        if (existingRequest) {
-          return {
-            success: false,
-            message: 'Anda sudah pernah membuat permintaan untuk lembaga ini',
-          };
-        }
-        await ctx.db.insert(associationRequestsLembaga).values({
-          id: crypto.randomUUID(),
-          lembagaId: input.lembaga_id,
-          user_id: ctx.session.user.id,
-          division: input.division,
-          position: input.position,
-          status: 'Pending', // Pending Status
+      const existingRequest =
+        await ctx.db.query.associationRequestsLembaga.findFirst({
+          where: (associationRequestsLembaga, { eq, and }) =>
+            and(
+              eq(associationRequestsLembaga.lembagaId, input.lembaga_id),
+              eq(associationRequestsLembaga.user_id, ctx.session.user.id),
+            ),
         });
-
-        return { success: true };
-      } catch (error) {
-        console.error('Error creating association request:', error);
-        return { success: false };
+      if (existingRequest) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Anda sudah pernah membuat permintaan untuk lembaga ini',
+        });
       }
+      await ctx.db.insert(associationRequestsLembaga).values({
+        id: crypto.randomUUID(),
+        lembagaId: input.lembaga_id,
+        user_id: ctx.session.user.id,
+        division: input.division,
+        position: input.position,
+        status: 'Pending', // Pending Status
+      });
+      return { success: true };
     }),
 
   getMahasiswaById: protectedProcedure
@@ -564,7 +549,7 @@ export const userRouter = createTRPCRouter({
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Mahasiswa not found',
+          message: 'Mahasiswa tidak ditemukan',
         });
       }
 
@@ -587,7 +572,7 @@ export const userRouter = createTRPCRouter({
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Mahasiswa not found',
+          message: 'Mahasiswa tidak ditemukan',
         });
       }
 
@@ -610,7 +595,7 @@ export const userRouter = createTRPCRouter({
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Mahasiswa not found',
+          message: 'Mahasiswa tidak ditemukan',
         });
       }
 
@@ -645,7 +630,7 @@ export const userRouter = createTRPCRouter({
       if (anggota.length === 0 || !anggota[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Anggota not found',
+          message: 'Anggota tidak ditemukan',
         });
       }
 
@@ -686,7 +671,7 @@ export const userRouter = createTRPCRouter({
       if (anggota.length === 0 || !anggota[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Anggota not found',
+          message: 'Anggota tidak ditemukan',
         });
       }
 
@@ -727,7 +712,7 @@ export const userRouter = createTRPCRouter({
       if (panitia.length === 0 || !panitia[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Panitia not found',
+          message: 'Panitia tidak ditemukan',
         });
       }
 
@@ -768,7 +753,7 @@ export const userRouter = createTRPCRouter({
       if (panitia.length === 0 || !panitia[0]) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Panitia not found',
+          message: 'Panitia tidak ditemukan',
         });
       }
 
@@ -804,7 +789,7 @@ export const userRouter = createTRPCRouter({
         if (!createdDraft) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to create draft',
+            message: 'Gagal membuat draft',
           });
         }
 
@@ -819,10 +804,12 @@ export const userRouter = createTRPCRouter({
           updated_at: createdDraft.updated_at.toISOString(),
         };
       } catch (error) {
-        console.error('Error creating draft:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create draft',
+          message: 'Gagal membuat draft',
         });
       }
     }),
@@ -852,7 +839,7 @@ export const userRouter = createTRPCRouter({
         if (!updatedDraft) {
           throw new TRPCError({
             code: 'NOT_FOUND',
-            message: 'Draft not found or not editable',
+            message: 'Draft tidak ditemukan atau tidak dapat diedit',
           });
         }
 
@@ -867,10 +854,12 @@ export const userRouter = createTRPCRouter({
           updated_at: updatedDraft.updated_at.toISOString(),
         };
       } catch (error) {
-        console.error('Error updating draft:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update draft',
+          message: 'Gagal memperbarui draft',
         });
       }
     }),
@@ -895,22 +884,24 @@ export const userRouter = createTRPCRouter({
           .returning();
 
         if (!submittedReport) {
-          return {
-            success: false,
-            message: 'Draft not found or already submitted',
-          };
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Draft tidak ditemukan atau sudah dikirim',
+          });
         }
 
         return {
           success: true,
-          message: 'Report submitted successfully',
+          message: 'Laporan berhasil dikirim',
         };
       } catch (error) {
-        console.error('Error submitting report:', error);
-        return {
-          success: false,
-          message: 'Failed to submit report',
-        };
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengirim laporan',
+        });
       }
     }),
 
@@ -931,8 +922,15 @@ export const userRouter = createTRPCRouter({
           .returning({ id: support.id });
 
         return { success: !!deletedReport };
-      } catch {
-        return { success: false };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal menghapus laporan',
+        });
+
       }
     }),
 
@@ -970,10 +968,12 @@ export const userRouter = createTRPCRouter({
           })),
         };
       } catch (error) {
-        console.error('Error fetching reports:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch reports',
+          message: 'Gagal mengambil laporan',
         });
       }
     }),

@@ -39,6 +39,7 @@ const AssociationSchema = z.object({
   event_id: z.string(),
   event_name: z.string(),
   user_id: z.string(),
+  image: z.string().url().nullable(),
   mahasiswa_name: z.string(),
   division: z.string(),
   position: z.string(),
@@ -79,6 +80,13 @@ export const GetLembagaEventsOutputSchema = z.object({
 
 export const AddAnggotaLembagaInputSchema = z.object({
   user_id: z.string().nonempty(),
+  division: z.string().nonempty(),
+  position: z.string().nonempty(),
+});
+
+export const AddAnggotaManualLembagaInputSchema = z.object({
+  name: z.string().nonempty(),
+  nim: z.string().nonempty(),
   division: z.string().nonempty(),
   position: z.string().nonempty(),
 });
@@ -176,17 +184,18 @@ export const GetAllRequestedAssociationSummaryOutputSchema = z.array(
 
 export const GetAllRequestAssociationKegiatanInputSchema = z.object({
   event_id: z.string().nonempty(),
-  division: z.string().optional(),
+  division: z.array(z.string()).optional(),
 });
 
 export const GetAllRequestAssociationInputSchema = z.object({
-  division: z.string().optional(),
+  division: z.array(z.string()).optional(),
 });
 
 export const GetAllRequestAssociationLembagaOutputSchema = z.object({
   requests: z.array(
     z.object({
       user_id: z.string(),
+      image: z.string().url().nullable(),
       mahasiswa_name: z.string(),
       division: z.string(),
       position: z.string(),
