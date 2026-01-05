@@ -3,17 +3,19 @@
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AjuanAsosiasiForm from '~/app/lembaga/profile-kegiatan/_components/ajuan-asosiasi-form';
 import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent } from '~/components/ui/dialog';
 import type { Session } from 'next-auth';
+import { api } from '~/trpc/react';
 
 interface EventHeaderProps {
   title: string;
   organizer: string;
   backgroundImage: string;
   logoImage: string;
+  eventId?: string;
   linkDaftar?: string | null;
   ajuanAsosiasi?: boolean;
   session?: Session | null;
@@ -24,6 +26,7 @@ export function EventHeader({
   organizer,
   backgroundImage,
   logoImage,
+  eventId,
   linkDaftar,
   ajuanAsosiasi,
   session,
@@ -33,11 +36,43 @@ export function EventHeader({
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  const { data: myRequests } = api.users.getMyRequestAssociation.useQuery(
+    undefined,
+    { enabled: Boolean(eventId) },
+  );
+
+  const matchingRequest = useMemo(
+    () => myRequests?.find((r) => r.event_id === eventId),
+    [myRequests, eventId],
+  );
+
+  useEffect(() => {
+    if (matchingRequest) {
+      setIsSubmitted(matchingRequest.status !== 'Declined');
+    } else {
+      setIsSubmitted(false);
+    }
+  }, [matchingRequest]);
+
+  const utils = api.useUtils();
+  const deleteAssociationMutation =
+    api.users.deleteRequestAssociation.useMutation({
+      onSuccess: () => {
+        setIsSubmitted(false);
+        setShowConfirmation(false);
+        void utils.users.getMyRequestAssociation.invalidate();
+      },
+      onError: (err) => {
+        alert(err.message || 'Gagal membatalkan pengajuan.');
+      },
+    });
+
   const handleConfirmCancel = () => {
-    setIsSubmitted(false);
-    setResetTrigger((prev) => prev + 1); // Trigger form reset
-    setShowConfirmation(false);
-    alert('Ajuan berhasil dibatalkan!');
+    if (!eventId) {
+      alert('Event ID tidak tersedia.');
+      return;
+    }
+    deleteAssociationMutation.mutate({ event_id: eventId });
   };
 
   const isLembaga = session?.user.role === 'lembaga';
@@ -93,23 +128,25 @@ export function EventHeader({
                     <Button
                       size="lg"
                       onClick={() => {
-                        if (isSubmitted) {
+                        if (isSubmitted && matchingRequest?.status === 'Pending') {
                           setShowConfirmation(true);
-                        } else {
+                        } else if (!isSubmitted) {
                           setIsOpen(true);
                         }
                       }}
                       className={`flex-1 rounded-xl text-sm sm:text-lg text-white max-w-[250px] flex items-center justify-center gap-2 ${
-                        isSubmitted
+                        isSubmitted && matchingRequest?.status === 'Pending'
                           ? 'bg-[#F16350] hover:bg-[#C04F40] active:bg-[#F16350]'
                           : 'bg-[#00B7B7] hover:bg-[#00A3A3] active:bg-[#008F8F]'
                       }`}
                     >
-                      {isSubmitted ? (
+                      {isSubmitted && matchingRequest?.status === 'Pending' ? (
                         <>
                           <X className="w-5 h-5" />
                           Batalkan Pengajuan
                         </>
+                      ) : isSubmitted ? (
+                        'Sudah diajukan'
                       ) : (
                         'Ajukan Asosiasi'
                       )}
@@ -127,7 +164,7 @@ export function EventHeader({
         <AjuanAsosiasiForm
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          eventId="123"
+          eventId={eventId ?? ''}
           eventName={title}
           eventLogo={logoImage}
           organizationName={organizer}
