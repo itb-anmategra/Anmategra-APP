@@ -2,31 +2,34 @@
 import { type ColumnProps } from '~/app/_components/laporan/board/report-column';
 // Components Import
 import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-container';
+import { api } from '~/trpc/server';
 
-const DummyData: ColumnProps[] = [
-  {
-    title: 'Backlog',
-    reports: [
-      { id: '1', name: 'Report 1', date: '15/07/2024', category: 'Kategori' },
-      { id: '2', name: 'Report 2', date: '15/07/2024', category: 'Kategori' },
-      { id: '3', name: 'Report 3', date: '15/07/2024', category: 'Kategori' },
-    ],
-  },
-  {
-    title: 'In Progress',
-    reports: [
-      { id: '4', name: 'Report 4', date: '15/07/2024', category: 'Kategori' },
-      { id: '5', name: 'Report 5', date: '15/07/2024', category: 'Kategori' },
-    ],
-  },
-  {
-    title: 'Resolved',
-    reports: [
-      { id: '6', name: 'Report 6', date: '15/07/2024', category: 'Kategori' },
-    ],
-  },
-];
+const formatDate = (dateString: string) =>
+  new Date(dateString).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 
 export default async function LaporanPage() {
-  return <LaporanMainContainer data={DummyData} isAdminView={true} />;
+  const { reports } = await api.admin.getAllReportsAdmin({});
+
+  const columns: ColumnProps[] = ['Backlog', 'In Progress', 'Resolved'].map(
+    (status) => ({
+      title: status as ColumnProps[number]['title'],
+      reports: reports
+        .filter((r) => r.status === status)
+        .map((r) => ({
+          id: r.id,
+          name: r.subject,
+          date: formatDate(r.created_at),
+          category: r.urgent,
+          description: r.description,
+          urgent: r.urgent,
+          attachment: r.attachment,
+        })),
+    }),
+  );
+
+  return <LaporanMainContainer data={columns} isAdminView={true} />;
 }

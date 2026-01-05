@@ -54,7 +54,7 @@ export function ReportColumn({
   const router = useRouter();
 
   const handleClick = (id: string) => {
-    router.push(`/laporan/${id}`);
+    router.push(isAdminView ? `/admin/${id}` : `/laporan/${id}`);
   };
 
   return (
