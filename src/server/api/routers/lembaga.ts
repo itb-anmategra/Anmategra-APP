@@ -1044,25 +1044,15 @@ export const lembagaRouter = createTRPCRouter({
         });
       }
 
-      const existing = await ctx.db.query.bestStaffKegiatan.findMany({
-        where: and(
-          eq(bestStaffKegiatan.eventId, input.event_id),
-          // overlap condition:
-          or(
-            and(
-              lte(bestStaffKegiatan.startDate, new Date(input.end_date)),
-              gte(bestStaffKegiatan.endDate, new Date(input.start_date)),
-            ),
+      await ctx.db
+        .delete(bestStaffKegiatan)
+        .where(
+          and(
+            eq(bestStaffKegiatan.eventId, input.event_id),
+            lte(bestStaffKegiatan.startDate, new Date(input.end_date)),
+            gte(bestStaffKegiatan.endDate, new Date(input.start_date)),
           ),
-        ),
-      });
-
-      if (existing.length > 0) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'Tanggal bentrok dengan Best Staff lain di divisi ini.',
-        });
-      }
+        );
 
       // insert to tabel bestStaffKegiatan
       await ctx.db.insert(bestStaffKegiatan).values(
@@ -1123,26 +1113,16 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Start date tidak boleh lebih besar dari end date',
         });
       }
-
-      const existing = await ctx.db.query.bestStaffLembaga.findMany({
-        where: and(
-          eq(bestStaffLembaga.lembagaId, input.lembaga_id),
-          // overlap condition:
-          or(
-            and(
-              lte(bestStaffLembaga.startDate, new Date(input.end_date)),
-              gte(bestStaffLembaga.endDate, new Date(input.start_date)),
-            ),
+      
+      await ctx.db
+        .delete(bestStaffLembaga)
+        .where(
+          and(
+            eq(bestStaffLembaga.lembagaId, input.lembaga_id),
+            lte(bestStaffLembaga.startDate, new Date(input.end_date)),
+            gte(bestStaffLembaga.endDate, new Date(input.start_date)),
           ),
-        ),
-      });
-
-      if (existing.length > 0) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'Tanggal bentrok dengan Best Staff lain di divisi ini.',
-        });
-      }
+        );
 
       // insert to tabel bestStaffKegiatan
       await ctx.db.insert(bestStaffLembaga).values(
