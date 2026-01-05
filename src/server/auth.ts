@@ -23,7 +23,7 @@ import {
 
 import daftarProdi from './db/kode-program-studi.json';
 
-interface Prodi {
+export interface Prodi {
   kode: number;
   jurusan: string;
 }
@@ -94,7 +94,16 @@ export const authOptions: NextAuthOptions = {
 
           // asumsi cuma ada angkatan 2000-an
           const angkatan = parseInt(nim!.substring(3, 5)) + 2000;
-          await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+
+          // Check if mahasiswa record already exists (from add manual)
+          const existingMahasiswa = await db.query.mahasiswa.findFirst({
+            where: eq(mahasiswa.userId, user.id),
+          });
+
+          if (!existingMahasiswa) {
+            // Only insert if not added manually
+            await insertMahasiswa(user.id, parseInt(nim!), jurusan, angkatan);
+          }
 
           token.role = user.role;
         }
@@ -150,53 +159,59 @@ export const authOptions: NextAuthOptions = {
         const isVerified = await isEmailInVerifiedUsers(user.email);
 
         if (!isValidLembaga && !isVerified) return false;
-        const existingUser = await db.query.users.findFirst({
-          where: (u) => eq(u.email, user.email),
-        });
-
-        if (existingUser) {
-          // Check if account row already exists
-          const existingAccount = await db.query.accounts.findFirst({
-            where: (a) =>
-              eq(a.provider, account.provider) &&
-              eq(a.providerAccountId, account.providerAccountId),
-          });
-
-          if (!existingAccount) {
-            // Insert new account entry
-            await db.insert(accounts).values({
-              userId: existingUser.id,
-              provider: account.provider,
-              providerAccountId: account.providerAccountId,
-              type: 'oauth',
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              id_token: account.id_token,
-            });
-          }
-          return true;
-        }
-      }
-
+      } 
       // signin mahasiswa
       else if (account?.provider === 'azure-ad') {
         // cek email mahasiswa
-        if (user.email?.endsWith('@mahasiswa.itb.ac.id')) {
-          // cek nim valid
-          const nim = user.email.split('@')[0];
-          if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
+        if (!user.email?.endsWith('@mahasiswa.itb.ac.id')) return false;
+        // cek nim valid
+        const nim = user.email.split('@')[0];
+        if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
+      } 
+      else {
+        return true; 
+      }
 
-          // cari jurusan
-          // const kodeProdi = parseInt(nim.substring(0, 3));
-          // const jurusan = daftarProdi.find(
-          //   (item: Prodi) => item.kode === kodeProdi,
-          // )?.jurusan;
+      const existingUser = await db.query.users.findFirst({
+        where: (u) => eq(u.email, user.email),
+      });
 
-          // // cek jurusan valid
-          // return !!jurusan;
-          return true;
+      if (existingUser) {
+        // Check if account row already exists
+        const existingAccount = await db.query.accounts.findFirst({
+          where: (a) =>
+            eq(a.provider, account.provider) &&
+            eq(a.providerAccountId, account.providerAccountId),
+        });
+
+        if (!existingAccount) {
+          // Insert new account entry
+          await db.insert(accounts).values({
+            userId: existingUser.id,
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            type: 'oauth',
+            access_token: account.access_token,
+            refresh_token: account.refresh_token,
+            id_token: account.id_token,
+          });
         }
-        return false;
+
+        // Update emailVerified and name if user was added manually
+        if (account.provider === 'azure-ad' && !existingUser.emailVerified) {
+          await db
+            .update(users)
+            .set({ 
+              emailVerified: new Date(), 
+              name: user.name
+            })
+            .where(eq(users.id, existingUser.id));
+        }
+
+        user.id = existingUser.id;
+        user.role = (existingUser.role as 'admin' | 'lembaga' | 'mahasiswa') ?? user.role;
+
+        return true;
       }
 
       return true;
@@ -253,7 +268,7 @@ const isEmailInVerifiedUsers = async (email: string) => {
   });
 
   return user !== undefined;
-};
+``};
 
 const insertMahasiswa = async (
   id: string,

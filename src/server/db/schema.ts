@@ -222,6 +222,7 @@ export const events = createTable('event', {
   participant_count: integer('participant_count').notNull().default(0),
   is_highlighted: boolean('is_highlighted').notNull().default(false),
   is_organogram: boolean('is_organogram').notNull().default(false),
+  organogram_image: varchar('organogram_image', { length: 255 }),
   ...timestamps,
 });
 
