@@ -1,0 +1,1 @@
+ALTER TABLE "anmategra_support" ALTER COLUMN "status" SET DEFAULT 'Draft';
