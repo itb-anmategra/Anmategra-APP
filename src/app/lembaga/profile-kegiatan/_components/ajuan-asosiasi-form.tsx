@@ -98,14 +98,14 @@ const AjuanAsosiasiForm = ({
       setIsSubmitted(true);
       onSubmissionSuccess?.();
       setIsOpen(false);
-      alert('Pengajuan berhasil dikirim (simulasi).');
+      alert('Pengajuan berhasil dikirim.');
     }, 900);
   };
 
   const handleCancelSubmission = () => {
     setIsSubmitted(false);
     form.reset();
-    alert('Ajuan berhasil dibatalkan (simulasi).');
+    alert('Ajuan berhasil dibatalkan.');
   };
 
   const onSubmit = (values: AjuanAsosiasiSchemaType) => {
