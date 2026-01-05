@@ -100,7 +100,7 @@ const RequestTableEventsEntries: React.FC<{ data: PermintaanAsosiasi[] }> = ({
               Tidak ada permintaan asosiasi
             </div>
             <p className="text-sm md:text-[24px] text-[#C4CACE] max-w-xs md:max-w-md">
-              Maaf, Anda belum mencatat kegiatan yang dapat ditampilkan.
+              Belum ada permintaan asosiasi yang masuk.
             </p>
           </div>
         </>

@@ -21,16 +21,22 @@ const RequestTableAssociationsEntries: React.FC<{
   lembagaId: string | undefined;
 }> = ({ id, data, lembagaId }) => {
   const router = useRouter();
+  const utils = api.useUtils();
 
   // penggunaan mutation baru untuk acc / decline lembaga
   // pengecekan cuma bawa ke page lain, nanti implementasi kalau backend sudah integrasi menyeluruh
   const acceptLembagaMutation =
     api.lembaga.acceptRequestAssociationLembaga.useMutation({
       onSuccess: () => {
-        router.push('/inbox');
+        void utils.lembaga.getAllRequestAssociation.invalidate();
+        void utils.lembaga.getAllRequestAssociationLembaga.invalidate();
+        void utils.lembaga.getAllRequestAssociationSummary.invalidate();
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
       onError: () => {
-        router.push('/anggota');
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
     });
   const handleAcceptLembaga = (
@@ -49,10 +55,15 @@ const RequestTableAssociationsEntries: React.FC<{
   const declineLembagaMutation =
     api.lembaga.declineRequestAssociationLembaga.useMutation({
       onSuccess: () => {
-        router.push('/inbox');
+        void utils.lembaga.getAllRequestAssociation.invalidate();
+        void utils.lembaga.getAllRequestAssociationLembaga.invalidate();
+        void utils.lembaga.getAllRequestAssociationSummary.invalidate();
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
       onError: () => {
-        router.push('/anggota');
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
     });
   const handleDeclineLembaga = (
@@ -70,10 +81,14 @@ const RequestTableAssociationsEntries: React.FC<{
 
   const acceptEventMutation = api.lembaga.acceptRequestAssociation.useMutation({
     onSuccess: () => {
-      router.push('/inbox');
+      void utils.lembaga.getAllRequestAssociation.invalidate();
+      void utils.lembaga.getAllRequestAssociationSummary.invalidate();
+      router.push('/lembaga/inbox');
+      router.refresh();
     },
     onError: () => {
-      router.push('/anggota');
+      router.push('/lembaga/inbox');
+      router.refresh();
     },
   });
   const handleAcceptEvent = (
@@ -94,10 +109,14 @@ const RequestTableAssociationsEntries: React.FC<{
   const declineEventMutation =
     api.lembaga.declineRequestAssociation.useMutation({
       onSuccess: () => {
-        router.push('/inbox');
+        void utils.lembaga.getAllRequestAssociation.invalidate();
+        void utils.lembaga.getAllRequestAssociationSummary.invalidate();
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
       onError: () => {
-        router.push('/anggota');
+        router.push('/lembaga/inbox');
+        router.refresh();
       },
     });
   const handleDeclineEvent = (
