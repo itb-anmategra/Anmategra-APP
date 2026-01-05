@@ -183,7 +183,7 @@ const RequestTableAssociationsEntries: React.FC<{
                 </div>
 
                 {/* Buttons */}
-                <div className="flex items-center justify-between md:justify-end gap-2 px-3 md:px-0 mt-2 md:mt-0">
+                <div className="flex items-center justify-between md:justify-center gap-2 px-3 md:px-0 mt-2 md:mt-0">
                   <Button
                     onClick={() => {
                       if (id === lembagaId) {
