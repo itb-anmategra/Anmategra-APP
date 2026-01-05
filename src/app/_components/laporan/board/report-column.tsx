@@ -5,12 +5,6 @@ import {
 import Image, { type StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '~/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 
 import { type Report } from './report-card';
 import { SortableReportCard } from './sortable-report-card';
@@ -67,7 +61,7 @@ export function ReportColumn({
     <>
       {displayedStatus.includes(title) && (
         <div className="flex flex-col bg-gray-100 rounded-xl p-4 shadow-sm w-full flex-shrink-0 h-auto md:h-[574px]">
-          <div className="mb-4 flex flex-row items-center justify-between">
+          <div className="mb-4 flex flex-row items-center">
             <div className="flex flex-row items-center gap-3">
               <Image src={getTypeImage(title)} alt="Status" />
               <h2 className="text-lg font-semibold">{title}</h2>
@@ -75,19 +69,6 @@ export function ReportColumn({
                 {reports.length}
               </span>
             </div>
-
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger className="mb-2 text-2xl select-none">
-                ...
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="text-xl">
-                <DropdownMenuItem>
-                  <Button variant="ghost" onClick={() => hideColumn(title)}>
-                    Hide Column
-                  </Button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
           <div

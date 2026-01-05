@@ -25,8 +25,8 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
         {
           <div className="flex w-full justify-between text-black">
             <div className="flex flex-col gap-2">
-              <h1 className="text-[32px] font-semibold">{Laporan.name}</h1>
-              <h3 className="text-[18px] text-[#636A6D]">{Laporan.date}</h3>
+              <h1 className="text-[32px] font-semibold break-words">{Laporan.name}</h1>
+              <h3 className="text-[18px] text-[#636A6D] break-words">{Laporan.date}</h3>
               <span className="border-gray-[#636A6D] rounded-full border px-4 py-2 text-[16px] text-[#636A6D] justify-content-center w-fit">
                 {Laporan.category}
               </span>
@@ -36,14 +36,14 @@ export const LaporanCard = (Laporan: LaporanDetailProps) => {
                 src={getTypeImage(Laporan.status)}
                 alt={Laporan.status + ' Icon'}
               />
-              <h4>{Laporan.status}</h4>
+              <h4 className="break-words">{Laporan.status}</h4>
             </div>
           </div>
         }
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         <>
-          <div className="h-fit text-justify text-[20px]">
+          <div className="h-fit text-justify text-[20px] whitespace-pre-wrap break-words">
             {Laporan.content}
           </div>
           {Laporan.attachment && Laporan?.attachment.length > 0 && (
