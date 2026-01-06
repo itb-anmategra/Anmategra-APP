@@ -87,7 +87,7 @@ export const raporRouter = createTRPCRouter({
           }
           nilaiPerMahasiswa.get(n.user_id)!.push({
             profil_id: n.profil_id,
-            nilai: n.nilai ?? 0,
+            nilai: n.nilai ? (n.nilai < 0 ? 0 : n.nilai > 100 ? 100 : n.nilai) : 0,
           });
         }
 

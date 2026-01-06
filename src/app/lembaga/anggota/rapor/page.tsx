@@ -43,6 +43,7 @@ export default async function RaporPage() {
       <div className="mb-6" />
 
       <RaporTable
+        session={session}
         lembaga_id={lembaga_id}
         type="lembaga"
         selectOptions={selectOptions}

@@ -136,6 +136,24 @@ export const GetMahasiswaOutputSchema = z.object({
   }),
 });
 
+export const SearchMahasiswaInputSchema = z.object({
+  query: z.string(),
+  lembagaId: z.string().optional(),
+  eventId: z.string().optional(),
+  isKegiatan: z.boolean(),
+  limit: z.number().optional().default(10),
+});
+
+export const SearchMahasiswaOutputSchema = z.object({
+  results: z.array(
+    z.object({
+      userId: z.string(),
+      name: z.string(),
+      nim: z.string(),
+    }),
+  ),
+});
+
 export const GetPanitiaByIdInputSchema = z.object({
   userId: z.string(),
   kegiatanId: z.string(),

@@ -1,5 +1,6 @@
 'use client';
 
+import { Download } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody } from '~/components/ui/table';
 import { useToast } from '~/hooks/use-toast';
@@ -13,6 +14,9 @@ import LinkButton from './link-button';
 import RaporTableHeader from './rapor-table-header';
 import RaporTableRow from './rapor-table-row';
 import TambahProfilButton from './tambah-profil-button';
+import { Button } from '~/components/ui/button';
+import { ImportDialog } from './import-dialog';
+import { type Session } from 'next-auth';
 
 type Anggota = { nama: string; nim: string; profil: string[] };
 type ProfilData = {
@@ -37,6 +41,7 @@ interface ProfilItem {
 }
 
 interface TableProps {
+  session: Session | null;
   event_id?: string;
   lembaga_id?: string;
   selectOptions: { value: string; label: string }[];
@@ -44,6 +49,7 @@ interface TableProps {
 }
 
 export default function RaporTable({
+  session,
   event_id,
   lembaga_id,
   selectOptions,
@@ -586,10 +592,50 @@ export default function RaporTable({
     }
   };
 
+  const handleExportRapor = async () => {
+    try {
+      const exportHref =
+        type === 'event'
+          ? `/api/lembaga/kegiatan/${event_id}/nilai`
+          : `/api/lembaga/${lembaga_id}/nilai`;
+      const response = await fetch(exportHref);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rapor-${type === 'event' ? 'kegiatan' : 'lembaga'}-${type === 'event' ? event_id : lembaga_id}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        toast({
+          title: 'Rapor berhasil diekspor',
+        });
+      } else {
+        const result = (await response.json()) as {
+            message?: string;
+            data?: any;
+            error?: string;
+            details?: string;
+          };
+        toast({
+          title: 'Gagal mengekspor rapor',
+          description: result.error,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Gagal mengekspor rapor',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const linkHref =
-    type === 'event'
-      ? `/kegiatan/${event_id}/profil`
-      : `/profil`;
+    type === 'event' ? `/kegiatan/${event_id}/profil` : `/profil`;
 
   return (
     <div className="flex flex-col flex-1">
@@ -604,16 +650,29 @@ export default function RaporTable({
               Profil {type === 'event' ? 'Kegiatan' : 'Lembaga'}
             </LinkButton>
           </div>
-          <EditNilaiButton
-            editNilaiMode={editNilaiMode}
-            setEditNilaiMode={setEditNilaiMode}
-            editedData={editedData}
-            setData={setData}
-            setEditedData={setEditedData}
-            data={data}
-            onSave={handleSaveNilai}
-            isSaving={upsertMutation.isPending}
-          />
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-5">
+            <ImportDialog
+              session={session}
+              isLembaga={type !== 'event'}
+            />
+            <Button
+              onClick={handleExportRapor}
+              variant={'dark_blue'}
+            >
+              <Download size={24} />
+              Unduh
+            </Button>
+            <EditNilaiButton
+              editNilaiMode={editNilaiMode}
+              setEditNilaiMode={setEditNilaiMode}
+              editedData={editedData}
+              setData={setData}
+              setEditedData={setEditedData}
+              data={data}
+              onSave={handleSaveNilai}
+              isSaving={upsertMutation.isPending}
+            />
+          </div>
         </div>
 
         {/* Desktop Table View - hidden on mobile */}

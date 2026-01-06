@@ -10,9 +10,9 @@ export default async function Home() {
   const anggota = await api.lembaga.getAllAnggota({
     lembagaId: session?.user.lembagaId ?? '',
   });
-  const addAnggotaProps = await api.users.getTambahAnggotaLembagaOptions({
-    lembagaId: session?.user.lembagaId ?? '',
-  });
+
+  const getPosisiBidang = await api.lembaga.getPosisiBidangOptions();
+
   return (
     <main>
       {/* <AnggotaContent
@@ -23,7 +23,7 @@ export default async function Home() {
       <AnggotaContent
         session={session}
         data={anggota}
-        dataAddAnggota={addAnggotaProps}
+        dataPosisiBidang={getPosisiBidang}
         pageAnggota={true}
       />
     </main>

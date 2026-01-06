@@ -2,29 +2,133 @@
 
 import Image from 'next/image';
 import TrashCan from 'public/icons/trash.svg';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '~/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
+// import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 
-const CsvForm = () => {
+type UploadState =
+  | { status: 'initial' }
+  | { status: 'uploading'; file: File; progress: number }
+  | { status: 'complete'; file: File }
+  | { status: 'success'; message: string; data?: any }
+  | { status: 'error'; error: string };
+
+interface CsvFormContentProps {
+  importType:
+    | 'kegiatan-anggota'
+    | 'kegiatan-nilai'
+    | 'lembaga-anggota'
+    | 'lembaga-nilai';
+  entityId: string;
+  onImportSuccess?: (data: any) => void;
+  triggerElement?: React.ReactNode;
+}
+
+const CsvFormContent = ({
+  importType,
+  entityId,
+  onImportSuccess,
+}: CsvFormContentProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'initial',
   });
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  type UploadState =
-    | { status: 'initial' }
-    | { status: 'uploading'; file: File; progress: number }
-    | { status: 'complete'; file: File };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      if (!/\.(xlsx|xls)$/.exec(file.name)) {
+        setUploadState({
+          status: 'error',
+          error: `Invalid file format. Please upload Excel file (.xlsx or .xls)`,
+        });
+        return;
+      }
+
       setUploadState({ status: 'uploading', file: file, progress: 0 });
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(getUploadEndpoint(), {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = (await response.json()) as {
+          message?: string;
+          data?: any;
+          error?: string;
+          details?: string;
+        };
+
+        if (response.ok) {
+          setUploadState({
+            status: 'success',
+            message: result.message ?? 'File imported successfully',
+            data: result.data,
+          });
+          onImportSuccess?.(result.data);
+        } else {
+          const errorMsg = result.error ?? result.details ?? 'Upload failed';
+          setUploadState({
+            status: 'error',
+            error: errorMsg,
+          });
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Upload failed';
+        setUploadState({
+          status: 'error',
+          error: errorMessage,
+        });
+      }
     }
   };
+
+  const getImportTypeInfo = () => {
+    switch (importType) {
+      case 'kegiatan-anggota':
+        return {
+          title: 'Upload Daftar Anggota Kegiatan',
+          worksheetName: 'Anggota Kegiatan',
+        };
+      case 'kegiatan-nilai':
+        return {
+          title: 'Upload Nilai Profil Kegiatan',
+          worksheetName: 'Nilai Profil Kegiatan',
+        };
+      case 'lembaga-anggota':
+        return {
+          title: 'Upload Daftar Anggota Lembaga',
+          worksheetName: 'Anggota Lembaga',
+        };
+      case 'lembaga-nilai':
+        return {
+          title: 'Upload Nilai Profil Lembaga',
+          worksheetName: 'Nilai Profil Lembaga',
+        };
+    }
+  };
+
+  const getUploadEndpoint = () => {
+    switch (importType) {
+      case 'kegiatan-anggota':
+        return `/api/lembaga/kegiatan/${entityId}/anggota`;
+      case 'kegiatan-nilai':
+        return `/api/lembaga/kegiatan/${entityId}/nilai`;
+      case 'lembaga-anggota':
+        return `/api/lembaga/${entityId}/anggota`;
+      case 'lembaga-nilai':
+        return `/api/lembaga/${entityId}/nilai`;
+    }
+  };
+
+  const typeInfo = getImportTypeInfo();
 
   const handleDeleteClick = () => {
     setIsConfirmOpen(true);
@@ -39,26 +143,6 @@ const CsvForm = () => {
     setIsConfirmOpen(false);
   };
 
-  // simulasi proses upload
-  useEffect(() => {
-    if (uploadState.status === 'uploading') {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setUploadState({
-          status: 'uploading',
-          file: uploadState.file,
-          progress,
-        });
-        if (progress >= 100) {
-          clearInterval(interval);
-          setUploadState({ status: 'complete', file: uploadState.file });
-        }
-      }, 200);
-
-      return () => clearInterval(interval);
-    }
-  }, [uploadState]);
 
   const renderContent = () => {
     switch (uploadState.status) {
@@ -66,7 +150,7 @@ const CsvForm = () => {
         return (
           <div className="flex flex-col h-full">
             <h3 className="m-0 text-[20px] font-semibold text-[#141718] pb-[15px]">
-              Upload CSV
+              {typeInfo.title}
             </h3>
 
             <div className="h-px w-full bg-black mb-5" />
@@ -89,7 +173,7 @@ const CsvForm = () => {
               />
 
               <p className="font-semibold text-xl text-[#636A6D] group-hover:text-[#00A5A5]">
-                Select a CSV file to upload{' '}
+                Select an Excel file to upload{' '}
               </p>
               <p className="font-bold text-md text-[#C7CCCF] pb-5">
                 or drag and drop it here{' '}
@@ -124,7 +208,7 @@ const CsvForm = () => {
         return (
           <div className="flex flex-col h-full">
             <h3 className="m-0 text-[20px] font-semibold text-[#141718] pb-[15px]">
-              Upload CSV
+              {typeInfo.title}
             </h3>
 
             <div className="h-px w-full bg-black mb-5" />
@@ -175,7 +259,7 @@ const CsvForm = () => {
         return (
           <div className="flex flex-col h-full">
             <h3 className="m-0 text-[20px] font-semibold text-[#141718] pb-[15px]">
-              Upload CSV
+              {typeInfo.title}
             </h3>
 
             <div className="h-px w-full bg-black mb-5" />
@@ -183,7 +267,7 @@ const CsvForm = () => {
             <div className="group flex flex-col justify-start w-full h-[400px]">
               <div className="flex items-center gap-4 border border-[#C4CACE] rounded-[8px] p-[20px_16px]">
                 <Image
-                  src="/images/miscellaneous/csv.svg"
+                  src="/images/miscellaneous/excel.svg"
                   alt="File icon"
                   width={40}
                   height={40}
@@ -223,66 +307,113 @@ const CsvForm = () => {
           </div>
         );
 
+      case 'success':
+        return (
+          <div className="flex flex-col h-full">
+            <h3 className="m-0 text-[20px] font-semibold text-[#141718] pb-[15px]">
+              {typeInfo.title}
+            </h3>
+
+            <div className="h-px w-full bg-black mb-5" />
+
+            <div className="group flex flex-col justify-center items-center h-[400px] p-[50px_20px] bg-white rounded-[10px] border-2 border-[#00A5A5]">
+              <div className="w-[80px] h-[80px] bg-[#00A5A5] rounded-full flex items-center justify-center mb-5">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                  <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                </svg>
+              </div>
+
+              <p className="text-[20px] font-semibold text-[#00A5A5] text-center">
+                {uploadState.message}
+              </p>
+
+              <Button
+                onClick={() => setUploadState({ status: 'initial' })}
+                variant="light_blue"
+                className="mt-5 text-[14px] font-semibold"
+              >
+                Upload Another File
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'error':
+        return (
+          <div className="flex flex-col h-full">
+            <h3 className="m-0 text-[20px] font-semibold text-[#141718] pb-[15px]">
+              {typeInfo.title}
+            </h3>
+
+            <div className="h-px w-full bg-black mb-5" />
+
+            <div className="group flex flex-col justify-center items-center h-[400px] p-[50px_20px] bg-white rounded-[10px] border-2 border-[#FF4444]">
+              <div className="w-[80px] h-[80px] bg-[#FF4444] rounded-full flex items-center justify-center mb-5">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </div>
+
+              <p className="text-[20px] font-semibold text-[#FF4444] text-center mb-2">
+                Upload Failed
+              </p>
+
+              <p className="text-[14px] text-[#666] text-center mb-5">
+                {uploadState.error}
+              </p>
+
+              <Button
+                onClick={() => setUploadState({ status: 'initial' })}
+                variant="warning_outline"
+                className="text-[14px] font-semibold"
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        if (!open) {
-          setUploadState({ status: 'initial' });
-        }
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="light_blue" className="text-[12px] font-semibold">
-          Upload CSV
-        </Button>
-      </DialogTrigger>
+    <div className="flex flex-col h-full">
+      {renderContent()}
 
-      <DialogContent
-        className="bg-white p-[24px_28px] rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.18)] max-w-[800px] w-[90%] min-h-[400px]"
-        aria-describedby={undefined}
-      >
-        {renderContent()}
+      {/* confirmation message */}
+      {isConfirmOpen && (
+        <>
+          {/* bg hitam */}
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-screen bg-black/50 z-[1000]" />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-[#ccc] w-[500px] rounded-[20px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-[1001]">
+            <p className="text-center">
+              Apakah Anda yakin ingin menghapus file ini?
+            </p>
 
-        {/* confirmation message */}
-        {isConfirmOpen && (
-          <>
-            {/* bg hitam */}
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-screen bg-black/50 z-[1000]" />
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-[#ccc] w-[500px] rounded-[20px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-[1001]">
-              <p className="text-center">
-                Apakah Anda yakin ingin menghapus file ini?
-              </p>
+            <div className="flex flex-row justify-center gap-4 mt-3">
+              <Button
+                onClick={handleCancelDelete}
+                variant="warning"
+                className="text-[12px] font-semibold"
+              >
+                BATAL
+              </Button>
 
-              <div className="flex flex-row justify-center gap-4 mt-3">
-                <Button
-                  onClick={handleCancelDelete}
-                  variant="warning"
-                  className="text-[12px] font-semibold"
-                >
-                  BATAL
-                </Button>
-
-                <Button
-                  onClick={handleConfirmDelete}
-                  variant="dark_blue"
-                  className="text-[12px] font-semibold"
-                >
-                  YAKIN
-                </Button>
-              </div>
+              <Button
+                onClick={handleConfirmDelete}
+                variant="dark_blue"
+                className="text-[12px] font-semibold"
+              >
+                YAKIN
+              </Button>
             </div>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
-export default CsvForm;
+export default CsvFormContent;

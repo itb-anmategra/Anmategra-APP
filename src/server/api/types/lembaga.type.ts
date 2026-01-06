@@ -391,3 +391,18 @@ export const GetAllHistoryBestStaffMahasiswaOutputSchema = z.object({
     }),
   ),
 });
+
+export const GetPosisiBidangOptionsOutputSchema = z.object({
+  posisi: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+  ),
+  bidang: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+  ),
+});

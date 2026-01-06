@@ -13,7 +13,7 @@ export const GetAllNilaiProfilKegiatanOutputSchema = z.object({
       nilai: z.array(
         z.object({
           profil_id: z.string(),
-          nilai: z.number().min(0).max(100),
+          nilai: z.number(),
         }),
       ),
     }),

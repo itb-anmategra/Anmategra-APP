@@ -95,3 +95,7 @@ export const AddNewPanitiaKegiatanManualInputSchema = z.object({
   position: z.string().nonempty(),
   division: z.string().nonempty(),
 });
+
+export const EventIdSchema = z.object({
+  event_id: z.string(),
+});

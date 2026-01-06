@@ -1,10 +1,22 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gte, ilike, lte, or, inArray } from 'drizzle-orm';
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  lte,
+  or,
+} from 'drizzle-orm';
+import { type z } from 'zod';
 import {
   createTRPCRouter,
   lembagaProcedure,
   protectedProcedure,
 } from '~/server/api/trpc';
+import { type Prodi } from '~/server/auth';
 import {
   associationRequests,
   associationRequestsLembaga,
@@ -18,6 +30,7 @@ import {
   users,
 } from '~/server/db/schema';
 
+import daftarProdi from '../../db/kode-program-studi.json';
 import {
   AcceptRequestAssociationInputSchema,
   AcceptRequestAssociationLembagaInputSchema,
@@ -67,14 +80,13 @@ import {
   GetLembagaEventsOutputSchema,
   GetLembagaHighlightedEventInputSchema,
   GetLembagaHighlightedEventOutputSchema,
+  GetPosisiBidangOptionsOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
   editAnggotaLembagaInputSchema,
   editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
-import { z } from 'zod';
-import daftarProdi from '../../db/kode-program-studi.json';
-import { Prodi } from '~/server/auth';
+import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-kegiatan-form';
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -161,7 +173,7 @@ export const lembagaRouter = createTRPCRouter({
         });
       }
     }),
-  
+
   getAllRequestAssociationSummary: lembagaProcedure
     .input(GetAllRequestAssociationSummaryInputSchema)
     .output(GetAllRequestedAssociationSummaryOutputSchema)
@@ -174,7 +186,9 @@ export const lembagaRouter = createTRPCRouter({
         conditions2.push(ilike(events.name, `%${input.name}%`));
       }
 
-      const res = [] as z.infer<typeof GetAllRequestedAssociationSummaryOutputSchema>;
+      const res = [] as z.infer<
+        typeof GetAllRequestedAssociationSummaryOutputSchema
+      >;
 
       const lembaga1 = await ctx.db
         .select({
@@ -184,7 +198,7 @@ export const lembagaRouter = createTRPCRouter({
         .from(lembaga)
         .innerJoin(users, eq(lembaga.userId, users.id))
         .where(and(...conditions1));
-      
+
       if (lembaga1) {
         const countLembagaRequests = await ctx.db
           .select({
@@ -193,19 +207,22 @@ export const lembagaRouter = createTRPCRouter({
           .from(associationRequestsLembaga)
           .where(
             and(
-              eq(associationRequestsLembaga.lembagaId, ctx.session.user.lembagaId!), 
-              eq(associationRequestsLembaga.status, 'Pending')
-            )
+              eq(
+                associationRequestsLembaga.lembagaId,
+                ctx.session.user.lembagaId!,
+              ),
+              eq(associationRequestsLembaga.status, 'Pending'),
+            ),
           );
-        
-        if(Number(countLembagaRequests[0]?.count ?? 0) > 0) {
+
+        if (Number(countLembagaRequests[0]?.count ?? 0) > 0) {
           res.push({
             id: ctx.session.user.lembagaId!,
             name: lembaga1[0]?.name ?? '',
             total_requests: Number(countLembagaRequests[0]?.count ?? 0),
             type: 'Lembaga',
             image: lembaga1[0]?.image ?? null,
-          })
+          });
         }
       }
 
@@ -217,12 +234,12 @@ export const lembagaRouter = createTRPCRouter({
         })
         .from(events)
         .where(and(...conditions2));
-      
+
       // Get all pending requests for these events in a single grouped query
-      const eventIds = eventslist.map(e => e.id);
-      let eventRequestCounts: { event_id: string, count: number }[] = [];
+      const eventIds = eventslist.map((e) => e.id);
+      let eventRequestCounts: { event_id: string; count: number }[] = [];
       if (eventIds.length > 0) {
-        eventRequestCounts = await ctx.db
+        eventRequestCounts = (await ctx.db
           .select({
             event_id: associationRequests.event_id,
             count: count(),
@@ -234,10 +251,13 @@ export const lembagaRouter = createTRPCRouter({
               // Only for events in our list
               eventIds.length === 1
                 ? eq(associationRequests.event_id, eventIds[0]!)
-                : inArray(associationRequests.event_id, eventIds)
-            )
+                : inArray(associationRequests.event_id, eventIds),
+            ),
           )
-          .groupBy(associationRequests.event_id) as { event_id: string, count: number }[];
+          .groupBy(associationRequests.event_id)) as {
+          event_id: string;
+          count: number;
+        }[];
       }
       // Map event_id to count
       const eventCountMap = new Map<string, number>();
@@ -269,11 +289,17 @@ export const lembagaRouter = createTRPCRouter({
       });
 
       if (!eventOrg) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Kegiatan tidak ditemukan' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Kegiatan tidak ditemukan',
+        });
       }
 
       if (eventOrg.org_id !== ctx.session.user.lembagaId!) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Anda tidak memiliki izin untuk mengakses data ini.' });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Anda tidak memiliki izin untuk mengakses data ini.',
+        });
       }
 
       const conditions = [
@@ -282,9 +308,7 @@ export const lembagaRouter = createTRPCRouter({
       ];
 
       if (input.division && input.division.length > 0) {
-        conditions.push(
-          inArray(associationRequests.division, input.division),
-        );
+        conditions.push(inArray(associationRequests.division, input.division));
       }
 
       const requests = await ctx.db
@@ -431,8 +455,8 @@ export const lembagaRouter = createTRPCRouter({
 
         const kodeProdi = parseInt(input.nim.substring(0, 3));
         const jurusan =
-          daftarProdi.find((item: Prodi) => item.kode === kodeProdi)
-            ?.jurusan ?? 'TPB';
+          daftarProdi.find((item: Prodi) => item.kode === kodeProdi)?.jurusan ??
+          'TPB';
 
         // asumsi cuma ada angkatan 2000-an
         const angkatan = parseInt(input.nim.substring(3, 5)) + 2000;
@@ -444,10 +468,10 @@ export const lembagaRouter = createTRPCRouter({
               name: input.name,
               email: email,
               role: 'mahasiswa',
-                emailVerified: null, // Not verified yet
+              emailVerified: null, // Not verified yet
             })
             .returning({ id: users.id });
-        
+
           await tx.insert(mahasiswa).values({
             userId: user[0]!.id,
             nim: Number(input.nim),
@@ -520,17 +544,17 @@ export const lembagaRouter = createTRPCRouter({
           })
           .where(
             and(
-              eq(kehimpunan.id, input.user_id + '_' + ctx.session.user.id),
+              eq(kehimpunan.userId, input.user_id),
               eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
             ),
           )
           .returning({ id: kehimpunan.id });
 
         if (updated.length === 0) {
-            throw new TRPCError({
-              code: 'NOT_FOUND',
-              message: 'Anggota tidak ditemukan',
-            });
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Anggota tidak ditemukan',
+          });
         }
 
         return {
@@ -540,9 +564,9 @@ export const lembagaRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: 'Gagal mengedit anggota' 
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengedit anggota',
         });
       }
     }),
@@ -617,7 +641,8 @@ export const lembagaRouter = createTRPCRouter({
         if (isUserAlreadyParticipant.length > 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.',
+            message:
+              'User sudah terdaftar di dalam kegiatan, silahkan edit posisi dan divisi di halaman kegiatan tersebut.',
           });
         }
 
@@ -674,9 +699,10 @@ export const lembagaRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: 'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.' 
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.',
         });
       }
     }),
@@ -731,9 +757,10 @@ export const lembagaRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: 'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.' 
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.',
         });
       }
     }),
@@ -830,8 +857,13 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllRequestAssociationInputSchema)
     .output(GetAllRequestAssociationLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
-      const conditions = [eq(associationRequestsLembaga.lembagaId, ctx.session?.user?.lembagaId ?? '',)];
-      
+      const conditions = [
+        eq(
+          associationRequestsLembaga.lembagaId,
+          ctx.session?.user?.lembagaId ?? '',
+        ),
+      ];
+
       conditions.push(eq(associationRequestsLembaga.status, 'Pending'));
 
       if (input.division && input.division.length > 0) {
@@ -884,9 +916,9 @@ export const lembagaRouter = createTRPCRouter({
           .limit(1);
 
         if (isExistAndAuthorized.length === 0) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.' 
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.',
           });
         }
 
@@ -905,7 +937,8 @@ export const lembagaRouter = createTRPCRouter({
         if (isUserAlreadyMember.length > 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'User sudah terdaftar di dalam lembaga, silahkan edit posisi dan divisi di halaman anggota.',
+            message:
+              'User sudah terdaftar di dalam lembaga, silahkan edit posisi dan divisi di halaman anggota.',
           });
         }
 
@@ -956,9 +989,10 @@ export const lembagaRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: 'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.' 
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Terjadi kesalahan tak terduga saat menerima permintaan asosiasi.',
         });
       }
     }),
@@ -985,9 +1019,9 @@ export const lembagaRouter = createTRPCRouter({
           .limit(1);
 
         if (isExistAndAuthorized.length === 0) {
-          throw new TRPCError({ 
-            code: 'NOT_FOUND', 
-            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.' 
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Permintaan asosiasi tidak ditemukan atau sudah diproses.',
           });
         }
 
@@ -1015,9 +1049,10 @@ export const lembagaRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: 'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.' 
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Terjadi kesalahan tak terduga saat menolak permintaan asosiasi.',
         });
       }
     }),
@@ -1463,6 +1498,39 @@ export const lembagaRouter = createTRPCRouter({
           end_date: record.end_date.toISOString(),
           division: record.division ?? '',
         })),
+      };
+    }),
+
+  getPosisiBidangOptions: lembagaProcedure
+    .output(GetPosisiBidangOptionsOutputSchema)
+    .query(async ({ ctx }) => {
+      const list_posisi_bidang = await ctx.db.query.kehimpunan.findMany({
+        where: (kehimpunan, { eq }) =>
+          eq(kehimpunan.lembagaId, ctx.session.user.lembagaId!),
+        columns: {
+          position: true,
+          division: true,
+        },
+      });
+      const uniquePosisi = Array.from(
+        new Set(list_posisi_bidang.map((item) => item.position)),
+      );
+      const posisi_list = uniquePosisi.map((position) => ({
+        value: position,
+        label: position ?? '',
+      }));
+
+      const uniqueBidang = Array.from(
+        new Set(list_posisi_bidang.map((item) => item.division)),
+      );
+      const bidang_list = uniqueBidang.map((division) => ({
+        value: division,
+        label: division ?? '',
+      }));
+
+      return {
+        posisi: posisi_list ?? ([] as comboboxDataType[]),
+        bidang: bidang_list ?? ([] as comboboxDataType[]),
       };
     }),
 });

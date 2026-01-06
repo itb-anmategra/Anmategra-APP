@@ -1,7 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
+import { type Prodi } from '~/server/auth';
 import { events, keanggotaan, mahasiswa, users } from '~/server/db/schema';
 
+import daftarProdi from '../../../db/kode-program-studi.json';
 import { lembagaProcedure } from '../../trpc';
 import {
   AddNewPanitiaKegiatanInputSchema,
@@ -14,8 +16,6 @@ import {
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
 } from '../../types/event.type';
-import daftarProdi from '../../../db/kode-program-studi.json';
-import { Prodi } from '~/server/auth';
 
 export const updateEvent = lembagaProcedure
   .input(UpdateEventInputSchema)
@@ -35,7 +35,8 @@ export const updateEvent = lembagaProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -88,7 +89,8 @@ export const addNewPanitia = lembagaProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -143,12 +145,20 @@ export const removePanitia = lembagaProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
       await ctx.db.transaction(async (tx) => {
-        await tx.delete(keanggotaan).where(eq(keanggotaan.id, input.id));
+        await tx
+          .delete(keanggotaan)
+          .where(
+            and(
+              eq(keanggotaan.user_id, input.id),
+              eq(keanggotaan.event_id, input.event_id),
+            ),
+          );
 
         await tx
           .update(events)
@@ -192,17 +202,31 @@ export const editPanitia = lembagaProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
-      await ctx.db
+      const result = await ctx.db
         .update(keanggotaan)
         .set({
           position: input.position,
           division: input.division,
         })
-        .where(eq(keanggotaan.id, input.event_id + '_' + input.user_id));
+        .where(
+          and(
+            eq(keanggotaan.user_id, input.user_id),
+            eq(keanggotaan.event_id, input.event_id),
+          ),
+        )
+        .returning();
+
+      if (!result[0]) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengubah data panitia.',
+        });
+      }
 
       return {
         success: true,
@@ -237,7 +261,8 @@ export const addNewPanitiaManual = lembagaProcedure
       if (!eventToUpdate) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
         });
       }
 
@@ -281,8 +306,8 @@ export const addNewPanitiaManual = lembagaProcedure
 
       const kodeProdi = parseInt(input.nim.substring(0, 3));
       const jurusan =
-        daftarProdi.find((item: Prodi) => item.kode === kodeProdi)
-          ?.jurusan ?? 'TPB';
+        daftarProdi.find((item: Prodi) => item.kode === kodeProdi)?.jurusan ??
+        'TPB';
 
       // asumsi cuma ada angkatan 2000-an
       const angkatan = parseInt(input.nim.substring(3, 5)) + 2000;
