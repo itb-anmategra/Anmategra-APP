@@ -240,6 +240,15 @@ export async function POST(
         );
       }
 
+      if (anggotaData.some((a) => a.userId === mahasiswaRecord.userId)) {
+        return Response.json(
+          {
+            error: `Duplicate entry for NIM ${nim} in Excel file.`,
+          },
+          { status: 400 },
+        );
+      }
+
       anggotaData.push({ userId: mahasiswaRecord.userId, divisi, posisi });
     }
 

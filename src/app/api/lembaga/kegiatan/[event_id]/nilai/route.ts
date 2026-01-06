@@ -142,7 +142,7 @@ export async function GET(
           n.mahasiswa.userId === member.user?.id &&
           n.profilKegiatan.id === profil.id,
       );
-      rowData.push(nilai?.nilai ?? '0');
+      rowData.push(nilai?.nilai ?? 0);
     });
 
     const row = sheet.addRow(rowData);
@@ -332,6 +332,15 @@ export async function POST(
         return Response.json(
           {
             error: `Name mismatch for NIM ${nim}: expected ${mahasiswaRecord.users.name}, got ${nama}.\n Please contact admin if this is an error.`,
+          },
+          { status: 400 },
+        );
+      }
+
+      if (mahasiswaIds.some((a) => a === mahasiswaRecord.userId)) {
+        return Response.json(
+          {
+            error: `Duplicate entry for NIM ${nim} in Excel file.`,
           },
           { status: 400 },
         );

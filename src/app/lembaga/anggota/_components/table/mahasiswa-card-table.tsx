@@ -126,10 +126,10 @@ export function MahasiswaCardTable({
         <ActionCell
           member={row.original}
           lembagaId={(table.options.meta as TableMeta)?.lembagaId}
-          eventId={eventId}
-          session={session}
-          posisiBidangData={posisiBidangData}
-          isKegiatan={isKegiatan}
+          eventId={(table.options.meta as TableMeta)?.eventId}
+          session={(table.options.meta as TableMeta)?.session}
+          posisiBidangData={(table.options.meta as TableMeta)?.posisiBidangData}
+          isKegiatan={(table.options.meta as TableMeta)?.isKegiatan}
         />
       ),
     },
@@ -147,65 +147,143 @@ export function MahasiswaCardTable({
   });
 
   return (
-    <div className="w-full">
-      <div className="rounded-md">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="text-left text-neutral-500 font-normal text-lg"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="text-neutral-700 text-lg"
+    <div className="flex flex-col flex-1">
+      <div className="flex-1">
+        {/* Desktop Table View */}
+        <div className="hidden md:block w-full overflow-x-auto">
+          <Table className="min-w-max">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="text-neutral-500">
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className="text-left font-normal"
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="text-neutral-700"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center py-12">
+                    <div className="text-neutral-500">
+                      <p className="text-lg mb-2">Tidak ada anggota ditemukan</p>
+                      <p className="text-sm">Coba ubah filter atau kata kunci pencarian</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <div
+                key={row.id}
+                className="bg-white rounded-lg border p-4 shadow-sm"
+              >
+                {/* Header - Name and NIM */}
+                <div className="mb-4 pb-3 border-b">
+                  <h3 className="font-semibold text-lg text-neutral-700">
+                    {row.original.nama}
+                  </h3>
+                  <p className="text-sm text-neutral-500">{row.original.nim}</p>
+                </div>
+
+                {/* Details */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-neutral-500">
+                      Divisi
+                    </span>
+                    <span className="text-sm text-neutral-700">
+                      {row.original.divisi}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-neutral-500">
+                      Posisi
+                    </span>
+                    <span className="text-sm text-neutral-700">
+                      {row.original.posisi}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-4 pt-3 border-t flex gap-2">
+                  <Link
+                    href={
+                      isKegiatan && eventId
+                        ? `/kegiatan/${eventId}/panitia/${row.original.id}`
+                        : `/anggota/${row.original.id}`
+                    }
+                    className="flex-1"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400"
+                    >
+                      Lihat Rapor
+                    </Button>
+                  </Link>
+                  <ActionCell
+                    member={row.original}
+                    lembagaId={lembagaId}
+                    eventId={eventId}
+                    session={session}
+                    posisiBidangData={posisiBidangData}
+                    isKegiatan={isKegiatan}
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-12 bg-white rounded-lg border">
+              <div className="text-neutral-500">
+                <p className="text-lg mb-2">Tidak ada anggota ditemukan</p>
+                <p className="text-sm">Coba ubah filter atau kata kunci pencarian</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <CustomPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-          />
-        </div>
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+        />
       )}
     </div>
   );

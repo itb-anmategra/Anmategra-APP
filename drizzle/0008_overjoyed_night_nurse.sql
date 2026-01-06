@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "keanggotaan_event_user_unique" ON "anmategra_keanggotaan" USING btree ("event_id","user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "kehimpunan_lembaga_user_unique" ON "anmategra_kehimpunan" USING btree ("lembaga_id","user_id");

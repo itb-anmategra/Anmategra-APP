@@ -48,7 +48,7 @@ export default function FilterDropdown({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button className="bg-neutral-50 hover:bg-neutral-300 border border-neutral-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2 text-lg">
+        <Button className="bg-neutral-50 hover:bg-neutral-300 border border-neutral-400 text-black rounded-[24px] px-4 py-3 shadow-none flex items-center gap-2">
           <Image src={Filter} alt="Filter icon" width={24} height={24} />
           Filter
           {selectedFilters.length > 0 && (

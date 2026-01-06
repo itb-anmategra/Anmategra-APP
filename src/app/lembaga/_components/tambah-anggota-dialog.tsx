@@ -69,7 +69,7 @@ export function TambahAnggotaDialog({
         <DropdownMenuTrigger asChild>
           <Button
             variant="light_blue"
-            className="rounded-[16px] px-3 shadow-none flex items-center gap-2 text-lg"
+            className="rounded-[16px] px-3 shadow-none flex items-center gap-2"
           >
             <Image src={Plus} alt="Tambah Anggota" width={24} height={24} />
             Tambah Anggota Baru
