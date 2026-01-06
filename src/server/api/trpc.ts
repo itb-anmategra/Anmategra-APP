@@ -6,13 +6,11 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
-import { ZodError } from "zod";
-
-import { getServerAuthSession } from "~/server/auth";
-import { db } from "~/server/db";
+import { TRPCError, initTRPC } from '@trpc/server';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
+import { getServerAuthSession } from '~/server/auth';
+import { db } from '~/server/db';
 
 /**
  * 1. CONTEXT
@@ -46,12 +44,30 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    // Customize message for Zod validation errors
+    if (error.cause instanceof ZodError) {
+      const zodError = error.cause;
+      const formattedMessage = zodError.errors
+        .map((e) => {
+          return e.message;
+        })
+        .join('; ');
+
+      return {
+        ...shape,
+        message: formattedMessage,
+        data: {
+          ...shape.data,
+          zodError: zodError.flatten(),
+        },
+      };
+    }
+
     return {
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: null,
       },
     };
   },
@@ -131,8 +147,8 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+    if (!ctx.session?.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
       ctx: {
@@ -142,12 +158,15 @@ export const protectedProcedure = t.procedure
     });
   });
 
-
 export const adminProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user || ctx.session.user.role !== "admin") {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+    if (
+      !ctx.session ||
+      !ctx.session.user ||
+      ctx.session.user.role !== 'admin'
+    ) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
       ctx: {
@@ -155,13 +174,15 @@ export const adminProcedure = t.procedure
         session: { ...ctx.session, user: ctx.session.user },
       },
     });
-  })
+  });
 
 export const isLembaga = t.middleware(async ({ ctx, next }) => {
-  if (ctx.session?.user.role !== "lembaga") {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (ctx.session?.user.role !== 'lembaga') {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next();
-})
+});
 
-export const lembagaProcedure = protectedProcedure.use(isLembaga)
+export const lembagaProcedure = protectedProcedure
+  .use(timingMiddleware)
+  .use(isLembaga);

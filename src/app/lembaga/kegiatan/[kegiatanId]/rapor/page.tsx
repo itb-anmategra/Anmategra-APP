@@ -1,5 +1,4 @@
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
-import { SearchBar } from '~/app/_components/placeholder/search-bar';
 import RaporTable from '~/app/_components/rapor/rapor-table';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -46,9 +45,6 @@ export default async function RaporPage({ params }: RaporPageProps) {
           { label: 'Rapor', href: `/kegiatan/${event_id}/rapor` },
         ]}
       />
-      <div className="mb-4" />
-      <SearchBar placeholder="Cari nama panitia" />
-      <div className="mb-6" />
 
       <RaporTable
         session={session}
