@@ -76,7 +76,7 @@ export default async function RaporIndividuLembagaPage({
           <RaporBreadcrumb
             items={[
               { label: 'Anggota', href: '/anggota' },
-              { label: 'Rapor Individu', href: '/anggota' },
+              { label: 'Rapor Individu', href: `/anggota/${raporId}` },
             ]}
           />
         </div>

@@ -22,12 +22,7 @@ import { toast } from '~/hooks/use-toast';
 import BestStaff from '../../_components/best-staff-form';
 import { Download } from 'lucide-react';
 
-export default function AnggotaContent({
-  session,
-  data,
-  dataPosisiBidang,
-  pageAnggota,
-}: {
+interface AnggotaContentProps {
   session: Session | null;
   data: Member[];
   dataPosisiBidang: {
@@ -35,7 +30,16 @@ export default function AnggotaContent({
     bidang: comboboxDataType[];
   };
   pageAnggota?: boolean;
-}) {
+  title: string;
+}
+
+export default function AnggotaContent({
+  session,
+  data,
+  dataPosisiBidang,
+  pageAnggota,
+  title,
+  }: AnggotaContentProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
@@ -126,6 +130,8 @@ export default function AnggotaContent({
     <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
       <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2">
         {isAnggota ? 'Anggota' : 'Panitia Kegiatan'}
+        {' '}
+        {title}
       </h1>
       <div className="mb-4" />
 

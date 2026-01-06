@@ -27,10 +27,16 @@ export default async function RaporPage() {
       label: profil.description,
     })) ?? [];
 
+  const lembaga = await api.lembaga.getInfo({
+    lembagaId: lembaga_id,
+  });
+
   return (
     <main className="flex flex-col p-4 sm:p-6 md:p-8 min-h-screen">
       <h1 className="text-2xl sm:text-3xl md:text-[32px] font-semibold mb-2">
         Rapor Anggota
+        {' '}
+        {lembaga?.nama ?? ''}
       </h1>
       <RaporBreadcrumb
         items={[

@@ -13,6 +13,10 @@ export default async function Home() {
 
   const getPosisiBidang = await api.lembaga.getPosisiBidangOptions();
 
+  const lembaga = await api.lembaga.getInfo({
+    lembagaId: session?.user.lembagaId ?? '',
+  });
+
   return (
     <main>
       {/* <AnggotaContent
@@ -25,6 +29,7 @@ export default async function Home() {
         data={anggota}
         dataPosisiBidang={getPosisiBidang}
         pageAnggota={true}
+        title={lembaga?.nama ?? ''}
       />
     </main>
   );

@@ -1,5 +1,5 @@
-import { SearchBar } from '~/app/_components/placeholder/search-bar';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
+import { SearchBar } from '~/app/_components/placeholder/search-bar';
 import RaporTable from '~/app/_components/rapor/rapor-table';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -33,12 +33,16 @@ export default async function RaporPage({ params }: RaporPageProps) {
       label: profil.description,
     })) ?? [];
 
+  const event = await api.event.getByID({ id: event_id });
+
   return (
     <main className="flex flex-col p-8 min-h-screen">
-      <h1 className="text-[32px] font-semibold mb-2">Rapor Panitia</h1>
+      <h1 className="text-[32px] font-semibold mb-2">
+        Rapor Panitia {event?.name ?? ''}
+      </h1>
       <RaporBreadcrumb
         items={[
-          { label: 'Kegiatan', href: '/kegiatan' },
+          { label: 'Kegiatan', href: `/kegiatan/${event_id}/panitia` },
           { label: 'Rapor', href: `/kegiatan/${event_id}/rapor` },
         ]}
       />
