@@ -61,6 +61,7 @@ const ProfileKegiatan = async ({
             kegiatan?.image ??
             '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
           }
+          eventId={kegiatan?.id ?? ''}
           ajuanAsosiasi={Boolean(kegiatan?.id)}
           session={session}
         />

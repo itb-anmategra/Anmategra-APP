@@ -253,8 +253,8 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       return generateYears(startYear, endYear);
     }
     
-    // For lembaga: 1956 to current year
-    return generateYears(1956, currentYear);
+    // For lembaga: 2015 to current year
+    return generateYears(2015, currentYear);
   }, [eventId, eventData]);
 
   const chooseBestStaffLembagaMutation = api.lembaga.chooseBestStaffLembaga.useMutation({

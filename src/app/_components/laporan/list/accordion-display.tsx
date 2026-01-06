@@ -31,16 +31,17 @@ type DataItem = Report & {
   onEdit?: () => void;
   onDelete?: () => void;
   column: ColumnType;
+  isAdminView?: boolean;
 };
 
-export const ListDisplayItem = ({ id, name, date, category, onEdit, onDelete, column }: DataItem) => {
+export const ListDisplayItem = ({ id, name, date, category, onEdit, onDelete, column, isAdminView }: DataItem) => {
   const showMenu = column === "Draft";
 
   return (
     <li className="relative flex flex-row items-center justify-between gap-2 rounded-xl border-b p-4 text-[17px] text-[#636A6D] shadow-sm">
       
 
-      <Link href={`/laporan/${id}`} className="flex items-center justify-between w-full">
+      <Link href={isAdminView ? `/admin/${id}` : `/laporan/${id}`} className="flex items-center justify-between w-full">
         <h1 className="">{name}</h1>
         <div className="flex flex-row items-center justify-evenly space-x-20">
           <h2>{date}</h2>
@@ -154,6 +155,7 @@ export const AccordionDisplay = ({
               urgent={report.urgent}
               attachment={report.attachment}
               column={title}
+              isAdminView={isAdminView}
               onEdit={() => onEditReport?.(report)}
               onDelete={() => handleDelete(report.id)}
             />

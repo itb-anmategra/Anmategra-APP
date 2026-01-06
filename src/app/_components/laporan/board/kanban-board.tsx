@@ -91,6 +91,15 @@ export const KanbanBoard = ({
     },
   })
 
+  const setReportStatusMutation = api.admin.setReportStatus.useMutation({
+    onError: () => {
+      toast({
+        title: 'Gagal memperbarui status',
+        description: 'Perubahan status tidak tersimpan. Coba lagi.',
+      });
+    },
+  });
+
   const findColumnByReportId = (id: string): ColumnType | undefined =>
     (Object.keys(reports) as ColumnType[]).find((col) =>
       reports[col].some((r) => r.id === id),
@@ -194,11 +203,23 @@ export const KanbanBoard = ({
       ...destinationItems.slice(insertIndex),
     ];
 
+    const prevState = JSON.parse(JSON.stringify(reports)) as typeof reports;
     setReports((prev) => ({
       ...prev,
       [sourceColumn]: newSource,
       [destinationColumn]: newDestination,
     }));
+
+    if (isAdminView && sourceColumn !== destinationColumn) {
+      try {
+        await setReportStatusMutation.mutateAsync({
+          id: activeId,
+          status: destinationColumn,
+        });
+      } catch (e) {
+        setReports(prevState);
+      }
+    }
   };
 
   const handleDelete = async (id:string) => {

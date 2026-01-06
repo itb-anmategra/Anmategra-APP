@@ -5,6 +5,7 @@ import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { api } from '~/trpc/react';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -28,9 +29,6 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 
-// Asumsi kamu punya komponen form ini
-
-// ✅ Schema dengan Zod
 const AjuanAsosiasiSchema = z.object({
   posisi: z.string().min(1, 'Posisi harus dipilih'),
   divisi: z.string().min(1, 'Divisi harus dipilih'),
@@ -61,8 +59,8 @@ const AjuanAsosiasiForm = ({
 }: AjuanAsosiasiFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const utils = api.useUtils();
 
-  // ✅ useForm hook
   const form = useForm<AjuanAsosiasiSchemaType>({
     resolver: zodResolver(AjuanAsosiasiSchema),
     mode: 'onChange',
@@ -83,29 +81,40 @@ const AjuanAsosiasiForm = ({
     }
   }, [resetTrigger, resetForm]);
 
-  // ✅ Simulasi submit
-  const simulateSubmit = (values: AjuanAsosiasiSchemaType) => {
-    setIsSubmitting(true);
-
-    const payload = {
-      ...values,
-      eventId,
-    };
-    console.log('Simulated submit payload:', payload);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const requestAssociationMutation = api.users.requestAssociation.useMutation({
+    onSuccess: () => {
       setIsSubmitted(true);
       onSubmissionSuccess?.();
       setIsOpen(false);
-      alert('Pengajuan berhasil dikirim (simulasi).');
-    }, 900);
-  };
+      void utils.users.getMyRequestAssociation.invalidate();
+      alert('Pengajuan berhasil dikirim.');
+    },
+    onError: (err) => {
+      alert(err.message || 'Gagal mengirim pengajuan.');
+    },
+    onSettled: () => setIsSubmitting(false),
+  });
+
+  const deleteAssociationMutation = api.users.deleteRequestAssociation.useMutation({
+    onSuccess: () => {
+      setIsSubmitted(false);
+      form.reset();
+      void utils.users.getMyRequestAssociation.invalidate();
+      alert('Ajuan berhasil dibatalkan.');
+    },
+    onError: (err) => {
+      alert(err.message || 'Gagal membatalkan pengajuan.');
+    },
+    onSettled: () => setIsSubmitting(false),
+  });
 
   const handleCancelSubmission = () => {
-    setIsSubmitted(false);
-    form.reset();
-    alert('Ajuan berhasil dibatalkan (simulasi).');
+    if (!eventId) {
+      alert('Event ID tidak tersedia.');
+      return;
+    }
+    setIsSubmitting(true);
+    deleteAssociationMutation.mutate({ event_id: eventId });
   };
 
   const onSubmit = (values: AjuanAsosiasiSchemaType) => {
@@ -114,11 +123,20 @@ const AjuanAsosiasiForm = ({
         handleCancelSubmission();
         return;
       }
-      simulateSubmit(values);
+      if (!eventId) {
+        alert('Event ID tidak tersedia.');
+        return;
+      }
+      setIsSubmitting(true);
+      requestAssociationMutation.mutate({
+        event_id: eventId,
+        division: values.divisi,
+        position: values.posisi,
+      });
     } catch (err) {
-      console.error('Simulated submit error:', err);
+      console.error('Submit error:', err);
       setIsSubmitting(false);
-      alert('Terjadi error saat pengiriman (simulasi).');
+      alert('Terjadi error saat pengiriman.');
     }
   };
 

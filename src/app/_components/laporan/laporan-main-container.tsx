@@ -52,14 +52,15 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
   const [editingReport, setEditingReport] = useState<ReportData | null>(null);
 
-  const { data: searchData } = api.users.getAllReportsUser.useQuery(
-    {
-      search: debouncedSearch,
-    },
-    {
-      enabled: debouncedSearch.length > 0,
-    }
-  );
+  const { data: searchData } = Laporan.isAdminView
+    ? api.admin.getAllReportsAdmin.useQuery(
+        { search: debouncedSearch || undefined },
+        { enabled: debouncedSearch.length > 0 },
+      )
+    : api.users.getAllReportsUser.useQuery(
+        { search: debouncedSearch },
+        { enabled: debouncedSearch.length > 0 },
+      );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,7 +85,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
       'Resolved': [],
     };
 
-    searchData.reports.forEach((report) => {
+    (searchData.reports || []).forEach((report) => {
       if (isValidStatus(report.status)) {
         reportsByStatus[report.status].push({
           id: report.id,

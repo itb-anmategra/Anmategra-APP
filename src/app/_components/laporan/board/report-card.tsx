@@ -60,16 +60,16 @@ export function ReportCard({ report, column, onClick, onEdit, onDelete }: Report
 
       <button
         onClick={onClick}
-        className="rounded-[20px] bg-white px-6 py-5 pr-[20%] shadow w-full text-left"
+        className="rounded-[20px] bg-white px-6 py-5 pr-14 shadow w-full text-left"
       >
-        <h3 className="mb-2 text-[20px] font-semibold text-primary-400">
+        <h3 className="mb-2 text-[20px] font-semibold text-primary-400 truncate">
           {report.name}
         </h3>
 
         <div className="flex items-center justify-between text-secondary-1100">
           <span className="text-[13px] text-gray-500">{report.date.slice(0, 11)}</span>
 
-          <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[13px]">
+          <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[13px] truncate max-w-[55%] text-right">
             {report.category}
           </span>
         </div>
