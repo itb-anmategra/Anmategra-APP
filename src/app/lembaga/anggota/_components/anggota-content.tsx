@@ -38,6 +38,7 @@ export default function AnggotaContent({
   pageAnggota?: boolean;
 }) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
   const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
@@ -55,8 +56,31 @@ export default function AnggotaContent({
 
   const handleFilterChange = useCallback((filters: string[]) => {
     setSelectedFilters(filters);
-    // TODO: Implement server-side filtering when BE is ready
   }, []);
+
+  // Client-side filtering
+  const filteredData = useMemo(() => {
+    let filtered = [...data];
+
+    // Filter by search query (search in name and NIM)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (member) =>
+          member.nama.toLowerCase().includes(query) ||
+          member.nim.toLowerCase().includes(query),
+      );
+    }
+
+    // Filter by selected divisions
+    if (selectedFilters.length > 0) {
+      filtered = filtered.filter((member) =>
+        selectedFilters.includes(member.divisi),
+      );
+    }
+
+    return filtered;
+  }, [data, searchQuery, selectedFilters]);
 
   const handleExport = async () => {
     try {
@@ -121,6 +145,8 @@ export default function AnggotaContent({
               <Input
                 className="rounded-[24px] pl-12 pr-4 border-[1px] border-neutral-400 w-full text-lg"
                 placeholder="Cari nama anggota"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -196,7 +222,7 @@ export default function AnggotaContent({
           {/* List Anggota Section */}
           <div className="mt-6">
             <MahasiswaCardTable
-              data={data}
+              data={filteredData}
               lembagaId={lembagaId}
               eventId={eventId}
               session={session}
