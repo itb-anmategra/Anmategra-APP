@@ -244,24 +244,37 @@ export const associationRequestStatusEnum = pgEnum(
 );
 
 // Keanggotaan (Membership) Table
-export const keanggotaan = createTable('keanggotaan', {
-  id: varchar('id', { length: 255 }).primaryKey(),
-  event_id: varchar('event_id', { length: 255 })
-    .references(() => events.id)
-    .notNull(),
-  user_id: varchar('user_id', { length: 255 })
-    .references(() => users.id)
-    .notNull(),
-  position: varchar('position', { length: 255 }).notNull(),
-  division: varchar('division', { length: 255 }).notNull(),
-  description: text('description'),
-});
+export const keanggotaan = createTable(
+  'keanggotaan',
+  {
+    id: varchar('id', { length: 255 }).primaryKey(),
+    event_id: varchar('event_id', { length: 255 })
+      .references(() => events.id)
+      .notNull(),
+    user_id: varchar('user_id', { length: 255 })
+      .references(() => users.id)
+      .notNull(),
+    position: varchar('position', { length: 255 }).notNull(),
+    division: varchar('division', { length: 255 }).notNull(),
+    description: text('description'),
+  },
+  (table) => ({
+    uniqueEventUser: uniqueIndex('keanggotaan_event_user_unique').on(
+      table.event_id,
+      table.user_id,
+    ),
+  }),
+);
 
 // Association Request Table
 export const associationRequests = createTable('association_request', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  event_id: varchar('event_id', { length: 255 }).references(() => events.id, { onDelete: 'cascade' }),
-  user_id: varchar('user_id', { length: 255 }).references(() => users.id, { onDelete: 'cascade' }),
+  event_id: varchar('event_id', { length: 255 }).references(() => events.id, {
+    onDelete: 'cascade',
+  }),
+  user_id: varchar('user_id', { length: 255 }).references(() => users.id, {
+    onDelete: 'cascade',
+  }),
   position: varchar('position', { length: 255 }).notNull(),
   division: varchar('division', { length: 255 }).notNull(),
   status: associationRequestStatusEnum('status').notNull().default('Pending'),
@@ -418,20 +431,29 @@ export const verifiedUsers = createTable('verified_user', {
 });
 
 // Kehimpunan Table
-export const kehimpunan = createTable('kehimpunan', {
-  id: varchar('id', { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: varchar('user_id', { length: 255 })
-    .notNull()
-    .references(() => users.id),
-  lembagaId: varchar('lembaga_id', { length: 255 })
-    .notNull()
-    .references(() => lembaga.id),
-  division: varchar('division', { length: 255 }).notNull(),
-  position: varchar('position', { length: 255 }).notNull(),
-});
+export const kehimpunan = createTable(
+  'kehimpunan',
+  {
+    id: varchar('id', { length: 255 })
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: varchar('user_id', { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    lembagaId: varchar('lembaga_id', { length: 255 })
+      .notNull()
+      .references(() => lembaga.id),
+    division: varchar('division', { length: 255 }).notNull(),
+    position: varchar('position', { length: 255 }).notNull(),
+  },
+  (table) => ({
+    uniqueEventUser: uniqueIndex('kehimpunan_lembaga_user_unique').on(
+      table.lembagaId,
+      table.userId,
+    ),
+  }),
+);
 
 // Best Staff
 export const bestStaffKegiatan = createTable('best_staff_kegiatan', {

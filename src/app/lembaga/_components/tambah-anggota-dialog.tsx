@@ -6,10 +6,9 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Plus from '~/../public/icons/plus.svg';
 import CsvFormContent from '~/app/_components/csv-form/csv-form';
-import TambahAnggotaForm, {
+import TambahEditAnggotaForm, {
   type comboboxDataType,
-} from '~/app/_components/form/tambah-anggota-form';
-import TambahAnggotaKegiatanForm from '~/app/_components/form/tambah-anggota-kegiatan-form';
+} from '~/app/_components/form/tambah-edit-anggota-form';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -29,40 +28,38 @@ import { api } from '~/trpc/react';
 
 type DialogMode = 'manual' | 'csv';
 
-export function TambahAnggotaDialog({
-  session,
-  dataAddAnggota,
-  pageAnggota,
-}: {
+interface TambahAnggotaDialogProps {
   session: Session | null;
-  dataAddAnggota: {
-    mahasiswa: comboboxDataType[];
-    nim: comboboxDataType[];
+  dataPosisiBidang: {
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
   pageAnggota?: boolean;
-}) {
+}
+
+export function TambahAnggotaDialog({
+  session,
+  dataPosisiBidang,
+  pageAnggota,
+}: TambahAnggotaDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>('manual');
   const pathname = usePathname();
   const isAnggota = pageAnggota ?? false;
+  const eventId = !isAnggota ? pathname.split('/')[3] : undefined;
   const utils = api.useUtils();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
+    setManualMode(false);
     if (open) {
-      setManualMode(false);
       setDialogMode('manual');
     }
   };
 
   const handleModeSelection = (mode: DialogMode) => {
     setDialogMode(mode);
-    if (mode === 'manual') {
-      setManualMode(true);
-    }
     setIsOpen(true);
   };
 
@@ -122,35 +119,24 @@ export function TambahAnggotaDialog({
             </DialogDescription>
           </DialogHeader>
 
-          {dialogMode === 'manual' && (
+          {dialogMode === 'manual' ? (
             <div>
-              {isAnggota ? (
-                <TambahAnggotaForm
-                  session={session}
-                  data={dataAddAnggota}
-                  setIsOpen={setIsOpen}
-                  manualMode={manualMode}
-                  setManualMode={setManualMode}
-                />
-              ) : (
-                <TambahAnggotaKegiatanForm
-                  session={session}
-                  data={dataAddAnggota}
-                  setIsOpen={setIsOpen}
-                  pathname={pathname}
-                />
-              )}
+              <TambahEditAnggotaForm
+                session={session}
+                data={dataPosisiBidang}
+                setIsOpen={setIsOpen}
+                manualMode={manualMode}
+                setManualMode={setManualMode}
+                isKegiatan={!isAnggota}
+                eventId={eventId}
+              />
             </div>
-          )}
-
-          {dialogMode === 'csv' && (
+          ) : (
             <div>
               <CsvFormContent
                 importType={isAnggota ? 'lembaga-anggota' : 'kegiatan-anggota'}
                 entityId={
-                  isAnggota
-                    ? (session?.user.lembagaId ?? '')
-                    : (pathname.split('/')[3] ?? '')
+                  isAnggota ? (session?.user.lembagaId ?? '') : (eventId ?? '')
                 }
                 onImportSuccess={() => {
                   toast({

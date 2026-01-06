@@ -13,13 +13,10 @@ import SearchIcon from '~/../public/icons/search.svg';
 import FilterDropdown, {
   type FilterOption,
 } from '~/app/_components/filter/filter-dropdown';
-import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-form';
+import { type Member } from '~/app/_components/form/action-cell';
+import { type comboboxDataType } from '~/app/_components/form/tambah-edit-anggota-form';
 import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-dialog';
-import {
-  MahasiswaCardTable,
-  type Member,
-} from '~/app/lembaga/anggota/_components/table/mahasiswa-card-table';
-import { MahasiswaKegiatanCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-kegiatan-card-table';
+import { MahasiswaCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-card-table';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { toast } from '~/hooks/use-toast';
@@ -29,14 +26,12 @@ import BestStaff from '../../_components/best-staff-form';
 export default function AnggotaContent({
   session,
   data,
-  dataAddAnggota,
+  dataPosisiBidang,
   pageAnggota,
 }: {
   session: Session | null;
   data: Member[];
-  dataAddAnggota: {
-    mahasiswa: comboboxDataType[];
-    nim: comboboxDataType[];
+  dataPosisiBidang: {
     posisi: comboboxDataType[];
     bidang: comboboxDataType[];
   };
@@ -48,29 +43,14 @@ export default function AnggotaContent({
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
 
-  const tableData = useMemo(() => {
-    if (!isAnggota && pathname) {
-      const eventIdFromPath = pathname.split('/')[3];
-      if (eventIdFromPath) {
-        return data.map((member) => {
-          return {
-            ...member,
-            event_id: eventIdFromPath,
-          };
-        });
-      }
-    }
-    return undefined;
-  }, [isAnggota, pathname, data]);
-
   const filterOptions: FilterOption[] = useMemo(
     () =>
-      dataAddAnggota.bidang.map((bidang) => ({
+      dataPosisiBidang.bidang.map((bidang) => ({
         id: bidang.value,
         label: bidang.label,
         value: bidang.value,
       })),
-    [dataAddAnggota.bidang],
+    [dataPosisiBidang.bidang],
   );
 
   const handleFilterChange = useCallback((filters: string[]) => {
@@ -154,7 +134,7 @@ export default function AnggotaContent({
               <div className="flex gap-x-5">
                 <TambahAnggotaDialog
                   session={session}
-                  dataAddAnggota={dataAddAnggota}
+                  dataPosisiBidang={dataPosisiBidang}
                   pageAnggota={isAnggota}
                 />
                 <Link
@@ -215,12 +195,14 @@ export default function AnggotaContent({
 
           {/* List Anggota Section */}
           <div className="mt-6">
-            {/* Integrate MahasiswaCardTable here */}
-            {isAnggota ? (
-              <MahasiswaCardTable data={data} lembagaId={lembagaId} />
-            ) : (
-              tableData && <MahasiswaKegiatanCardTable data={tableData} />
-            )}
+            <MahasiswaCardTable
+              data={data}
+              lembagaId={lembagaId}
+              eventId={eventId}
+              session={session}
+              posisiBidangData={dataPosisiBidang}
+              isKegiatan={!isAnggota}
+            />
           </div>
         </div>
       </div>

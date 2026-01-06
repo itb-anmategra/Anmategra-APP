@@ -10,21 +10,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { type Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import CallMadeIcon from 'public/icons/call_made.svg';
 import * as React from 'react';
+import { ActionCell, type Member } from '~/app/_components/form/action-cell';
+import { type comboboxDataType } from '~/app/_components/form/tambah-edit-anggota-form';
 import CustomPagination from '~/app/_components/layout/pagination-comp';
-import { EditAnggotaDialog } from '~/app/_components/form/edit-anggota-dialog';
 import { Button } from '~/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
 // Components Import
 import {
   Table,
@@ -34,152 +28,30 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
-// TRPC Import
-import { api } from '~/trpc/react';
-import { toast } from '~/hooks/use-toast';
 
-export type Member = {
-  id: string;
-  nama: string;
-  nim: string;
-  divisi: string;
-  posisi: string;
-  posisiColor: string;
+type TableMeta = {
+  lembagaId?: string;
+  eventId?: string;
+  session: Session | null;
+  posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
+  isKegiatan?: boolean;
 };
 
-function ActionCell({ member, lembagaId }: { member: Member; lembagaId?: string }) {
-  const [editOpen, setEditOpen] = React.useState(false);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
-  const mutation = api.lembaga.removeAnggota.useMutation();
-
-  const onDelete = (id: string) => {
-    mutation.mutate(
-      { user_id: id },
-      {
-        onSuccess: () => {
-          mutation.reset();
-          window.location.reload();
-          toast({
-            title: 'Berhasil menghapus anggota',
-            description: 'Data anggota telah dihapus.',
-          })
-        },
-        onError: (error) => {
-          toast({
-            title: 'Gagal menghapus anggota',
-            description: error.message,
-            variant: 'destructive',
-          })
-        }
-      },
-    );
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setEditOpen(true)}
-        className="border-blue-400 text-blue-400 hover:border-blue-500 hover:text-blue-500"
-      >
-        Edit
-      </Button>
-      <EditAnggotaDialog
-        isOpen={editOpen}
-        setIsOpen={setEditOpen}
-        memberId={member.id}
-        currentPosition={member.posisi}
-        currentDivision={member.divisi}
-        lembagaId={lembagaId}
-      />
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-red-400 text-red-400 hover:border-red-500 hover:text-red-500"
-          >
-            Hapus
-          </Button>
-        </DialogTrigger>
-        <DialogContent aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>Hapus Anggota</DialogTitle>
-            <DialogDescription>
-              Apakah kamu yakin ingin menghapus anggota ini?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="w-full flex items-center justify-center gap-x-4">
-            <Button onClick={() => setDeleteOpen(false)}>
-              Tidak, Batalkan
-            </Button>
-            <Button
-              onClick={() => {
-                onDelete(member.id);
-                setDeleteOpen(false);
-              }}
-              variant="warning"
-            >
-              Ya, Hapus
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
-
-const columns: ColumnDef<Member>[] = [
-  {
-    accessorKey: 'nama',
-    header: 'Nama',
-    cell: ({ row }) => <span>{row.getValue('nama')}</span>,
-  },
-  {
-    accessorKey: 'nim',
-    header: 'NIM',
-    cell: ({ row }) => <span>{row.getValue('nim')}</span>,
-  },
-  {
-    accessorKey: 'divisi',
-    header: 'Divisi',
-    cell: ({ row }) => <span>{row.getValue('divisi')}</span>,
-  },
-  {
-    accessorKey: 'posisi',
-    header: 'Posisi',
-    cell: ({ row }) => <span>{row.getValue('posisi')}</span>,
-  },
-  {
-    accessorKey: 'rapor',
-    header: 'Rapor',
-    cell: ({ row }) => (
-      <Link href={`/anggota/${row.original.id}`}>
-        <Button
-          variant="outline"
-          className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"
-        >
-          Lihat
-          <Image
-            src={CallMadeIcon}
-            alt="Call Made Icon"
-            width={16}
-            height={16}
-          />
-        </Button>
-      </Link>
-    ),
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row, table }) => <ActionCell member={row.original} lembagaId={(table.options.meta as any)?.lembagaId} />,
-  },
-];
-
-export function MahasiswaCardTable({ data, lembagaId }: { data: Member[]; lembagaId?: string }) {
+export function MahasiswaCardTable({
+  data,
+  lembagaId,
+  eventId,
+  session,
+  posisiBidangData,
+  isKegiatan = false,
+}: {
+  data: Member[];
+  lembagaId?: string;
+  eventId?: string;
+  session: Session | null;
+  posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
+  isKegiatan?: boolean;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
@@ -190,9 +62,78 @@ export function MahasiswaCardTable({ data, lembagaId }: { data: Member[]; lembag
     return data.slice(startIndex, endIndex);
   }, [data, currentPage]);
 
-  const tableMeta = React.useMemo(() => ({ lembagaId }), [lembagaId]);
+  const tableMeta = React.useMemo(
+    () => ({ lembagaId, eventId, session, posisiBidangData, isKegiatan }),
+    [lembagaId, eventId, session, posisiBidangData, isKegiatan],
+  );
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const columns: ColumnDef<Member>[] = [
+    {
+      accessorKey: 'nama',
+      header: 'Nama',
+      cell: ({ row }) => <span>{row.getValue('nama')}</span>,
+    },
+    {
+      accessorKey: 'nim',
+      header: 'NIM',
+      cell: ({ row }) => <span>{row.getValue('nim')}</span>,
+    },
+    {
+      accessorKey: 'divisi',
+      header: 'Divisi',
+      cell: ({ row }) => <span>{row.getValue('divisi')}</span>,
+    },
+    {
+      accessorKey: 'posisi',
+      header: 'Posisi',
+      cell: ({ row }) => <span>{row.getValue('posisi')}</span>,
+    },
+    {
+      accessorKey: 'rapor',
+      header: 'Rapor',
+      cell: ({ row, table }) => {
+        const eventId = (table.options.meta as TableMeta)?.eventId;
+        const isKegiatan = (table.options.meta as TableMeta)?.isKegiatan;
+        const href =
+          isKegiatan && eventId
+            ? `/kegiatan/${eventId}/panitia/${row.original.id}`
+            : `/anggota/${row.original.id}`;
+
+        return (
+          <Link href={href}>
+            <Button
+              variant="outline"
+              className="bg-neutral-250 text-gray-700 hover:bg-neutral-300 border-neutral-400 px-3 py-2 rounded-lg flex items-center gap-2"
+            >
+              Lihat
+              <Image
+                src={CallMadeIcon}
+                alt="Call Made Icon"
+                width={16}
+                height={16}
+              />
+            </Button>
+          </Link>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row, table }) => (
+        <ActionCell
+          member={row.original}
+          lembagaId={(table.options.meta as TableMeta)?.lembagaId}
+          eventId={eventId}
+          session={session}
+          posisiBidangData={posisiBidangData}
+          isKegiatan={isKegiatan}
+        />
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data: paginatedData,

@@ -15,8 +15,8 @@ const DaftarPanitiaKegiatanPage = async ({
   const session = await getServerAuthSession();
   const query = (await params).kegiatanId;
   const formatted_anggota = await api.event.getAllAnggota({ event_id: query });
-  const addAnggotaProps = await api.users.getTambahAnggotaKegiatanOptions({
-    kegiatanId: query,
+  const getPosisiBidang = await api.kegiatan.getPosisiBidangOptions({
+    event_id: query,
   });
 
   return (
@@ -24,7 +24,8 @@ const DaftarPanitiaKegiatanPage = async ({
       <AnggotaContent
         session={session}
         data={formatted_anggota ?? []}
-        dataAddAnggota={addAnggotaProps}
+        dataPosisiBidang={getPosisiBidang}
+        pageAnggota={false}
       />
     </main>
   );

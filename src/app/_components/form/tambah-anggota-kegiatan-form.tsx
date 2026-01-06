@@ -31,10 +31,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import { toast } from '~/hooks/use-toast';
 // Utils Import
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
-import { toast } from '~/hooks/use-toast';
 
 // ✅ Schema Validasi dengan Zod
 const AnggotaSchema = z.object({
@@ -69,19 +69,19 @@ const TambahAnggotaKegiatanForm = ({
   const [posisiOpen, setPosisiOpen] = useState(false);
   const [divisiOpen, setdivisiOpen] = useState(false);
   const mutation = api.event.addNewPanitia.useMutation({
-      onError: (error) => {
-        toast({
-          title: 'Gagal',
-          description: `Terjadi kesalahan: ${error.message}`,
-          variant: 'destructive',
-        });
-      },
-      onSuccess: () => {
-        toast({
-          title: 'Berhasil',
-          description: 'Anggota berhasil ditambahkan ke kegiatan.',
-        });
-      }
+    onError: (error) => {
+      toast({
+        title: 'Gagal',
+        description: `Terjadi kesalahan: ${error.message}`,
+        variant: 'destructive',
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Berhasil',
+        description: 'Anggota berhasil ditambahkan ke kegiatan.',
+      });
+    },
   });
   const form = useForm<AnggotaSchemaType>({
     resolver: zodResolver(AnggotaSchema),
@@ -190,8 +190,8 @@ const TambahAnggotaKegiatanForm = ({
                   </PopoverTrigger>
                   <PopoverContent className="p-0 PopoverContent">
                     <Command shouldFilter={false}>
-                      <CommandInput 
-                        placeholder="Cari atau ketik posisi baru" 
+                      <CommandInput
+                        placeholder="Cari atau ketik posisi baru"
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -200,32 +200,37 @@ const TambahAnggotaKegiatanForm = ({
                       <CommandList>
                         <CommandEmpty>
                           <div className="py-2 px-3 text-sm">
-                            Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                            Tekan Enter untuk menggunakan:{' '}
+                            <span className="font-semibold">{field.value}</span>
                           </div>
                         </CommandEmpty>
                         <CommandGroup>
-                          {posisiList.filter(p => 
-                            p.label.toLowerCase().includes(field.value.toLowerCase())
-                          ).map((p) => (
-                            <CommandItem
-                              key={p.value}
-                              value={p.value}
-                              onSelect={() => {
-                                field.onChange(p.value);
-                                setPosisiOpen(false);
-                              }}
-                            >
-                              {p.label}
-                              <Check
-                                className={cn(
-                                  'ml-auto',
-                                  field.value === p.value
-                                    ? 'opacity-100'
-                                    : 'opacity-0',
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
+                          {posisiList
+                            .filter((p) =>
+                              p.label
+                                .toLowerCase()
+                                .includes(field.value.toLowerCase()),
+                            )
+                            .map((p) => (
+                              <CommandItem
+                                key={p.value}
+                                value={p.value}
+                                onSelect={() => {
+                                  field.onChange(p.value);
+                                  setPosisiOpen(false);
+                                }}
+                              >
+                                {p.label}
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    field.value === p.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -256,8 +261,8 @@ const TambahAnggotaKegiatanForm = ({
                   </PopoverTrigger>
                   <PopoverContent className="p-0 PopoverContent">
                     <Command shouldFilter={false}>
-                      <CommandInput 
-                        placeholder="Cari atau ketik divisi baru" 
+                      <CommandInput
+                        placeholder="Cari atau ketik divisi baru"
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -266,32 +271,37 @@ const TambahAnggotaKegiatanForm = ({
                       <CommandList>
                         <CommandEmpty>
                           <div className="py-2 px-3 text-sm">
-                            Tekan Enter untuk menggunakan: <span className="font-semibold">{field.value}</span>
+                            Tekan Enter untuk menggunakan:{' '}
+                            <span className="font-semibold">{field.value}</span>
                           </div>
                         </CommandEmpty>
                         <CommandGroup>
-                          {divisiList.filter(b => 
-                            b.label.toLowerCase().includes(field.value.toLowerCase())
-                          ).map((b) => (
-                            <CommandItem
-                              key={b.value}
-                              value={b.value}
-                              onSelect={() => {
-                                field.onChange(b.value);
-                                setdivisiOpen(false);
-                              }}
-                            >
-                              {b.label}
-                              <Check
-                                className={cn(
-                                  'ml-auto',
-                                  field.value === b.value
-                                    ? 'opacity-100'
-                                    : 'opacity-0',
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
+                          {divisiList
+                            .filter((b) =>
+                              b.label
+                                .toLowerCase()
+                                .includes(field.value.toLowerCase()),
+                            )
+                            .map((b) => (
+                              <CommandItem
+                                key={b.value}
+                                value={b.value}
+                                onSelect={() => {
+                                  field.onChange(b.value);
+                                  setdivisiOpen(false);
+                                }}
+                              >
+                                {b.label}
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    field.value === b.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0',
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
