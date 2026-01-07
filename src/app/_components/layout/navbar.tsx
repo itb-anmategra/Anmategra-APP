@@ -147,7 +147,107 @@ const Navbar = ({ session }: { session: Session | null }) => {
         </>
       ) : (
         <>
-          <div className='w-full bg-white border-b border-neutral-50'>
+          {/* Mobile Navbar */}
+          <div className="sm:hidden w-full bg-white border-b border-neutral-50 fixed top-0 left-0 right-0 z-30">
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                {session && (
+                  <Button
+                    onClick={() => setIsSideBarOpen(true)}
+                    variant="ghost"
+                    size="icon"
+                    className="w-8 h-8"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                )}
+                
+                <Link href={session ? '/mahasiswa' : '/'} className="flex-shrink-0">
+                  <Image
+                    src={LogoAnmategra}
+                    alt="Logo Anmategra"
+                    width={40}
+                    height={40}
+                    priority
+                  />
+                </Link>
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <Button
+                  onClick={() => setIsSearchOpen(true)}
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8"
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+
+                {session && (
+                  <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
+                    {session.user.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt="Profile User"
+                        width={36}
+                        height={36}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <Image
+                        src={ProfilePic}
+                        alt="Default Profile"
+                        width={36}
+                        height={36}
+                        className="rounded-full"
+                      />
+                    )}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Search Overlay */}
+          {isSearchOpen && (
+            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-lg">
+              <div className="flex items-center px-4 py-3 border-b border-neutral-50">
+                <Button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 mr-3"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+
+                <div className="flex-1 relative">
+                  <Input
+                    placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+                    className="w-full pr-10 border-0 bg-gray-50 rounded-full placeholder:text-neutral-700 focus-visible:ring-1 focus-visible:ring-[#00B7B7]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                  />
+                  <Button
+                    onClick={handleSearchSubmit}
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8"
+                  >
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Desktop Navbar */}
+          <div className='hidden sm:block w-full bg-white border-b border-neutral-50'>
             <div className="flex items-center justify-between max-w-[1440px] max-h-[112px]
                     py-6 pl-[50px] pr-[72px]">
 

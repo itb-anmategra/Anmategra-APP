@@ -60,7 +60,8 @@ const PencarianContent = ({
   return (
     <div
       className={cn(
-        'flex w-full flex-col overflow-hidden pt-10 gap-6',
+        'flex w-full flex-col overflow-hidden gap-6 px-4 md:px-6',
+        'pt-20 sm:pt-10',
         session?.user.role === 'lembaga' && 'p-6',
       )}
     >
@@ -70,7 +71,7 @@ const PencarianContent = ({
         </h1>
         {session?.user.role !== 'mahasiswa' && (
           <Input
-            placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+            placeholder="Pencarian lembaga, kegiatan, atau mahasiswa"
             className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
             startAdornment={
               <MagnifyingGlassIcon className="size-5 text-gray-500" />
