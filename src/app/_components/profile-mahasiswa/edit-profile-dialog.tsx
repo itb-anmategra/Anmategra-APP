@@ -27,7 +27,7 @@ import { api } from '~/trpc/react';
 import { UploadButton } from '~/utils/uploadthing';
 
 const mahasiswaProfilSchema = z.object({
-  fotoProfil: z.string().url('Harus berupa URL yang valid').optional(),
+  fotoProfil: z.string().url().optional(),
   nama: z.string().min(1, 'Nama tidak boleh kosong'),
   nim: z.string(),
   jurusanAngkatan: z.string().min(1, 'Jurusan dan Angkatan tidak boleh kosong'),

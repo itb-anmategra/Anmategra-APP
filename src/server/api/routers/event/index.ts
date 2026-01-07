@@ -8,6 +8,7 @@ import {
   addNewPanitiaManual,
   editPanitia,
   removePanitia,
+  toggleHighlight,
   updateEvent,
 } from './update';
 
@@ -16,6 +17,7 @@ export const eventRouter = createTRPCRouter({
   create: createEvent,
   update: updateEvent,
   delete: deleteEvent,
+  toggleHighlight: toggleHighlight,
   getAllAnggota: getAllAnggota,
   addNewPanitia: addNewPanitia,
   addNewPanitiaManual: addNewPanitiaManual,

@@ -34,7 +34,6 @@ const DetailLembagaPage = async ({
     latestBestStaff = await api.lembaga.getLatestBestStaffLembaga({
       lembaga_id: lembagaId,
     });
-    console.log('Best staff data loaded:', latestBestStaff);
   } catch (error) {
     // No best staff data available yet
     console.log('No best staff data available for lembaga:', lembagaId, error);

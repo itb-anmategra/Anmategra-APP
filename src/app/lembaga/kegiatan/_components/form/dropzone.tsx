@@ -101,17 +101,17 @@ const CustomDropzone = ({
           <div className="flex flex-col items-center justify-center h-full gap-3 group-hover:text-[#00B7B7] transition-colors">
             <div className="relative w-12 h-12">
               <Image
-                src="/icons/upload.svg"
+                src="/images/miscellaneous/upload.svg"
                 alt="Upload icon"
                 width={50}
-                height={53}
+                height={50}
                 className="absolute inset-0 group-hover:opacity-0 transition-opacity"
               />
               <Image
-                src="/icons/upload-blue.svg"
+                src="/images/miscellaneous/upload-blue.svg"
                 alt="Upload icon hover"
                 width={50}
-                height={53}
+                height={50}
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
               />
             </div>
@@ -126,7 +126,7 @@ const CustomDropzone = ({
               variant="light_blue"
               className=" border-gray-300 hover:border-[#00B7B7]"
             >
-              + Unggah dokumen
+              + Unggah
             </Button>
           </div>
         )}
