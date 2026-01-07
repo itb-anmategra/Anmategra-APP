@@ -66,10 +66,7 @@ interface EventListProps {
   session: Session | null;
 }
 
-export default function EventList({
-  propEvents,
-  session,
-}: EventListProps) {
+export default function EventList({ propEvents, session }: EventListProps) {
   const { toast } = useToast();
   const [activities, setActivities] = useState<Event[]>(propEvents);
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,12 +92,9 @@ export default function EventList({
 
   const handleFilterChange = useCallback((filters: string[]) => {
     setSelectedFilters(filters);
-    
   }, []);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deletingEvent, setDeletingEvent] = useState<Event | null>(
-    null,
-  );
+  const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
 
   const deleteMutation = api.event.delete.useMutation({
     onSuccess: (data) => {
@@ -134,41 +128,92 @@ export default function EventList({
     }
   };
 
+  const toggleHighlightMutation = api.event.toggleHighlight.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: 'Berhasil mengubah status highlight',
+        description: data.is_highlighted
+          ? 'Kegiatan telah di-highlight'
+          : 'Kegiatan tidak lagi di-highlight',
+      });
+    },
+    onError: (error, variables) => {
+      setActivities((prevActivities) =>
+        prevActivities
+          .map((activity) =>
+            activity.id === variables.id
+              ? { ...activity, is_highlighted: !variables.is_highlighted }
+              : activity,
+          )
+          .sort((a, b) => {
+            if (a.is_highlighted && !b.is_highlighted) return -1;
+            if (!a.is_highlighted && b.is_highlighted) return 1;
+            return (
+              new Date(b.start_date).getTime() -
+              new Date(a.start_date).getTime()
+            );
+          }),
+      );
+      toast({
+        title: 'Gagal mengubah status highlight',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+    onSettled: () => {
+      setUpdatingHighlightId(null);
+    },
+  });
+
   const toggleHighlight = async (
     activityId: string,
     currentStatus: boolean,
   ) => {
     if (session === null) return;
     setUpdatingHighlightId(activityId);
-    try {
-      setActivities((prevActivities) => {
-        const updatedList = prevActivities.map((activity) =>
+
+    setActivities((prevActivities) =>
+      prevActivities
+        .map((activity) =>
           activity.id === activityId
             ? { ...activity, is_highlighted: !currentStatus }
             : activity,
-        );
-        return updatedList;
-      });
-    } catch (error) {
-      console.error(error);
-      alert('Gagal mengubah status highlight.');
-    } finally {
-      setUpdatingHighlightId(null);
-    }
+        )
+        .sort((a, b) => {
+          if (a.is_highlighted && !b.is_highlighted) return -1;
+          if (!a.is_highlighted && b.is_highlighted) return 1;
+          return (
+            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+          );
+        }),
+    );
+
+    toggleHighlightMutation.mutate({
+      id: activityId,
+      is_highlighted: !currentStatus,
+    });
   };
 
   useEffect(() => {
     const getActivities = async () => {
       setIsLoading(true);
-      const filteredActivities = propEvents.filter((activity) => {
-        const matchesSearch = activity.name
-          .toLowerCase()
-          .includes(debouncedSearchQuery.toLowerCase());
-        const matchesFilter =
-          selectedFilters.length === 0 ||
-          selectedFilters.includes(activity.status);
-        return matchesSearch && matchesFilter;
-      });
+      const filteredActivities = propEvents
+        .filter((activity) => {
+          const matchesSearch = activity.name
+            .toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase());
+          const matchesFilter =
+            selectedFilters.length === 0 ||
+            selectedFilters.includes(activity.status);
+          return matchesSearch && matchesFilter;
+        })
+        .sort((a, b) => {
+          if (a.is_highlighted && !b.is_highlighted) return -1;
+          if (!a.is_highlighted && b.is_highlighted) return 1;
+          return (
+            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+          );
+        });
       setActivities(filteredActivities);
       setIsLoading(false);
     };
@@ -296,17 +341,9 @@ export default function EventList({
                     )}
                   </div>
                   <div className="w-[131px] flex-shrink-0 text-base text-gray-500">
-                    {(() => {
-                      try {
-                        if (!activity.start_date) return '-';
-                        const date = new Date(activity.start_date);
-                        return isNaN(date.getTime())
-                          ? activity.start_date
-                          : format(date, 'dd/MM/yyyy');
-                      } catch {
-                        return activity.start_date || '-';
-                      }
-                    })()}
+                    {activity.start_date
+                      ? format(new Date(activity.start_date), 'dd/MM/yyyy')
+                      : '-'}
                   </div>
                   <div className="w-[110px] flex-shrink-0 flex items-center justify-center text-gray-500">
                     <Link href={`/kegiatan/${activity.id}/panitia`}>
@@ -372,12 +409,6 @@ export default function EventList({
                 </div>
               ))}
             </div>
-
-            {isLoading && (
-              <div className="p-4 text-center text-gray-500">
-                Loading activities...
-              </div>
-            )}
 
             {isLoading && (
               <div className="p-4 text-center text-gray-500">

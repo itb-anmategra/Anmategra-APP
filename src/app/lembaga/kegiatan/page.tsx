@@ -8,21 +8,21 @@ export default async function Home() {
 
   // Get activities from API
   const events = await api.kegiatan.getAllByLembaga(); // Belum ada Auth
-  const formattedActivities = events.map((activity) => ({
-    id: activity.id,
-    name: activity.name,
-    description: activity.description,
-    start_date: activity.start_date.toISOString(),
-    end_date: activity.end_date?.toISOString(),
-    participant_count: activity.participant_count,
-    status: activity.status,
-    thumbnail: activity.image,
-    oprec_link: activity.oprec_link,
-    location: activity.location,
-    participant_limit: activity.participant_limit,
-    is_highlighted: activity.is_highlighted,
-    is_organogram: activity.is_organogram,
-    background_image: activity.background_image,
+  const formattedActivities = events.map((event) => ({
+    id: event.id,
+    name: event.name,
+    description: event.description,
+    start_date: event.start_date.toISOString(),
+    end_date: event.end_date?.toISOString(),
+    participant_count: event.participant_count,
+    status: event.status,
+    thumbnail: event.image,
+    oprec_link: event.oprec_link,
+    location: event.location,
+    participant_limit: event.participant_limit,
+    is_highlighted: event.is_highlighted,
+    is_organogram: event.is_organogram,
+    background_image: event.background_image,
   }));
 
   const session = await getServerAuthSession();

@@ -23,11 +23,7 @@ export const CreateEventInputSchema = z.object({
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
   background_image: z.string().url().optional(),
-  organogram_image: z
-    .string()
-    .url()
-    .or(z.literal(''))
-    .optional(),
+  organogram_image: z.string().url().or(z.literal('')).optional(),
 });
 
 export const CreateEventOutputSchema = z.custom<Event>();
@@ -100,4 +96,14 @@ export const AddNewPanitiaKegiatanManualInputSchema = z.object({
 
 export const EventIdSchema = z.object({
   event_id: z.string(),
+});
+
+export const ToggleHighlightInputSchema = z.object({
+  id: z.string(),
+  is_highlighted: z.boolean(),
+});
+
+export const ToggleHighlightOutputSchema = z.object({
+  success: z.boolean(),
+  is_highlighted: z.boolean(),
 });

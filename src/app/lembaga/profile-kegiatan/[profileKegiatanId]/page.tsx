@@ -39,7 +39,6 @@ const ProfileKegiatan = async ({
     latestBestStaff = await api.lembaga.getLatestBestStaffKegiatan({
       event_id: query,
     });
-    console.log('Best staff data loaded for kegiatan:', latestBestStaff);
   } catch (error) {
     console.log('No best staff data available for kegiatan:', query, error);
   }

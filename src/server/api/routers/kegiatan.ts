@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-kegiatan-form';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -7,7 +8,6 @@ import {
 
 import { EventIdSchema } from '../types/event.type';
 import { GetPosisiBidangOptionsOutputSchema } from '../types/lembaga.type';
-import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-kegiatan-form';
 
 export const kegiatanRouter = createTRPCRouter({
   // Public Procedures
@@ -51,7 +51,10 @@ export const kegiatanRouter = createTRPCRouter({
   getAllByLembaga: lembagaProcedure.query(async ({ ctx }) => {
     const kegiatan = await ctx.db.query.events.findMany({
       where: (events, { eq }) => eq(events.org_id, ctx.session.user.lembagaId!),
-      orderBy: (events, { desc }) => desc(events.start_date),
+      orderBy: (events, { desc }) => [
+        desc(events.is_highlighted),
+        desc(events.start_date),
+      ],
       columns: {
         org_id: false,
       },
