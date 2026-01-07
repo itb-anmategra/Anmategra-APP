@@ -47,7 +47,7 @@ const ProfilEvent = async ({ params }: ProfilEventProps) => {
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/lembaga/kegiatan' },
+              { label: 'Kegiatan', href: `/lembaga/kegiatan/${params.kegiatanId}/panitia` },
               { label: 'Rapor Komunal', href: `/lembaga/kegiatan/${params.kegiatanId}/rapor` },
               { label: 'Profil Kegiatan', href: `/lembaga/kegiatan/${params.kegiatanId}/profil` },
             ]}

@@ -54,7 +54,13 @@ export const getAllAnggota = protectedProcedure
         .from(keanggotaan)
         .innerJoin(users, eq(keanggotaan.user_id, users.id))
         .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-        .where(and(...conditions));
+        .where(and(...conditions))
+        .orderBy(
+          keanggotaan.division,
+          keanggotaan.position,
+          mahasiswa.nim,
+          users.name,
+        );
 
       const formatted_anggota = anggota.map((anggota) => {
         return {

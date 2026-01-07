@@ -18,7 +18,16 @@ const DaftarPanitiaKegiatanPage = async ({
   const getPosisiBidang = await api.kegiatan.getPosisiBidangOptions({
     event_id: query,
   });
+  const event = await api.event.getByID({ id: query });
 
+  if (event && session && event?.lembaga?.id !== session?.user.lembagaId) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg">Unauthorized Access</div>
+      </div>
+    )
+  }
+  
   return (
     <main>
       <AnggotaContent
@@ -26,6 +35,7 @@ const DaftarPanitiaKegiatanPage = async ({
         data={formatted_anggota ?? []}
         dataPosisiBidang={getPosisiBidang}
         pageAnggota={false}
+        title={event?.name ?? ''}
       />
     </main>
   );

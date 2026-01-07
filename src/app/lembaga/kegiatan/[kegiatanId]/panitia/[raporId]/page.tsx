@@ -69,9 +69,9 @@ export default async function RaporIndividuPanitiaPage({
           </h1>
           <RaporBreadcrumb
             items={[
-              { label: 'Kegiatan', href: '/kegiatan' },
-              { label: 'Panitia', href: '/kegiatan' },
-              { label: 'Rapor Individu', href: '/kegiatan' },
+              { label: 'Kegiatan', href: `/kegiatan/${kegiatanId}/panitia` },
+              { label: 'Rapor', href: `/kegiatan/${kegiatanId}/rapor` },
+              { label: 'Rapor Individu', href: `/kegiatan/${kegiatanId}/panitia/${raporId}` },
             ]}
           />
         </div>

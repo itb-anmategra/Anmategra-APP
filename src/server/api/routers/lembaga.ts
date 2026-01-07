@@ -156,7 +156,13 @@ export const lembagaRouter = createTRPCRouter({
           .from(kehimpunan)
           .innerJoin(users, eq(kehimpunan.userId, users.id))
           .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-          .where(and(...conditions));
+          .where(and(...conditions))
+          .orderBy(
+            kehimpunan.division,
+            kehimpunan.position,
+            mahasiswa.nim,
+            users.name,
+          );
 
         return anggota.map((anggota) => ({
           id: anggota.id,
