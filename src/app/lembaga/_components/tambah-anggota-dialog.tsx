@@ -148,6 +148,7 @@ export function TambahAnggotaDialog({
                   } else {
                     void utils.event.getAllAnggota.invalidate();
                   }
+                  window.location.reload();
                   setIsOpen(false);
                 }}
               />

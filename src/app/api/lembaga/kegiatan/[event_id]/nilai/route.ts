@@ -67,8 +67,6 @@ export async function GET(
     .leftJoin(mahasiswa, eq(keanggotaan.user_id, mahasiswa.userId))
     .where(eq(keanggotaan.event_id, event_id))
     .orderBy(
-      keanggotaan.division,
-      keanggotaan.position,
       mahasiswa.nim,
       users.name,
     );

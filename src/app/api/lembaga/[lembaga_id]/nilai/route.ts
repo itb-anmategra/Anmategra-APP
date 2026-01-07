@@ -61,8 +61,6 @@ export async function GET(
     .leftJoin(mahasiswa, eq(kehimpunan.userId, mahasiswa.userId))
     .where(eq(kehimpunan.lembagaId, lembaga_id))
     .orderBy(
-      kehimpunan.division,
-      kehimpunan.position,
       mahasiswa.nim,
       users.name,
     );

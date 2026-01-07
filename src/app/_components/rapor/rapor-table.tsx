@@ -676,7 +676,7 @@ export default function RaporTable({
               </LinkButton>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-5">
-              <ImportDialog session={session} isLembaga={type !== 'event'} />
+              <ImportDialog session={session} isLembaga={type === 'lembaga'} />
               <Button onClick={handleExportRapor} variant={'dark_blue'}>
                 <Download size={24} />
                 Unduh
