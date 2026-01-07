@@ -42,6 +42,9 @@ async function LaporanPage() {
         name: report.subject,
         date: formatTanggal(report.created_at),
         category: report.urgent,
+        description: report.description,
+        urgent: report.urgent,
+        attachment: report.attachment,
       });
     }
   });

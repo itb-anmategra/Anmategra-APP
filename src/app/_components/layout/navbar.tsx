@@ -248,57 +248,49 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
           {/* Desktop Navbar */}
           <div className='hidden sm:block w-full bg-white border-b border-neutral-50'>
-            <div className="flex items-center justify-between max-w-[1440px] max-h-[112px]
-                    py-6 pl-[50px] pr-[72px]">
+            <div className="flex items-center justify-between max-w-[1440px] mx-auto py-3 px-6 lg:py-4 lg:px-12">
 
               {/* Logo Anmategra */}
               {session ? (
-                <div className="flex items-center max-w-[108px] min-h-[64px] gap-[20px]">
+                <div className="flex items-center gap-3">
                   <Button
                     onClick={() => setIsSideBarOpen(true)}
                     variant="ghost"
                     size="icon"
-                    className="w-[24px] h-[30px]"
+                    className="w-9 h-9"
                   >
-                    <Menu className="!w-[24px] !h-[30px]" />
+                    <Menu className="w-5 h-5" />
                   </Button>
 
                   <Link href={'/'}>
                     <Image
                       src={LogoAnmategra}
                       alt="Logo Anmategra"
-                      width={64}
-                      height={64}
+                      width={48}
+                      height={48}
                     />
                   </Link>
                 </div>
               ) : (
-                <div className="flex items-center gap-[20px]">
+                <div className="flex items-center">
                   <Link href={'/'}>
                     <Image
                       src={LogoAnmategra}
                       alt="Logo Anmategra"
-                      width={64}
-                      height={64}
+                      width={48}
+                      height={48}
                     />
                   </Link>
                 </div>
               )}
 
               {/* Input Search */}
-              <div
-                className="flex items-center w-full max-w-3xl h-[64px] mx-4 lg:flex 
-                          bg-white border border-[#C4CACE] rounded-[40px] 
-                            py-4 px-6 gap-2"
-              >
-                {/* Icon Mangnifying Glass */}
-                <MagnifyingGlassIcon className="size-6 text-gray-500 flex-shrink-0" />
+              <div className="flex items-center w-full flex-1 h-12 mx-4 bg-white border border-[#C4CACE] rounded-full py-2 px-4 gap-2">
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
 
-                {/* Input Field */}
                 <Input
                   placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
-                  className="w-full h-[32px] bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 
-                              font-[400] text-[20px] leading-[32px] text-[#636A6D]"
+                  className="w-full h-full bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-base text-[#636A6D]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -306,38 +298,33 @@ const Navbar = ({ session }: { session: Session | null }) => {
               </div>
 
               {/* Profil */}
-              <nav className="flex items-center justify-start w-[128px] min-h-[52px] gap-10">
+              <nav className="flex items-center">
                 {session ? (
-                  <div className="w-full items-center gap-[10px] pl-10">
-                    <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
-                      {session.user.image ? (
-                        <Image
-                          src={session.user.image}
-                          alt="Profile User"
-                          width={52}
-                          height={52}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <Image
-                          src={ProfilePic}
-                          alt="Default Profile"
-                          width={52}
-                          height={52}
-                          className="rounded-full"
-                        />
-                      )}
-                    </Link>
-                  </div>
+                  <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
+                    {session.user.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt="Profile User"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <Image
+                        src={ProfilePic}
+                        alt="Default Profile"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    )}
+                  </Link>
                 ) : (
                   <Link href={'/authentication'}>
                     <Button
-                      className="max-w-[128px] min-h-[48px] px-8 py-2 flex items-center justify-center gap-2
-                                    rounded-[12px] bg-[#00B7B7] text-white hover:bg-secondary-500"
+                      className="h-10 px-6 py-2 rounded-xl bg-[#00B7B7] text-white hover:bg-secondary-500 font-semibold text-lg"
                     >
-                      <span className="items-center font-[600] text-[24px] leading-[32px]">
-                        Login
-                      </span>
+                      Login
                     </Button>
                   </Link>
                 )}

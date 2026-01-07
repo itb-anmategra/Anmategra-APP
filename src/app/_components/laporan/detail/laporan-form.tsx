@@ -177,14 +177,24 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
 }) => {
   const toast = useToast();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(editMode);
   const [isMaximized, setIsMaximized] = useState(false);
 
-  const [formData, setFormData] = useState<LaporanSchema>({
-    judul: editMode && reportToEdit ? reportToEdit.name : '',
-    deskripsi: editMode && reportToEdit?.description ? reportToEdit.description : '',
-    file: editMode && reportToEdit ? reportToEdit.attachment : undefined,
-    prioritas: editMode && reportToEdit ? (reportToEdit.urgent as LaporanSchema['prioritas']) : undefined as unknown as LaporanSchema['prioritas'],
+  const [formData, setFormData] = useState<LaporanSchema>(() => {
+    if (editMode && reportToEdit) {
+      return {
+        judul: reportToEdit.name,
+        deskripsi: reportToEdit.description ?? '',
+        file: reportToEdit.attachment ?? undefined,
+        prioritas: reportToEdit.urgent as LaporanSchema['prioritas'],
+      };
+    }
+    return {
+      judul: '',
+      deskripsi: '',
+      file: undefined,
+      prioritas: undefined as unknown as LaporanSchema['prioritas'],
+    };
   });
 
   React.useEffect(() => {
@@ -192,7 +202,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
       setFormData({
         judul: reportToEdit.name,
         deskripsi: reportToEdit.description ?? '',
-        file: reportToEdit.attachment,
+        file: reportToEdit.attachment ?? undefined,
         prioritas: reportToEdit.urgent as LaporanSchema['prioritas'],
       });
       setIsOpen(true);

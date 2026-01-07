@@ -4,7 +4,9 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Input } from '~/components/ui/input';
+import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/react';
 
 // Components Import
@@ -167,6 +169,17 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
 
   return (
     <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
+      {Laporan.isAdminView && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            className="rounded-xl border-neutral-300 text-sm font-semibold"
+            onClick={() => signOut({ callbackUrl: '/authentication' })}
+          >
+            Logout
+          </Button>
+        </div>
+      )}
       {/* Header */}
       <LaporanHeader
         setCurrentDisplay={setCurrentDisplay}
