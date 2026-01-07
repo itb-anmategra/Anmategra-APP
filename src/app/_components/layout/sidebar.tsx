@@ -15,7 +15,7 @@ import { type Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 // Components Import
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -28,8 +28,8 @@ import {
 } from '~/components/ui/tooltip';
 // Lib Import
 import { cn } from '~/lib/utils';
+import { api } from '~/trpc/react';
 // Type Import
-import type { Lembaga } from '~/types/lembaga';
 
 // Assets Import
 import LogoAnmategraFull from '/public/images/logo/anmategra-logo-full.png';
@@ -71,11 +71,11 @@ const SIDEBAR_ITEMS_MAHASISWA: SidebarItemType[] = [
   { label: 'Inbox', href: '/mahasiswa/inbox', icon: <EnvelopeOpenIcon /> },
 ];
 
-export const Sidebar = ({ 
+export const Sidebar = ({
   session,
   isMobileOpen,
-  onMobileClose 
-}: { 
+  onMobileClose,
+}: {
   session: Session | null;
   isMobileOpen?: boolean;
   onMobileClose?: () => void;
@@ -94,17 +94,16 @@ export const Sidebar = ({
 
   let profileData: SidebarProfileData;
   if (role === 'lembaga') {
-    const lembaga: Lembaga = {
-      id: user?.lembagaId ?? '',
-      name: user?.name ?? '',
-      profilePicture: user?.image ?? '',
-    };
+    const lembaga = api.lembaga.getInfo.useQuery({
+      lembagaId: user?.lembagaId ?? '',
+    }).data;
+
     profileData = {
-      id: lembaga.id ?? '',
-      name: lembaga.name,
-      profilePicture: lembaga.profilePicture ?? '',
+      id: lembaga?.id ?? '',
+      name: lembaga?.nama ?? '',
+      profilePicture: lembaga?.foto ?? '',
       label: 'Lembaga',
-      href: `/profile-lembaga/${lembaga.id ?? ''}`,
+      href: `/profile-lembaga/${lembaga?.id ?? ''}`,
     };
   } else {
     profileData = {
@@ -118,12 +117,18 @@ export const Sidebar = ({
 
   return (
     <>
-      <div className={cn(role === 'lembaga' ? 'hidden sm:block sm:w-20 lg:w-64' : 'w-64')} />
+      <div
+        className={cn(
+          role === 'lembaga' ? 'hidden sm:block sm:w-20 lg:w-64' : 'w-64',
+        )}
+      />
 
       <div
         className={cn(
           'border-r bg-neutral-50 fixed left-0 h-screen transition-all duration-300',
-          role === 'lembaga' ? 'hidden sm:flex sm:w-20 lg:w-64 sm:p-3 lg:p-6' : 'w-64 p-6',
+          role === 'lembaga'
+            ? 'hidden sm:flex sm:w-20 lg:w-64 sm:p-3 lg:p-6'
+            : 'w-64 p-6',
         )}
       >
         <nav className="w-full h-full flex flex-col justify-between">
@@ -181,7 +186,10 @@ export const Sidebar = ({
           <div className="fixed top-0 right-0 h-full w-64 bg-neutral-50 shadow-lg z-[60] border-l sm:hidden">
             <nav className="w-full h-full flex flex-col">
               <div className="flex items-center justify-between p-4 border-b border-neutral-200">
-                <Link href="/lembaga" onClick={() => setIsMobileSidebarOpen(false)}>
+                <Link
+                  href="/lembaga"
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                >
                   <Image
                     src={LogoAnmategraFull}
                     alt="Logo Anmategra"
@@ -208,12 +216,16 @@ export const Sidebar = ({
                       key={item.href}
                       className={cn(
                         'flex items-center justify-start h-12 px-4 hover:bg-[#DFE7EC] hover:text-[#2B6282] rounded-[8px] text-[#636A6D] text-[16px]',
-                        usePathname() === item.href && 'bg-[#DFE7EC] text-[#2B6282]',
+                        usePathname() === item.href &&
+                          'bg-[#DFE7EC] text-[#2B6282]',
                       )}
                       variant="ghost"
                       asChild
                     >
-                      <Link href={item.href} onClick={() => setIsMobileSidebarOpen(false)}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                      >
                         <div className="flex flex-row items-center gap-3">
                           <span className="w-5 h-5">{item.icon}</span>
                           <span>{item.label}</span>
@@ -226,14 +238,19 @@ export const Sidebar = ({
 
               <div className="p-4 border-t border-neutral-200">
                 <div className="flex flex-col gap-3">
-                  <Link href={profileData.href} onClick={() => setIsMobileSidebarOpen(false)}>
+                  <Link
+                    href={profileData.href}
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  >
                     <div className="flex items-center gap-3 p-2 hover:bg-[#DFE7EC] rounded-lg transition-colors">
                       <Avatar className="w-10 h-10 flex-shrink-0">
                         <AvatarImage
                           className="object-contain"
                           src={profileData.profilePicture ?? ''}
                         />
-                        <AvatarFallback>{profileData.name.slice(0, 2)}</AvatarFallback>
+                        <AvatarFallback>
+                          {profileData.name.slice(0, 2)}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col gap-0 min-w-0">
                         <p className="font-semibold text-[16px] line-clamp-1">
