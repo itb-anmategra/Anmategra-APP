@@ -33,15 +33,21 @@ const Navbar = ({ session }: { session: Session | null }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
 
+  const navigateToSearch = () => {
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    const encoded = encodeURIComponent(trimmed);
+    if (session?.user.role === 'lembaga') {
+      void router.push(`/lembaga/pencarian/${encoded}`);
+    } else {
+      void router.push(`/mahasiswa/pencarian/${encoded}`);
+    }
+    setIsSearchOpen(false);
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      if (session?.user.role === 'lembaga') {
-        void router.push(`/lembaga/pencarian/${searchQuery}`);
-      } else {
-        void router.push(`/mahasiswa/pencarian/${searchQuery}`);
-      }
-      setIsSearchOpen(false);
-      // setSearchQuery('');
+      navigateToSearch();
     }
   };
 
@@ -51,12 +57,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
   //   }
   // });
   const handleSearchSubmit = () => {
-    if (session?.user.role === 'lembaga') {
-      void router.push(`/lembaga/pencarian/${searchQuery}`);
-    } else {
-      void router.push(`/mahasiswa/pencarian/${searchQuery}`);
-    }
-    setIsSearchOpen(false);
+    navigateToSearch();
     // setSearchQuery('');
   }
 
