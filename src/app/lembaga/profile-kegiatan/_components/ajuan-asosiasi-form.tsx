@@ -22,12 +22,20 @@ import {
   FormMessage,
 } from '~/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '~/components/ui/command';
+import { ChevronsUpDown, Check } from 'lucide-react';
+import { cn } from '~/lib/utils';
 
 const AjuanAsosiasiSchema = z.object({
   posisi: z.string().min(1, 'Posisi harus dipilih'),
@@ -60,6 +68,15 @@ const AjuanAsosiasiForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const utils = api.useUtils();
+  const [posisiOpen, setPosisiOpen] = useState(false);
+  const [divisiOpen, setDivisiOpen] = useState(false);
+  const [posisiOptions, setPosisiOptions] = useState<{ value: string; label: string }[]>([]);
+  const [divisiOptions, setDivisiOptions] = useState<{ value: string; label: string }[]>([]);
+
+  const { data: kegiatanOptions } = api.users.getTambahAnggotaKegiatanOptions.useQuery(
+    { kegiatanId: eventId },
+    { enabled: Boolean(eventId) },
+  );
 
   const form = useForm<AjuanAsosiasiSchemaType>({
     resolver: zodResolver(AjuanAsosiasiSchema),
@@ -80,6 +97,13 @@ const AjuanAsosiasiForm = ({
       resetForm();
     }
   }, [resetTrigger, resetForm]);
+
+  useEffect(() => {
+    if (kegiatanOptions) {
+      setPosisiOptions(kegiatanOptions.posisi ?? []);
+      setDivisiOptions(kegiatanOptions.bidang ?? []);
+    }
+  }, [kegiatanOptions]);
 
   const requestAssociationMutation = api.users.requestAssociation.useMutation({
     onSuccess: () => {
@@ -142,25 +166,6 @@ const AjuanAsosiasiForm = ({
 
   const isValid = form.formState.isValid;
 
-  const posisiOptions = [
-    { value: 'ketua', label: 'Ketua' },
-    { value: 'wakil-ketua', label: 'Wakil Ketua' },
-    { value: 'sekretaris', label: 'Sekretaris' },
-    { value: 'bendahara', label: 'Bendahara' },
-    { value: 'koordinator', label: 'Koordinator' },
-    { value: 'anggota', label: 'Anggota' },
-  ];
-
-  const divisiOptions = [
-    { value: 'acara', label: 'Acara' },
-    { value: 'humas', label: 'Humas' },
-    { value: 'publikasi', label: 'Publikasi' },
-    { value: 'perlengkapan', label: 'Perlengkapan' },
-    { value: 'konsumsi', label: 'Konsumsi' },
-    { value: 'keamanan', label: 'Keamanan' },
-    { value: 'dokumentasi', label: 'Dokumentasi' },
-  ];
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
@@ -210,20 +215,63 @@ const AjuanAsosiasiForm = ({
                     <FormLabel className="text-gray-900 text-lg font-medium">
                       Posisi
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full h-10 border-[#D0D5DD] rounded-lg text-base">
-                          <SelectValue placeholder="Pilih posisi" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {posisiOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={posisiOpen} onOpenChange={setPosisiOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <span className={cn(!field.value && 'text-[#98A2B3]')}>
+                            {field.value || 'Masukkan posisi...'}
+                          </span>
+                          <ChevronsUpDown className={cn('h-4 w-4', !field.value && 'text-[#636A6D]')} />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="Cari atau ketik posisi baru..."
+                            value={field.value}
+                            onValueChange={(val) => field.onChange(val)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && field.value) {
+                                e.preventDefault();
+                                setPosisiOpen(false);
+                              }
+                            }}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              <div className="py-2 px-3 text-sm">
+                                Tekan Enter untuk menggunakan:{' '}
+                                <span className="font-semibold">{field.value}</span>
+                              </div>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {(posisiOptions ?? [])
+                                .filter((p) =>
+                                  p.label.toLowerCase().includes((field.value || '').toLowerCase()),
+                                )
+                                .map((p) => (
+                                  <CommandItem
+                                    key={p.value}
+                                    value={p.value}
+                                    onSelect={() => {
+                                      field.onChange(p.value);
+                                      setPosisiOpen(false);
+                                    }}
+                                  >
+                                    {p.label}
+                                    <Check
+                                      className={cn(
+                                        'ml-auto',
+                                        field.value === p.value ? 'opacity-100' : 'opacity-0',
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -237,20 +285,63 @@ const AjuanAsosiasiForm = ({
                     <FormLabel className="text-gray-900 text-lg font-medium">
                       Divisi
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full h-10 border-[#D0D5DD] rounded-lg text-base">
-                          <SelectValue placeholder="Pilih divisi" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {divisiOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={divisiOpen} onOpenChange={setDivisiOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <span className={cn(!field.value && 'text-[#98A2B3]')}>
+                            {field.value || 'Masukkan divisi...'}
+                          </span>
+                          <ChevronsUpDown className={cn('h-4 w-4', !field.value && 'text-[#636A6D]')} />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="Cari atau ketik divisi baru..."
+                            value={field.value}
+                            onValueChange={(val) => field.onChange(val)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && field.value) {
+                                e.preventDefault();
+                                setDivisiOpen(false);
+                              }
+                            }}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              <div className="py-2 px-3 text-sm">
+                                Tekan Enter untuk menggunakan:{' '}
+                                <span className="font-semibold">{field.value}</span>
+                              </div>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {(divisiOptions ?? [])
+                                .filter((d) =>
+                                  d.label.toLowerCase().includes((field.value || '').toLowerCase()),
+                                )
+                                .map((d) => (
+                                  <CommandItem
+                                    key={d.value}
+                                    value={d.value}
+                                    onSelect={() => {
+                                      field.onChange(d.value);
+                                      setDivisiOpen(false);
+                                    }}
+                                  >
+                                    {d.label}
+                                    <Check
+                                      className={cn(
+                                        'ml-auto',
+                                        field.value === d.value ? 'opacity-100' : 'opacity-0',
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
