@@ -10,7 +10,7 @@ export const CreateEventInputSchema = z.object({
     .string()
     .min(10, 'Deskripsi minimal 10 karakter')
     .max(100, 'Deskripsi maksimal 100 karakter'),
-  image: z.string().url('Harus berupa URL yang valid'),
+  image: z.string().url(),
   start_date: z.string().datetime(),
   end_date: z.string().datetime().nullable().optional(),
   status: z.enum(['Coming Soon', 'On going', 'Ended']),
@@ -19,13 +19,15 @@ export const CreateEventInputSchema = z.object({
     .url('Harus berupa URL yang valid')
     .or(z.literal(''))
     .optional(),
-  location: z.string().min(3, 'Lokasi minimal 3 karakter'),
-  participant_limit: z.number().int().min(1, 'Minimal 1 peserta'),
-  participant_count: z.number().int().min(0, 'Minimal 0 peserta'),
+  location: z.string().optional(),
   is_highlighted: z.boolean().optional(),
   is_organogram: z.boolean().optional(),
-  background_image: z.string().url('Harus berupa URL yang valid').optional(),
-  organogram_image: z.string().url('Harus berupa URL yang valid').optional(),
+  background_image: z.string().url().optional(),
+  organogram_image: z
+    .string()
+    .url()
+    .or(z.literal(''))
+    .optional(),
 });
 
 export const CreateEventOutputSchema = z.custom<Event>();

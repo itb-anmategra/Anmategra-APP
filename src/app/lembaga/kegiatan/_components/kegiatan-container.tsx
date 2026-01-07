@@ -2,6 +2,7 @@
 
 // Library Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { format } from 'date-fns';
 // Icons Import
 import {
   ArrowUpRight,
@@ -21,8 +22,7 @@ import FilterDropdown, {
   type FilterOption,
 } from '~/app/_components/filter/filter-dropdown';
 import DeleteProfilDialog from '~/app/_components/rapor/delete-profil-dialog';
-import EditKegiatanForm from '~/app/lembaga/kegiatan/_components/form/edit-kegiatan-form';
-import TambahKegiatanForm from '~/app/lembaga/kegiatan/_components/form/tambah-kegiatan-form';
+import TambahEditKegiatanForm from '~/app/lembaga/kegiatan/_components/form/tambah-edit-kegiatan-form';
 // Components Import
 import { useDebounce } from '~/components/debounceHook';
 import { Button } from '~/components/ui/button';
@@ -44,7 +44,7 @@ import { Input } from '~/components/ui/input';
 import { useToast } from '~/hooks/use-toast';
 import { api } from '~/trpc/react';
 
-export interface Activity {
+export interface Event {
   id: string;
   name: string;
   description: string | null;
@@ -61,20 +61,22 @@ export interface Activity {
   is_organogram: boolean;
 }
 
-export default function ActivityList({
-  propActivites,
-  session,
-}: {
-  propActivites: Activity[];
+interface EventListProps {
+  propEvents: Event[];
   session: Session | null;
-}) {
+}
+
+export default function EventList({
+  propEvents,
+  session,
+}: EventListProps) {
   const { toast } = useToast();
-  const [activities, setActivities] = useState<Activity[]>(propActivites);
+  const [activities, setActivities] = useState<Event[]>(propEvents);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [updatingHighlightId, setUpdatingHighlightId] = useState<string | null>(
     null,
   );
@@ -82,21 +84,21 @@ export default function ActivityList({
 
   const filterOptions: FilterOption[] = useMemo(() => {
     const uniqueStatuses = Array.from(
-      new Set(propActivites.map((activity) => activity.status)),
+      new Set(propEvents.map((activity) => activity.status)),
     ).filter(Boolean);
     return uniqueStatuses.map((status) => ({
       id: status,
       label: status,
       value: status,
     }));
-  }, [propActivites]);
+  }, [propEvents]);
 
   const handleFilterChange = useCallback((filters: string[]) => {
     setSelectedFilters(filters);
-    // TODO: Implement server-side filtering when BE is ready
+    
   }, []);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deletingActivity, setDeletingActivity] = useState<Activity | null>(
+  const [deletingEvent, setDeletingEvent] = useState<Event | null>(
     null,
   );
 
@@ -104,7 +106,7 @@ export default function ActivityList({
     onSuccess: (data) => {
       setActivities((prev) => prev.filter((a) => a.id !== data.id));
       setDeleteConfirmOpen(false);
-      setDeletingActivity(null);
+      setDeletingEvent(null);
       toast({
         title: 'Kegiatan berhasil dihapus',
         description: 'Kegiatan telah dihapus dari database',
@@ -158,39 +160,37 @@ export default function ActivityList({
   useEffect(() => {
     const getActivities = async () => {
       setIsLoading(true);
-      const filteredActivities = propActivites.filter((activity) =>
-        activity.name
+      const filteredActivities = propEvents.filter((activity) => {
+        const matchesSearch = activity.name
           .toLowerCase()
-          .includes(debouncedSearchQuery.toLowerCase()),
-      );
+          .includes(debouncedSearchQuery.toLowerCase());
+        const matchesFilter =
+          selectedFilters.length === 0 ||
+          selectedFilters.includes(activity.status);
+        return matchesSearch && matchesFilter;
+      });
       setActivities(filteredActivities);
       setIsLoading(false);
     };
     getActivities()
       .then((r) => r)
       .catch((e) => e);
-  }, [debouncedSearchQuery, propActivites]);
+  }, [debouncedSearchQuery, propEvents, selectedFilters]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      // Nampilin hasil pencarian client side fetching
-    }
-  };
-
-  const handleDeleteClick = (activity: Activity) => {
-    setDeletingActivity(activity);
+  const handleDeleteClick = (activity: Event) => {
+    setDeletingEvent(activity);
     setDeleteConfirmOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    if (deletingActivity) {
-      deleteMutation.mutate({ id: deletingActivity.id });
+    if (deletingEvent) {
+      deleteMutation.mutate({ id: deletingEvent.id });
     }
   };
 
   const handleCancelDelete = () => {
     setDeleteConfirmOpen(false);
-    setDeletingActivity(null);
+    setDeletingEvent(null);
   };
 
   return (
@@ -206,7 +206,6 @@ export default function ActivityList({
           }
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
         />
       </div>
 
@@ -222,10 +221,10 @@ export default function ActivityList({
             <DialogHeader>
               <DialogTitle>Tambah Kegiatan</DialogTitle>
             </DialogHeader>
-            <TambahKegiatanForm
+            <TambahEditKegiatanForm
               session={session}
               setIsOpen={setIsOpen}
-              setActivityList={setActivities}
+              setEventList={setActivities}
             />
           </DialogContent>
         </Dialog>
@@ -297,7 +296,17 @@ export default function ActivityList({
                     )}
                   </div>
                   <div className="w-[131px] flex-shrink-0 text-base text-gray-500">
-                    {activity.start_date}
+                    {(() => {
+                      try {
+                        if (!activity.start_date) return '-';
+                        const date = new Date(activity.start_date);
+                        return isNaN(date.getTime())
+                          ? activity.start_date
+                          : format(date, 'dd/MM/yyyy');
+                      } catch {
+                        return activity.start_date || '-';
+                      }
+                    })()}
                   </div>
                   <div className="w-[110px] flex-shrink-0 flex items-center justify-center text-gray-500">
                     <Link href={`/kegiatan/${activity.id}/panitia`}>
@@ -343,7 +352,7 @@ export default function ActivityList({
                         className="rounded-xl min-w-[120px] p-0 overflow-hidden"
                       >
                         <DropdownMenuItem
-                          onSelect={() => setEditingActivity(activity)}
+                          onSelect={() => setEditingEvent(activity)}
                           className="w-full rounded-none cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
                         >
                           <Pencil className="text-[#00B7B7] h-4 w-4" />
@@ -386,21 +395,21 @@ export default function ActivityList({
       </div>
 
       <Dialog
-        open={editingActivity !== null}
+        open={editingEvent !== null}
         onOpenChange={(open) => {
-          if (!open) setEditingActivity(null);
+          if (!open) setEditingEvent(null);
         }}
       >
-        <DialogContent className="min-w-[800px]">
+        <DialogContent className="min-w-[800px]" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Edit Kegiatan</DialogTitle>
           </DialogHeader>
-          {editingActivity && (
-            <EditKegiatanForm
+          {editingEvent && (
+            <TambahEditKegiatanForm
               session={session}
-              setIsOpen={() => setEditingActivity(null)}
-              setActivityList={setActivities}
-              kegiatan={editingActivity}
+              setIsOpen={() => setEditingEvent(null)}
+              setEventList={setActivities}
+              kegiatan={editingEvent}
             />
           )}
         </DialogContent>
@@ -410,7 +419,7 @@ export default function ActivityList({
         open={deleteConfirmOpen}
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title={`Apakah Anda yakin ingin menghapus kegiatan "${deletingActivity?.name}"?`}
+        title={`Apakah Anda yakin ingin menghapus kegiatan "${deletingEvent?.name}"?`}
         cancelButtonText="Batal"
         confirmButtonText="Hapus"
       />
