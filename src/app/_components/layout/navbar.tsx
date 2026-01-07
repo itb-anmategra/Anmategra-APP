@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 // Components Import
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import { api } from '~/trpc/react';
 
 import { Sidebar as Sidebars } from './sidebar';
 // Assets Import
@@ -32,6 +33,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
+
+  const user = api.users.getMahasiswaById.useQuery(
+    { userId: session?.user.id ?? '' },
+    { enabled: !!session?.user.id },
+  ).data?.mahasiswaData.user;
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -58,10 +64,13 @@ const Navbar = ({ session }: { session: Session | null }) => {
     }
     setIsSearchOpen(false);
     // setSearchQuery('');
-  }
+  };
 
   useEffect(() => {
-    if (session?.user.role === 'lembaga' && !window.location.pathname.startsWith('/lembaga')) {
+    if (
+      session?.user.role === 'lembaga' &&
+      !window.location.pathname.startsWith('/lembaga')
+    ) {
       router.push('/lembaga');
     }
   }, [session, router]);
@@ -84,7 +93,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                 </Link>
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <Button
                   onClick={() => setIsSearchOpen(true)}
                   variant="ghost"
@@ -146,10 +155,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
         </>
       ) : (
         <>
-          <div className='w-full bg-white border-b border-neutral-50'>
-            <div className="flex items-center justify-between max-w-[1440px] max-h-[112px]
-                    py-6 pl-[50px] pr-[72px]">
-
+          <div className="w-full bg-white border-b border-neutral-50">
+            <div
+              className="flex items-center justify-between max-w-[1440px] max-h-[112px]
+                    py-6 pl-[50px] pr-[72px]"
+            >
               {/* Logo Anmategra */}
               {session ? (
                 <div className="flex items-center max-w-[108px] min-h-[64px] gap-[20px]">
@@ -208,14 +218,16 @@ const Navbar = ({ session }: { session: Session | null }) => {
               <nav className="flex items-center justify-start w-[128px] min-h-[52px] gap-10">
                 {session ? (
                   <div className="w-full items-center gap-[10px] pl-10">
-                    <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
-                      {session.user.image ? (
+                    <Link
+                      href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}
+                    >
+                      {user?.image ? (
                         <Image
-                          src={session.user.image}
+                          src={user.image}
                           alt="Profile User"
                           width={52}
                           height={52}
-                          className="rounded-full"
+                          className="rounded-full object-cover w-[52px] h-[52px]"
                         />
                       ) : (
                         <Image
@@ -223,7 +235,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                           alt="Default Profile"
                           width={52}
                           height={52}
-                          className="rounded-full"
+                          className="rounded-full object-cover w-[52px] h-[52px]"
                         />
                       )}
                     </Link>
@@ -243,7 +255,6 @@ const Navbar = ({ session }: { session: Session | null }) => {
               </nav>
             </div>
           </div>
-
         </>
       )}
       {isSideBarOpen && session?.user.role === 'lembaga' && (
@@ -256,8 +267,8 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
           {/* Sidebar from right for lembaga mobile */}
           <div className="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-[60] border-l sm:hidden">
-            <Sidebar 
-              session={session} 
+            <Sidebar
+              session={session}
               isMobileOpen={true}
               onMobileClose={() => setIsSideBarOpen(false)}
             />
