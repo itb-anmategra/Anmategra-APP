@@ -1,8 +1,7 @@
 'use client';
 
-// import Image from 'next/image';
-// import PartyPopper from 'public/icons/party-popper.svg';
-import React, { useState, useEffect } from 'react';
+import { skipToken } from '@tanstack/query-core';
+import React, { useEffect, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -20,9 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { useToast } from '~/hooks/use-toast';
 import { api } from '~/trpc/react';
-// import { useQueries } from '@tanstack/react-query';
-import { skipToken } from '@tanstack/query-core';
 
 export type Division = {
   name: string;
@@ -103,7 +101,7 @@ function PeriodSelect({
   };
 
   return (
-    <div className="flex w-full gap-4 mb-2 items-center">
+    <div className="flex w-full gap-4 mb-4 items-center">
       <Select onValueChange={(val) => handleChange('startMonth', val)}>
         <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
           <SelectValue placeholder="Bulan" />
@@ -134,7 +132,7 @@ function PeriodSelect({
         </SelectContent>
       </Select>
 
-      <span className="self-center text-xs">s.d.</span>
+      <span className="self-center text-sm">s.d.</span>
 
       <Select onValueChange={(val) => handleChange('endMonth', val)}>
         <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
@@ -176,7 +174,7 @@ type DivisionTableProps = {
 
 function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
   return (
-    <div className="w-full max-w-[500px] max-h-[300px] sm:max-h-[420px] mx-auto overflow-y-auto pr-2 space-y-3">
+    <div className="w-full max-w-[600px] max-h-[300px] sm:max-h-[420px] mx-auto overflow-y-auto p-1 space-y-3">
       <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
         <div className="w-[120px] sm:w-[140px]">Divisi</div>
         <div className="flex-1">Best Staff</div>
@@ -189,15 +187,15 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
           </div>
           <div className="flex-1">
             <Select onValueChange={(val) => onSelect(divisi.name, val)}>
-              <SelectTrigger className="w-full h-[32px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
+              <SelectTrigger className="w-full h-[36px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
                 <SelectValue placeholder="Pilih anggota" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border border-[#C4CACE] [&_[data-radix-select-viewport]]:p-0">
+              <SelectContent className="rounded-xl border border-[#C4CACE]">
                 {divisi.candidates.map((staff, j) => (
                   <SelectItem
                     key={j}
                     value={staff}
-                    className="py-1.5 px-3 border-b last:border-0 border-[#C4CACE] rounded-none text-xs text-[#636A6D] hover:bg-gray-100"
+                    className="py-2 px-3 text-sm text-[#636A6D] hover:bg-gray-100"
                   >
                     {staff}
                   </SelectItem>
@@ -218,6 +216,8 @@ type BestStaffProps = {
 };
 
 const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -239,48 +239,70 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
 
   const { data: eventData } = api.event.getByID.useQuery(
     eventId ? { id: eventId } : skipToken,
-    { enabled: !!eventId }
+    { enabled: !!eventId },
   );
 
   const years = React.useMemo(() => {
     const currentYear = new Date().getFullYear();
-    
+
     if (eventId && eventData) {
       const startYear = new Date(eventData.start_date).getFullYear();
-      const endYear = eventData.end_date 
-        ? new Date(eventData.end_date).getFullYear() 
+      const endYear = eventData.end_date
+        ? new Date(eventData.end_date).getFullYear()
         : currentYear;
       return generateYears(startYear, endYear);
     }
-    
+
     // For lembaga: 2015 to current year
-    return generateYears(2015, currentYear);
+    return generateYears(2020, currentYear);
   }, [eventId, eventData]);
 
-  const chooseBestStaffLembagaMutation = api.lembaga.chooseBestStaffLembaga.useMutation({
-    onSuccess: () => {
-      alert('Best Staff berhasil disimpan!');
-    },
-    onError: (err) => {
-      console.error(err);
-      alert('Terjadi kesalahan saat menyimpan Best Staff.');
-    },
-  });
+  const chooseBestStaffLembagaMutation =
+    api.lembaga.chooseBestStaffLembaga.useMutation({
+      onSuccess: () => {
+        toast({
+          variant: 'default',
+          title: '✓ Berhasil!',
+          description: 'Best Staff berhasil disimpan.',
+        });
+        setIsOpen(false);
+      },
+      onError: (err) => {
+        console.error(err);
+        toast({
+          variant: 'destructive',
+          title: 'Gagal menyimpan',
+          description: 'Terjadi kesalahan saat menyimpan Best Staff.',
+        });
+      },
+    });
 
-  const chooseBestStaffKegiatanMutation = api.lembaga.chooseBestStaffKegiatan.useMutation({
-    onSuccess: () => {
-      alert('Best Staff berhasil disimpan!');
-    },
-    onError: (err) => {
-      console.error(err);
-      alert('Terjadi kesalahan saat menyimpan Best Staff.');
-    },
-  });
+  const chooseBestStaffKegiatanMutation =
+    api.lembaga.chooseBestStaffKegiatan.useMutation({
+      onSuccess: () => {
+        toast({
+          variant: 'default',
+          title: '✓ Berhasil!',
+          description: 'Best Staff berhasil disimpan.',
+        });
+        setIsOpen(false);
+      },
+      onError: (err) => {
+        console.error(err);
+        toast({
+          variant: 'destructive',
+          title: 'Gagal menyimpan',
+          description: 'Terjadi kesalahan saat menyimpan Best Staff.',
+        });
+      },
+    });
 
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
     {},
   );
-  const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>({}); 
+  const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>(
+    {},
+  );
   const [divisionDataMapping, setDivisionDataMapping] = useState<
     Record<string, { name: string; user_id: string }[]>
   >({});
@@ -289,22 +311,22 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   const { data: divisionData } = eventId
     ? api.lembaga.getAllKegiatanDivision.useQuery(
         { event_id: eventId },
-        { enabled: !!eventId }
+        { enabled: !!eventId },
       )
     : api.lembaga.getAllLembagaDivision.useQuery(
         lembagaId ? { lembaga_id: lembagaId } : skipToken,
-        { enabled: !!lembagaId }
+        { enabled: !!lembagaId },
       );
-  
+
   // Fetch all anggota once and group by division, then build staff options
   const { data: anggotaData } = eventId
     ? api.event.getAllAnggota.useQuery(
         { event_id: eventId },
-        { enabled: !!eventId }
+        { enabled: !!eventId },
       )
     : api.lembaga.getAllAnggota.useQuery(
         lembagaId ? { lembagaId: lembagaId } : skipToken,
-        { enabled: !!lembagaId }
+        { enabled: !!lembagaId },
       );
 
   useEffect(() => {
@@ -327,22 +349,34 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
     setDivisionDataMapping((prev) => ({ ...prev, ...fullMap }));
   }, [anggotaData]);
 
-
   const handleSubmit = () => {
     const { startMonth, startYear, endMonth, endYear } = periode;
 
     if ((startMonth && !startYear) || (!startMonth && startYear)) {
-      alert('Bulan dan Tahun Awal harus dipilih berpasangan.');
+      toast({
+        variant: 'destructive',
+        title: 'Periode tidak lengkap',
+        description: 'Bulan dan Tahun Awal harus dipilih berpasangan.',
+      });
       return;
     }
 
     if ((endMonth && !endYear) || (!endMonth && endYear)) {
-      alert('Bulan dan Tahun Akhir harus dipilih berpasangan.');
+      toast({
+        variant: 'destructive',
+        title: 'Periode tidak lengkap',
+        description: 'Bulan dan Tahun Akhir harus dipilih berpasangan.',
+      });
       return;
     }
 
     if (!startMonth || !startYear || !endMonth || !endYear) {
-      alert('Bulan & Tahun Awal serta Bulan & Tahun Akhir wajib diisi.');
+      toast({
+        variant: 'destructive',
+        title: 'Data belum lengkap',
+        description:
+          'Bulan & Tahun Awal serta Bulan & Tahun Akhir wajib diisi.',
+      });
       return;
     }
 
@@ -352,7 +386,11 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
     const eMonth = parseInt(endMonth, 10);
 
     if (isNaN(sYear) || isNaN(eYear) || isNaN(sMonth) || isNaN(eMonth)) {
-      alert('Bulan & Tahun harus berupa angka valid.');
+      toast({
+        variant: 'destructive',
+        title: 'Format tidak valid',
+        description: 'Bulan & Tahun harus berupa angka valid.',
+      });
       return;
     }
 
@@ -360,24 +398,31 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
     const endTotal = eYear * 12 + (eMonth - 1);
 
     if (endTotal < startTotal) {
-      alert('Periode akhir harus sama atau setelah periode awal.');
+      toast({
+        variant: 'destructive',
+        title: 'Periode tidak valid',
+        description: 'Periode akhir harus sama atau setelah periode awal.',
+      });
       return;
     }
 
     const emptyDivisi = (divisionData?.divisions ?? []).filter(
-      (d) => !(selectedStaff[d]?.trim()),
+      (d) => !selectedStaff[d]?.trim(),
     );
     if (emptyDivisi.length > 0) {
-      alert(`Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`);
+      toast({
+        variant: 'destructive',
+        title: 'Pilihan belum lengkap',
+        description: `Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`,
+      });
       return;
     }
 
     // Format tanggal: YYYY-MM-01
-    const start_date = (new Date(sYear, sMonth - 1, 1)).toISOString();
-    const end_date = (new Date(eYear, eMonth - 1, 1)).toISOString();
+    const start_date = new Date(sYear, sMonth - 1, 1).toISOString();
+    const end_date = new Date(eYear, eMonth - 1, 1).toISOString();
 
     // divisionDataMapping is populated by the top-level anggota query effect
-
 
     // Mapping selectedStaff ke best_staff_list[]
     const best_staff_list = Object.entries(selectedStaff).map(
@@ -388,10 +433,9 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
           user_id: userObj?.user_id ?? '', // kasih fallback string kosong kalau undefined
           division,
         };
-      }
+      },
     );
 
-    
     if (eventId) {
       // Event context
       const payload = {
@@ -413,13 +457,17 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       console.log('Payload submit (Lembaga):', payload);
       chooseBestStaffLembagaMutation.mutate(payload);
     } else {
-      alert('Missing lembaga_id or event_id - cannot submit');
+      toast({
+        variant: 'destructive',
+        title: 'Kesalahan sistem',
+        description: 'ID lembaga atau kegiatan tidak ditemukan.',
+      });
       return;
     }
   };
-  
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
@@ -433,7 +481,7 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
           <DialogTitle className="text-2xl sm:text-[32px] font-bold">
             Pilih Best Staff
           </DialogTitle>
-          <DialogDescription className="text-sm font-medium text-black">
+          <DialogDescription className="text-sm font-medium text-[#636A6D]">
             Periode Penilaian
           </DialogDescription>
         </DialogHeader>
@@ -448,10 +496,12 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
         />
 
         <DivisionTable
-          divisions={divisionData?.divisions.map((div) => ({
-            name: div,
-            candidates: staffOptions[div] ?? [],
-          })) ?? []} // fallback ke array kosong kalau undefined
+          divisions={
+            divisionData?.divisions.map((div) => ({
+              name: div,
+              candidates: staffOptions[div] ?? [],
+            })) ?? []
+          } // fallback ke array kosong kalau undefined
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
           }
@@ -460,12 +510,18 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
         <div className="flex justify-center gap-4 mt-6">
           <DialogClose asChild>
             <Button
-              onClick={handleSubmit}
-              className="bg-[#2B6282] text-sm text-white font-semibold leading-[26px] w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-[#265673] transition"
+              variant="outline"
+              className="border-[#636A6D] text-[#636A6D] w-[100px] sm:w-[120px] h-[40px] rounded-xl"
             >
-              SIMPAN
+              Batal
             </Button>
           </DialogClose>
+          <Button
+            onClick={handleSubmit}
+            className="bg-[#00B7B7] text-white font-semibold w-[100px] sm:w-[120px] h-[40px] rounded-xl hover:bg-[#00A5A5]"
+          >
+            Simpan
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
