@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 // Components Import
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import { api } from '~/trpc/react';
 
 import { Sidebar as Sidebars } from './sidebar';
 // Assets Import
@@ -32,6 +33,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
+
+  const user = api.users.getMahasiswaById.useQuery(
+    { userId: session?.user.id ?? '' },
+    { enabled: !!session?.user.id },
+  ).data?.mahasiswaData.user;
 
   const navigateToSearch = () => {
     const trimmed = searchQuery.trim();
@@ -185,13 +191,13 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
                 {session && (
                   <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
-                    {session.user.image ? (
+                    {user?.image ? (
                       <Image
-                        src={session.user.image}
+                        src={user.image}
                         alt="Profile User"
                         width={36}
                         height={36}
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[36px] h-[36px]"
                       />
                     ) : (
                       <Image
@@ -199,7 +205,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                         alt="Default Profile"
                         width={36}
                         height={36}
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[36px] h-[36px]"
                       />
                     )}
                   </Link>
@@ -285,7 +291,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
               )}
 
               {/* Input Search */}
-              <div className="flex items-center w-full flex-1 h-12 mx-4 bg-white border border-[#C4CACE] rounded-full py-2 px-4 gap-2">
+              <div className="flex items-center w-full flex-1 max-w-2xl h-12 mx-4 bg-white border border-[#C4CACE] rounded-full py-2 px-4 gap-2">
                 <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
 
                 <Input
@@ -298,16 +304,16 @@ const Navbar = ({ session }: { session: Session | null }) => {
               </div>
 
               {/* Profil */}
-              <nav className="flex items-center">
+              <nav className="flex items-center flex-shrink-0">
                 {session ? (
                   <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
-                    {session.user.image ? (
+                    {user?.image ? (
                       <Image
-                        src={session.user.image}
+                        src={user.image}
                         alt="Profile User"
                         width={40}
                         height={40}
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[40px] h-[40px]"
                       />
                     ) : (
                       <Image
@@ -315,7 +321,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                         alt="Default Profile"
                         width={40}
                         height={40}
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[40px] h-[40px]"
                       />
                     )}
                   </Link>

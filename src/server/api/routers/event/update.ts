@@ -13,6 +13,8 @@ import {
   EditPanitiaKegiatanOutputSchema,
   RemovePanitiaKegiatanInputSchema,
   RemovePanitiaKegiatanOutputSchema,
+  ToggleHighlightInputSchema,
+  ToggleHighlightOutputSchema,
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
 } from '../../types/event.type';
@@ -357,6 +359,51 @@ export const addNewPanitiaManual = lembagaProcedure
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Terjadi kesalahan tak terduga saat menambahkan panitia.',
+      });
+    }
+  });
+
+export const toggleHighlight = lembagaProcedure
+  .input(ToggleHighlightInputSchema)
+  .output(ToggleHighlightOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      await ctx.db
+        .update(events)
+        .set({
+          is_highlighted: input.is_highlighted,
+        })
+        .where(eq(events.id, input.id));
+
+      return {
+        success: true,
+        is_highlighted: input.is_highlighted,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan saat mengubah status highlight.',
       });
     }
   });

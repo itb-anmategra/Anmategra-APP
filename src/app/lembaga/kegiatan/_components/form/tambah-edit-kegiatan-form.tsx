@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import { z } from 'zod';
 // Type Import
-import { type Activity } from '~/app/lembaga/kegiatan/_components/kegiatan-container';
+import { type Event } from '~/app/lembaga/kegiatan/_components/kegiatan-container';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Checkbox } from '~/components/ui/checkbox';
@@ -45,6 +45,7 @@ import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
 import CustomDropzone from './dropzone';
+import { toast } from '~/hooks/use-toast';
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z
@@ -54,7 +55,7 @@ const EventInputSchema = z
       .string()
       .min(10, 'Deskripsi minimal 10 karakter')
       .max(100, 'Deskripsi maksimal 100 karakter'),
-    image: z.string().url('Harus berupa URL yang valid'),
+    image: z.string().url(),
     start_date: z.string().datetime(),
     end_date: z.string().datetime().nullable().optional(),
     status: z.enum(['Coming Soon', 'On going', 'Ended']),
@@ -63,15 +64,13 @@ const EventInputSchema = z
       .url('Harus berupa URL yang valid')
       .or(z.literal(''))
       .optional(),
-    location: z.string().min(3, 'Lokasi minimal 3 karakter'),
-    participant_limit: z.number().int().min(1, 'Minimal 1 peserta'),
-    participant_count: z.number().int().min(0, 'Minimal 0 peserta'),
+    location: z.string().optional(),
     is_highlighted: z.boolean().optional(),
     is_organogram: z.boolean().optional(),
-    background_image: z.string().url('Harus berupa URL yang valid').optional(),
+    background_image: z.string().url().optional(),
     organogram_image: z
       .string()
-      .url('Harus berupa URL yang valid')
+      .url()
       .or(z.literal(''))
       .optional(),
   })
@@ -88,42 +87,85 @@ const EventInputSchema = z
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
 
-const TambahKegiatanForm = ({
+const TambahEditKegiatanForm = ({
   setIsOpen,
+  kegiatan,
 }: {
   session: Session | null;
   setIsOpen: (param: boolean) => void;
-  setActivityList: (param: Activity[]) => void;
+  setEventList: (param: Event[]) => void;
+  kegiatan?: Event | null;
 }) => {
+  const isEditMode = !!kegiatan;
+
   // ✅ useForm hook
   const form = useForm<EventInputSchemaType>({
     resolver: zodResolver(EventInputSchema),
     mode: 'onChange',
-    defaultValues: {
-      name: '',
-      description: '',
-      image: '',
-      start_date: new Date().toISOString(),
-      end_date: undefined,
-      status: 'Coming Soon',
-      oprec_link: '',
-      location: '',
-      participant_limit: 1,
-      participant_count: 0,
-      is_highlighted: false,
-      is_organogram: false,
-      background_image: '',
-      organogram_image: '',
-    },
+    defaultValues: isEditMode
+      ? {
+          name: kegiatan.name,
+          description: kegiatan.description ?? '',
+          image: kegiatan.thumbnail ?? '',
+          start_date:
+            kegiatan.start_date && !isNaN(Date.parse(kegiatan.start_date))
+              ? new Date(kegiatan.start_date).toISOString()
+              : new Date().toISOString(),
+          end_date:
+            kegiatan.end_date && kegiatan.end_date !== '' && !isNaN(Date.parse(kegiatan.end_date))
+              ? new Date(kegiatan.end_date).toISOString()
+              : undefined,
+          status: kegiatan.status,
+          oprec_link: kegiatan.oprec_link ?? '',
+          location: kegiatan.location ?? '',
+          is_highlighted: kegiatan.is_highlighted ?? false,
+          is_organogram: kegiatan.is_organogram ?? false,
+          background_image: kegiatan.background_image ?? '',
+          organogram_image: '',
+        }
+      : {
+          name: '',
+          description: '',
+          image: undefined,
+          start_date: new Date().toISOString(),
+          end_date: undefined,
+          status: 'Coming Soon',
+          oprec_link: undefined,
+          location: undefined,
+          is_highlighted: false,
+          is_organogram: false,
+          background_image: undefined,
+          organogram_image: undefined,
+        },
   });
 
-  const mutation = api.event.create.useMutation({
+  const createMutation = api.event.create.useMutation({
     onSuccess: () => {
       setIsOpen(false);
       location.reload();
     },
     onError: (error) => {
+      toast({
+        title: 'Gagal membuat kegiatan',
+        description: error.message,
+        variant: 'destructive',
+      });
       console.error('Error creating event:', error);
+    },
+  });
+
+  const updateMutation = api.event.update.useMutation({
+    onSuccess: () => {
+      setIsOpen(false);
+      location.reload();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Gagal mengubah kegiatan',
+        description: error.message,
+        variant: 'destructive',
+      });
+      console.error('Error updating event:', error);
     },
   });
 
@@ -134,7 +176,12 @@ const TambahKegiatanForm = ({
       is_organogram: values.is_organogram ?? false,
       is_highlighted: values.is_highlighted ?? false,
     };
-    mutation.mutate(query);
+
+    if (isEditMode) {
+      updateMutation.mutate({ ...query, id: kegiatan.id });
+    } else {
+      createMutation.mutate(query);
+    }
   };
 
   const isValid = form.formState.isValid;
@@ -161,7 +208,7 @@ const TambahKegiatanForm = ({
       <div className="w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] overflow-y-auto">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-3 w-full px-4 py-4"
+          className="space-y-4 w-full px-4 py-4"
         >
           {/* Nama Kegiatan */}
           <FormField
@@ -340,7 +387,7 @@ const TambahKegiatanForm = ({
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormLabel>
-                    Lokasi Kegiatan<span className="text-red-500 ml-1">*</span>
+                    Lokasi Kegiatan
                   </FormLabel>
                   <FormControl className="p-2">
                     <Input
@@ -375,8 +422,8 @@ const TambahKegiatanForm = ({
           </div>
 
           {/* Layout: Batas & Jumlah Peserta */}
-          <div className="flex space-x-4 ">
-            <FormField
+          <div className="flex space-x-4">
+            {/* <FormField
               control={form.control}
               name="participant_limit"
               render={({ field }) => (
@@ -479,7 +526,7 @@ const TambahKegiatanForm = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="is_organogram"
@@ -562,7 +609,6 @@ const TambahKegiatanForm = ({
             <Button
               type="submit"
               className="bg-primary-400"
-              disabled={!isValid}
             >
               SIMPAN
             </Button>
@@ -573,4 +619,4 @@ const TambahKegiatanForm = ({
   );
 };
 
-export default TambahKegiatanForm;
+export default TambahEditKegiatanForm;

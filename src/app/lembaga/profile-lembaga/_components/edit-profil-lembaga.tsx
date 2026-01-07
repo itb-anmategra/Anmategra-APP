@@ -1,9 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera, Pencil } from 'lucide-react';
+import { Camera, Loader2, Pencil } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 // Form Import
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -54,6 +54,7 @@ const EditProfileLembaga = ({
 }) => {
   const mutation = api.lembaga.editProfil.useMutation();
   const toast = useToast();
+  const [isUploading, setIsUploading] = useState(false);
   const form = useForm<profileLembagaSchemaType>({
     resolver: zodResolver(profileLembagaSchema),
     defaultValues: {
@@ -83,10 +84,10 @@ const EditProfileLembaga = ({
   }
 
   return (
-    <div className="w-full px-18">
+    <div className="w-full px-6">
       {!isEdit && (
         <Button
-          className="w-full bg-secondary-500 hover:bg-secondary-600 space-x-6 -translate-y-0 px-6 py-6 text-base sm:text-lg md:text-xl rounded-3xl text-white hover:text-white shadow-none"
+          className="w-full bg-secondary-500 hover:bg-secondary-600 space-x-3 px-6 py-3 text-sm sm:text-base md:text-lg rounded-2xl text-white hover:text-white shadow-none"
           onClick={() => setIsEdit(true)}
         >
           <Pencil /> Edit Profile Lembaga
@@ -94,8 +95,8 @@ const EditProfileLembaga = ({
       )}
       {isEdit && (
         <div className="w-full items-center pb-2">
-          <div className="mb-6">
-            <h2 className="text-xl sm:text-2xl md:text-[32px] font-semibold text-slate-600">
+          <div className="mb-4">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
               Edit Profile Lembaga
             </h2>
           </div>
@@ -103,9 +104,9 @@ const EditProfileLembaga = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 w-full"
+              className="space-y-4 w-full"
             >
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-x-[52px]">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-x-8">
                 <div className="flex flex-col items-start">
                   <FormField
                     control={form.control}
@@ -113,52 +114,70 @@ const EditProfileLembaga = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-30 h-30 sm:w-40 sm:h-40 md:w-64 md:h-64 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
+                          <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-gray-200 cursor-pointer group">
                             {field.value ? (
                               <Image
                                 src={field.value}
                                 alt="Profile Picture Lembaga"
-                                width={128}
-                                height={128}
-                                className="w-full h-full object-cover"
+                                width={160}
+                                height={160}
+                                className="w-full h-full object-cover relative z-0"
                               />
                             ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
-                                <Camera className="w-8 h-8 mb-2" />
+                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 relative z-0">
+                                <Camera className="w-6 h-6 mb-2" />
                                 <span className="text-xs text-center">
                                   Click to upload
                                 </span>
                               </div>
                             )}
 
-                            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center opacity-100 transition-opacity">
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                               <Image
-                                src={'/icons/photo-camera.svg'}
+                                src={'/images/miscellaneous/photo-camera.svg'}
                                 alt="Camera Icon"
-                                height={24}
-                                width={24}
+                                height={20}
+                                width={20}
                               />
-                              <span className="text-neutral-300 text-xs text-center font-semibold ">
-                                {field.value
-                                  ? 'Click to change photo'
-                                  : 'Click to upload'}
+                              <span className="text-white text-xs text-center font-semibold mt-1">
+                                {field.value ? 'Change photo' : 'Upload photo'}
                               </span>
                             </div>
 
-                            <div className="absolute inset-0">
+                            {/* Loading Overlay */}
+                            {isUploading && (
+                              <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center z-30">
+                                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                <span className="text-white text-xs mt-2">
+                                  Uploading...
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="absolute inset-0 z-20 opacity-0">
                               <UploadButton
                                 endpoint="imageUploader"
+                                onBeforeUploadBegin={(files) => {
+                                  setIsUploading(true);
+                                  return files;
+                                }}
                                 onClientUploadComplete={(res) => {
                                   if (res && res.length > 0 && res[0]) {
                                     field.onChange(res[0].url);
                                   }
+                                  setIsUploading(false);
                                 }}
                                 onUploadError={(error: Error) => {
-                                  alert(`ERROR! ${error.message}`);
+                                  setIsUploading(false);
+                                  toast.toast({
+                                    variant: 'destructive',
+                                    title: 'Upload Gagal',
+                                    description: error.message,
+                                  });
                                 }}
                                 appearance={{
                                   button:
-                                    'w-full h-full bg-transparent border-none cursor-pointer p-0 m-0',
+                                    'w-full h-full !bg-transparent border-none cursor-pointer p-0 m-0',
                                   container: 'w-full h-full',
                                   allowedContent: 'hidden',
                                 }}
@@ -211,7 +230,7 @@ const EditProfileLembaga = ({
                           <Textarea
                             placeholder="Masukkan deskripsi lembaga"
                             {...field}
-                            className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm resize-none md:text-base min-h-40 sm:min-h-60"
+                            className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm resize-none md:text-base min-h-32 sm:min-h-40"
                           />
                         </FormControl>
                         <FormMessage />
@@ -222,7 +241,7 @@ const EditProfileLembaga = ({
               </div>
 
               {/* Submit Button */}
-              <div className="w-full gap-x-4 flex justify-center items-center sm:justify-end sm:items-end pt-4">
+              <div className="w-full gap-x-3 flex justify-center items-center sm:justify-end sm:items-end pt-2">
                 <Button
                   variant={'outline'}
                   className="border-Blue-Dark text-Blue-Dark"
@@ -231,10 +250,7 @@ const EditProfileLembaga = ({
                 >
                   Batal Edit
                 </Button>
-                <Button
-                  type="submit"
-                  className="bg-Blue-Dark text-white px-6 py-3"
-                >
+                <Button type="submit" className="bg-Blue-Dark text-white">
                   Simpan
                 </Button>
               </div>
