@@ -27,7 +27,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 }) => {
   const [isEdit, setIsEdit] = useState(false);
 
-  const baseHref = 'profile-kegiatan';
+  const baseHref = '/mahasiswa/profile-kegiatan';
 
   return (
     <div

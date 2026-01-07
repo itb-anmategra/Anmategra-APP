@@ -30,7 +30,7 @@ const ProfileKegiatan = async ({
             <RaporBreadcrumb
               items={[
                 {label: 'Beranda', href: '/'},
-                {label:'Profil Kegiatan', href:`/profile-kegiatan/${query}`}
+                {label:'Profil Kegiatan', href:`/mahasiswa/profile-kegiatan/${query}`}
               ]}
             />
           </div>
