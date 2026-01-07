@@ -3,7 +3,6 @@ import Link from 'next/link';
 import YellowStarIcon from 'public/icons/yellow-star.svg';
 import dummyProfile from 'public/images/placeholder/profile-pic.png';
 import { Card } from '~/components/ui/card';
-import { getServerAuthSession } from '~/server/auth';
 
 // const dummyData = {
 //   nama: 'John Doe',
@@ -23,14 +22,14 @@ interface BestStaffCardProps {
   isLembaga?: boolean;
 }
 
-export default async function BestStaffCard({
+export default function BestStaffCard({
   nama = 'John Doe',
   NIM = '111234567',
   jurusan = 'Sastra Mesin',
   profilePicture = dummyProfile,
   divisi = 'UI/UX',
   id_mahasiswa = '1',
-  isLembaga = false
+  isLembaga = false,
 }: BestStaffCardProps) {
   // const session = await getServerAuthSession();
   // const isLembaga = session?.user.role === 'lembaga';
@@ -40,12 +39,7 @@ export default async function BestStaffCard({
     divisi.length > 28 ? divisi.slice(0, 20) + '...' : divisi;
 
   return (
-    <Link
-      href={
-        `/profile-mahasiswa/${id_mahasiswa}`
-      }
-      className="no-underline"
-    >
+    <Link href={`/profile-mahasiswa/${id_mahasiswa}`} className="no-underline">
       <Card className="w-60 max-h-[200px] rounded-[20px] bg-white hover:bg-[#00B7B7] group border border-[#E0E5E8] flex flex-col items-center justify-center hover:cursor-pointer">
         <div className="w-full h-full flex">
           <div className="relative w-full h-full flex flex-col items-center justify-center">
