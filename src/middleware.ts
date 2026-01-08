@@ -22,7 +22,7 @@ export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Redirect to authentication if not logged in (except for root and auth page)
-  if (pathname !== '/' && pathname !== '/authentication' && !token) {
+  if (pathname !== '/' && pathname !== '/authentication' && pathname !== '/auth-error' && !token) {
     return NextResponse.redirect(new URL('/authentication', req.url));
   }
 
