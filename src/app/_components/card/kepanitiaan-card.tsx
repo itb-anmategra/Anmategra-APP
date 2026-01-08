@@ -82,7 +82,7 @@ export const KepanitiaanCard = ({
             </span>
           )}
         </p>
-        <div className="absolute bottom-4 mt-auto flex items-center gap-1 text-sm text-Regent-Gray">
+        <div className="mt-auto flex items-center gap-1 text-sm text-Regent-Gray">
           <CalendarIcon />
           <span className="line-clamp-1">
             {dayjs(kepanitiaan.startDate).format('MMM YYYY')} -{' '}

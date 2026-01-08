@@ -79,7 +79,7 @@ export function EventHeader({
 
   return (
     <div className="mb-8 overflow-hidden rounded-[36px]">
-      <div className="relative h-48 sm:*:h-[250px] md:h-[350px]">
+      <div className="relative h-56 sm:h-64 md:h-72">
         <div className="absolute inset-0">
           <Image
             src={backgroundImage}
@@ -97,28 +97,50 @@ export function EventHeader({
               'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)',
           }}
         />
-        <div className="absolute bottom-0 left-0 flex w-full items-end justify-between px-10 pb-10">
-          <div className="flex gap-6">
-            <div className="relative h-20 w-20 md:h-32 md:w-32 overflow-hidden rounded-full border-[1px] aspect-square flex-shrink-0 self-center md:self-auto">
+        <div
+          className={`absolute bottom-0 left-0 flex w-full px-4 sm:px-8 md:px-10 pb-5 sm:pb-8 md:pb-10 ${
+            isLembaga
+              ? 'flex-row items-center justify-start gap-4 sm:gap-6'
+              : 'flex-col gap-3 sm:flex-row sm:items-end sm:justify-between'
+          }`}
+        >
+          <div
+            className={`flex gap-4 sm:gap-6 ${isLembaga ? 'items-center' : 'items-start sm:items-end flex-1'}`}
+          >
+            <div className="relative h-16 w-16 sm:h-20 sm:w-20 md:h-28 md:w-28 overflow-hidden rounded-full border-[1px] aspect-square flex-shrink-0 self-start md:self-auto">
               <Image
                 src={logoImage}
                 alt="Event logo"
                 fill
                 className="object-cover object-center"
-                sizes="(max-width: 640px) 80px, 128px"
+                sizes="(max-width: 640px) 80px, 112px"
               />
             </div>
 
-            <div className="flex flex-col gap-1">
-              <h1 className="text-sm sm:text-xl md:text-3xl font-bold text-white">{title}</h1>
-              <p className="text-xs sm:text-lg md:text-2xl font-light text-white">{organizer}</p>
+            <div className={`flex flex-col gap-1 ${isLembaga ? 'pb-1' : ''}`}>
+              <h1
+                className={`font-bold text-white leading-tight ${
+                  isLembaga
+                    ? 'text-lg sm:text-2xl md:text-3xl'
+                    : 'text-lg sm:text-2xl md:text-3xl'
+                }`}
+              >
+                {title}
+              </h1>
+              <p
+                className={`font-light text-white leading-tight ${
+                  isLembaga ? 'text-sm sm:text-lg md:text-xl' : 'text-sm sm:text-lg md:text-xl'
+                }`}
+              >
+                {organizer}
+              </p>
               {!isLembaga && (
-                <div className="mt-2 flex flex-1 flex-col justify-end gap-3">
+                <div className="mt-3 sm:mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3">
                   {linkDaftar && (
-                    <Link href={linkDaftar}>
+                    <Link href={linkDaftar} className="w-full sm:w-auto">
                       <Button
                         size="lg"
-                        className="flex-1 rounded-xl bg-[#00B7B7] text-xs sm:text-lg text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4] max-w-[250px]"
+                        className="w-full sm:w-auto sm:max-w-[240px] rounded-xl bg-[#00B7B7] text-sm sm:text-lg text-white hover:bg-[#82CBDE] active:bg-[#D9F4F4]"
                       >
                         Daftar menjadi Panitia
                       </Button>
@@ -134,7 +156,7 @@ export function EventHeader({
                           setIsOpen(true);
                         }
                       }}
-                      className={`flex-1 rounded-xl text-sm sm:text-lg text-white max-w-[250px] flex items-center justify-center gap-2 ${
+                      className={`w-full sm:w-auto sm:max-w-[240px] rounded-xl text-sm sm:text-lg text-white flex items-center justify-center gap-2 ${
                         isSubmitted && matchingRequest?.status === 'Pending'
                           ? 'bg-[#F16350] hover:bg-[#C04F40] active:bg-[#F16350]'
                           : 'bg-[#00B7B7] hover:bg-[#00A3A3] active:bg-[#008F8F]'

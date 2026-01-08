@@ -65,6 +65,16 @@ const ProfileKegiatan = async ({
           session={session}
         />
         <div className="mb-8">
+          <h2 className="text-xl md:text-2xl font-semibold text-slate-600 mb-3">
+            Deskripsi Kegiatan
+          </h2>
+          <div className="rounded-xl bg-white border border-neutral-200 px-4 py-3 md:px-6 md:py-4 text-sm md:text-base text-neutral-800 leading-relaxed">
+            {kegiatan?.description?.trim()
+              ? kegiatan.description
+              : 'Belum ada deskripsi untuk kegiatan ini.'}
+          </div>
+        </div>
+        <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl md:text-2xl font-semibold text-slate-600">
               Penyelenggara

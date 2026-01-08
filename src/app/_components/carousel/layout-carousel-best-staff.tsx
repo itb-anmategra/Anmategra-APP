@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '~/components/ui/button';
 
 export default function LayoutCarouselBestStaff({
@@ -12,6 +12,14 @@ export default function LayoutCarouselBestStaff({
   itemCount?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const scrollLeft = () => {
     containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
@@ -21,34 +29,38 @@ export default function LayoutCarouselBestStaff({
     containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
-  const showNavigation = itemCount > 4;
+  const showNavigation = isMobile ? itemCount > 1 : itemCount > 4;
+
+  const wrappedChildren = React.Children.map(children, (child) => (
+    <div className="shrink-0 snap-start">{child}</div>
+  ));
 
   return (
-    <div className="flex flex-row items-center gap-[17px]">
+    <div className="relative w-full">
       {showNavigation && (
         <Button
           variant="light_blue"
           size="icon"
           onClick={scrollLeft}
-          className="flex flex-shrink-0 rounded-[8px]"
+          className="absolute left-0 sm:left-1 top-1/2 z-10 -translate-y-1/2 rounded-[8px] shadow"
         >
           <ChevronLeft className="size-4" />
         </Button>
       )}
       <div
         ref={containerRef}
-        className="flex gap-4 scroll-smooth overflow-x-hidden"
+        className="flex justify-start gap-4 scroll-smooth overflow-x-hidden pb-4"
       >
-        {children}
+        {wrappedChildren}
       </div>
       {showNavigation && (
         <Button
           variant="light_blue"
           size="icon"
           onClick={scrollRight}
-          className="flex flex-shrink-0 rounded-[8px]"
+          className="absolute right-0 sm:right-1 top-1/2 z-10 -translate-y-1/2 rounded-[8px] shadow"
         >
-          <ChevronRight />
+          <ChevronRight className="size-4" />
         </Button>
       )}
     </div>

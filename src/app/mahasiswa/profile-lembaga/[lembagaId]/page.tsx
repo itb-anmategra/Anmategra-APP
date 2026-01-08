@@ -52,7 +52,7 @@ const DetailLembagaPage = async ({
   }
   return (
     <>
-      <div className="w-full flex min-h-screen flex-col items-center px-[14px]">
+      <div className="w-full flex min-h-screen flex-col items-center px-[14px] pt-24 sm:pt-10">
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold text-slate-600">Lembaga</h1>
@@ -85,17 +85,17 @@ const DetailLembagaPage = async ({
             <Link href={`/mahasiswa/profile-kegiatan/${highlightedEvent.id}`}>
               <div className="space-y-4 pb-12">
                 <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
-                  Highlighed Event
+                  Highlighted Event
                 </h5>
-                <Card className="transition-all hover:shadow-md overflow-x-hidden flex justify-start gap-x-6 items-center">
+                <Card className="transition-all hover:shadow-md overflow-hidden flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 p-4 sm:p-6">
                   <Image
                     src={highlightedEvent?.image ?? DummyFotoEvent}
                     alt="Foto Kegiatan"
-                    className="h-full w-auto"
-                    width={200}
-                    height={100}
+                    className="w-full sm:w-[220px] md:w-[260px] h-[160px] sm:h-full object-cover flex-shrink-0"
+                    width={260}
+                    height={160}
                   />
-                  <div className="space-y-2">
+                  <div className="space-y-2 w-full">
                     <Badge className="space-x-2 rounded-full bg-Blue-Dark py-1">
                       <Image
                         src={lembagaData?.users.image ?? LogoHMIFKecil}
@@ -106,13 +106,13 @@ const DetailLembagaPage = async ({
                       />
                       <p className="text-xs">{lembagaData?.name}</p>
                     </Badge>
-                    <p className="text-xl text-Blue-Dark font-semibold">
+                    <p className="text-lg sm:text-xl text-Blue-Dark font-semibold leading-tight line-clamp-2">
                       {highlightedEvent?.name}
                     </p>
-                    <p className="text-neutral-1000">
+                    <p className="text-sm sm:text-base text-neutral-1000 leading-snug line-clamp-3">
                       {highlightedEvent?.description}
                     </p>
-                    <div className="flex items-center gap-2 text-sm text-Regent-Gray">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-Regent-Gray">
                       <CalendarIcon className="h-4 w-4" />
                       {highlightedEvent?.start_date.toDateString()} -{' '}
                       {highlightedEvent?.end_date?.toDateString()}
