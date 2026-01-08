@@ -2,17 +2,15 @@
 
 // Library Import
 // Icons Import
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 // Auth Import
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '~/components/ui/button';
 // Components Import
-import { Input } from '~/components/ui/input';
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
@@ -27,34 +25,13 @@ export default function LandingContent({
   };
   session: Session | null;
 }) {
-  const [searchQuery, setSearchQuery] = useState('');
-
   const router = useRouter();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      const trimmed = searchQuery.trim();
-      if (!trimmed) return;
-      const encoded = encodeURIComponent(trimmed);
-      void router.push(`/pencarian/${encoded}`);
-    }
-  };
-
   return (
-    <div className="flex w-full flex-col gap-4 pt-[68px] pl-[42px] pr-[36px]">
-      {/* Title and Search */}
+    <div className="flex w-full flex-col gap-4 pt-0 sm:pt-6 pl-[42px] pr-[36px]">
+      {/* Title */}
       <div className="flex flex-col gap-4 ">
         <h1 className="text-[32px] font-semibold text-[#141718]">Beranda</h1>
-        <Input
-          placeholder="Cari lembaga, kegiatan, atau mahasiswa"
-          className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
-          startAdornment={
-            <MagnifyingGlassIcon className="size-6 text-gray-500" />
-          }
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
       </div>
 
       {/* List of Kepanitiaan */}

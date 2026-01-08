@@ -17,18 +17,18 @@ const MahasiswaCard = ({
     profilePicture: StaticImageData | string
 }) => {
     return (
-        <Card className='w-[400px] h-[150px] px-6 py-4 flex items-center gap-x-4 transition-all hover:shadow-md'>
+        <Card className='w-full max-w-[400px] h-[150px] px-4 sm:px-6 py-4 flex items-center gap-x-3 sm:gap-x-4 transition-all hover:shadow-md'>
             <Image
                 src={profilePicture}
                 alt='Profile Picture'
                 width={80}
                 height={80}
-                className='rounded-full max-h-[100px] max-w-[100px] min-h-[100px] min-w-[100px] object-cover'
+                className='rounded-full h-20 w-20 sm:h-[100px] sm:w-[100px] object-cover flex-shrink-0'
             />
-            <div className='flex-1 overflow-hidden'>
-                <p className='text-neutral-1000 text-lg truncate'>{nama}</p>
-                <p className='text-neutral-700 text-sm truncate'>{NIM}</p>
-                <p className='text-neutral-700 text-sm truncate'>{jurusan}</p>
+            <div className='flex-1 overflow-hidden min-w-0'>
+                <p className='text-neutral-1000 text-base sm:text-lg font-semibold truncate'>{nama}</p>
+                <p className='text-neutral-700 text-xs sm:text-sm truncate'>{NIM}</p>
+                <p className='text-neutral-700 text-xs sm:text-sm truncate'>{jurusan}</p>
             </div>
         </Card>
     )

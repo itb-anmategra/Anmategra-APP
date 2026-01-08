@@ -163,7 +163,8 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                       })}`}
                       divisi={item.division}
                       profilePicture={mahasiswaData?.user.image ?? ''}
-                      disableLink={true}
+                      targetType="lembaga"
+                      targetId={item.lembaga_id}
                     />
                   ))}
                 </div>
@@ -187,7 +188,8 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                       })}`}
                       divisi={item.division}
                       profilePicture={mahasiswaData?.user.image ?? ''}
-                      disableLink={true}
+                      targetType="kegiatan"
+                      targetId={item.event_id}
                     />
                   ))}
                 </div>
