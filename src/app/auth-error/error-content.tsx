@@ -18,40 +18,39 @@ export default function AuthErrorContent({
   const error = getSearchParams.get('error');
 
   return (
-    <main className="flex flex-col overflow-hidden pb-16 sm:space-y-4 md:space-y-8">
-      <div className="mb-12 fixed w-full shadow-sm z-20">
+    <main className="flex justify-center items-center p-4 h-screen">
+      {/* <div className="mb-12 fixed w-full shadow-sm z-20">
         <Navbar session={session} />
-      </div>
+      </div> */}
 
       {/* Error Content */}
-      <main className="flex flex-col items-center justify-center flex-1 px-4 py-16">
-        <div className="flex flex-col items-center max-w-lg text-center">
-          <Image
-            src={Logo}
-            alt="Error Illustration"
-            width={200}
-            height={200}
-            className="mb-6"
-          />
-          <h1 className="mb-4 text-4xl font-bold">Oops!</h1>
-          {error === 'AccessDenied' ? (
-            <p className="mb-8 text-lg text-gray-600">
-              Maaf, Akun anda tidak memiliki akses pada aplikasi Anmategra
-            </p>
-          ) : (
-            <p className="mb-8 text-lg text-gray-600">
-              Maaf, Terjadi kesalahan pada proses autentikasi
-            </p>
-          )}
-          <Button
-            asChild
-            variant="dark_blue"
-            className="bg-[#2D3648] text-white hover:bg-[#1E2533]"
-          >
-            <Link href="/">Kembali ke Beranda</Link>
-          </Button>
-        </div>
-      </main>
+      <div className="flex flex-col items-center max-w-lg text-center">
+        <Image
+          src={Logo}
+          alt="Error Illustration"
+          width={200}
+          height={200}
+          className="absolute top-10"
+        />
+        <h1 className="mb-4 text-4xl font-bold">Oops!</h1>
+        {error === 'AccessDenied' ? (
+          <p className="mb-8 text-lg text-gray-600">
+            Maaf, Akun anda tidak memiliki akses pada aplikasi Anmategra.
+            Silakan kontak admin jika ini merupakan kesalahan.
+          </p>
+        ) : (
+          <p className="mb-8 text-lg text-gray-600">
+            Maaf, Terjadi kesalahan pada proses autentikasi
+          </p>
+        )}
+        <Button
+          asChild
+          variant="dark_blue"
+          className="bg-[#2D3648] text-white hover:bg-[#1E2533]"
+        >
+          <Link href="/">Kembali ke Beranda</Link>
+        </Button>
+      </div>
     </main>
   );
 }
