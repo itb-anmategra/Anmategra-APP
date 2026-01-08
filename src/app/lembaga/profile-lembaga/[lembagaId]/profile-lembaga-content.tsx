@@ -163,7 +163,7 @@ export default function ProfileLembagaContent({
             {newestEvent && newestEvent.length !== 0 ? (
               newestEvent.map((item) => (
                 <Link
-                  href={`/lembaga/profile-kegiatan/${item.id}`}
+                  href={`/profile-kegiatan/${item.id}`}
                   key={item.id}
                 >
                   <KepanitiaanCard kepanitiaan={item} />

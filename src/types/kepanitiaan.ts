@@ -5,7 +5,7 @@ export interface Kepanitiaan {
   name: string;
   image: string | null;
   description: string | null;
-  quota: number;
+  anggotaCount: number;
   startDate: Date;
   endDate: Date | null;
   position?: string;
