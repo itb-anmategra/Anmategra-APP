@@ -16,6 +16,7 @@ import { type Report } from './board/report-card';
 import LaporanFormDialog from './detail/laporan-form';
 import { type CurrentDisplay, LaporanHeader } from './laporan-header';
 import { ListDisplay } from './list/list-display';
+import { formatTanggal } from '~/utils/utils';
 
 interface LaporanProps {
   data: ColumnProps[];
@@ -27,22 +28,6 @@ type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
 
 function isValidStatus(status: string): status is Status {
   return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
-}
-
-export function formatTanggal(dateInput: Date | string): string {
-  const date = new Date(dateInput);
-
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-    timeZone: 'Asia/Jakarta',
-  };
-
-  return new Intl.DateTimeFormat('id-ID', options).format(date);
 }
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {

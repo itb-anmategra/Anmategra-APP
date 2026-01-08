@@ -1,8 +1,9 @@
 // Props Import
-import { type ColumnProps } from '~/app/_components/laporan/board/report-column';
 import { type Report } from '~/app/_components/laporan/board/report-card';
+import { type ColumnProps } from '~/app/_components/laporan/board/report-column';
 import { LaporanMainContainer } from '~/app/_components/laporan/laporan-main-container';
 import { api } from '~/trpc/server';
+import { formatTanggal } from '~/utils/utils';
 
 type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
 
@@ -10,30 +11,14 @@ function isValidStatus(status: string): status is Status {
   return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
 }
 
-export function formatTanggal(dateInput: Date | string): string {
-  const date = new Date(dateInput);
-
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-    timeZone: 'Asia/Jakarta',
-  };
-
-  return new Intl.DateTimeFormat('id-ID', options).format(date);
-}
-
 export default async function LaporanPage() {
   const data = await api.users.getAllReportsUser({});
 
   const reportsByStatus: Record<Status, Report[]> = {
-    'Draft': [],
-    'Backlog': [],
+    Draft: [],
+    Backlog: [],
     'In Progress': [],
-    'Resolved': [],
+    Resolved: [],
   };
 
   (data.reports || []).forEach((report) => {
