@@ -10,6 +10,7 @@ import NoKepanitiaan from 'public/images/miscellaneous/not-found-kepanitiaan.png
 import React, { useState } from 'react';
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
+import BestStaffCard from '~/app/_components/card/best-staff-card';
 import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepanitiaan-button';
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -24,6 +25,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   mahasiswaData,
   newestEvent,
   isLembagaView = false,
+  bestStaffData = null,
 }) => {
   const [isEdit, setIsEdit] = useState(false);
 
@@ -136,6 +138,63 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             </div>
           )}
         </div>
+
+        {/* Histori Best Staff */}
+        {bestStaffData && (bestStaffData.best_staff_lembaga.length > 0 || bestStaffData.best_staff_kegiatan.length > 0) && (
+          <div className="space-y-6 pb-12">
+            <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
+              Histori Best Staff
+            </h5>
+            
+            {bestStaffData.best_staff_lembaga.length > 0 && (
+              <div className="space-y-3">
+                <h6 className="text-lg font-semibold text-slate-600">Lembaga</h6>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {bestStaffData.best_staff_lembaga.map((item, index) => (
+                    <BestStaffCard
+                      key={index}
+                      nama={item.event_name}
+                      subtitle={`${new Date(item.start_date).toLocaleDateString('id-ID', {
+                        month: 'long',
+                        year: 'numeric',
+                      })}–${new Date(item.end_date).toLocaleDateString('id-ID', {
+                        month: 'long',
+                        year: 'numeric',
+                      })}`}
+                      divisi={item.division}
+                      profilePicture={mahasiswaData?.user.image ?? ''}
+                      disableLink={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {bestStaffData.best_staff_kegiatan.length > 0 && (
+              <div className="space-y-3">
+                <h6 className="text-lg font-semibold text-slate-600">Kegiatan</h6>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {bestStaffData.best_staff_kegiatan.map((item, index) => (
+                    <BestStaffCard
+                      key={index}
+                      nama={item.name}
+                      subtitle={`${new Date(item.start_date).toLocaleDateString('id-ID', {
+                        month: 'long',
+                        year: 'numeric',
+                      })}–${new Date(item.end_date).toLocaleDateString('id-ID', {
+                        month: 'long',
+                        year: 'numeric',
+                      })}`}
+                      divisi={item.division}
+                      profilePicture={mahasiswaData?.user.image ?? ''}
+                      disableLink={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Kepanitiaan Terbaru */}
         <div className="space-y-4 pb-12 md:mt-[50px]">

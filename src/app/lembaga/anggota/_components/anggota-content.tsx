@@ -19,7 +19,6 @@ import { MahasiswaCardTable } from '~/app/lembaga/anggota/_components/table/maha
 import { Button } from '~/components/ui/button';
 import { toast } from '~/hooks/use-toast';
 
-import BestStaff from '../../_components/best-staff-form';
 import { Download } from 'lucide-react';
 
 interface AnggotaContentProps {
@@ -182,24 +181,26 @@ export default function AnggotaContent({
                   Rapor Komunal
                 </Button>
               </Link>
-              <BestStaff
-                lembagaId={lembagaId}
-                eventId={eventId}
-                trigger={
-                  <Button
-                    variant="light_blue"
-                    className="rounded-[16px] px-3 shadow-none flex items-center gap-2"
-                  >
-                    <Image
-                      src={Best}
-                      alt="Pilih Best Staff"
-                      width={24}
-                      height={24}
-                    />
-                    Pilih Best Staff
-                  </Button>
+              <Link
+                href={
+                  isAnggota
+                    ? '/anggota/histori'
+                    : `/lembaga/profile-kegiatan/${eventId}/histori`
                 }
-              />
+              >
+                <Button
+                  variant="light_blue"
+                  className="rounded-[16px] px-3 shadow-none flex items-center gap-2"
+                >
+                  <Image
+                    src={Best}
+                    alt="Pilih Best Staff"
+                    width={24}
+                    height={24}
+                  />
+                  Pilih Best Staff
+                </Button>
+              </Link>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-2">
               <FilterDropdown

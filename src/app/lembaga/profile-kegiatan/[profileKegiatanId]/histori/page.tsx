@@ -9,67 +9,65 @@ import { Plus } from 'lucide-react';
 
 interface Props {
   params: {
-    lembagaId: string;
+    profileKegiatanId: string;
   };
 }
 
-const HistoriBestStaffPage = async ({ params }: Props) => {
+const HistoriBestStaffKegiatanPage = async ({ params }: Props) => {
   const session = await getServerAuthSession();
-  const { lembagaId } = params;
+  const { profileKegiatanId: kegiatanId } = params;
 
-  const historyData = await api.lembaga.getAllHistoryBestStaffLembaga({
-    lembaga_id: lembagaId,
+  const historyData = await api.lembaga.getAllHistoryBestStaffKegiatan({
+    event_id: kegiatanId,
   });
 
-  const lembagaInfo = await api.profile.getLembaga({ lembagaId });
-  const namaLembaga = lembagaInfo?.lembagaData?.name ?? 'Lembaga';
-  
-  const isOwner = session?.user?.lembagaId === lembagaId;
+  const kegiatanInfo = await api.event.getByID({ id: kegiatanId });
+  const namaKegiatan = kegiatanInfo?.name ?? 'Kegiatan';
+  const lembagaId = session?.user?.lembagaId;
 
   return (
     <div className="w-full flex h-screen flex-col items-center overflow-y-hidden">
       <div className="flex max-w-7xl w-full flex-col gap-6 px-9 py-[68px]">
         <div className="flex w-full justify-between items-start">
           <div className="flex flex-col gap-2">
-            <h1 className="font-semibold text-[32px]">{namaLembaga}</h1>
+            <h1 className="font-semibold text-[32px]">{namaKegiatan}</h1>
             <HistoriBreadCrumb
               items={[
                 { label: 'Beranda', href: '/' },
-                { label: namaLembaga, href: `/lembaga/profile-lembaga/${lembagaId}` },
+                { label: 'Kegiatan', href: `/lembaga/profile-kegiatan/${kegiatanId}` },
                 {
                   label: 'Histori Best Staff',
-                  href: `/lembaga/profile-lembaga/${lembagaId}/histori`,
+                  href: `/lembaga/profile-kegiatan/${kegiatanId}/histori`,
                 },
               ]}
             />
           </div>
-          {isOwner && (
-            <BestStaffForm
-              mode="add"
-              lembagaId={lembagaId}
-              trigger={
-                <Button
-                  variant="dark_blue"
-                  className="rounded-xl gap-2 px-4 py-3"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span className="font-semibold text-base">
-                    Tambah Periode
-                  </span>
-                </Button>
-              }
-            />
-          )}
+          <BestStaffForm
+            mode="add"
+            lembagaId={lembagaId}
+            eventId={kegiatanId}
+            trigger={
+              <Button
+                variant="dark_blue"
+                className="rounded-xl gap-2 px-4 py-3"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="font-semibold text-base">
+                  Tambah Periode
+                </span>
+              </Button>
+            }
+          />
         </div>
         <HistoriBestStaffContent
-          isKegiatan={false}
+          isKegiatan={true}
           lembagaId={lembagaId}
+          kegiatanId={kegiatanId}
           initialData={historyData}
-          isReadOnly={!isOwner}
         />
       </div>
     </div>
   );
 };
 
-export default HistoriBestStaffPage;
+export default HistoriBestStaffKegiatanPage;

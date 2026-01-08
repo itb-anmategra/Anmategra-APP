@@ -283,6 +283,17 @@ export const ChooseBestStaffLembagaOutputSchema = z.object({
   success: z.boolean(),
 });
 
+export const DeleteBestStaffPeriodeInputSchema = z.object({
+  lembaga_id: z.string().nonempty().optional(),
+  event_id: z.string().nonempty().optional(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+});
+
+export const DeleteBestStaffPeriodeOutputSchema = z.object({
+  success: z.boolean(),
+});
+
 export const GetLatestBestStaffKegiatanInputSchema = z.object({
   event_id: z.string().nonempty(),
 });

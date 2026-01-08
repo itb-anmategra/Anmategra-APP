@@ -1,6 +1,9 @@
 // Library Import
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
+import { Button } from '~/components/ui/button';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
@@ -20,6 +23,26 @@ const ProfileKegiatan = async ({
   });
 
   const session = await getServerAuthSession();
+
+  let latestBestStaff: {
+    start_date: string;
+    end_date: string;
+    best_staff_list: {
+      user_id: string;
+      name: string;
+      image: string | null;
+      nim: string;
+      jurusan: string;
+      division: string;
+    }[];
+  } | null = null;
+  try {
+    latestBestStaff = await api.lembaga.getLatestBestStaffKegiatan({
+      event_id: query,
+    });
+  } catch (error) {
+    console.log('No best staff data available for kegiatan:', query, error);
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-8">
@@ -65,6 +88,50 @@ const ProfileKegiatan = async ({
               }
             />
           </Link>
+          {/* Best Staff Section */}
+          {latestBestStaff && (
+            <div className="flex flex-col gap-12 w-full mt-8 mb-8">
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-row justify-between items-center">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+                    Best Staff Periode{' '}
+                    {new Date(latestBestStaff.start_date).toLocaleDateString(
+                      'id-ID',
+                      {
+                        month: 'long',
+                        year: 'numeric',
+                      },
+                    )}
+                    –
+                    {new Date(latestBestStaff.end_date).toLocaleDateString(
+                      'id-ID',
+                      {
+                        month: 'long',
+                        year: 'numeric',
+                      },
+                    )}
+                  </h2>
+                  <Button asChild variant="ghost">
+                    <Link
+                      href={`/mahasiswa/profile-kegiatan/${query}/histori`}
+                      className="flex items-center gap-2 text-lg"
+                    >
+                      <span>Lihat Histori</span>
+                      <ChevronRight
+                        className="!w-4 !h-4 text-slate-600"
+                        aria-hidden
+                      />
+                    </Link>
+                  </Button>
+                </div>
+                <CarouselBestStaff
+                  bestStaffList={latestBestStaff.best_staff_list}
+                  isLembaga={false}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="mt-4">
             <ProfileKegiatanComp anggota={participant ?? []} session={session} />
           </div>
