@@ -176,7 +176,7 @@ const DetailLembagaPage = async ({
               {newestEvent && newestEvent.length !== 0 ? (
                 newestEvent.map((item) => (
                   <Link
-                    href={`/mahasiswa/profile-kegiatan/${item.id}`}
+                    href={`/profile-kegiatan/${item.id}`}
                     key={item.id}
                   >
                     <KepanitiaanCard kepanitiaan={item} />

@@ -69,7 +69,7 @@ export const KepanitiaanCard = ({
           </span>
           <div className="flex items-center gap-1 text-sm text-Regent-Gray">
             <PersonIcon />
-            {kepanitiaan.quota <= 0 ? '0' : kepanitiaan.quota}
+            {kepanitiaan.anggotaCount <= 0 ? '0' : kepanitiaan.anggotaCount}
           </div>
         </div>
         <p className="line-clamp-2 text-sm leading-tight xl:line-clamp-3">
