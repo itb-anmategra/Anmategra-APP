@@ -47,6 +47,8 @@ import {
   DeclineRequestAssociationLembagaInputSchema,
   DeclineRequestAssociationLembagaOutputSchema,
   DeclineRequestAssociationOutputSchema,
+  DeleteBestStaffPeriodeInputSchema,
+  DeleteBestStaffPeriodeOutputSchema,
   EditProfilLembagaInputSchema,
   EditProfilLembagaOutputSchema,
   GetAllAnggotaLembagaInputSchema,
@@ -1282,18 +1284,10 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  getAllHistoryBestStaffKegiatan: lembagaProcedure
+  getAllHistoryBestStaffKegiatan: protectedProcedure
     .input(GetAllHistoryBestStaffKegiatanInputSchema)
     .output(GetAllHistoryBestStaffKegiatanOutputSchema)
     .query(async ({ ctx, input }) => {
-      const eventOrg = await ctx.db.query.events.findFirst({
-        where: eq(events.id, input.event_id),
-        columns: { org_id: true },
-      });
-
-      if (ctx.session.user.lembagaId! !== eventOrg?.org_id) {
-        throw new TRPCError({ code: 'FORBIDDEN' });
-      }
 
       const records = await ctx.db
         .select({
@@ -1363,13 +1357,10 @@ export const lembagaRouter = createTRPCRouter({
       };
     }),
 
-  getAllHistoryBestStaffLembaga: lembagaProcedure
+  getAllHistoryBestStaffLembaga: protectedProcedure
     .input(GetAllHistoryBestStaffLembagaInputSchema)
     .output(GetAllHistoryBestStaffLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
-      if (ctx.session.user.lembagaId! !== input.lembaga_id) {
-        throw new TRPCError({ code: 'FORBIDDEN' });
-      }
 
       const records = await ctx.db
         .select({
@@ -1466,8 +1457,8 @@ export const lembagaRouter = createTRPCRouter({
         })
         .from(bestStaffLembaga)
         .innerJoin(lembaga, eq(bestStaffLembaga.lembagaId, lembaga.id))
-        .where(eq(bestStaffLembaga.mahasiswaId, ctx.session.user.id))
-        .orderBy(desc(bestStaffKegiatan.startDate));
+        .where(eq(bestStaffLembaga.mahasiswaId, input.mahasiswa_id))
+        .orderBy(desc(bestStaffLembaga.startDate));
 
       return {
         best_staff_kegiatan: kegiatanRecords.map((record) => ({
@@ -1484,6 +1475,54 @@ export const lembagaRouter = createTRPCRouter({
           end_date: record.end_date.toISOString(),
           division: record.division ?? '',
         })),
+      };
+    }),
+
+  deleteBestStaffPeriode: lembagaProcedure
+    .input(DeleteBestStaffPeriodeInputSchema)
+    .output(DeleteBestStaffPeriodeOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (input.lembaga_id) {
+        if (ctx.session.user.lembagaId! !== input.lembaga_id) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        await ctx.db
+          .delete(bestStaffLembaga)
+          .where(
+            and(
+              eq(bestStaffLembaga.lembagaId, input.lembaga_id),
+              eq(bestStaffLembaga.startDate, new Date(input.start_date)),
+              eq(bestStaffLembaga.endDate, new Date(input.end_date)),
+            ),
+          );
+      } else if (input.event_id) {
+        const event = await ctx.db.query.events.findFirst({
+          where: eq(events.id, input.event_id),
+        });
+
+        if (!event || event.org_id !== ctx.session.user.lembagaId) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+
+        await ctx.db
+          .delete(bestStaffKegiatan)
+          .where(
+            and(
+              eq(bestStaffKegiatan.eventId, input.event_id),
+              eq(bestStaffKegiatan.startDate, new Date(input.start_date)),
+              eq(bestStaffKegiatan.endDate, new Date(input.end_date)),
+            ),
+          );
+      } else {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Either lembaga_id or event_id must be provided',
+        });
+      }
+
+      return {
+        success: true,
       };
     }),
 

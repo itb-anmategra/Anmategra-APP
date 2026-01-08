@@ -67,6 +67,12 @@ type PeriodSelectProps = {
     endMonth: string | null;
     endYear: string | null;
   }) => void;
+  initialValues?: {
+    startMonth: string | null;
+    startYear: string | null;
+    endMonth: string | null;
+    endYear: string | null;
+  };
 };
 
 function PeriodSelect({
@@ -76,11 +82,29 @@ function PeriodSelect({
   selectContentBase,
   selectItemBase,
   onChange,
+  initialValues,
 }: PeriodSelectProps) {
-  const [startMonth, setStartMonth] = useState<string | null>(null);
-  const [startYear, setStartYear] = useState<string | null>(null);
-  const [endMonth, setEndMonth] = useState<string | null>(null);
-  const [endYear, setEndYear] = useState<string | null>(null);
+  const [startMonth, setStartMonth] = useState<string | null>(
+    initialValues?.startMonth ?? null,
+  );
+  const [startYear, setStartYear] = useState<string | null>(
+    initialValues?.startYear ?? null,
+  );
+  const [endMonth, setEndMonth] = useState<string | null>(
+    initialValues?.endMonth ?? null,
+  );
+  const [endYear, setEndYear] = useState<string | null>(
+    initialValues?.endYear ?? null,
+  );
+
+  React.useEffect(() => {
+    if (initialValues) {
+      setStartMonth(initialValues.startMonth);
+      setStartYear(initialValues.startYear);
+      setEndMonth(initialValues.endMonth);
+      setEndYear(initialValues.endYear);
+    }
+  }, [initialValues]);
 
   const handleChange = (
     key: 'startMonth' | 'startYear' | 'endMonth' | 'endYear',
@@ -102,7 +126,10 @@ function PeriodSelect({
 
   return (
     <div className="flex w-full gap-4 mb-4 items-center">
-      <Select onValueChange={(val) => handleChange('startMonth', val)}>
+      <Select
+        onValueChange={(val) => handleChange('startMonth', val)}
+        value={startMonth ?? undefined}
+      >
         <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
           <SelectValue placeholder="Bulan" />
         </SelectTrigger>
@@ -119,7 +146,10 @@ function PeriodSelect({
         </SelectContent>
       </Select>
 
-      <Select onValueChange={(val) => handleChange('startYear', val)}>
+      <Select
+        onValueChange={(val) => handleChange('startYear', val)}
+        value={startYear ?? undefined}
+      >
         <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
           <SelectValue placeholder="Tahun" />
         </SelectTrigger>
@@ -134,7 +164,10 @@ function PeriodSelect({
 
       <span className="self-center text-sm">s.d.</span>
 
-      <Select onValueChange={(val) => handleChange('endMonth', val)}>
+      <Select
+        onValueChange={(val) => handleChange('endMonth', val)}
+        value={endMonth ?? undefined}
+      >
         <SelectTrigger className={`${selectTriggerBase} flex-[2]`}>
           <SelectValue placeholder="Bulan" />
         </SelectTrigger>
@@ -151,7 +184,10 @@ function PeriodSelect({
         </SelectContent>
       </Select>
 
-      <Select onValueChange={(val) => handleChange('endYear', val)}>
+      <Select
+        onValueChange={(val) => handleChange('endYear', val)}
+        value={endYear ?? undefined}
+      >
         <SelectTrigger className={`${selectTriggerBase} flex-[1]`}>
           <SelectValue placeholder="Tahun" />
         </SelectTrigger>
@@ -170,9 +206,14 @@ function PeriodSelect({
 type DivisionTableProps = {
   divisions: Division[];
   onSelect: (divisionName: string, staff: string) => void;
+  initialSelection?: Record<string, string>;
 };
 
-function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
+function DivisionTable({
+  divisions,
+  onSelect,
+  initialSelection,
+}: DivisionTableProps) {
   return (
     <div className="w-full max-w-[600px] max-h-[300px] sm:max-h-[420px] mx-auto overflow-y-auto p-1 space-y-3">
       <div className="flex gap-12 sticky top-0 bg-white z-10 py-2 font-semibold text-sm">
@@ -186,7 +227,10 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
             {divisi.name}
           </div>
           <div className="flex-1">
-            <Select onValueChange={(val) => onSelect(divisi.name, val)}>
+            <Select
+              onValueChange={(val) => onSelect(divisi.name, val)}
+              value={initialSelection?.[divisi.name] ?? undefined}
+            >
               <SelectTrigger className="w-full h-[36px] rounded-xl text-sm text-[#636A6D] border border-[#C4CACE]">
                 <SelectValue placeholder="Pilih anggota" />
               </SelectTrigger>
@@ -209,15 +253,36 @@ function DivisionTable({ divisions, onSelect }: DivisionTableProps) {
   );
 }
 
-type BestStaffProps = {
+type BestStaffFormProps = {
   trigger?: React.ReactNode;
   lembagaId?: string;
   eventId?: string;
+  mode: 'add' | 'edit';
+  existingPeriode?: {
+    start_date: string;
+    end_date: string;
+    best_staff_list: Array<{
+      user_id: string;
+      name: string;
+      image: string | null;
+      nim: string;
+      jurusan: string;
+      division: string;
+    }>;
+  };
 };
 
-const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
+const BestStaffForm = ({
+  trigger,
+  lembagaId,
+  eventId,
+  mode,
+  existingPeriode,
+}: BestStaffFormProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const utils = api.useUtils();
+
   const selectTriggerBase =
     'h-[40px] rounded-lg border border-[#636A6D] [&>span]:text-[#9DA4A8] [&>span]:text-xs';
   const selectContentBase =
@@ -225,17 +290,31 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   const selectItemBase =
     'py-2.5 px-3 border-b last:border-0 border-[#636A6D] rounded-none text-xs text-[#636A6D] hover:bg-gray-100';
 
+  const getInitialPeriodeValues = React.useCallback(() => {
+    if (mode === 'edit' && existingPeriode) {
+      const startDate = new Date(existingPeriode.start_date);
+      const endDate = new Date(existingPeriode.end_date);
+      return {
+        startMonth: (startDate.getMonth() + 1).toString().padStart(2, '0'),
+        startYear: startDate.getFullYear().toString(),
+        endMonth: (endDate.getMonth() + 1).toString().padStart(2, '0'),
+        endYear: endDate.getFullYear().toString(),
+      };
+    }
+    return {
+      startMonth: null as string | null,
+      startYear: null as string | null,
+      endMonth: null as string | null,
+      endYear: null as string | null,
+    };
+  }, [mode, existingPeriode]);
+
   const [periode, setPeriode] = useState<{
     startMonth: string | null;
     startYear: string | null;
     endMonth: string | null;
     endYear: string | null;
-  }>({
-    startMonth: null,
-    startYear: null,
-    endMonth: null,
-    endYear: null,
-  });
+  }>(() => getInitialPeriodeValues());
 
   const { data: eventData } = api.event.getByID.useQuery(
     eventId ? { id: eventId } : skipToken,
@@ -253,18 +332,18 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       return generateYears(startYear, endYear);
     }
 
-    // For lembaga: 2015 to current year
     return generateYears(2020, currentYear);
   }, [eventId, eventData]);
 
   const chooseBestStaffLembagaMutation =
     api.lembaga.chooseBestStaffLembaga.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast({
           variant: 'default',
-          title: '✓ Berhasil!',
-          description: 'Best Staff berhasil disimpan.',
+          title: 'Berhasil!',
+          description: `Best Staff berhasil ${mode === 'add' ? 'ditambahkan' : 'diperbarui'}.`,
         });
+        await utils.lembaga.getAllHistoryBestStaffLembaga.invalidate();
         setIsOpen(false);
       },
       onError: (err) => {
@@ -279,12 +358,13 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
 
   const chooseBestStaffKegiatanMutation =
     api.lembaga.chooseBestStaffKegiatan.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast({
           variant: 'default',
-          title: '✓ Berhasil!',
-          description: 'Best Staff berhasil disimpan.',
+          title: 'Berhasil!',
+          description: `Best Staff berhasil ${mode === 'add' ? 'ditambahkan' : 'diperbarui'}.`,
         });
+        await utils.lembaga.getAllHistoryBestStaffKegiatan.invalidate();
         setIsOpen(false);
       },
       onError: (err) => {
@@ -297,8 +377,21 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       },
     });
 
+  const getInitialStaffSelection = React.useCallback(() => {
+    if (mode === 'edit' && existingPeriode) {
+      const selection: Record<string, string> = {};
+      existingPeriode.best_staff_list.forEach((staff) => {
+        if (staff.name) {
+          selection[staff.division] = staff.name;
+        }
+      });
+      return selection;
+    }
+    return {};
+  }, [mode, existingPeriode]);
+
   const [selectedStaff, setSelectedStaff] = useState<Record<string, string>>(
-    {},
+    () => getInitialStaffSelection(),
   );
   const [staffOptions, setStaffOptions] = useState<Record<string, string[]>>(
     {},
@@ -307,7 +400,13 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
     Record<string, { name: string; user_id: string }[]>
   >({});
 
-  // Ambil divisions dari backend
+  React.useEffect(() => {
+    if (isOpen) {
+      setPeriode(getInitialPeriodeValues());
+      setSelectedStaff(getInitialStaffSelection());
+    }
+  }, [isOpen, getInitialPeriodeValues, getInitialStaffSelection]);
+
   const { data: divisionData } = eventId
     ? api.lembaga.getAllKegiatanDivision.useQuery(
         { event_id: eventId },
@@ -318,7 +417,6 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
         { enabled: !!lembagaId },
       );
 
-  // Fetch all anggota once and group by division, then build staff options
   const { data: anggotaData } = eventId
     ? api.event.getAllAnggota.useQuery(
         { event_id: eventId },
@@ -418,43 +516,35 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       return;
     }
 
-    // Format tanggal: YYYY-MM-01
     const start_date = new Date(sYear, sMonth - 1, 1).toISOString();
     const end_date = new Date(eYear, eMonth - 1, 1).toISOString();
 
-    // divisionDataMapping is populated by the top-level anggota query effect
-
-    // Mapping selectedStaff ke best_staff_list[]
     const best_staff_list = Object.entries(selectedStaff).map(
       ([division, userName]) => {
-        const usersInDivision = divisionDataMapping[division] ?? []; // fallback ke array kosong
+        const usersInDivision = divisionDataMapping[division] ?? [];
         const userObj = usersInDivision.find((s) => s.name === userName);
         return {
-          user_id: userObj?.user_id ?? '', // kasih fallback string kosong kalau undefined
+          user_id: userObj?.user_id ?? '',
           division,
         };
       },
     );
 
     if (eventId) {
-      // Event context
       const payload = {
         event_id: eventId,
         start_date,
         end_date,
         best_staff_list,
       };
-      console.log('Payload submit (Kegiatan):', payload);
       chooseBestStaffKegiatanMutation.mutate(payload);
     } else if (lembagaId) {
-      // Lembaga context
       const payload = {
         lembaga_id: lembagaId,
         start_date,
         end_date,
         best_staff_list,
       };
-      console.log('Payload submit (Lembaga):', payload);
       chooseBestStaffLembagaMutation.mutate(payload);
     } else {
       toast({
@@ -467,11 +557,11 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen} key={isOpen ? 'open' : 'closed'}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button className="w-[191px] h-[50px] bg-[#00B7B7] rounded-2xl hover:bg-[#00A5A5] text-white text-[18px] font-semibold">
-            Pilih Best Staff
+            {mode === 'add' ? 'Tambah' : 'Edit'} Best Staff
           </Button>
         )}
       </DialogTrigger>
@@ -479,7 +569,7 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
       <DialogContent className="max-w-[724px] rounded-[20px] p-6 sm:p-10 [&>button[aria-label='Close']]:hidden max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl sm:text-[32px] font-bold">
-            Pilih Best Staff
+            {mode === 'add' ? 'Tambah' : 'Edit'} Best Staff
           </DialogTitle>
           <DialogDescription className="text-sm font-medium text-[#636A6D]">
             Periode Penilaian
@@ -493,6 +583,7 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
           selectContentBase={selectContentBase}
           selectItemBase={selectItemBase}
           onChange={setPeriode}
+          initialValues={periode}
         />
 
         <DivisionTable
@@ -501,10 +592,11 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
               name: div,
               candidates: staffOptions[div] ?? [],
             })) ?? []
-          } // fallback ke array kosong kalau undefined
+          }
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
           }
+          initialSelection={selectedStaff}
         />
 
         <div className="flex justify-center gap-4 mt-6">
@@ -528,4 +620,4 @@ const BestStaff = ({ trigger, lembagaId, eventId }: BestStaffProps) => {
   );
 };
 
-export default BestStaff;
+export default BestStaffForm;

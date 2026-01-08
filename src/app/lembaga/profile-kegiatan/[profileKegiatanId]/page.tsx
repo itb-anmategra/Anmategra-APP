@@ -108,7 +108,7 @@ const ProfileKegiatan = async ({
                 {is_user_owner && (
                   <Button asChild variant="ghost">
                     <Link
-                      href={`/profile-lembaga/${lembaga?.id}/histori`}
+                      href={`/lembaga/profile-kegiatan/${query}/histori`}
                       className="flex items-center gap-2 text-lg"
                     >
                       <span>Lihat Histori</span>

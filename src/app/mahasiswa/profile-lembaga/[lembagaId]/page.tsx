@@ -1,8 +1,10 @@
 // Libray Import
 // Icons Import
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
+import { Button } from '~/components/ui/button';
 // Asset Import
 import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
 import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
@@ -28,6 +30,26 @@ const DetailLembagaPage = async ({
     await api.profile.getLembaga({ lembagaId: lembagaId });
 
   const session = await getServerAuthSession();
+
+  let latestBestStaff: {
+    start_date: string;
+    end_date: string;
+    best_staff_list: {
+      user_id: string;
+      name: string;
+      image: string | null;
+      nim: string;
+      jurusan: string;
+      division: string;
+    }[];
+  } | null = null;
+  try {
+    latestBestStaff = await api.lembaga.getLatestBestStaffLembaga({
+      lembaga_id: lembagaId,
+    });
+  } catch (error) {
+    console.log('No best staff data available for lembaga:', lembagaId, error);
+  }
   return (
     <>
       <div className="w-full flex min-h-screen flex-col items-center px-[14px]">
@@ -99,6 +121,50 @@ const DetailLembagaPage = async ({
                 </Card>
               </div>
             </Link>
+          )}
+
+          {/* Best Staff Section */}
+          {latestBestStaff && (
+            <div className="flex flex-col gap-12 w-full pb-12">
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-row justify-between items-center">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+                    Best Staff Periode{' '}
+                    {new Date(latestBestStaff.start_date).toLocaleDateString(
+                      'id-ID',
+                      {
+                        month: 'long',
+                        year: 'numeric',
+                      },
+                    )}
+                    –
+                    {new Date(latestBestStaff.end_date).toLocaleDateString(
+                      'id-ID',
+                      {
+                        month: 'long',
+                        year: 'numeric',
+                      },
+                    )}
+                  </h2>
+                  <Button asChild variant="ghost">
+                    <Link
+                      href={`/mahasiswa/profile-lembaga/${lembagaId}/histori`}
+                      className="flex items-center gap-2 text-lg"
+                    >
+                      <span>Lihat Histori</span>
+                      <ChevronRight
+                        className="!w-4 !h-4 text-slate-600"
+                        aria-hidden
+                      />
+                    </Link>
+                  </Button>
+                </div>
+                <CarouselBestStaff
+                  bestStaffList={latestBestStaff.best_staff_list}
+                  isLembaga={true}
+                />
+              </div>
+            </div>
           )}
 
           {/* Kepanitiaan Terbaru */}

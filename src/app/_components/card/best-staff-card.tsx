@@ -14,22 +14,26 @@ import { Card } from '~/components/ui/card';
 
 interface BestStaffCardProps {
   nama: string;
-  NIM: string;
-  jurusan: string;
+  NIM?: string;
+  jurusan?: string;
   profilePicture: StaticImageData | string;
   divisi: string;
-  id_mahasiswa: string;
+  id_mahasiswa?: string;
   isLembaga?: boolean;
+  subtitle?: string;
+  disableLink?: boolean;
 }
 
 export default function BestStaffCard({
   nama = 'John Doe',
-  NIM = '111234567',
-  jurusan = 'Sastra Mesin',
+  NIM,
+  jurusan,
   profilePicture = dummyProfile,
   divisi = 'UI/UX',
-  id_mahasiswa = '1',
+  id_mahasiswa,
   isLembaga = false,
+  subtitle,
+  disableLink = false,
 }: BestStaffCardProps) {
   // const session = await getServerAuthSession();
   // const isLembaga = session?.user.role === 'lembaga';
@@ -38,46 +42,54 @@ export default function BestStaffCard({
   const divisiSliced =
     divisi.length > 28 ? divisi.slice(0, 20) + '...' : divisi;
 
-  return (
-    <Link href={`/profile-mahasiswa/${id_mahasiswa}`} className="no-underline">
-      <Card className="w-60 max-h-[200px] rounded-[20px] bg-white hover:bg-[#00B7B7] group border border-[#E0E5E8] flex flex-col items-center justify-center hover:cursor-pointer">
-        <div className="w-full h-full flex">
-          <div className="relative w-full h-full flex flex-col items-center justify-center">
-            <div className="absolute top-[17px] left-[192px]">
+  const cardContent = (
+    <Card className="w-60 max-h-[200px] rounded-[20px] bg-white hover:bg-[#00B7B7] group border border-[#E0E5E8] flex flex-col items-center justify-center hover:cursor-pointer">
+      <div className="w-full h-full flex">
+        <div className="relative w-full h-full flex flex-col items-center justify-center">
+          <div className="absolute top-[17px] left-[192px]">
+            <Image
+              src={YellowStarIcon}
+              alt="Yellow Star Icon"
+              width={36}
+              height={36}
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col items-center justify-center px-1 py-[27px]">
+            <div className="w-16 h-16 rounded-full overflow-hidden border border-[#009292] group-hover:border-[#E0E5E8] mb-[9px]">
               <Image
-                src={YellowStarIcon}
-                alt="Yellow Star Icon"
-                width={36}
-                height={36}
-                className="object-cover"
+                src={profilePicture}
+                alt="Profile Picture"
+                width={64}
+                height={64}
+                className="object-cover w-full h-full"
               />
             </div>
-            <div className="flex flex-col items-center justify-center px-1 py-[27px]">
-              <div className="w-16 h-16 rounded-full overflow-hidden border border-[#009292] group-hover:border-[#E0E5E8] mb-[9px]">
-                <Image
-                  src={profilePicture}
-                  alt="Profile Picture"
-                  width={64}
-                  height={64}
-                  className="object-cover w-full h-full"
-                />
-              </div>
 
-              <div className="text-center">
-                <h1 className="font-bold text-xl text-[#009292] group-hover:text-white">
-                  {namaSliced}
-                </h1>
-                <p className="text-xs text-[#141718] group-hover:text-white">
-                  {NIM} - {jurusan}
-                </p>
-                <h2 className="text-[#9DA4A8] font-semibold group-hover:text-white">
-                  {divisiSliced}
-                </h2>
-              </div>
+            <div className="text-center">
+              <h1 className="font-bold text-xl text-[#009292] group-hover:text-white">
+                {namaSliced}
+              </h1>
+              <p className="text-xs text-[#141718] group-hover:text-white">
+                {subtitle ?? (NIM && jurusan ? `${NIM} - ${jurusan}` : '')}
+              </p>
+              <h2 className="text-[#9DA4A8] font-semibold group-hover:text-white">
+                {divisiSliced}
+              </h2>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
+    </Card>
+  );
+
+  if (disableLink || !id_mahasiswa) {
+    return cardContent;
+  }
+
+  return (
+    <Link href={`/profile-mahasiswa/${id_mahasiswa}`} className="no-underline">
+      {cardContent}
     </Link>
   );
 }
