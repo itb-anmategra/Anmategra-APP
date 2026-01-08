@@ -3,8 +3,8 @@ import {
   LaporanCard,
 } from "~/app/_components/laporan/detail/laporan-card";
 import { api } from "~/trpc/server";
-import { formatTanggal } from "../page";
 import { RaporBreadcrumb } from "~/app/_components/breadcrumb";
+import { formatTanggal } from "~/utils/utils";
 
 export default async function ReportDetail({params}: {params: { laporanId: string }}) {
   const data = await api.users.getAllReportsUser({});

@@ -338,7 +338,7 @@ async function importSupport() {
       subject: record.subject!,
       topic: record.topic!,
       description: record.description!,
-      status: 'In Progress',
+      status: 'In Progress' as 'Draft' | 'In Progress' | 'Resolved' | 'Backlog',
       created_at: parseDate(record.created_at) ?? new Date(),
       updated_at: parseDate(record.updated_at) ?? new Date(),
     }));

@@ -16,7 +16,7 @@ export default async function LaporanPage() {
 
   const columns: ColumnProps[] = ['Backlog', 'In Progress', 'Resolved'].map(
     (status) => ({
-      title: status as ColumnProps[number]['title'],
+      title: status as ColumnProps['title'],
       reports: reports
         .filter((r) => r.status === status)
         .map((r) => ({
