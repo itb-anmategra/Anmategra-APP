@@ -4,10 +4,10 @@ import { type Report } from '~/app/_components/laporan/board/report-card';
 import { api } from '~/trpc/server';
 import { formatTanggal } from '~/utils/utils';
 
-type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
+type Status = 'Draft' | 'Reported' | 'In Progress' | 'Resolved';
 
 function isValidStatus(status: string): status is Status {
-  return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
+  return ['Draft', 'Reported', 'In Progress', 'Resolved'].includes(status);
 }
 
 async function LaporanPage() {
@@ -15,7 +15,7 @@ async function LaporanPage() {
   
     const reportsByStatus: Record<Status, Report[]> = {
     'Draft': [],
-    'Backlog': [],
+    'Reported': [],
     'In Progress': [],
     'Resolved': [],
   };
@@ -36,7 +36,7 @@ async function LaporanPage() {
 
   const finalData: ColumnProps[] = [
     { title: 'Draft', reports: reportsByStatus.Draft },
-    { title: 'Backlog', reports: reportsByStatus.Backlog },
+    { title: 'Reported', reports: reportsByStatus.Reported },
     
     { title: 'In Progress', reports: reportsByStatus['In Progress'] },
     { title: 'Resolved', reports: reportsByStatus.Resolved },

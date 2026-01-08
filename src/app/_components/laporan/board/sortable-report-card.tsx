@@ -15,6 +15,7 @@ export function SortableReportCard({
   onEdit,
   onDelete,
   isAdminView,
+  onSubmitReport,
 }: {
   report: Report;
   column: ColumnType;
@@ -22,6 +23,7 @@ export function SortableReportCard({
   onEdit?: () => void;
   onDelete?: () => void;
   isAdminView?: boolean;
+  onSubmitReport?: () => void;
 }) {
   const {
     attributes,
@@ -40,7 +42,7 @@ export function SortableReportCard({
     opacity: isDragging ? 0 : 1,
   };
 
-  const canDrag = Boolean(isAdminView) || column === 'Draft' || column === 'Backlog';
+  const canDrag = Boolean(isAdminView);
   return (
     <div
       ref={setNodeRef}
@@ -55,6 +57,7 @@ export function SortableReportCard({
         onClick={onClickAction}
         onEdit={onEdit}
         onDelete={onDelete}      
+        onSubmit={onSubmitReport}
       />
     </div>
   );

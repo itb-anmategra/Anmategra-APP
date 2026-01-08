@@ -58,7 +58,7 @@ export const adminRouter = createTRPCRouter({
           .from(support)
           .where(
             and(
-              inArray(support.status, ['In Progress', 'Resolved', 'Backlog']), // Only include non-draft reports
+              inArray(support.status, ['In Progress', 'Resolved', 'Reported']), // Only include non-draft reports
               input.status ? eq(support.status, input.status) : undefined,
               input.search
                 ? or(
@@ -110,7 +110,7 @@ export const adminRouter = createTRPCRouter({
       
       const statusOrder = {
         'Draft': 0,
-        'Backlog': 1,
+        'Reported': 1,
         'In Progress': 2,
         'Resolved': 3,
       } as const;

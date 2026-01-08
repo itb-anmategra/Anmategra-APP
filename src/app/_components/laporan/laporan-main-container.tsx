@@ -24,10 +24,10 @@ interface LaporanProps {
 }
 
 type ReportData = Report;
-type Status = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
+type Status = 'Draft' | 'Reported' | 'In Progress' | 'Resolved';
 
 function isValidStatus(status: string): status is Status {
-  return ['Draft', 'Backlog', 'In Progress', 'Resolved'].includes(status);
+  return ['Draft', 'Reported', 'In Progress', 'Resolved'].includes(status);
 }
 
 export const LaporanMainContainer = (Laporan: LaporanProps) => {
@@ -67,7 +67,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
 
     const reportsByStatus: Record<Status, Report[]> = {
       'Draft': [],
-      'Backlog': [],
+      'Reported': [],
       'In Progress': [],
       'Resolved': [],
     };
@@ -88,7 +88,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
 
     return [
       { title: 'Draft' as const, reports: reportsByStatus.Draft },
-      { title: 'Backlog' as const, reports: reportsByStatus.Backlog },
+      { title: 'Reported' as const, reports: reportsByStatus.Reported },
       { title: 'In Progress' as const, reports: reportsByStatus['In Progress'] },
       { title: 'Resolved' as const, reports: reportsByStatus.Resolved },
     ];
@@ -109,7 +109,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   }, [display, isMounted]);
 
   const [status, setStatus] = useState<ColumnType[]>(() => {
-    const all: ColumnType[] = ["Draft", "Backlog", "In Progress", "Resolved"];
+    const all: ColumnType[] = ["Draft", "Reported", "In Progress", "Resolved"];
 
     if (Laporan.isAdminView) {
       return all.filter((col) => col !== "Draft");

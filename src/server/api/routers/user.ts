@@ -947,7 +947,7 @@ export const userRouter = createTRPCRouter({
         const [submittedReport] = await ctx.db
           .update(support)
           .set({
-            status: 'Backlog',
+            status: 'Reported',
           })
           .where(
             and(
