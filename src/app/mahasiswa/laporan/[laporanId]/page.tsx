@@ -24,7 +24,7 @@ export default async function ReportDetail({params}: {params: { laporanId: strin
   }
 
   return (
-    <div className="flex flex-col gap-3 p-8">
+    <div className="flex flex-col gap-3 p-4 sm:p-8 pt-24 sm:pt-8">
       <RaporBreadcrumb
         items={[
           { label: "Laporan", href: "/laporan" },

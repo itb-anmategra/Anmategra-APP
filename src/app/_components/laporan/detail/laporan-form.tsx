@@ -177,14 +177,24 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
 }) => {
   const toast = useToast();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(editMode);
   const [isMaximized, setIsMaximized] = useState(false);
 
-  const [formData, setFormData] = useState<LaporanSchema>({
-    judul: editMode && reportToEdit ? reportToEdit.name : '',
-    deskripsi: editMode && reportToEdit?.description ? reportToEdit.description : '',
-    file: editMode && reportToEdit ? reportToEdit.attachment : undefined,
-    prioritas: editMode && reportToEdit ? (reportToEdit.urgent as LaporanSchema['prioritas']) : undefined as unknown as LaporanSchema['prioritas'],
+  const [formData, setFormData] = useState<LaporanSchema>(() => {
+    if (editMode && reportToEdit) {
+      return {
+        judul: reportToEdit.name,
+        deskripsi: reportToEdit.description ?? '',
+        file: reportToEdit.attachment ?? undefined,
+        prioritas: reportToEdit.urgent as LaporanSchema['prioritas'],
+      };
+    }
+    return {
+      judul: '',
+      deskripsi: '',
+      file: undefined,
+      prioritas: undefined as unknown as LaporanSchema['prioritas'],
+    };
   });
 
   React.useEffect(() => {
@@ -192,7 +202,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
       setFormData({
         judul: reportToEdit.name,
         deskripsi: reportToEdit.description ?? '',
-        file: reportToEdit.attachment,
+        file: reportToEdit.attachment ?? undefined,
         prioritas: reportToEdit.urgent as LaporanSchema['prioritas'],
       });
       setIsOpen(true);
@@ -375,10 +385,9 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
         <DialogContent
           className={`
             p-0 rounded-[20px] border bg-white [&>button]:hidden
-            ${
-              isMaximized
-                ? 'w-[95vw] h-[95vh] max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
-                : 'w-[1000px] h-[384px] max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
+            ${isMaximized
+              ? 'w-[95vw] h-[95vh] max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
+              : 'w-[95vw] max-w-[520px] max-h-[90vh] sm:w-[1000px] sm:h-[384px] sm:max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
             }
           `}
           aria-describedby={undefined}
@@ -387,13 +396,11 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
             {editMode ? 'Edit Laporan' : 'Buat Laporan Baru'}
           </DialogTitle>
           <div
-            className={`flex flex-col pt-8 pr-6 pb-4 pl-6 gap-[${
-              isMaximized ? '400px' : '120px'
-            }]`}
+            className="flex flex-col h-full overflow-y-auto pt-6 pr-4 pb-5 pl-4 sm:pt-8 sm:pr-6 sm:pb-4 sm:pl-6 gap-6 sm:gap-8"
           >
             {/* Header */}
-            <div className={`flex flex-col gap-${isMaximized ? '4' : '3'} w-full`}>
-              <div className="flex items-center justify-between w-full h-[36px]">
+            <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-3 sm:gap-4">
                 <div className="flex items-center gap-3">
                   <ChevronRight className="w-5 h-5 text-[#000000]" />
                   <span className="text-[#636A6D] font-bold text-[16px] leading-[24px]">
@@ -402,10 +409,10 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                 </div>
 
                 {/* Header Right Controls */}
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 justify-end">
                   
                   {getFieldError('file') && (
-                    <p className="text-sm text-red-600 max-w-[250px] leading-4">
+                    <p className="text-sm text-red-600 max-w-[250px] leading-4 order-2 sm:order-none">
                         {getFieldError('file')}
                     </p>
                   )}
@@ -418,7 +425,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                       isFormSubmitting={isSubmitting}
                     />
                   ) : (
-                    <div className="flex items-center gap-2 text-sm text-gray-600 max-w-[200px]">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 max-w-[200px] order-2 sm:order-none">
                       <Paperclip className="!w-4 !h-4 text-gray-600 rotate-45" />
                       <span className="truncate">
                         {getFileNameFromUrl(formData.file) ?? 'File Terunggah'}
@@ -437,11 +444,11 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
 
                   {/* Prioritas */}
                   <CustomFormField error={getFieldError('prioritas')} isPriority={true}>
-                    <div className="relative inline-block">
+                    <div className="relative inline-block w-full sm:w-auto order-1 sm:order-none">
                       <Button
                         variant="outline"
                         onClick={() => setShowPrioritas(!showPrioritas)}
-                        className="items-center box-border px-3 py-2 w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
+                        className="items-center box-border px-3 py-2 w-full sm:w-[172px] h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[3px]"
                         disabled={isAdmin}
                       >
                         {formData.prioritas
@@ -454,7 +461,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                       </Button>
 
                       {showPrioritas && !isAdmin && (
-                        <div className="absolute left-0 top-full mt-1 w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
+                        <div className="absolute left-0 top-full mt-1 w-full sm:w-[172px] bg-white border border-neutral-700 rounded-[12px] shadow-lg z-10">
                           {[
                             { label: 'Low', value: 'Low', color: 'bg-green-500' },
                             { label: 'Medium', value: 'Medium', color: 'bg-yellow-400' },
@@ -490,7 +497,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                   {/* Simpan Draf */}
                   <Button
                     variant="outline"
-                    className="flex items-center justify-center box-border px-3 py-2 h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[10px]"
+                    className="flex items-center justify-center box-border px-3 py-2 h-auto text-[14px] font-bold border border-neutral-700 rounded-[12px] text-neutral-700 gap-[10px] w-full sm:w-auto"
                     disabled={true}
                   >
                     Draf
@@ -501,7 +508,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsMaximized(!isMaximized)}
-                    className="p-1 h-auto"
+                    className="p-1 h-auto order-3 sm:order-none"
                   >
                     {isMaximized ? (
                       <Minimize2 className="!w-5 !h-5 text-gray-600" />
@@ -531,7 +538,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                     placeholder="Judul Laporan"
                     maxLength={50}
                     disabled={isAdmin}
-                    className="w-full h-[60px] text-[32px] leading-[40px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
+                    className="w-full h-[56px] sm:h-[60px] text-[20px] sm:text-[32px] leading-[28px] sm:leading-[40px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
                   /> {/*text-[#9DA4A8] awalnya*/}
                 </CustomFormField>
 
@@ -545,21 +552,21 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                     maxLength={400}
                     rows={isMaximized ? 15 : 8}
                     disabled={isAdmin}
-                    className={`w-full !font-[400] !text-[24px] !leading-[32px] text-gray-600
+                    className={`w-full !font-[400] !text-[16px] sm:!text-[24px] !leading-[24px] sm:!leading-[32px] text-gray-600
                       border-none shadow-none focus-visible:ring-0 p-[10px] resize-none
-                      ${isMaximized ? 'h-[180px]' : 'h-[120px]'}`}
+                      ${isMaximized ? 'min-h-[200px]' : 'min-h-[140px]'}`}
                   />
                 </CustomFormField>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-4 right-5 flex justify-end items-center w-full">
+            <div className="flex justify-end items-center w-full mt-2 sm:mt-0">
               <Button
                 onClick={handleSubmit}
                 variant="dark_blue"
                 disabled={isAdmin ?? isSubmitting}
-                className="px-6 py-3 rounded-[12px] font-bold w-[200px] h-[45px] text-[17px]"
+                className="px-6 py-3 rounded-[12px] font-bold w-full sm:w-[200px] h-[45px] text-[17px]"
               >
                 {isSubmitting ? (
                   <>

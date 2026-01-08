@@ -33,7 +33,10 @@ export default function LandingContent({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      void router.push(`/pencarian/${searchQuery}`);
+      const trimmed = searchQuery.trim();
+      if (!trimmed) return;
+      const encoded = encodeURIComponent(trimmed);
+      void router.push(`/pencarian/${encoded}`);
     }
   };
 

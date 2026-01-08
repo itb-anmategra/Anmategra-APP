@@ -201,7 +201,7 @@ export default function InboxTable({
 
   return (
     <>
-      <div className="flex flex-col rounded-xl font-sans">
+      <div className="flex flex-col rounded-xl font-sans gap-2 sm:gap-0">
         {allRequests.length > 0 ? (
           <>
             {/* Header: hidden on small screens, visible on md+ */}
@@ -223,7 +223,7 @@ export default function InboxTable({
               return (
                 <div
                   key={item.id}
-                  className="border-b border-[#E7E9EC] p-3 md:p-4"
+                  className="border-b border-[#E7E9EC] px-2 py-4 md:p-4"
                 >
                   {/* Mobile: stacked, Desktop: grid */}
                   <div className="flex flex-col md:grid md:grid-cols-[0.5fr_2fr_1fr_1fr_1fr_1fr_0.5fr] md:items-center md:gap-4 gap-2">
@@ -244,31 +244,31 @@ export default function InboxTable({
                     </div>
 
                     {/* Nama */}
-                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] px-3 md:px-0">
+                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] px-1 md:px-0">
                       <span className="md:hidden font-semibold">Nama: </span>
                       {displayName}
                     </div>
 
                     {/* Lembaga */}
-                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
+                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-1 md:px-0">
                       <span className="md:hidden font-semibold">Lembaga: </span>
                       {item.event_id ? 'Kegiatan' : 'Lembaga'}
                     </div>
 
                     {/* Divisi */}
-                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
+                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-1 md:px-0">
                       <span className="md:hidden font-semibold">Divisi: </span>
                       {item.division}
                     </div>
 
                     {/* Posisi */}
-                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-3 md:px-0">
+                    <div className="text-sm md:text-[18px] font-regular text-[#636A6D] md:text-center px-1 md:px-0">
                       <span className="md:hidden font-semibold">Posisi: </span>
                       {item.position}
                     </div>
 
                     {/* Status */}
-                    <div className="flex items-center justify-center px-3 md:px-0 mt-2 md:mt-0">
+                    <div className="flex items-center justify-center px-1 md:px-0 mt-2 md:mt-0">
                       <Button
                         className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-lg ${
                           statusConfig[item.status].className
