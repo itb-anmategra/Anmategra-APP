@@ -24,7 +24,7 @@ interface ReportColumnProps extends ColumnProps {
   hideColumn: (type: ColumnType) => void;
   activeReportId?: string;
   isAdminView?: boolean;
-  onEditReport?: (id: string) => void;
+  onEditReport?: (report: Report) => void;
   onDeleteReport?: (id: string) => void;
 }
 
@@ -96,7 +96,7 @@ export function ReportColumn({
                     report={report}
                     column={title}
                     onClickAction={() => handleClick(report.id)}
-                    onEdit={() => onEditReport?.(report.id)}
+                    onEdit={() => onEditReport?.(report)}
                     onDelete={() => onDeleteReport?.(report.id)}
                     isAdminView={isAdminView}
                   />

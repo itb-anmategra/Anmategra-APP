@@ -39,15 +39,21 @@ const Navbar = ({ session }: { session: Session | null }) => {
     { enabled: !!session?.user.id },
   ).data?.mahasiswaData.user;
 
+  const navigateToSearch = () => {
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    const encoded = encodeURIComponent(trimmed);
+    if (session?.user.role === 'lembaga') {
+      void router.push(`/lembaga/pencarian/${encoded}`);
+    } else {
+      void router.push(`/mahasiswa/pencarian/${encoded}`);
+    }
+    setIsSearchOpen(false);
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      if (session?.user.role === 'lembaga') {
-        void router.push(`/lembaga/pencarian/${searchQuery}`);
-      } else {
-        void router.push(`/mahasiswa/pencarian/${searchQuery}`);
-      }
-      setIsSearchOpen(false);
-      // setSearchQuery('');
+      navigateToSearch();
     }
   };
 
@@ -57,20 +63,12 @@ const Navbar = ({ session }: { session: Session | null }) => {
   //   }
   // });
   const handleSearchSubmit = () => {
-    if (session?.user.role === 'lembaga') {
-      void router.push(`/lembaga/pencarian/${searchQuery}`);
-    } else {
-      void router.push(`/mahasiswa/pencarian/${searchQuery}`);
-    }
-    setIsSearchOpen(false);
+    navigateToSearch();
     // setSearchQuery('');
-  };
+  }
 
   useEffect(() => {
-    if (
-      session?.user.role === 'lembaga' &&
-      !window.location.pathname.startsWith('/lembaga')
-    ) {
+    if (session?.user.role === 'lembaga' && !window.location.pathname.startsWith('/lembaga')) {
       router.push('/lembaga');
     }
   }, [session, router]);
@@ -93,7 +91,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                 </Link>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className='flex items-center justify-between'>
                 <Button
                   onClick={() => setIsSearchOpen(true)}
                   variant="ghost"
@@ -155,59 +153,150 @@ const Navbar = ({ session }: { session: Session | null }) => {
         </>
       ) : (
         <>
-          <div className="w-full bg-white border-b border-neutral-50">
-            <div
-              className="flex items-center justify-between max-w-[1440px] max-h-[112px]
-                    py-6 pl-[50px] pr-[72px]"
-            >
-              {/* Logo Anmategra */}
-              {session ? (
-                <div className="flex items-center max-w-[108px] min-h-[64px] gap-[20px]">
+          {/* Mobile Navbar */}
+          <div className="sm:hidden w-full bg-white border-b border-neutral-50 fixed top-0 left-0 right-0 z-30">
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                {session && (
                   <Button
                     onClick={() => setIsSideBarOpen(true)}
                     variant="ghost"
                     size="icon"
-                    className="w-[24px] h-[30px]"
+                    className="w-8 h-8"
                   >
-                    <Menu className="!w-[24px] !h-[30px]" />
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                )}
+                
+                <Link href={session ? '/mahasiswa' : '/'} className="flex-shrink-0">
+                  <Image
+                    src={LogoAnmategra}
+                    alt="Logo Anmategra"
+                    width={40}
+                    height={40}
+                    priority
+                  />
+                </Link>
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <Button
+                  onClick={() => setIsSearchOpen(true)}
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8"
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+
+                {session && (
+                  <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
+                    {user?.image ? (
+                      <Image
+                        src={user.image}
+                        alt="Profile User"
+                        width={36}
+                        height={36}
+                        className="rounded-full object-cover w-[36px] h-[36px]"
+                      />
+                    ) : (
+                      <Image
+                        src={ProfilePic}
+                        alt="Default Profile"
+                        width={36}
+                        height={36}
+                        className="rounded-full object-cover w-[36px] h-[36px]"
+                      />
+                    )}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Search Overlay */}
+          {isSearchOpen && (
+            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-lg">
+              <div className="flex items-center px-4 py-3 border-b border-neutral-50">
+                <Button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 mr-3"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+
+                <div className="flex-1 relative">
+                  <Input
+                    placeholder="Cari lembaga, kegiatan, atau mahasiswa"
+                    className="w-full pr-10 border-0 bg-gray-50 rounded-full placeholder:text-neutral-700 focus-visible:ring-1 focus-visible:ring-[#00B7B7]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                  />
+                  <Button
+                    onClick={handleSearchSubmit}
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8"
+                  >
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Desktop Navbar */}
+          <div className='hidden sm:block w-full bg-white border-b border-neutral-50'>
+            <div className="flex items-center justify-between max-w-[1440px] mx-auto py-3 px-6 lg:py-4 lg:px-12">
+
+              {/* Logo Anmategra */}
+              {session ? (
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={() => setIsSideBarOpen(true)}
+                    variant="ghost"
+                    size="icon"
+                    className="w-9 h-9"
+                  >
+                    <Menu className="w-5 h-5" />
                   </Button>
 
                   <Link href={'/'}>
                     <Image
                       src={LogoAnmategra}
                       alt="Logo Anmategra"
-                      width={64}
-                      height={64}
+                      width={48}
+                      height={48}
                     />
                   </Link>
                 </div>
               ) : (
-                <div className="flex items-center gap-[20px]">
+                <div className="flex items-center">
                   <Link href={'/'}>
                     <Image
                       src={LogoAnmategra}
                       alt="Logo Anmategra"
-                      width={64}
-                      height={64}
+                      width={48}
+                      height={48}
                     />
                   </Link>
                 </div>
               )}
 
               {/* Input Search */}
-              <div
-                className="flex items-center w-full max-w-3xl h-[64px] mx-4 lg:flex 
-                          bg-white border border-[#C4CACE] rounded-[40px] 
-                            py-4 px-6 gap-2"
-              >
-                {/* Icon Mangnifying Glass */}
-                <MagnifyingGlassIcon className="size-6 text-gray-500 flex-shrink-0" />
+              <div className="flex items-center w-full flex-1 max-w-2xl h-12 mx-4 bg-white border border-[#C4CACE] rounded-full py-2 px-4 gap-2">
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
 
-                {/* Input Field */}
                 <Input
                   placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
-                  className="w-full h-[32px] bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 
-                              font-[400] text-[20px] leading-[32px] text-[#636A6D]"
+                  className="w-full h-full bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-base text-[#636A6D]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -215,46 +304,40 @@ const Navbar = ({ session }: { session: Session | null }) => {
               </div>
 
               {/* Profil */}
-              <nav className="flex items-center justify-start w-[128px] min-h-[52px] gap-10">
+              <nav className="flex items-center flex-shrink-0">
                 {session ? (
-                  <div className="w-full items-center gap-[10px] pl-10">
-                    <Link
-                      href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}
-                    >
-                      {user?.image ? (
-                        <Image
-                          src={user.image}
-                          alt="Profile User"
-                          width={52}
-                          height={52}
-                          className="rounded-full object-cover w-[52px] h-[52px]"
-                        />
-                      ) : (
-                        <Image
-                          src={ProfilePic}
-                          alt="Default Profile"
-                          width={52}
-                          height={52}
-                          className="rounded-full object-cover w-[52px] h-[52px]"
-                        />
-                      )}
-                    </Link>
-                  </div>
+                  <Link href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}>
+                    {user?.image ? (
+                      <Image
+                        src={user.image}
+                        alt="Profile User"
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover w-[40px] h-[40px]"
+                      />
+                    ) : (
+                      <Image
+                        src={ProfilePic}
+                        alt="Default Profile"
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover w-[40px] h-[40px]"
+                      />
+                    )}
+                  </Link>
                 ) : (
                   <Link href={'/authentication'}>
                     <Button
-                      className="max-w-[128px] min-h-[48px] px-8 py-2 flex items-center justify-center gap-2
-                                    rounded-[12px] bg-[#00B7B7] text-white hover:bg-secondary-500"
+                      className="h-10 px-6 py-2 rounded-xl bg-[#00B7B7] text-white hover:bg-secondary-500 font-semibold text-lg"
                     >
-                      <span className="items-center font-[600] text-[24px] leading-[32px]">
-                        Login
-                      </span>
+                      Login
                     </Button>
                   </Link>
                 )}
               </nav>
             </div>
           </div>
+
         </>
       )}
       {isSideBarOpen && session?.user.role === 'lembaga' && (
@@ -267,8 +350,8 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
           {/* Sidebar from right for lembaga mobile */}
           <div className="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-[60] border-l sm:hidden">
-            <Sidebar
-              session={session}
+            <Sidebar 
+              session={session} 
               isMobileOpen={true}
               onMobileClose={() => setIsSideBarOpen(false)}
             />

@@ -8,9 +8,9 @@ import { api } from '~/trpc/server';
 export default async function SearchPage({
   params,
 }: {
-  params: Promise<{ params: string }>;
+  params: { params: string };
 }) {
-  const query = (await params).params;
+  const query = decodeURIComponent(params.params);
   const session = await getServerAuthSession();
   const data = await api.landing.searchAll({ query: query });
 
@@ -26,5 +26,11 @@ export default async function SearchPage({
     })),
   };
 
-  return <PencarianContent session={session} data={transformedData} />;
+  return (
+    <PencarianContent
+      session={session}
+      data={transformedData}
+      searchQuery={query}
+    />
+  );
 }

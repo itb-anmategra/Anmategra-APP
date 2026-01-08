@@ -22,15 +22,15 @@ const ProfileKegiatan = async ({
   const session = await getServerAuthSession();
 
   return (
-    <div>
+    <div className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-8">
       <div className="w-full flex min-h-screen flex-col items-center">
-        <div className="w-full max-w-7xl bg-slate-50 py-6">
-          <div className="mb-4">
+        <div className="w-full max-w-6xl bg-slate-50 py-6 rounded-none sm:rounded-xl">
+          <div className="mb-4 px-1 sm:px-2">
             <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
             <RaporBreadcrumb
               items={[
                 {label: 'Beranda', href: '/'},
-                {label:'Profil Kegiatan', href:`/profile-kegiatan/${query}`}
+                {label:'Profil Kegiatan', href:`/mahasiswa/profile-kegiatan/${query}`}
               ]}
             />
           </div>
@@ -65,7 +65,9 @@ const ProfileKegiatan = async ({
               }
             />
           </Link>
-          <ProfileKegiatanComp anggota={participant ?? []} session={session} />
+          <div className="mt-4">
+            <ProfileKegiatanComp anggota={participant ?? []} session={session} />
+          </div>
         </div>
       </div>
     </div>

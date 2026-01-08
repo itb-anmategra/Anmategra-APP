@@ -36,6 +36,7 @@ import {
 } from '~/components/ui/command';
 import { ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '~/lib/utils';
+import { useToast } from '~/hooks/use-toast';
 
 const AjuanAsosiasiSchema = z.object({
   posisi: z.string().min(1, 'Posisi harus dipilih'),
@@ -68,6 +69,7 @@ const AjuanAsosiasiForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const utils = api.useUtils();
+  const toast = useToast();
   const [posisiOpen, setPosisiOpen] = useState(false);
   const [divisiOpen, setDivisiOpen] = useState(false);
   const [posisiOptions, setPosisiOptions] = useState<{ value: string; label: string }[]>([]);
@@ -111,10 +113,17 @@ const AjuanAsosiasiForm = ({
       onSubmissionSuccess?.();
       setIsOpen(false);
       void utils.users.getMyRequestAssociation.invalidate();
-      alert('Pengajuan berhasil dikirim.');
+      toast.toast({
+        title: 'Pengajuan berhasil dikirim',
+        description: 'Permintaan asosiasi sudah tercatat.',
+      });
     },
     onError: (err) => {
-      alert(err.message || 'Gagal mengirim pengajuan.');
+      toast.toast({
+        title: 'Gagal mengirim pengajuan',
+        description: err.message || 'Coba lagi nanti.',
+        variant: 'destructive',
+      });
     },
     onSettled: () => setIsSubmitting(false),
   });
@@ -124,17 +133,28 @@ const AjuanAsosiasiForm = ({
       setIsSubmitted(false);
       form.reset();
       void utils.users.getMyRequestAssociation.invalidate();
-      alert('Ajuan berhasil dibatalkan.');
+      toast.toast({
+        title: 'Ajuan dibatalkan',
+        description: 'Pengajuan asosiasi telah dibatalkan.',
+      });
     },
     onError: (err) => {
-      alert(err.message || 'Gagal membatalkan pengajuan.');
+      toast.toast({
+        title: 'Gagal membatalkan pengajuan',
+        description: err.message || 'Coba lagi nanti.',
+        variant: 'destructive',
+      });
     },
     onSettled: () => setIsSubmitting(false),
   });
 
   const handleCancelSubmission = () => {
     if (!eventId) {
-      alert('Event ID tidak tersedia.');
+      toast.toast({
+        title: 'Event tidak tersedia',
+        description: 'ID event tidak ditemukan.',
+        variant: 'destructive',
+      });
       return;
     }
     setIsSubmitting(true);
@@ -148,7 +168,11 @@ const AjuanAsosiasiForm = ({
         return;
       }
       if (!eventId) {
-        alert('Event ID tidak tersedia.');
+        toast.toast({
+          title: 'Event tidak tersedia',
+          description: 'ID event tidak ditemukan.',
+          variant: 'destructive',
+        });
         return;
       }
       setIsSubmitting(true);
@@ -160,7 +184,11 @@ const AjuanAsosiasiForm = ({
     } catch (err) {
       console.error('Submit error:', err);
       setIsSubmitting(false);
-      alert('Terjadi error saat pengiriman.');
+      toast.toast({
+        title: 'Gagal mengirim',
+        description: 'Terjadi error saat pengiriman.',
+        variant: 'destructive',
+      });
     }
   };
 

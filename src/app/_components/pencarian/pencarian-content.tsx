@@ -2,13 +2,13 @@
 
 // Library Import
 // Icon Import
-// import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 // Session Import
 import { type Session } from 'next-auth';
 // Image Import
 import Image from 'next/image';
 import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import dummyLembaga from 'public/images/logo/hmif-logo.png';
 import NotFound from 'public/images/miscellaneous/not-found-general.png';
 // Dummy Asset Import
@@ -17,7 +17,7 @@ import React from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import LembagaCard from '~/app/_components/card/lembaga-card';
 import MahasiswaCard from '~/app/_components/card/mahasiswa-card';
-// import { Input } from '~/components/ui/input';
+import { Input } from '~/components/ui/input';
 import { cn } from '~/lib/utils';
 // Types Import
 import { type Kepanitiaan } from '~/types/kepanitiaan';
@@ -25,6 +25,7 @@ import { type Kepanitiaan } from '~/types/kepanitiaan';
 const PencarianContent = ({
   session,
   data,
+  searchQuery,
 }: {
   session: Session | null;
   data: {
@@ -38,38 +39,50 @@ const PencarianContent = ({
     lembaga: Kepanitiaan[];
     kegiatan: Kepanitiaan[];
   };
+  searchQuery?: string;
 }) => {
-  // const [searchQuery, setSearchQuery] = useState('');
-  // const router = useRouter();
+  const [keyword, setKeyword] = React.useState(searchQuery ?? '');
+  const router = useRouter();
 
-  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (event.key === 'Enter') {
-  //     void router.push(`/pencarian/${searchQuery}`);
-  //   }
-  // };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const trimmed = keyword.trim();
+      if (!trimmed) return;
+      const encoded = encodeURIComponent(trimmed);
+      if (session?.user.role === 'lembaga') {
+        void router.push(`/lembaga/pencarian/${encoded}`);
+      } else {
+        void router.push(`/mahasiswa/pencarian/${encoded}`);
+      }
+    }
+  };
 
   return (
     <div
       className={cn(
-        'flex w-full flex-col overflow-hidden pt-10 gap-4',
+        'flex w-full flex-col overflow-hidden gap-6 px-4 md:px-6',
+        'pt-20 sm:pt-10',
         session?.user.role === 'lembaga' && 'p-6',
       )}
     >
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold text-slate-600">
-            Hasil Pencarian
-          </h1>
-          {/* <Input
-            placeholder="Cari lembaga, kegiatan, atau mahasiswa"
-            className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
+      <div className="flex w-full flex-col gap-3 max-w-5xl">
+        <h1 className="text-2xl font-semibold text-slate-600">
+          Hasil Pencarian
+        </h1>
+        {session?.user.role !== 'mahasiswa' && (
+          <Input
+            placeholder="Pencarian lembaga, kegiatan, atau mahasiswa"
+            className="rounded-3xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent"
             startAdornment={
-              <MagnifyingGlassIcon className="size-4 text-gray-500" />
+              <MagnifyingGlassIcon className="size-5 text-gray-500" />
             }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={handleKeyDown}
-          /> */}
-        </div>
+          />
+        )}
+      </div>
+
       <div
         className={cn(
           'flex flex-col items-center w-full',

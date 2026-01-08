@@ -27,11 +27,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
 }) => {
   const [isEdit, setIsEdit] = useState(false);
 
-  const baseHref = 'profile-kegiatan';
+  const baseHref = '/mahasiswa/profile-kegiatan';
 
   return (
-    <div
-      className='w-full flex min-h-screen flex-col items-center px-6'>
+    <div className='w-full flex min-h-screen flex-col items-center px-4 sm:px-6 pt-20 sm:pt-8'>
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">

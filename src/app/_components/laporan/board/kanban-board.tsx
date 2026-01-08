@@ -237,11 +237,8 @@ export const KanbanBoard = ({
     }
   };
 
-  const handleEdit = (id: string) => {
-    const col = findColumnByReportId(id);
-    if (!col) return;
-    const report = reports[col].find((r) => r.id === id);
-    if (report && onEditReport) {
+  const handleEdit = (report: Report) => {
+    if (onEditReport) {
       onEditReport(report);
     }
   };
