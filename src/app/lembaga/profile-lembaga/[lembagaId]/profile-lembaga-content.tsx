@@ -133,20 +133,18 @@ export default function ProfileLembagaContent({
                     },
                   )}
                 </h2>
-                {is_user_owner && (
-                  <Button asChild variant="ghost">
-                    <Link
-                      href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
-                      className="flex items-center gap-2 text-lg"
-                    >
-                      <span>Lihat Histori </span>
-                      <ChevronRight
-                        className="!w-4 !h-4 text-slate-1000"
-                        aria-hidden
-                      />
-                    </Link>
-                  </Button>
-                )}
+                <Button asChild variant="ghost">
+                  <Link
+                    href={`/lembaga/profile-lembaga/${lembagaId}/histori`}
+                    className="flex items-center gap-2 text-lg"
+                  >
+                    <span>Lihat Histori </span>
+                    <ChevronRight
+                      className="!w-4 !h-4 text-slate-1000"
+                      aria-hidden
+                    />
+                  </Link>
+                </Button>
               </div>
               <CarouselBestStaff
                 bestStaffList={latestBestStaff.best_staff_list}
