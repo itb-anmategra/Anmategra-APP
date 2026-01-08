@@ -22,6 +22,8 @@ interface BestStaffCardProps {
   isLembaga?: boolean;
   subtitle?: string;
   disableLink?: boolean;
+  targetType?: 'lembaga' | 'kegiatan';
+  targetId?: string;
 }
 
 export default function BestStaffCard({
@@ -34,6 +36,8 @@ export default function BestStaffCard({
   isLembaga = false,
   subtitle,
   disableLink = false,
+  targetType,
+  targetId,
 }: BestStaffCardProps) {
   // const session = await getServerAuthSession();
   // const isLembaga = session?.user.role === 'lembaga';
@@ -83,13 +87,28 @@ export default function BestStaffCard({
     </Card>
   );
 
-  if (disableLink || !id_mahasiswa) {
+  if (disableLink) {
     return cardContent;
   }
 
-  return (
-    <Link href={`/profile-mahasiswa/${id_mahasiswa}`} className="no-underline">
-      {cardContent}
-    </Link>
-  );
+  if (targetType && targetId) {
+    const href = targetType === 'lembaga' 
+      ? `/profile-lembaga/${targetId}` 
+      : `/profile-kegiatan/${targetId}`;
+    return (
+      <Link href={href} className="no-underline">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  if (id_mahasiswa) {
+    return (
+      <Link href={`/profile-mahasiswa/${id_mahasiswa}`} className="no-underline">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }

@@ -22,8 +22,7 @@ import LogoAnmategra from '/public/images/logo/anmategra-logo.png';
 
 type SidebarProps = {
   session: Session | null;
-  isMobileOpen?: boolean;
-  onMobileClose?: () => void;
+  onClose?: () => void;
 };
 
 const Sidebar = Sidebars as (props: SidebarProps) => JSX.Element;
@@ -33,6 +32,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
+
+  const lembagaInfo = api.lembaga.getInfo.useQuery(
+    { lembagaId: session?.user.lembagaId ?? '' },
+    { enabled: session?.user.role === 'lembaga' && !!session?.user.lembagaId },
+  ).data;
 
   const user = api.users.getMahasiswaById.useQuery(
     { userId: session?.user.id ?? '' },
@@ -110,6 +114,70 @@ const Navbar = ({ session }: { session: Session | null }) => {
                   <Menu className="w-6 h-6" />
                 </Button>
               </div>
+            </div>
+          </div>
+
+          <div className="hidden sm:block w-full bg-white border-b border-neutral-50">
+            <div className="flex items-center justify-between max-w-[1440px] mx-auto py-3 px-6 lg:py-4 lg:px-12">
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={() => setIsSideBarOpen(true)}
+                  variant="ghost"
+                  size="icon"
+                  className="w-9 h-9"
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+
+                <Link href="/lembaga" className="flex-shrink-0">
+                  <Image
+                    src={LogoAnmategra}
+                    alt="Logo Anmategra"
+                    width={48}
+                    height={48}
+                  />
+                </Link>
+              </div>
+
+              <div className="flex items-center w-full flex-1 max-w-2xl h-12 mx-4 bg-white border border-[#C4CACE] rounded-full py-2 px-4 gap-2">
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
+
+                <Input
+                  placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
+                  className="w-full h-full bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-base text-[#636A6D]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+
+              <nav className="flex items-center flex-shrink-0">
+                <Link
+                  href={
+                    lembagaInfo?.id
+                      ? `/profile-lembaga/${lembagaInfo.id}`
+                      : '/lembaga'
+                  }
+                >
+                  {lembagaInfo?.foto || session?.user.image ? (
+                    <Image
+                      src={lembagaInfo?.foto ?? session?.user.image ?? ''}
+                      alt="Profile User"
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover w-[40px] h-[40px]"
+                    />
+                  ) : (
+                    <Image
+                      src={ProfilePic}
+                      alt="Default Profile"
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover w-[40px] h-[40px]"
+                    />
+                  )}
+                </Link>
+              </nav>
             </div>
           </div>
 
@@ -340,25 +408,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
         </>
       )}
-      {isSideBarOpen && session?.user.role === 'lembaga' && (
-        <>
-          {/* Background overlay */}
-          <div
-            className="fixed inset-0 z-40 bg-black/40 sm:hidden"
-            onClick={() => setIsSideBarOpen(false)}
-          />
-
-          {/* Sidebar from right for lembaga mobile */}
-          <div className="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-[60] border-l sm:hidden">
-            <Sidebar 
-              session={session} 
-              isMobileOpen={true}
-              onMobileClose={() => setIsSideBarOpen(false)}
-            />
-          </div>
-        </>
-      )}
-      {isSideBarOpen && session?.user.role === 'mahasiswa' && (
+      {isSideBarOpen && session && (
         <>
           {/* Background overlay */}
           <div
@@ -366,10 +416,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
             onClick={() => setIsSideBarOpen(false)}
           />
 
-          {/* Sidebar from left for mahasiswa */}
-          <div className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[100] border-none">
-            <Sidebar session={session} />
-          </div>
+          {/* Sidebar drawer */}
+          <Sidebar
+            session={session}
+            onClose={() => setIsSideBarOpen(false)}
+          />
         </>
       )}
     </>
