@@ -110,31 +110,38 @@ export const authOptions: NextAuthOptions = {
 
         // insert Lembaga table
         else if (account?.provider === 'google') {
-          const lembagaExists = await db.query.lembaga.findFirst({
-            where: eq(lembaga.userId, user.id),
+          const userRecord = await db.query.users.findFirst({
+            where: eq(users.email, user.email),
           });
-          if (!lembagaExists) {
-            await db
-              .update(users)
-              .set({ role: 'lembaga' })
-              .where(eq(users.id, user.id))
-              .returning();
-            const lembaga_id = crypto.randomUUID();
-            await db
-              .insert(lembaga)
-              .values({
-                id: lembaga_id,
-                userId: user.id,
-                name: user.name,
-                foundingDate: new Date(),
-              })
-              .returning();
-
-            token.role = 'lembaga';
-            token.lembagaId = lembaga_id;
+          if (userRecord?.role === 'admin') {
+            token.role = 'admin';
           } else {
-            token.role = user.role;
-            token.lembagaId = lembagaExists.id;
+            const lembagaExists = await db.query.lembaga.findFirst({
+              where: eq(lembaga.userId, user.id),
+            });
+            if (!lembagaExists) {
+              await db
+                .update(users)
+                .set({ role: 'lembaga' })
+                .where(eq(users.id, user.id))
+                .returning();
+              const lembaga_id = crypto.randomUUID();
+              await db
+                .insert(lembaga)
+                .values({
+                  id: lembaga_id,
+                  userId: user.id,
+                  name: user.name,
+                  foundingDate: new Date(),
+                })
+                .returning();
+
+              token.role = 'lembaga';
+              token.lembagaId = lembaga_id;
+            } else {
+              token.role = user.role;
+              token.lembagaId = lembagaExists.id;
+            }
           }
         }
 
@@ -157,9 +164,11 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'google') {
         const isValidLembaga = user.email?.endsWith('@km.itb.ac.id');
         const isVerified = await isEmailInVerifiedUsers(user.email);
-
-        if (!isValidLembaga && !isVerified) return false;
-      } 
+        const userRecord = await db.query.users.findFirst({
+          where: eq(users.email, user.email),
+        });
+        if (!isValidLembaga && !isVerified && userRecord?.role !== 'admin') return false;
+      }
       // signin mahasiswa
       else if (account?.provider === 'azure-ad') {
         // cek email mahasiswa
@@ -167,9 +176,8 @@ export const authOptions: NextAuthOptions = {
         // cek nim valid
         const nim = user.email.split('@')[0];
         if (!nim || nim.length !== 8 || isNaN(parseInt(nim))) return false;
-      } 
-      else {
-        return true; 
+      } else {
+        return true;
       }
 
       const existingUser = await db.query.users.findFirst({
@@ -183,8 +191,10 @@ export const authOptions: NextAuthOptions = {
             eq(a.provider, account.provider) &&
             eq(a.providerAccountId, account.providerAccountId),
         });
+        console.log('yes');
 
         if (!existingAccount) {
+          console.log('yes');
           // Insert new account entry
           await db.insert(accounts).values({
             userId: existingUser.id,
@@ -201,15 +211,16 @@ export const authOptions: NextAuthOptions = {
         if (account.provider === 'azure-ad' && !existingUser.emailVerified) {
           await db
             .update(users)
-            .set({ 
-              emailVerified: new Date(), 
-              name: user.name
+            .set({
+              emailVerified: new Date(),
+              name: user.name,
             })
             .where(eq(users.id, existingUser.id));
         }
 
         user.id = existingUser.id;
-        user.role = (existingUser.role as 'admin' | 'lembaga' | 'mahasiswa') ?? user.role;
+        user.role =
+          (existingUser.role as 'admin' | 'lembaga' | 'mahasiswa') ?? user.role;
 
         return true;
       }
@@ -269,7 +280,8 @@ const isEmailInVerifiedUsers = async (email: string) => {
   });
 
   return user !== undefined;
-``};
+  ``;
+};
 
 const insertMahasiswa = async (
   id: string,
