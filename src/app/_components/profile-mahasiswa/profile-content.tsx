@@ -174,7 +174,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                           },
                         )}`}
                         divisi={item.division}
-                        profilePicture={mahasiswaData?.user.image ?? ''}
+                        profilePicture={mahasiswaData?.user.image}
                         targetType="lembaga"
                         targetId={item.lembaga_id}
                       />
@@ -206,7 +206,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                           },
                         )}`}
                         divisi={item.division}
-                        profilePicture={mahasiswaData?.user.image ?? ''}
+                        profilePicture={mahasiswaData?.user.image}
                         targetType="kegiatan"
                         targetId={item.event_id}
                       />
@@ -225,11 +225,9 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
           {newestEvent && newestEvent.length !== 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {newestEvent.map((item: Kepanitiaan) => (
-                // masukkin posisi ke sini
                 <Link key={item.id} href={`${baseHref}/${item.id}`}>
-                  <KepanitiaanCard
+                  <KepanitiaanCard 
                     kepanitiaan={item}
-                    key={item.name}
                     showRaporLink={true}
                     mahasiswaId={userId}
                     raporVisible={item.raporVisible ?? false}

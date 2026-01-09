@@ -16,7 +16,7 @@ interface BestStaffCardProps {
   nama: string;
   NIM?: string;
   jurusan?: string;
-  profilePicture: StaticImageData | string;
+  profilePicture?: StaticImageData | string | null;
   divisi: string;
   id_mahasiswa?: string;
   isLembaga?: boolean;
@@ -62,7 +62,7 @@ export default function BestStaffCard({
           <div className="flex flex-col items-center justify-center px-1 py-[27px]">
             <div className="w-16 h-16 rounded-full overflow-hidden border border-[#009292] group-hover:border-[#E0E5E8] mb-[9px]">
               <Image
-                src={profilePicture}
+                src={profilePicture ?? dummyProfile}
                 alt="Profile Picture"
                 width={64}
                 height={64}

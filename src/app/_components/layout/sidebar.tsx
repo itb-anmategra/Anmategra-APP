@@ -95,15 +95,16 @@ export const Sidebar = ({
     profileData = {
       id: lembaga?.id ?? '',
       name: lembaga?.nama ?? '',
-      profilePicture: lembaga?.foto ?? '',
+      profilePicture: lembaga?.foto ?? '/images/placeholder/profile-pic.png',
       label: 'Lembaga',
       href: `/profile-lembaga/${lembaga?.id ?? ''}`,
     };
   } else {
+    const mahasiswa = api.users.getMahasiswaById.useQuery({ userId: user?.id ?? '' })?.data?.mahasiswaData?.user;
     profileData = {
       id: user?.id ?? '',
       name: user?.name ?? '',
-      profilePicture: user?.image ?? '',
+      profilePicture: mahasiswa?.image ?? '/images/placeholder/profile-pic.png',
       label: 'Mahasiswa',
       href: `/profile-mahasiswa/${user?.id ?? ''}`,
     };
@@ -230,7 +231,7 @@ const SidebarProfile = ({
               <div className="flex items-center justify-start gap-4 px-1 py-2">
                 <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarImage
-                    className="object-contain"
+                    className="object-cover"
                     src={profile.profilePicture ?? ''}
                   />
                   <AvatarFallback>{profile.name.slice(0, 2)}</AvatarFallback>
