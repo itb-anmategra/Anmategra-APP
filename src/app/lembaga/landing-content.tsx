@@ -28,7 +28,7 @@ export default function LandingContent({
   const router = useRouter();
 
   return (
-    <div className="flex w-full flex-col gap-4 pt-0 sm:pt-6 pl-[42px] pr-[36px]">
+    <div className="flex w-full flex-col gap-4 pt-0 sm:pt-6">
       {/* Title */}
       <div className="flex flex-col gap-4 ">
         <h1 className="text-[32px] font-semibold text-[#141718]">Beranda</h1>

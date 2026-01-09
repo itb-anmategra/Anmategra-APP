@@ -12,7 +12,7 @@ import DraftIcon from '/public/images/laporan/draft.svg';
 import InProgressIcon from '/public/images/laporan/in-progress.svg';
 import ResolvedIcon from '/public/images/laporan/resolved.svg';
 
-export type ColumnType = 'Draft' | 'Backlog' | 'In Progress' | 'Resolved';
+export type ColumnType = 'Draft' | 'Reported' | 'In Progress' | 'Resolved';
 
 export interface ColumnProps {
   title: ColumnType;
@@ -26,13 +26,14 @@ interface ReportColumnProps extends ColumnProps {
   isAdminView?: boolean;
   onEditReport?: (report: Report) => void;
   onDeleteReport?: (id: string) => void;
+  onSubmitReport?: (id: string) => void;
 }
 
 export function getTypeImage(type: ColumnType) {
   switch (type) {
     case 'Draft':
       return DraftIcon as StaticImageData;
-    case 'Backlog':
+    case 'Reported':
       return DraftIcon as StaticImageData;
     case 'In Progress':
       return InProgressIcon as StaticImageData;
@@ -50,6 +51,7 @@ export function ReportColumn({
   isAdminView = false,
   onEditReport,
   onDeleteReport,
+  onSubmitReport,
 }: ReportColumnProps) {
   const router = useRouter();
 
@@ -99,6 +101,7 @@ export function ReportColumn({
                     onEdit={() => onEditReport?.(report)}
                     onDelete={() => onDeleteReport?.(report.id)}
                     isAdminView={isAdminView}
+                    onSubmitReport={() => onSubmitReport?.(report.id)}
                   />
                 ))}
               </div>

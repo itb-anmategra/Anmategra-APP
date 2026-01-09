@@ -27,34 +27,57 @@ export interface ReportCardProps {
   onClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onSubmit?: () => void;
 }
 
-export function ReportCard({ report, column, onClick, onEdit, onDelete }: ReportCardProps) {
+export function ReportCard({
+  report,
+  column,
+  onClick,
+  onEdit,
+  onDelete,
+  onSubmit,
+}: ReportCardProps) {
   const showMenu = column === "Draft";
+  const showSubmit = column === "Draft" && Boolean(onSubmit);
 
   return (
     <div className="relative w-full">
-      {showMenu && (
-        <div className="absolute right-3 top-3 z-10">
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="text-2xl select-none">
-              ...
-            </DropdownMenuTrigger>
+      {(showMenu || showSubmit) && (
+        <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+          {showSubmit && (
+            <Button
+              size="sm"
+              className="rounded-full bg-secondary-400 text-white hover:bg-secondary-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSubmit?.();
+              }}
+            >
+              Kirim
+            </Button>
+          )}
+          {showMenu && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger className="text-2xl select-none">
+                ...
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="text-xl">
-              <DropdownMenuItem onClick={onEdit}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Edit
-                </Button>
-              </DropdownMenuItem>
+              <DropdownMenuContent className="text-xl">
+                <DropdownMenuItem onClick={onEdit}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Edit
+                  </Button>
+                </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={onDelete}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Delete
-                </Button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem onClick={onDelete}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Delete
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       )}
 

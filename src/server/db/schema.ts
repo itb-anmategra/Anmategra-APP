@@ -343,7 +343,7 @@ export const supportStatusEnum = pgEnum('support_status', [
   'Draft',
   'In Progress',
   'Resolved',
-  'Backlog',
+  'Reported',
 ]);
 
 export const supportUrgentEnum = pgEnum('support_urgent', [

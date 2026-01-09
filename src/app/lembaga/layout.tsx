@@ -14,11 +14,13 @@ export const metadata: Metadata = {
 const LembagaLayout = async ({ children }: { children: ReactNode }) => {
   const session = await getServerAuthSession();
   return (
-    <div className="flex flex-col">
-      <div className="sticky top-0 z-20">
+    <div className="flex flex-col items-center">
+      <div className="sticky top-0 z-20 w-full">
         <Navbar session={session} />
       </div>
-      <div className="flex-1 pt-16 sm:pt-0">{children}</div>
+      <div className="w-full max-w-7xl flex-1 pt-16 sm:pt-0 px-6 lg:px-12 mb-10">
+        {children}
+      </div>
     </div>
   );
 };

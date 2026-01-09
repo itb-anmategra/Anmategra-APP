@@ -62,7 +62,7 @@ export const KanbanBoard = ({
     onSuccess: () => {
       toast({
         title: 'Laporan berhasil diajukan',
-        description: 'Laporan telah berpindah ke status Backlog.',
+        description: 'Laporan telah berpindah ke status Reported.',
       });
       onRefresh?.();
     },
@@ -73,7 +73,7 @@ export const KanbanBoard = ({
       });
       onRefresh?.();
     },
-  })
+  });
 
   const deleteReportMutation = api.users.deleteReport.useMutation({
     onSuccess: () => {
@@ -89,7 +89,7 @@ export const KanbanBoard = ({
         description: 'Terjadi kesalahan saat menghapus laporan.',
       });
     },
-  })
+  });
 
   const setReportStatusMutation = api.admin.setReportStatus.useMutation({
     onError: () => {
@@ -111,11 +111,11 @@ export const KanbanBoard = ({
     if (!source || !dest) return true;
 
     if (source === dest) {
-      if (source === 'Draft' || source === 'Backlog') return false;
+      if (source === 'Draft' || source === 'Reported') return false;
       return true; 
     }
 
-    if (source === 'Draft' && dest === 'Backlog') return false;
+    if (source === 'Draft' && dest === 'Reported') return false;
 
     return true;
   };
@@ -143,7 +143,7 @@ export const KanbanBoard = ({
     }
     if (!sourceColumn || !destinationColumn) return;
 
-    if (!isAdminView && sourceColumn === 'Draft' && destinationColumn === 'Backlog') {
+    if (!isAdminView && sourceColumn === 'Draft' && destinationColumn === 'Reported') {
       try {
         await submitReportMutation.mutateAsync({id:activeId});
         setReports((prev) => {
@@ -222,6 +222,27 @@ export const KanbanBoard = ({
     }
   };
 
+  const handleSubmitReport = async (id: string) => {
+    try {
+      await submitReportMutation.mutateAsync({ id });
+      setReports((prev) => {
+        const srcColumn: ColumnType = 'Draft';
+        const destColumn: ColumnType = 'Reported';
+        const src = prev[srcColumn].filter((r) => r.id !== id);
+        const moved = prev[srcColumn].find((r) => r.id === id);
+        return {
+          ...prev,
+          [srcColumn]: src,
+          [destColumn]: moved
+            ? [...prev[destColumn], moved]
+            : prev[destColumn],
+        };
+      });
+    } catch (e) {
+      console.error('submitReport failed', e);
+    }
+  };
+
   const handleDelete = async (id:string) => {
     try {
       await deleteReportMutation.mutateAsync({id});
@@ -246,10 +267,10 @@ export const KanbanBoard = ({
   return (
     <div className="container mx-auto">
       <DndContext
-        sensors={sensors}
+        sensors={isAdminView ? sensors : []}
         onDragStart={({ active }) => {
+          if (!isAdminView) return;
           const col = findColumnByReportId(active.id.toString());
-          if (!isAdminView && col !== 'Draft' && col !== 'Backlog') return;
           const item = col ? reports[col].find((r) => r.id === active.id.toString()) : null;
           setActiveReport(item ?? null);
         }}
@@ -270,6 +291,9 @@ export const KanbanBoard = ({
                 isAdminView={isAdminView}
                 onEditReport={handleEdit}
                 onDeleteReport={handleDelete}
+                onSubmitReport={
+                  !isAdminView && colId === 'Draft' ? handleSubmitReport : undefined
+                }
               />
             </Droppable>
           ))}

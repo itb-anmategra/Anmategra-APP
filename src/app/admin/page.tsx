@@ -14,7 +14,7 @@ const formatDate = (dateString: string) =>
 export default async function LaporanPage() {
   const { reports } = await api.admin.getAllReportsAdmin({});
 
-  const columns: ColumnProps[] = ['Backlog', 'In Progress', 'Resolved'].map(
+  const columns: ColumnProps[] = ['Reported', 'In Progress', 'Resolved'].map(
     (status) => ({
       title: status as ColumnProps['title'],
       reports: reports

@@ -138,11 +138,11 @@ export const LaporanHeader = ({
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold"
-              checked={status.includes('Backlog')}
-              onClick={() => toggleStatus('Backlog')}
+              checked={status.includes('Reported')}
+              onClick={() => toggleStatus('Reported')}
             >
               <Image src={Draft} alt="Draft Icon" className="h-5 w-5" />
-              <span className="text-sm">Backlog</span>
+              <span className="text-sm">Reported</span>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               className="flex w-full min-w-[150px] flex-row items-center gap-5 text-lg font-semibold"
