@@ -3,6 +3,7 @@
 // Library Import
 // Icons Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import type { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 // Assets Import
@@ -10,11 +11,12 @@ import NoAnggota from 'public/images/miscellaneous/not-found-anggota.png';
 import React from 'react';
 // Components Import
 import { Input } from '~/components/ui/input';
-import type { Session } from 'next-auth';
 
 const ProfileKegiatanComp = ({
   anggota,
-  session
+  session,
+  kegiatanId,
+  raporVisible = false,
 }: {
   anggota: {
     id: string;
@@ -26,6 +28,8 @@ const ProfileKegiatanComp = ({
     divisi: string | null;
   }[];
   session?: Session | null;
+  kegiatanId: string;
+  raporVisible?: boolean;
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const [filteredAnggota, setFilteredAnggota] = React.useState<
@@ -62,7 +66,9 @@ const ProfileKegiatanComp = ({
   return (
     <div>
       <div className="mb-4 mt-4 sm:mt-8 flex items-center justify-between">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">Anggota</h2>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+          Anggota
+        </h2>
       </div>
       <div className="mb-4">
         <Input
@@ -98,19 +104,39 @@ const ProfileKegiatanComp = ({
                     {item.nim} - {item.jurusan}
                   </p>
                   <div className="flex items-center gap-x-2">
-                    <p className="text-xs sm:text-sm text-slate-600">{item.posisi}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">
+                      {item.posisi}
+                    </p>
                     <p> | </p>
-                    <p className="text-xs sm:text-sm text-slate-600">{item.divisi}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">
+                      {item.divisi}
+                    </p>
                   </div>
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <button className="text-xs sm:text-sm md:text-base text-sky-600 font-semibold">
-                  <Link href={isLembaga ? `/lembaga/profile-mahasiswa/${item.id}` : `/mahasiswa/profile-mahasiswa/${item.id}`}>
+                  <Link
+                    href={
+                      isLembaga
+                        ? `/lembaga/profile-mahasiswa/${item.id}`
+                        : `/mahasiswa/profile-mahasiswa/${item.id}`
+                    }
+                  >
                     {' '}
                     Lihat Profil
                   </Link>
                 </button>
+                {raporVisible && (
+                  <button className="text-xs sm:text-sm md:text-base text-emerald-600 font-semibold">
+                    <Link
+                      href={`/mahasiswa/profile-kegiatan/${kegiatanId}/rapor/${item.id}`}
+                    >
+                      {' '}
+                      Lihat Rapor
+                    </Link>
+                  </button>
+                )}
               </div>
             </div>
           ))

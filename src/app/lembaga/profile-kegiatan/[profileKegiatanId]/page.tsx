@@ -47,7 +47,9 @@ const ProfileKegiatan = async ({
     <div className="w-full flex min-h-screen flex-col items-center px-6">
       <div className="w-full max-w-7xl bg-slate-50 py-6">
         <div className="mb-4">
-          <h1 className="text-xl md:text-2xl font-semibold text-slate-600">Kegiatan</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-600">
+            Kegiatan
+          </h1>
         </div>
         <EventHeader
           title={kegiatan?.name ?? 'null'}
@@ -138,7 +140,12 @@ const ProfileKegiatan = async ({
           </div>
         )}
 
-        <ProfileKegiatanComp anggota={participant ?? []} session={session} />
+        <ProfileKegiatanComp
+          anggota={participant ?? []}
+          session={session}
+          kegiatanId={query ?? ''}
+          raporVisible={kegiatan?.rapor_visible ?? false}
+        />
       </div>
     </div>
   );

@@ -57,6 +57,7 @@ export const profileRouter = createTRPCRouter({
         endDate: item.event.end_date ? new Date(item.event.end_date) : null,
         position: item.keanggotaan.position,
         division: item.keanggotaan.division,
+        raporVisible: item.event.rapor_visible,
       }));
 
       if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {

@@ -8,14 +8,15 @@ import LineIcon from 'public/icons/line-icon-2.png';
 import WhatsappIcon from 'public/icons/wa-icon.png';
 import NoKepanitiaan from 'public/images/miscellaneous/not-found-kepanitiaan.png';
 import React, { useState } from 'react';
+import BestStaffCard from '~/app/_components/card/best-staff-card';
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
-import BestStaffCard from '~/app/_components/card/best-staff-card';
 import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepanitiaan-button';
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
+
 import { RaporBreadcrumb } from '../breadcrumb';
 import { type ProfileMahasiswaContentProps } from './constant';
 
@@ -32,7 +33,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   const baseHref = '/profile-kegiatan';
 
   return (
-    <div className='w-full flex min-h-screen flex-col items-center px-4 sm:px-6 pt-20 sm:pt-8'>
+    <div className="w-full flex min-h-screen flex-col items-center px-4 sm:px-6 pt-20 sm:pt-8">
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
@@ -51,7 +52,9 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             <Avatar
               className={cn(
                 'rounded-full',
-                isLembagaView ? 'h-20 w-20 sm:h-[120px] sm:w-[120px] md:h-[180px] md:w-[180px]' : 'h-52 w-52 md:h-40 md:w-40',
+                isLembagaView
+                  ? 'h-20 w-20 sm:h-[120px] sm:w-[120px] md:h-[180px] md:w-[180px]'
+                  : 'h-52 w-52 md:h-40 md:w-40',
               )}
             >
               <AvatarImage
@@ -140,63 +143,79 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
         </div>
 
         {/* Histori Best Staff */}
-        {bestStaffData && (bestStaffData.best_staff_lembaga.length > 0 || bestStaffData.best_staff_kegiatan.length > 0) && (
-          <div className="space-y-6 pb-12">
-            <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
-              Histori Best Staff
-            </h5>
-            
-            {bestStaffData.best_staff_lembaga.length > 0 && (
-              <div className="space-y-3">
-                <h6 className="text-lg font-semibold text-slate-600">Lembaga</h6>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {bestStaffData.best_staff_lembaga.map((item, index) => (
-                    <BestStaffCard
-                      key={index}
-                      nama={item.event_name}
-                      subtitle={`${new Date(item.start_date).toLocaleDateString('id-ID', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}–${new Date(item.end_date).toLocaleDateString('id-ID', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}`}
-                      divisi={item.division}
-                      profilePicture={mahasiswaData?.user.image ?? ''}
-                      targetType="lembaga"
-                      targetId={item.lembaga_id}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+        {bestStaffData &&
+          (bestStaffData.best_staff_lembaga.length > 0 ||
+            bestStaffData.best_staff_kegiatan.length > 0) && (
+            <div className="space-y-6 pb-12">
+              <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
+                Histori Best Staff
+              </h5>
 
-            {bestStaffData.best_staff_kegiatan.length > 0 && (
-              <div className="space-y-3">
-                <h6 className="text-lg font-semibold text-slate-600">Kegiatan</h6>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {bestStaffData.best_staff_kegiatan.map((item, index) => (
-                    <BestStaffCard
-                      key={index}
-                      nama={item.name}
-                      subtitle={`${new Date(item.start_date).toLocaleDateString('id-ID', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}–${new Date(item.end_date).toLocaleDateString('id-ID', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}`}
-                      divisi={item.division}
-                      profilePicture={mahasiswaData?.user.image ?? ''}
-                      targetType="kegiatan"
-                      targetId={item.event_id}
-                    />
-                  ))}
+              {bestStaffData.best_staff_lembaga.length > 0 && (
+                <div className="space-y-3">
+                  <h6 className="text-lg font-semibold text-slate-600">
+                    Lembaga
+                  </h6>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {bestStaffData.best_staff_lembaga.map((item, index) => (
+                      <BestStaffCard
+                        key={index}
+                        nama={item.event_name}
+                        subtitle={`${new Date(
+                          item.start_date,
+                        ).toLocaleDateString('id-ID', {
+                          month: 'long',
+                          year: 'numeric',
+                        })}–${new Date(item.end_date).toLocaleDateString(
+                          'id-ID',
+                          {
+                            month: 'long',
+                            year: 'numeric',
+                          },
+                        )}`}
+                        divisi={item.division}
+                        profilePicture={mahasiswaData?.user.image ?? ''}
+                        targetType="lembaga"
+                        targetId={item.lembaga_id}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+
+              {bestStaffData.best_staff_kegiatan.length > 0 && (
+                <div className="space-y-3">
+                  <h6 className="text-lg font-semibold text-slate-600">
+                    Kegiatan
+                  </h6>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {bestStaffData.best_staff_kegiatan.map((item, index) => (
+                      <BestStaffCard
+                        key={index}
+                        nama={item.name}
+                        subtitle={`${new Date(
+                          item.start_date,
+                        ).toLocaleDateString('id-ID', {
+                          month: 'long',
+                          year: 'numeric',
+                        })}–${new Date(item.end_date).toLocaleDateString(
+                          'id-ID',
+                          {
+                            month: 'long',
+                            year: 'numeric',
+                          },
+                        )}`}
+                        divisi={item.division}
+                        profilePicture={mahasiswaData?.user.image ?? ''}
+                        targetType="kegiatan"
+                        targetId={item.event_id}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
         {/* Kepanitiaan Terbaru */}
         <div className="space-y-4 pb-12 md:mt-[50px]">
@@ -208,7 +227,13 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               {newestEvent.map((item: Kepanitiaan) => (
                 // masukkin posisi ke sini
                 <Link key={item.id} href={`${baseHref}/${item.id}`}>
-                  <KepanitiaanCard kepanitiaan={item} key={item.name} />
+                  <KepanitiaanCard
+                    kepanitiaan={item}
+                    key={item.name}
+                    showRaporLink={true}
+                    mahasiswaId={userId}
+                    raporVisible={item.raporVisible ?? false}
+                  />
                 </Link>
               ))}
             </div>
