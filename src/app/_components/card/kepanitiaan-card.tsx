@@ -1,10 +1,14 @@
+'use client';
+
 // Library Import
 // Icons Import
 import { CalendarIcon, PersonIcon } from '@radix-ui/react-icons';
 import dayjs from 'dayjs';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 // Components Import
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Button } from '~/components/ui/button';
 import { Card } from '~/components/ui/card';
 // Utils Import
 import { cn } from '~/lib/utils';
@@ -14,12 +18,20 @@ import type { Kepanitiaan } from '~/types/kepanitiaan';
 interface KepanitiaanCardProps {
   kepanitiaan: Kepanitiaan;
   orientation?: 'vertical' | 'horizontal';
+  showRaporLink?: boolean;
+  mahasiswaId?: string;
+  raporVisible?: boolean;
 }
 
 export const KepanitiaanCard = ({
   kepanitiaan,
   orientation = 'vertical',
+  showRaporLink = false,
+  mahasiswaId,
+  raporVisible = false,
 }: KepanitiaanCardProps) => {
+  const router = useRouter();
+
   return (
     <Card
       className={cn(
@@ -91,6 +103,19 @@ export const KepanitiaanCard = ({
               : 'Sekarang'}
           </span>
         </div>
+        {showRaporLink && raporVisible && mahasiswaId && (
+          <Button
+            variant="link"
+            className="text-sm font-semibold text-emerald-600 hover:underline p-0 justify-start"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              router.push(`/mahasiswa/profile-kegiatan/${kepanitiaan.id}/rapor/${mahasiswaId}`);
+            }}
+          >
+            Lihat Rapor →
+          </Button>
+        )}
       </div>
     </Card>
   );

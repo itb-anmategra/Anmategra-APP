@@ -43,6 +43,7 @@ export const GetLembagaOutputSchema = z.object({
       id: z.string(),
       image: z.string().url().nullable(),
     }),
+    raporVisible: z.boolean(),
   }),
   newestEvent: z.array(z.custom<Kepanitiaan>()),
   highlightedEvent: z.custom<Event>().nullable(),

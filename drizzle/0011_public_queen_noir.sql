@@ -1,0 +1,2 @@
+ALTER TABLE "anmategra_event" ADD COLUMN "rapor_visible" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+ALTER TABLE "anmategra_lembaga" ADD COLUMN "rapor_visible" boolean DEFAULT false NOT NULL;

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
-import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, lembagaProcedure, protectedProcedure } from '~/server/api/trpc';
 import {
   CreateProfilKegiatanInputSchema,
   CreateProfilKegiatanOutputSchema,
@@ -23,7 +23,7 @@ import {
 } from '../profil/services';
 
 export const profilKegiatanRouter = createTRPCRouter({
-  getAllProfilKegiatan: lembagaProcedure
+  getAllProfilKegiatan: protectedProcedure
     .input(GetAllProfilKegiatanInputSchema)
     .output(GetAllProfilOutputSchema)
     .query(async ({ ctx, input }) => {

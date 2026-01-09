@@ -1,4 +1,5 @@
-import type { Lembaga } from "./lembaga";
+import type { Lembaga } from './lembaga';
+
 export interface Kepanitiaan {
   lembaga: Lembaga;
   id?: string;
@@ -10,4 +11,5 @@ export interface Kepanitiaan {
   endDate: Date | null;
   position?: string;
   division?: string;
+  raporVisible?: boolean;
 }

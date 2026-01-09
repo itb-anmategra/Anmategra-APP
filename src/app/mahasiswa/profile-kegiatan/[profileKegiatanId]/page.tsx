@@ -2,15 +2,15 @@
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
-import { Button } from '~/components/ui/button';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
-import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
-import { api } from '~/trpc/server';
-import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
+import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
+import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/trpc/server';
 
 const ProfileKegiatan = async ({
   params,
@@ -52,8 +52,11 @@ const ProfileKegiatan = async ({
             <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
             <RaporBreadcrumb
               items={[
-                {label: 'Beranda', href: '/'},
-                {label:'Profil Kegiatan', href:`/mahasiswa/profile-kegiatan/${query}`}
+                { label: 'Beranda', href: '/' },
+                {
+                  label: 'Profil Kegiatan',
+                  href: `/mahasiswa/profile-kegiatan/${query}`,
+                },
               ]}
             />
           </div>
@@ -143,7 +146,13 @@ const ProfileKegiatan = async ({
           )}
 
           <div className="mt-4">
-            <ProfileKegiatanComp anggota={participant ?? []} session={session} />
+            <ProfileAnggotaComp
+              anggota={participant ?? []}
+              session={session}
+              kegiatanLembagaId={query ?? ''}
+              raporVisible={kegiatan?.rapor_visible ?? false}
+              isKegiatan={true}
+            />
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
   const user = api.users.getMahasiswaById.useQuery(
     { userId: session?.user.id ?? '' },
-    { enabled: !!session?.user.id },
+    { enabled: session?.user.role === 'mahasiswa' && !!session?.user.id },
   ).data?.mahasiswaData.user;
 
   const navigateToSearch = () => {

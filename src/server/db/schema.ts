@@ -186,6 +186,7 @@ export const lembaga = createTable('lembaga', {
   major: varchar('major', { length: 255 }),
   field: varchar('field', { length: 255 }),
   memberCount: integer('member_count'),
+  raporVisible: boolean('rapor_visible').notNull().default(false),
   ...timestamps,
 });
 
@@ -223,6 +224,7 @@ export const events = createTable('event', {
   is_highlighted: boolean('is_highlighted').notNull().default(false),
   is_organogram: boolean('is_organogram').notNull().default(false),
   organogram_image: varchar('organogram_image', { length: 255 }),
+  rapor_visible: boolean('rapor_visible').notNull().default(false),
   ...timestamps,
 });
 

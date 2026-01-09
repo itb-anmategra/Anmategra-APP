@@ -15,6 +15,8 @@ import {
   RemovePanitiaKegiatanOutputSchema,
   ToggleHighlightInputSchema,
   ToggleHighlightOutputSchema,
+  ToggleRaporVisibilityInputSchema,
+  ToggleRaporVisibilityOutputSchema,
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
 } from '../../types/event.type';
@@ -404,6 +406,51 @@ export const toggleHighlight = lembagaProcedure
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Terjadi kesalahan saat mengubah status highlight.',
+      });
+    }
+  });
+
+export const toggleRaporVisibility = lembagaProcedure
+  .input(ToggleRaporVisibilityInputSchema)
+  .output(ToggleRaporVisibilityOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      await ctx.db
+        .update(events)
+        .set({
+          rapor_visible: input.rapor_visible,
+        })
+        .where(eq(events.id, input.id));
+
+      return {
+        success: true,
+        rapor_visible: input.rapor_visible,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan saat mengubah visibilitas rapor.',
       });
     }
   });

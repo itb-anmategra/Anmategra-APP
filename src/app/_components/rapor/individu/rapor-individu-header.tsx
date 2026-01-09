@@ -24,17 +24,17 @@ export type HeaderDataProps = {
   dataNilaiProfil: NilaiKegiatanOutput | null;
   id: string;
   isLembaga?: boolean;
+  canEdit?: boolean;
 };
 
 export default function RaporIndividuHeader({
   dataNilaiProfil,
   id,
   isLembaga,
+  canEdit = true,
 }: HeaderDataProps) {
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
-    dataNilaiProfil?.nilai
-      ? dataNilaiProfil.nilai
-      : [],
+    dataNilaiProfil?.nilai ? dataNilaiProfil.nilai : [],
   );
 
   const upsertMutationLembaga =
@@ -122,15 +122,14 @@ export default function RaporIndividuHeader({
 
       <div className="flex flex-col lg:flex-row items-start justify-between w-full mb-8 sm:mb-12 md:mb-16 gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 sm:gap-6 md:gap-10 w-full lg:flex-1">
-          <div className="flex flex-col min-w-24 max-w-24 min-h-24 max-h-24 sm:min-w-32 sm:max-w-32 sm:min-h-32 sm:max-h-32 md:min-w-40 md:max-w-40 md:min-h-40 md:max-h-40 rounded-full overflow-hidden flex-shrink-0">
+          <div className="flex flex-col min-w-24 max-w-24 min-h-24 max-h-24 sm:min-w-32 sm:max-w-32 sm:min-h-32 sm:max-h-32 md:min-w-40 md:max-w-40 md:min-h-40 md:max-h-40 rounded-full overflow-hidden flex-shrink-0 relative">
             <Image
               src={
                 mahasiswaOutput.data?.mahasiswaData.user.image ?? dummyProfile
               }
               alt="Profile Picture"
-              width={160}
-              height={160}
-              className="object-cover w-full h-full"
+              fill
+              className="object-cover"
             />
           </div>
           <div className="flex flex-col items-start justify-start w-full min-w-0">
@@ -142,28 +141,36 @@ export default function RaporIndividuHeader({
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-4 sm:gap-x-8 md:gap-x-[50px] gap-y-3 sm:gap-y-4 items-start justify-start mb-3 sm:mb-[18px] w-full">
               <div className="flex flex-col items-start justify-start min-w-0">
-                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">NIM</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">
+                  NIM
+                </div>
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.nim}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start min-w-0">
-                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">Jurusan</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">
+                  Jurusan
+                </div>
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.jurusan}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start min-w-0">
-                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">Divisi</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500">
+                  Divisi
+                </div>
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.division}
                 </div>
               </div>
 
               <div className="flex flex-col items-start justify-start min-w-0">
-                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500 ">Posisi</div>
+                <div className="text-sm sm:text-base md:text-[18px] text-neutral-500 ">
+                  Posisi
+                </div>
                 <div className="text-sm sm:text-base md:text-[18px] text-neutral-800 text-wrap w-full">
                   {dataNilaiProfil?.position}
                 </div>
@@ -205,21 +212,23 @@ export default function RaporIndividuHeader({
           </div>
         </div>
 
-        <div className="w-full lg:w-auto flex-shrink-0">
-          <FormNilaiProfil
-            initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
-              id: profil.profil_id,
-              value: profil.nilai ?? 0,
-            }))}
-            onSave={(updatedProfiles) => {
-              const updatedNilaiProfils = updatedProfiles.map((p) => ({
-                profil_id: p.id,
-                nilai: p.value ?? 0,
-              }));
-              handleUpdateNilaiProfilChange(updatedNilaiProfils);
-            }}
-          />
-        </div>
+        {canEdit && (
+          <div className="w-full lg:w-auto flex-shrink-0">
+            <FormNilaiProfil
+              initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
+                id: profil.profil_id,
+                value: profil.nilai ?? 0,
+              }))}
+              onSave={(updatedProfiles) => {
+                const updatedNilaiProfils = updatedProfiles.map((p) => ({
+                  profil_id: p.id,
+                  nilai: p.value ?? 0,
+                }));
+                handleUpdateNilaiProfilChange(updatedNilaiProfils);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="w-full">

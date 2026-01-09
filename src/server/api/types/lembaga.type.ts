@@ -11,6 +11,7 @@ export const GetInfoLembagaOutputSchema = z.object({
   deskripsi: z.string().nullable(),
   tanggal_berdiri: z.date().nullable(),
   tipe_lembaga: z.string().nullable(),
+  raporVisible: z.boolean().nullable(),
   detail_tambahan: z.object({
     jurusan: z.string().nullable(),
     bidang: z.string().nullable(),
@@ -416,4 +417,13 @@ export const GetPosisiBidangOptionsOutputSchema = z.object({
       label: z.string(),
     }),
   ),
+});
+
+export const ToggleRaporVisibilityLembagaInputSchema = z.object({
+  rapor_visible: z.boolean(),
+});
+
+export const ToggleRaporVisibilityLembagaOutputSchema = z.object({
+  success: z.boolean(),
+  rapor_visible: z.boolean(),
 });

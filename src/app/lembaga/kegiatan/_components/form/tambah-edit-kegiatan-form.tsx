@@ -39,13 +39,13 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
+import { toast } from '~/hooks/use-toast';
 // Utils Import
 import { cn } from '~/lib/utils';
 // TRPC Import
 import { api } from '~/trpc/react';
 
 import CustomDropzone from './dropzone';
-import { toast } from '~/hooks/use-toast';
 
 // ✅ Schema dengan Zod
 const EventInputSchema = z
@@ -68,11 +68,8 @@ const EventInputSchema = z
     is_highlighted: z.boolean().optional(),
     is_organogram: z.boolean().optional(),
     background_image: z.string().url().optional(),
-    organogram_image: z
-      .string()
-      .url()
-      .or(z.literal(''))
-      .optional(),
+    organogram_image: z.string().url().or(z.literal('')).optional(),
+    rapor_visible: z.boolean().optional(),
   })
   .refine(
     (data) =>
@@ -112,7 +109,9 @@ const TambahEditKegiatanForm = ({
               ? new Date(kegiatan.start_date).toISOString()
               : new Date().toISOString(),
           end_date:
-            kegiatan.end_date && kegiatan.end_date !== '' && !isNaN(Date.parse(kegiatan.end_date))
+            kegiatan.end_date &&
+            kegiatan.end_date !== '' &&
+            !isNaN(Date.parse(kegiatan.end_date))
               ? new Date(kegiatan.end_date).toISOString()
               : undefined,
           status: kegiatan.status,
@@ -122,6 +121,7 @@ const TambahEditKegiatanForm = ({
           is_organogram: kegiatan.is_organogram ?? false,
           background_image: kegiatan.background_image ?? '',
           organogram_image: '',
+          rapor_visible: kegiatan.rapor_visible ?? false,
         }
       : {
           name: '',
@@ -136,6 +136,7 @@ const TambahEditKegiatanForm = ({
           is_organogram: false,
           background_image: undefined,
           organogram_image: undefined,
+          rapor_visible: false,
         },
   });
 
@@ -386,9 +387,7 @@ const TambahEditKegiatanForm = ({
               name="location"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>
-                    Lokasi Kegiatan
-                  </FormLabel>
+                  <FormLabel>Lokasi Kegiatan</FormLabel>
                   <FormControl className="p-2">
                     <Input
                       className="rounded-lg "
@@ -540,6 +539,24 @@ const TambahEditKegiatanForm = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="rapor_visible"
+              render={({ field }) => (
+                <FormItem className="flex-1 flex flex-row self-end space-x-3 items-center justify-center space-y-0">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <FormLabel
+                    className="font-normal cursor-pointer"
+                    onClick={() => field.onChange(!field.value)}
+                  >
+                    Rapor Terlihat Publik
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
           </div>
 
           <FormField
@@ -606,10 +623,7 @@ const TambahEditKegiatanForm = ({
           />
           {/* Tombol Submit */}
           <div className="flex justify-center w-full">
-            <Button
-              type="submit"
-              className="bg-primary-400"
-            >
+            <Button type="submit" className="bg-primary-400">
               SIMPAN
             </Button>
           </div>

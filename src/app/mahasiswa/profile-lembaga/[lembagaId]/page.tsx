@@ -3,22 +3,22 @@
 import { CalendarIcon, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
-import { Button } from '~/components/ui/button';
 // Asset Import
 import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
 import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
 import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
 import React from 'react';
-import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
-import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
-import { Badge } from '~/components/ui/badge';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
+import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
+import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
+import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
+import { Badge } from '~/components/ui/badge';
+import { Button } from '~/components/ui/button';
 // Components Import
 import { Card } from '~/components/ui/card';
+import { getServerAuthSession } from '~/server/auth';
 // TRPC Import
 import { api } from '~/trpc/server';
-import { getServerAuthSession } from '~/server/auth';
 
 const DetailLembagaPage = async ({
   params,
@@ -59,11 +59,14 @@ const DetailLembagaPage = async ({
             <RaporBreadcrumb
               items={[
                 { label: 'Beranda', href: '/' },
-                { label: 'Profil Lembaga', href: `/profile-lembaga/${lembagaId}` },
+                {
+                  label: 'Profil Lembaga',
+                  href: `/profile-lembaga/${lembagaId}`,
+                },
               ]}
             />
           </div>
-            <div className="w-full flex items-center justify-center gap-6 sm:py-12">
+          <div className="w-full flex items-center justify-center gap-6 sm:py-12">
             <Image
               src={lembagaData?.users.image ?? DummyFotoLembaga}
               alt="Foto Lembaga"
@@ -73,13 +76,13 @@ const DetailLembagaPage = async ({
             />
             <div className="space-y-1">
               <p className="text-xl sm:text-2xl md:text-3xl text-slate-600 font-semibold">
-              {lembagaData?.name}
+                {lembagaData?.name}
               </p>
               <p className="text-sm sm:text-lg md:text-xl text-slate-400">
-              {lembagaData?.description}
+                {lembagaData?.description}
               </p>
             </div>
-            </div>
+          </div>
 
           {highlightedEvent && (
             <Link href={`/mahasiswa/profile-kegiatan/${highlightedEvent.id}`}>
@@ -175,10 +178,7 @@ const DetailLembagaPage = async ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {newestEvent && newestEvent.length !== 0 ? (
                 newestEvent.map((item) => (
-                  <Link
-                    href={`/profile-kegiatan/${item.id}`}
-                    key={item.id}
-                  >
+                  <Link href={`/profile-kegiatan/${item.id}`} key={item.id}>
                     <KepanitiaanCard kepanitiaan={item} />
                   </Link>
                 ))
@@ -189,7 +189,13 @@ const DetailLembagaPage = async ({
           </div>
 
           {/* Anggota Section */}
-          <ProfileKegiatanComp anggota={anggota ?? []} session={session} />
+          <ProfileAnggotaComp
+            anggota={anggota ?? []}
+            session={session}
+            kegiatanLembagaId={lembagaId}
+            raporVisible={lembagaData.raporVisible}
+            isKegiatan={false}
+          />
         </div>
       </div>
     </>

@@ -11,6 +11,7 @@ import {
   or,
 } from 'drizzle-orm';
 import { type z } from 'zod';
+import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-kegiatan-form';
 import {
   createTRPCRouter,
   lembagaProcedure,
@@ -85,10 +86,11 @@ import {
   GetPosisiBidangOptionsOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  ToggleRaporVisibilityLembagaInputSchema,
+  ToggleRaporVisibilityLembagaOutputSchema,
   editAnggotaLembagaInputSchema,
   editAnggotaLembagaOutputSchema,
 } from '../types/lembaga.type';
-import { type comboboxDataType } from '~/app/_components/form/tambah-anggota-kegiatan-form';
 
 export const lembagaRouter = createTRPCRouter({
   // Fetch lembaga general information
@@ -121,6 +123,7 @@ export const lembagaRouter = createTRPCRouter({
         deskripsi: lembaga.description,
         tanggal_berdiri: lembaga.foundingDate,
         tipe_lembaga: lembaga.type,
+        raporVisible: lembaga.raporVisible,
         detail_tambahan: {
           jurusan: lembaga.type === 'Himpunan' ? lembaga.major : null,
           bidang: lembaga.type === 'UKM' ? lembaga.field : null,
@@ -1156,7 +1159,7 @@ export const lembagaRouter = createTRPCRouter({
           message: 'Start date tidak boleh lebih besar dari end date',
         });
       }
-      
+
       await ctx.db
         .delete(bestStaffLembaga)
         .where(
@@ -1288,7 +1291,6 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllHistoryBestStaffKegiatanInputSchema)
     .output(GetAllHistoryBestStaffKegiatanOutputSchema)
     .query(async ({ ctx, input }) => {
-
       const records = await ctx.db
         .select({
           id: bestStaffKegiatan.id,
@@ -1361,7 +1363,6 @@ export const lembagaRouter = createTRPCRouter({
     .input(GetAllHistoryBestStaffLembagaInputSchema)
     .output(GetAllHistoryBestStaffLembagaOutputSchema)
     .query(async ({ ctx, input }) => {
-
       const records = await ctx.db
         .select({
           id: bestStaffLembaga.id,
@@ -1557,5 +1558,29 @@ export const lembagaRouter = createTRPCRouter({
         posisi: posisi_list ?? ([] as comboboxDataType[]),
         bidang: bidang_list ?? ([] as comboboxDataType[]),
       };
+    }),
+
+  toggleRaporVisibility: lembagaProcedure
+    .input(ToggleRaporVisibilityLembagaInputSchema)
+    .output(ToggleRaporVisibilityLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db
+          .update(lembaga)
+          .set({
+            raporVisible: input.rapor_visible,
+          })
+          .where(eq(lembaga.id, ctx.session.user.lembagaId!));
+
+        return {
+          success: true,
+          rapor_visible: input.rapor_visible,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Terjadi kesalahan saat mengubah visibilitas rapor.',
+        });
+      }
     }),
 });
