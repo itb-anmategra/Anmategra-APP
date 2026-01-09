@@ -120,7 +120,7 @@ export const SearchBar = ({
                   {previewData.mahasiswa.map((mahasiswa) => (
                     <Link
                       key={mahasiswa.userId}
-                      href={`/mahasiswa/profile-mahasiswa/${mahasiswa.userId}`}
+                      href={`/profile-mahasiswa/${mahasiswa.userId}`}
                       onClick={handleLinkClick}
                       className="block px-4 py-3 hover:bg-gray-50 transition-colors"
                     >
