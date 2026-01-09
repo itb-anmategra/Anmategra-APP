@@ -22,7 +22,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER mahasiswa_after_insert_nama
-AFTER INSERT ON anmategra_mahasiswa
+BEFORE INSERT ON anmategra_mahasiswa
 FOR EACH ROW
 EXECUTE FUNCTION sync_mahasiswa_nama();
 
