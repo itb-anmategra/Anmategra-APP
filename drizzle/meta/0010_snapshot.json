@@ -1,6 +1,6 @@
 {
-  "id": "bff3dfc1-b145-451e-ae65-2bdefc0b1d71",
-  "prevId": "30fd4e2b-9dc1-4dc7-99a4-25bc84217495",
+  "id": "46f9d1d5-d6f3-4c74-9fc9-25acdf6d0b06",
+  "prevId": "c1af4ef4-1e00-40a6-a4fb-3432a893f283",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -541,6 +541,12 @@
           "notNull": true,
           "default": false
         },
+        "organogram_image": {
+          "name": "organogram_image",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -616,7 +622,29 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "keanggotaan_event_user_unique": {
+          "name": "keanggotaan_event_user_unique",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "anmategra_keanggotaan_event_id_anmategra_event_id_fk": {
           "name": "anmategra_keanggotaan_event_id_anmategra_event_id_fk",
@@ -683,7 +711,29 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "kehimpunan_lembaga_user_unique": {
+          "name": "kehimpunan_lembaga_user_unique",
+          "columns": [
+            {
+              "expression": "lembaga_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "anmategra_kehimpunan_user_id_anmategra_user_id_fk": {
           "name": "anmategra_kehimpunan_user_id_anmategra_user_id_fk",
@@ -1457,7 +1507,8 @@
           "type": "support_status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'Draft'"
         },
         "attachment": {
           "name": "attachment",
@@ -1748,7 +1799,7 @@
         "Draft",
         "In Progress",
         "Resolved",
-        "Backlog"
+        "Reported"
       ]
     },
     "public.support_urgent": {

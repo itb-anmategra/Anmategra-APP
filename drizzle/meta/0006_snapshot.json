@@ -1749,7 +1749,7 @@
         "Draft",
         "In Progress",
         "Resolved",
-        "Reported"
+        "Backlog"
       ]
     },
     "public.support_urgent": {

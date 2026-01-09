@@ -71,6 +71,13 @@
       "when": 1767859829982,
       "tag": "0009_lying_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1767934007992,
+      "tag": "0010_serious_midnight",
+      "breakpoints": true
     }
   ]
 }
