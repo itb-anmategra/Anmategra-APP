@@ -85,6 +85,27 @@
       "when": 1767943892830,
       "tag": "0011_public_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1767962949798,
+      "tag": "0012_wealthy_madame_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1767963177942,
+      "tag": "0013_same_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1767965765992,
+      "tag": "0014_burly_mentor",
+      "breakpoints": true
     }
   ]
 }

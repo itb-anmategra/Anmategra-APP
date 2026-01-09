@@ -142,6 +142,8 @@ export const mahasiswa = createTable('mahasiswa', {
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
   nim: integer('nim').notNull(),
+  nimTpb: integer('nim_tpb'),
+  nama: varchar('nama', { length: 255 }),               // redundant column for performance
   jurusan: varchar('jurusan', { length: 255 }).notNull(),
   angkatan: integer('angkatan').notNull(),
   lineId: varchar('line_id', { length: 255 }),
