@@ -23,6 +23,7 @@ export default async function Home() {
     is_highlighted: event.is_highlighted,
     is_organogram: event.is_organogram,
     background_image: event.background_image,
+    rapor_visible: event.rapor_visible,
   }));
 
   const session = await getServerAuthSession();

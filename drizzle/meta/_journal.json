@@ -78,6 +78,13 @@
       "when": 1767934007992,
       "tag": "0010_serious_midnight",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1767943892830,
+      "tag": "0011_public_queen_noir",
+      "breakpoints": true
     }
   ]
 }

@@ -1,10 +1,15 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq, inArray } from 'drizzle-orm';
-import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  lembagaProcedure,
+  protectedProcedure,
+} from '~/server/api/trpc';
 import {
   events,
   keanggotaan,
   kehimpunan,
+  lembaga,
   mahasiswa,
   nilaiProfilKegiatan,
   nilaiProfilLembaga,
@@ -88,7 +93,13 @@ export const raporRouter = createTRPCRouter({
           }
           nilaiPerMahasiswa.get(n.user_id)!.push({
             profil_id: n.profil_id,
-            nilai: n.nilai ? (n.nilai < 0 ? 0 : n.nilai > 100 ? 100 : n.nilai) : 0,
+            nilai: n.nilai
+              ? n.nilai < 0
+                ? 0
+                : n.nilai > 100
+                  ? 100
+                  : n.nilai
+              : 0,
           });
         }
 
@@ -118,10 +129,20 @@ export const raporRouter = createTRPCRouter({
       try {
         const event = await ctx.db.query.events.findFirst({
           where: (event, { eq }) => eq(event.id, input.event_id),
-          columns: { org_id: true },
+          columns: { org_id: true, rapor_visible: true },
         });
 
-        if (!event || event.org_id !== ctx.session.user.lembagaId) {
+        if (!event) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Event tidak ditemukan.',
+          });
+        }
+
+        if (
+          !event.rapor_visible &&
+          event.org_id !== ctx.session.user.lembagaId
+        ) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Access denied to this event.',
@@ -353,7 +374,18 @@ export const raporRouter = createTRPCRouter({
     .output(GetNilaiLembagaIndividuOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
-        if (ctx.session.user.lembagaId !== input.lembaga_id) {
+        const [lembagaUser] = await ctx.db.select().from(lembaga).where(
+          eq(lembaga.id, input.lembaga_id),
+        ).limit(1);
+
+        if (!lembagaUser) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Lembaga tidak ditemukan.',
+          });
+        }
+
+        if (!lembaga.raporVisible && ctx.session.user.lembagaId !== input.lembaga_id) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Access denied to this lembaga.',
@@ -489,6 +521,208 @@ export const raporRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal mengupdate nilai mahasiswa.',
+        });
+      }
+    }),
+
+  // Public procedures for mahasiswa to view rapor if visible
+  getNilaiKegiatanIndividuPublic: protectedProcedure
+    .input(GetNilaiKegiatanIndividuInputSchema)
+    .output(GetNilaiKegiatanIndividuOutputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const event = await ctx.db.query.events.findFirst({
+          where: (event, { eq }) => eq(event.id, input.event_id),
+          columns: { org_id: true, rapor_visible: true },
+          with: {
+            lembaga: {
+              columns: { id: true },
+            },
+          },
+        });
+
+        if (!event) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Event tidak ditemukan',
+          });
+        }
+
+        if (!event.rapor_visible) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Rapor tidak dapat diakses',
+          });
+        }
+
+        const mhs = await ctx.db
+          .select({
+            user_id: keanggotaan.user_id,
+            name: users.name,
+            nim: mahasiswa.nim,
+            jurusan: mahasiswa.jurusan,
+            lineId: mahasiswa.lineId,
+            whatsapp: mahasiswa.whatsapp,
+            division: keanggotaan.division,
+            position: keanggotaan.position,
+          })
+          .from(keanggotaan)
+          .innerJoin(mahasiswa, eq(mahasiswa.userId, keanggotaan.user_id))
+          .innerJoin(users, eq(users.id, keanggotaan.user_id))
+          .where(
+            and(
+              eq(keanggotaan.event_id, input.event_id),
+              eq(keanggotaan.user_id, input.mahasiswa_id),
+            ),
+          )
+          .limit(1);
+
+        if (!mhs.length)
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Mahasiswa tidak ditemukan',
+          });
+
+        const dataMahasiswa = mhs[0]!;
+
+        const nilaiList = await ctx.db
+          .select({
+            profil_id: nilaiProfilKegiatan.profilId,
+            nilai: nilaiProfilKegiatan.nilai,
+          })
+          .from(nilaiProfilKegiatan)
+          .innerJoin(
+            profilKegiatan,
+            eq(nilaiProfilKegiatan.profilId, profilKegiatan.id),
+          )
+          .where(
+            and(
+              eq(profilKegiatan.eventId, input.event_id),
+              eq(nilaiProfilKegiatan.mahasiswaId, input.mahasiswa_id),
+            ),
+          );
+
+        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
+          profil_id,
+          nilai: nilai ?? 0,
+        }));
+
+        return {
+          user_id: dataMahasiswa.user_id,
+          name: dataMahasiswa.name ?? '',
+          nim: dataMahasiswa.nim.toString() ?? '',
+          jurusan: dataMahasiswa.jurusan ?? '',
+          lineId: dataMahasiswa.lineId ?? '',
+          whatsapp: dataMahasiswa.whatsapp ?? '',
+          division: dataMahasiswa.division ?? '',
+          position: dataMahasiswa.position ?? '',
+          nilai: formattedNilaiList,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengambil nilai individu',
+        });
+      }
+    }),
+
+  getNilaiLembagaIndividuPublic: protectedProcedure
+    .input(GetNilaiLembagaIndividuInputSchema)
+    .output(GetNilaiLembagaIndividuOutputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const lembagaData = await ctx.db.query.lembaga.findFirst({
+          where: (lembaga, { eq }) => eq(lembaga.id, input.lembaga_id),
+          columns: { id: true, raporVisible: true },
+        });
+
+        if (!lembagaData) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Lembaga tidak ditemukan',
+          });
+        }
+
+        if (!lembagaData.raporVisible) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Rapor tidak dapat diakses',
+          });
+        }
+
+        const mhs = await ctx.db
+          .select({
+            user_id: kehimpunan.userId,
+            name: users.name,
+            nim: mahasiswa.nim,
+            jurusan: mahasiswa.jurusan,
+            lineId: mahasiswa.lineId,
+            whatsapp: mahasiswa.whatsapp,
+            division: kehimpunan.division,
+            position: kehimpunan.position,
+          })
+          .from(kehimpunan)
+          .innerJoin(mahasiswa, eq(mahasiswa.userId, kehimpunan.userId))
+          .innerJoin(users, eq(users.id, kehimpunan.userId))
+          .where(
+            and(
+              eq(kehimpunan.lembagaId, input.lembaga_id),
+              eq(kehimpunan.userId, input.mahasiswa_id),
+            ),
+          )
+          .limit(1);
+
+        if (!mhs.length)
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Mahasiswa tidak ditemukan',
+          });
+
+        const dataMahasiswa = mhs[0]!;
+
+        const nilaiList = await ctx.db
+          .select({
+            profil_id: nilaiProfilLembaga.profilId,
+            nilai: nilaiProfilLembaga.nilai,
+          })
+          .from(nilaiProfilLembaga)
+          .innerJoin(
+            profilLembaga,
+            eq(nilaiProfilLembaga.profilId, profilLembaga.id),
+          )
+          .where(
+            and(
+              eq(profilLembaga.lembagaId, input.lembaga_id),
+              eq(nilaiProfilLembaga.mahasiswaId, input.mahasiswa_id),
+            ),
+          );
+
+        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
+          profil_id,
+          nilai: nilai ?? 0,
+        }));
+
+        return {
+          user_id: dataMahasiswa.user_id,
+          name: dataMahasiswa.name ?? '',
+          nim: dataMahasiswa.nim.toString() ?? '',
+          jurusan: dataMahasiswa.jurusan ?? '',
+          lineId: dataMahasiswa.lineId ?? '',
+          whatsapp: dataMahasiswa.whatsapp ?? '',
+          division: dataMahasiswa.division ?? '',
+          position: dataMahasiswa.position ?? '',
+          nilai: formattedNilaiList,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengambil nilai individu lembaga',
         });
       }
     }),

@@ -1,5 +1,6 @@
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import RaporTable from '~/app/_components/rapor/rapor-table';
+import RaporVisibilitySwitch from '~/app/_components/rapor/rapor-visibility-switch';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 
@@ -36,9 +37,16 @@ export default async function RaporPage({ params }: RaporPageProps) {
 
   return (
     <main className="flex flex-col p-8 min-h-screen">
-      <h1 className="text-[32px] font-semibold mb-2">
-        Rapor Panitia {event?.name ?? ''}
-      </h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-[32px] font-semibold">
+          Rapor Panitia {event?.name ?? ''}
+        </h1>
+        <RaporVisibilitySwitch
+          type="event"
+          id={event_id}
+          initialValue={event?.rapor_visible ?? false}
+        />
+      </div>
       <RaporBreadcrumb
         items={[
           { label: 'Kegiatan', href: `/kegiatan/${event_id}/panitia` },

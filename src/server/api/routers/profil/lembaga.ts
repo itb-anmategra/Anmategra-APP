@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
-import { createTRPCRouter, lembagaProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, lembagaProcedure, protectedProcedure } from '~/server/api/trpc';
 import {
   CreateProfilLembagaInputSchema,
   CreateProfilLembagaOutputSchema,
@@ -23,7 +23,7 @@ import {
 } from './services';
 
 export const profileLembagaRouter = createTRPCRouter({
-  getAllProfilLembaga: lembagaProcedure
+  getAllProfilLembaga: protectedProcedure
     .input(GetAllProfilLembagaInputSchema)
     .output(GetAllProfilOutputSchema)
     .query(async ({ ctx, input }) => {

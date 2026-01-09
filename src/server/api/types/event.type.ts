@@ -24,6 +24,7 @@ export const CreateEventInputSchema = z.object({
   is_organogram: z.boolean().optional(),
   background_image: z.string().url().optional(),
   organogram_image: z.string().url().or(z.literal('')).optional(),
+  rapor_visible: z.boolean().optional(),
 });
 
 export const CreateEventOutputSchema = z.custom<Event>();
@@ -106,4 +107,14 @@ export const ToggleHighlightInputSchema = z.object({
 export const ToggleHighlightOutputSchema = z.object({
   success: z.boolean(),
   is_highlighted: z.boolean(),
+});
+
+export const ToggleRaporVisibilityInputSchema = z.object({
+  id: z.string(),
+  rapor_visible: z.boolean(),
+});
+
+export const ToggleRaporVisibilityOutputSchema = z.object({
+  success: z.boolean(),
+  rapor_visible: z.boolean(),
 });

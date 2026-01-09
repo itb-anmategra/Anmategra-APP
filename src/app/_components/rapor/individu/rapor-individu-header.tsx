@@ -24,12 +24,14 @@ export type HeaderDataProps = {
   dataNilaiProfil: NilaiKegiatanOutput | null;
   id: string;
   isLembaga?: boolean;
+  canEdit?: boolean;
 };
 
 export default function RaporIndividuHeader({
   dataNilaiProfil,
   id,
   isLembaga,
+  canEdit = true,
 }: HeaderDataProps) {
   const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
     dataNilaiProfil?.nilai ? dataNilaiProfil.nilai : [],
@@ -210,21 +212,23 @@ export default function RaporIndividuHeader({
           </div>
         </div>
 
-        <div className="w-full lg:w-auto flex-shrink-0">
-          <FormNilaiProfil
-            initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
-              id: profil.profil_id,
-              value: profil.nilai ?? 0,
-            }))}
-            onSave={(updatedProfiles) => {
-              const updatedNilaiProfils = updatedProfiles.map((p) => ({
-                profil_id: p.id,
-                nilai: p.value ?? 0,
-              }));
-              handleUpdateNilaiProfilChange(updatedNilaiProfils);
-            }}
-          />
-        </div>
+        {canEdit && (
+          <div className="w-full lg:w-auto flex-shrink-0">
+            <FormNilaiProfil
+              initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
+                id: profil.profil_id,
+                value: profil.nilai ?? 0,
+              }))}
+              onSave={(updatedProfiles) => {
+                const updatedNilaiProfils = updatedProfiles.map((p) => ({
+                  profil_id: p.id,
+                  nilai: p.value ?? 0,
+                }));
+                handleUpdateNilaiProfilChange(updatedNilaiProfils);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="w-full">
