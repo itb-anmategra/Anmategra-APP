@@ -47,8 +47,20 @@ export const GetTambahAnggotaKegiatanOptionsInputSchema = z.object({
   kegiatanId: z.string(),
 });
 
-export const GetTambahAnggotaKegiatanOptionsOutputSchema =
-  GetTambahAnggotaLembagaOptionsOutputSchema;
+export const GetTambahAnggotaKegiatanOptionsOutputSchema = z.object({
+  posisi: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+  ),
+  bidang: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+  ),
+});
 
 export const EditProfilMahasiswaInputSchema = z.object({
   image: z.string().url().optional(),
