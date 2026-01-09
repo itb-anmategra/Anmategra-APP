@@ -9,7 +9,7 @@ import LineLogo from 'public/icons/line-icon.png';
 import TwitterLogo from 'public/icons/twitter-icon.png';
 import AnmategraLogo from 'public/images/logo/anmategra-logo.png';
 // Assets Import
-import KMLogo from 'public/images/logo/kmitb-logo.png';
+import KMLogo from 'public/images/logo/kmitb-logo.jpeg';
 import PSDMLogo from 'public/images/logo/psdm-logo.png';
 import React from 'react';
 
