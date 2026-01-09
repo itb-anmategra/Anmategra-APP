@@ -306,8 +306,6 @@ export const landingRouter = createTRPCRouter({
           .limit(2),
       ]);
 
-      console.log(mahasiswaRes, lembagaRes, kegiatanRes);
-
       return {
         mahasiswa: mahasiswaRes.map((m) => ({
           userId: m.userId,

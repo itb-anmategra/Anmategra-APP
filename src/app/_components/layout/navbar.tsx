@@ -276,7 +276,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
               <nav className="flex items-center flex-shrink-0">
                 {session ? (
                   <Link
-                    href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}
+                    href={`/profile-mahasiswa/${session.user.id}`}
                   >
                     {user?.image ? (
                       <Image
