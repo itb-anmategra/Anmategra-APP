@@ -95,6 +95,7 @@ export const profileRouter = createTRPCRouter({
           foundingDate: true,
           endingDate: true,
           type: true,
+          raporVisible: true,
         },
       });
 

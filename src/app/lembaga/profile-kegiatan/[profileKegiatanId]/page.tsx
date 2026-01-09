@@ -6,7 +6,7 @@ import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
-import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
+import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -140,11 +140,12 @@ const ProfileKegiatan = async ({
           </div>
         )}
 
-        <ProfileKegiatanComp
+        <ProfileAnggotaComp
           anggota={participant ?? []}
           session={session}
-          kegiatanId={query ?? ''}
+          kegiatanLembagaId={query ?? ''}
           raporVisible={kegiatan?.rapor_visible ?? false}
+          isKegiatan={true}
         />
       </div>
     </div>

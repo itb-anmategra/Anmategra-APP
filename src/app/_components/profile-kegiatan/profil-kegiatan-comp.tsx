@@ -12,10 +12,11 @@ import React from 'react';
 // Components Import
 import { Input } from '~/components/ui/input';
 
-const ProfileKegiatanComp = ({
+const ProfileAnggotaComp = ({
   anggota,
   session,
-  kegiatanId,
+  kegiatanLembagaId,
+  isKegiatan,
   raporVisible = false,
 }: {
   anggota: {
@@ -28,7 +29,8 @@ const ProfileKegiatanComp = ({
     divisi: string | null;
   }[];
   session?: Session | null;
-  kegiatanId: string;
+  kegiatanLembagaId?: string;
+  isKegiatan: boolean;
   raporVisible?: boolean;
 }) => {
   const [search, setSearch] = React.useState<string>('');
@@ -130,7 +132,7 @@ const ProfileKegiatanComp = ({
                 {raporVisible && (
                   <button className="text-xs sm:text-sm md:text-base text-emerald-600 font-semibold">
                     <Link
-                      href={`/mahasiswa/profile-kegiatan/${kegiatanId}/rapor/${item.id}`}
+                      href={`/${isKegiatan ? 'profile-kegiatan' : 'profile-lembaga'}/${kegiatanLembagaId}/rapor/${item.id}`}
                     >
                       {' '}
                       Lihat Rapor
@@ -163,4 +165,4 @@ const ProfileKegiatanComp = ({
   );
 };
 
-export default ProfileKegiatanComp;
+export default ProfileAnggotaComp;

@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
 import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 // Asset Import
 import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
+import { useState } from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
-import ProfileKegiatanComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
+import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
 import { Button } from '~/components/ui/button';
 
@@ -22,7 +22,7 @@ export default function ProfileLembagaContent({
   highlightedEvent,
   anggota,
   latestBestStaff,
-  isLembaga
+  isLembaga,
 }: {
   lembagaId: string;
   session: any;
@@ -41,8 +41,8 @@ export default function ProfileLembagaContent({
       {isEditMode && (
         <div className="w-full overflow-y-auto">
           <div className="max-w-7xl mx-auto py-6">
-            <EditProfileLembaga 
-              lembagaData={lembagaData} 
+            <EditProfileLembaga
+              lembagaData={lembagaData}
               isEdit={isEditMode}
               setIsEdit={setIsEditMode}
             />
@@ -51,50 +51,51 @@ export default function ProfileLembagaContent({
       )}
 
       <div className="flex max-w-7xl w-full flex-col gap-4">
-
-      {!isEditMode && (
-        <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
-          <div className="flex flex-col">
-            <h1 className="text-xl md:text-2xl font-semibold text-slate-600">Beranda</h1>
-            <p className="text-slate-400">Beranda / Nama Lembaga</p>
-          </div>
-          <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-x-10 py-12 transition-all duration-500 ease-in-out">
-            <div className='w-full md:w-3/4 flex flex-col gap-8 items-center justify-center'>
-              <div className='w-full flex flex-col sm:flex-row gap-8 items-center justify-center'>
-                <div className="flex-shrink-0">
-                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-gray-200">
-                  <Image
-                    src={lembagaData?.users.image ?? DummyFotoLembaga}
-                    alt="Foto Lembaga"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 224px"
-                    priority
+        {!isEditMode && (
+          <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
+            <div className="flex flex-col">
+              <h1 className="text-xl md:text-2xl font-semibold text-slate-600">
+                Beranda
+              </h1>
+              <p className="text-slate-400">Beranda / Nama Lembaga</p>
+            </div>
+            <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-x-10 py-12 transition-all duration-500 ease-in-out">
+              <div className="w-full md:w-3/4 flex flex-col gap-8 items-center justify-center">
+                <div className="w-full flex flex-col sm:flex-row gap-8 items-center justify-center">
+                  <div className="flex-shrink-0">
+                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden bg-gray-200">
+                      <Image
+                        src={lembagaData?.users.image ?? DummyFotoLembaga}
+                        alt="Foto Lembaga"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 224px"
+                        priority
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-4 text-center md:text-left flex-1">
+                    <div className="space-y-2">
+                      <p className="text-xl md:text-3xl text-slate-600 font-semibold">
+                        {lembagaData?.name}
+                      </p>
+                      <p className="text-sm md:text-xl text-slate-400">
+                        {lembagaData?.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {is_user_owner && (
+                  <EditProfileLembaga
+                    lembagaData={lembagaData}
+                    isEdit={false}
+                    setIsEdit={setIsEditMode}
                   />
-                  </div>
-                </div>
-                <div className="space-y-4 text-center md:text-left flex-1">
-                  <div className="space-y-2">
-                  <p className="text-xl md:text-3xl text-slate-600 font-semibold">
-                    {lembagaData?.name}
-                  </p>
-                  <p className="text-sm md:text-xl text-slate-400">
-                    {lembagaData?.description}
-                  </p>
-                  </div>
-                </div>
+                )}
               </div>
-              {is_user_owner && (
-              <EditProfileLembaga 
-                lembagaData={lembagaData} 
-                isEdit={false}
-                setIsEdit={setIsEditMode}
-              />
-              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* Highlighted Event */}
         {highlightedEvent && (
@@ -162,10 +163,7 @@ export default function ProfileLembagaContent({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {newestEvent && newestEvent.length !== 0 ? (
               newestEvent.map((item) => (
-                <Link
-                  href={`/profile-kegiatan/${item.id}`}
-                  key={item.id}
-                >
+                <Link href={`/profile-kegiatan/${item.id}`} key={item.id}>
                   <KepanitiaanCard kepanitiaan={item} />
                 </Link>
               ))
@@ -174,9 +172,14 @@ export default function ProfileLembagaContent({
             )}
           </div>
         </div>
-        <ProfileKegiatanComp anggota={anggota ?? []} session={session}/>
+        <ProfileAnggotaComp
+          anggota={anggota ?? []}
+          session={session}
+          kegiatanLembagaId={lembagaId}
+          raporVisible={lembagaData?.raporVisible ?? false}
+          isKegiatan={false}
+        />
       </div>
-      
     </div>
   );
-};
+}
