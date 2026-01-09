@@ -49,17 +49,16 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg sm:text-xl md:text-2xl text-Blue-Dark font-semibold my-2">
-              Kementerian Riset dan Sistematisasi <br className="hidden sm:block" />
-              Sumber Daya Manusia
+              Kementerian Sinergi Kaderisasi<br className="hidden sm:block" />
             </h3>
             <p className="text-sm md:text-base text-Blue-Dark leading-5">
               Kemenkoan Pengembangan Sumber Daya Manusia <br className="hidden sm:block" /> Kabinet
-              "Restorasi marwah" KM ITB 2024/2025
+              "Ameliorasi" KM ITB 2025/2026
             </p>
           </div>
           <div className="py-2">
             <p className="text-Blue-Dark text-sm md:text-[16px]">
-              Copyright © Anmategra 2024
+              Copyright © Anmategra 2025
             </p>
           </div>
         </div>
@@ -68,21 +67,21 @@ const Footer = () => {
             <h5 className="text-Blue-Dark text-lg md:text-xl font-medium">Narahubung</h5>
             <div>
               <p className="font-semibold text-Blue-Dark text-sm md:text-base">
-                Mohammad Ari Alexander Aziz
+                Albertus Christian Poandy
               </p>
               <div className="flex items-center gap-x-2">
                 <Image src={LineLogo} alt="Logo Line" width={16} height={16} />
-                <p className="text-Blue-Dark text-sm">arialexander2</p>
+                <p className="text-Blue-Dark text-sm">chrisp15</p>
               </div>
             </div>
             <div className="py-[1px]" />
             <div>
               <p className="font-semibold text-Blue-Dark text-sm md:text-base">
-                Rizqi Andhika Pratama
+                Grace Evelyn Simon
               </p>
               <div className="flex items-center gap-x-2">
                 <Image src={LineLogo} alt="Logo Line" width={16} height={16} />
-                <p className="text-Blue-Dark text-sm">rizqi_rap</p>
+                <p className="text-Blue-Dark text-sm">graceevelyns</p>
               </div>
             </div>
           </div>
