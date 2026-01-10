@@ -62,6 +62,7 @@ const SIDEBAR_ITEMS_LEMBAGA: SidebarItemType[] = [
 
 const SIDEBAR_ITEMS_MAHASISWA: SidebarItemType[] = [
   { label: 'Beranda', href: '/mahasiswa', icon: <HomeIcon /> },
+  { label: 'Kegiatan', href: '/mahasiswa/kegiatan', icon: <CalendarIcon /> },
   {
     label: 'Laporan',
     href: '/mahasiswa/laporan',

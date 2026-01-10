@@ -1,4 +1,5 @@
-import { and, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, eq, gt, ilike, inArray, lt, or, sql } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   createTRPCRouter,
@@ -11,6 +12,8 @@ import { type Kepanitiaan } from '~/types/kepanitiaan';
 import {
   GetRecentEventsOutputSchema,
   GetTopEventsOutputSchema,
+  GetAllEventsInputSchema,
+  GetAllEventsOutputSchema,
   SearchAllOutputSchema,
   SearchAllQueryInputSchema,
   searchPreviewInputSchema,
@@ -22,11 +25,7 @@ export const landingRouter = createTRPCRouter({
     .input(z.void())
     .output(GetRecentEventsOutputSchema)
     .query(async ({ ctx }) => {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
       const events = await ctx.db.query.events.findMany({
-        where: (events, { gte }) => gte(events.start_date, oneMonthAgo),
         orderBy: (events, { desc }) => desc(events.start_date),
         with: {
           lembaga: {
@@ -63,6 +62,131 @@ export const landingRouter = createTRPCRouter({
       }));
 
       return formattedEvents;
+    }),
+
+  getAllEvents: publicProcedure
+    .input(GetAllEventsInputSchema)
+    .output(GetAllEventsOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 8;
+      const sort = input.sort ?? 'newest';
+      let cursorDate: Date | undefined;
+      let cursorId: string | undefined;
+      let cursorCount: number | undefined;
+
+      if (input.cursor) {
+        const [datePart, idPart] = input.cursor.split('|');
+        if (datePart && idPart) {
+          if (sort === 'most_participants') {
+            cursorCount = Number(datePart);
+          } else {
+            cursorDate = new Date(datePart);
+          }
+          cursorId = idPart;
+        }
+      }
+
+      const conditions: SQL<unknown>[] = [];
+      if (sort === 'newest' && cursorDate && cursorId) {
+        const date = cursorDate;
+        const id = cursorId;
+        conditions.push(
+          or(
+            lt(events.start_date, date),
+            and(eq(events.start_date, date), lt(events.id, id)),
+          ) as SQL,
+        );
+      }
+      if (sort === 'oldest' && cursorDate && cursorId) {
+        const date = cursorDate;
+        const id = cursorId;
+        conditions.push(
+          or(
+            gt(events.start_date, date),
+            and(eq(events.start_date, date), gt(events.id, id)),
+          ) as SQL,
+        );
+      }
+      if (
+        sort === 'most_participants' &&
+        cursorCount !== undefined &&
+        cursorId
+      ) {
+        const count = cursorCount;
+        const id = cursorId;
+        conditions.push(
+          or(
+            lt(events.participant_count, count),
+            and(eq(events.participant_count, count), lt(events.id, id)),
+          ) as SQL,
+        );
+      }
+
+      if (input.status && input.status.length > 0) {
+        conditions.push(inArray(events.status, input.status));
+      }
+
+      const orderBy =
+        sort === 'oldest'
+          ? (events, { asc }) => [asc(events.start_date), asc(events.id)]
+          : sort === 'most_participants'
+            ? (events, { desc }) => [
+                desc(events.participant_count),
+                desc(events.id),
+              ]
+            : (events, { desc }) => [desc(events.start_date), desc(events.id)];
+
+      const list = await ctx.db.query.events.findMany({
+        where: conditions.length > 0 ? and(...conditions) : undefined,
+        orderBy,
+        with: {
+          lembaga: {
+            with: {
+              users: {},
+            },
+          },
+        },
+        limit: limit + 1,
+        columns: {
+          id: true,
+          name: true,
+          description: true,
+          image: true,
+          start_date: true,
+          end_date: true,
+          participant_count: true,
+          background_image: true,
+        },
+      });
+
+      const hasMore = list.length > limit;
+      const sliced = hasMore ? list.slice(0, limit) : list;
+
+      const formattedEvents: Kepanitiaan[] = sliced.map((item) => ({
+        lembaga: {
+          name: item.lembaga?.name ?? '',
+          profilePicture: item.lembaga?.users.image ?? '',
+        },
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        image: item.background_image,
+        anggotaCount: item.participant_count ?? 0,
+        startDate: new Date(item.start_date),
+        endDate: item.end_date ? new Date(item.end_date) : null,
+      }));
+
+      const lastItem = sliced[sliced.length - 1];
+      const nextCursor =
+        hasMore && lastItem
+          ? sort === 'most_participants'
+            ? `${lastItem.participant_count ?? 0}|${lastItem.id}`
+            : `${new Date(lastItem.start_date).toISOString()}|${lastItem.id}`
+          : null;
+      return {
+        events: formattedEvents,
+        nextCursor,
+      };
     }),
 
   getTopEvents: publicProcedure
