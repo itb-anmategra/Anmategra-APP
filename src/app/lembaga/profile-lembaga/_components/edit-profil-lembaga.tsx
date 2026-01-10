@@ -18,16 +18,26 @@ import {
   FormMessage,
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select';
 import { Textarea } from '~/components/ui/textarea';
 import { useToast } from '~/hooks/use-toast';
 import { api } from '~/trpc/react';
 import { UploadButton } from '~/utils/uploadthing';
+
+const lembagaTypeOptions = ['Himpunan', 'UKM', 'Kepanitiaan'] as const;
 
 const profileLembagaSchema = z.object({
   nama: z
     .string()
     .min(1, 'Nama wajib diisi')
     .max(30, 'Nama maksimal 30 karakter'),
+  tipe: z.enum(lembagaTypeOptions).optional(),
   deskripsi: z
     .string()
     .min(10, 'Deskripsi minimal 10 karakter')
@@ -45,6 +55,7 @@ const EditProfileLembaga = ({
     id: string;
     name: string;
     description: string | null;
+    type?: (typeof lembagaTypeOptions)[number] | null;
     users: {
       image: string | null;
     };
@@ -59,6 +70,7 @@ const EditProfileLembaga = ({
     resolver: zodResolver(profileLembagaSchema),
     defaultValues: {
       nama: lembagaData.name ?? '',
+      tipe: lembagaData.type ?? undefined,
       deskripsi: lembagaData.description ?? '',
       gambar: lembagaData.users.image ?? '',
     },
@@ -211,6 +223,37 @@ const EditProfileLembaga = ({
                             {...field}
                             className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm md:text-base"
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Tipe Lembaga */}
+                  <FormField
+                    control={form.control}
+                    name="tipe"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-neutral-1000 text-sm md:text-lg">
+                          Tipe Lembaga
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className="border rounded-xl border-neutral-400 bg-neutral-200 text-sm md:text-base">
+                              <SelectValue placeholder="Pilih tipe lembaga" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {lembagaTypeOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

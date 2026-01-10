@@ -384,10 +384,10 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
 
         <DialogContent
           className={`
-            p-0 rounded-[20px] border bg-white [&>button]:hidden
+            p-0 rounded-[20px] border bg-white max-h-[85vh] overflow-y-auto [&>button]:hidden
             ${isMaximized
               ? 'w-[95vw] h-[95vh] max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
-              : 'w-[95vw] max-w-[520px] max-h-[90vh] sm:w-[1000px] sm:h-[384px] sm:max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
+              : 'w-[92vw] max-w-[460px] sm:w-[820px] sm:max-w-none left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2'
             }
           `}
           aria-describedby={undefined}
@@ -396,7 +396,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
             {editMode ? 'Edit Laporan' : 'Buat Laporan Baru'}
           </DialogTitle>
           <div
-            className="flex flex-col h-full overflow-y-auto pt-6 pr-4 pb-5 pl-4 sm:pt-8 sm:pr-6 sm:pb-4 sm:pl-6 gap-6 sm:gap-8"
+            className="flex flex-col pt-5 pr-4 pb-4 pl-4 sm:pt-6 sm:pr-5 sm:pb-4 sm:pl-5 gap-5 sm:gap-6"
           >
             {/* Header */}
             <div className="flex flex-col gap-4 w-full">
@@ -538,7 +538,7 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                     placeholder="Judul Laporan"
                     maxLength={50}
                     disabled={isAdmin}
-                    className="w-full h-[56px] sm:h-[60px] text-[20px] sm:text-[32px] leading-[28px] sm:leading-[40px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
+                    className="w-full h-[52px] sm:h-[56px] text-[18px] sm:text-[28px] leading-[26px] sm:leading-[36px] text-gray-700 font-bold border-none shadow-none focus-visible:ring-0 p-[10px]"
                   /> {/*text-[#9DA4A8] awalnya*/}
                 </CustomFormField>
 
@@ -550,11 +550,11 @@ const LaporanFormDialog: React.FC<LaporanFormDialogProps> = ({
                     }
                     placeholder="Deskripsi"
                     maxLength={400}
-                    rows={isMaximized ? 15 : 8}
+                    rows={isMaximized ? 12 : 6}
                     disabled={isAdmin}
-                    className={`w-full !font-[400] !text-[16px] sm:!text-[24px] !leading-[24px] sm:!leading-[32px] text-gray-600
+                    className={`w-full !font-[400] !text-[15px] sm:!text-[20px] !leading-[22px] sm:!leading-[28px] text-gray-600
                       border-none shadow-none focus-visible:ring-0 p-[10px] resize-none
-                      ${isMaximized ? 'min-h-[200px]' : 'min-h-[140px]'}`}
+                      ${isMaximized ? 'min-h-[180px]' : 'min-h-[120px]'}`}
                   />
                 </CustomFormField>
               </div>

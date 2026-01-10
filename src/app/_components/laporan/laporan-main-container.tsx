@@ -36,7 +36,7 @@ export const LaporanMainContainer = (Laporan: LaporanProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  const [display, setCurrentDisplay] = useState<CurrentDisplay>('Board');
+  const [display, setCurrentDisplay] = useState<CurrentDisplay>('List');
   const [editingReport, setEditingReport] = useState<ReportData | null>(null);
 
   const { data: searchData } = Laporan.isAdminView

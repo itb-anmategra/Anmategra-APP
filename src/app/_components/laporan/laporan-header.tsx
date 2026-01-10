@@ -169,7 +169,7 @@ export const LaporanHeader = ({
         </DropdownMenu>
 
         {/* Tambah Laporan */}
-        {!isLaporanEmpty && currentDisplay === 'Board' && !isAdminView && (
+        {!isLaporanEmpty && !isAdminView && (
           <LaporanFormDialog isAdmin={isAdminView ?? false} />
         )}
       </div>

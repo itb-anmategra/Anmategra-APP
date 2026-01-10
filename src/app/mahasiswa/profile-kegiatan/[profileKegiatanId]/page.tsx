@@ -23,6 +23,11 @@ const ProfileKegiatan = async ({
   });
 
   const session = await getServerAuthSession();
+  const userId = session?.user?.id;
+  const isParticipant = Boolean(
+    userId && participant?.some((member) => member.id === userId),
+  );
+  const shouldHideAjuanAsosiasi = isParticipant;
 
   let latestBestStaff: {
     start_date: string;
@@ -72,7 +77,7 @@ const ProfileKegiatan = async ({
               '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
             }
             eventId={kegiatan?.id ?? ''}
-            ajuanAsosiasi={Boolean(kegiatan?.id)}
+            ajuanAsosiasi={Boolean(kegiatan?.id) && !shouldHideAjuanAsosiasi}
             linkDaftar={kegiatan?.oprec_link}
             session={session}
           />

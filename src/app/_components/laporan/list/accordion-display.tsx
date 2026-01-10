@@ -10,7 +10,6 @@ import {
 
 import { type Report } from '../board/report-card';
 import { type ColumnType } from '../board/report-column';
-import LaporanFormDialog from '../detail/laporan-form';
 import Link from 'next/link';
 import { api } from '~/trpc/react';
 import { useToast } from '~/hooks/use-toast';
@@ -30,55 +29,92 @@ interface AccordionProps {
 type DataItem = Report & {
   onEdit?: () => void;
   onDelete?: () => void;
+  onSubmit?: () => void;
   column: ColumnType;
   isAdminView?: boolean;
 };
 
-export const ListDisplayItem = ({ id, name, date, category, onEdit, onDelete, column, isAdminView }: DataItem) => {
-  const showMenu = column === "Draft";
+export const ListDisplayItem = ({
+  id,
+  name,
+  date,
+  category,
+  onEdit,
+  onDelete,
+  onSubmit,
+  column,
+  isAdminView,
+}: DataItem) => {
+  const showMenu = column === "Draft" && !isAdminView;
+  const showSubmit = column === "Draft" && !isAdminView;
 
   return (
-    <li className="relative flex flex-row items-center justify-between gap-2 rounded-xl border-b p-4 text-[17px] text-[#636A6D] shadow-sm">
-      
+    <li className="relative flex flex-col gap-3 rounded-xl border-b p-4 text-[17px] text-[#636A6D] shadow-sm">
+      <div className="flex w-full items-start justify-between gap-3">
+        <Link
+          href={isAdminView ? `/admin/${id}` : `/laporan/${id}`}
+          className="min-w-0 flex-1"
+        >
+          <h1 className="truncate font-semibold text-[#2B6282]">{name}</h1>
+        </Link>
+        <div className="flex items-center gap-2">
+          {showSubmit && (
+            <Button
+              size="sm"
+              className="rounded-full bg-secondary-400 text-white hover:bg-secondary-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSubmit?.();
+              }}
+            >
+              Kirim
+            </Button>
+          )}
+          {showMenu && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger
+                className="text-2xl select-none"
+                onClick={(e) => e.stopPropagation()}
+              >
+                ...
+              </DropdownMenuTrigger>
 
-      <Link href={isAdminView ? `/admin/${id}` : `/laporan/${id}`} className="flex items-center justify-between w-full">
-        <h1 className="">{name}</h1>
-        <div className="flex flex-row items-center justify-evenly space-x-20">
-          <h2>{date}</h2>
-          <span className="border-[#636A6D] rounded-full border px-4 py-2 text-sm">
-            {category}
-          </span>
+              <DropdownMenuContent className="text-xl">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.();
+                  }}
+                >
+                  <Button variant="ghost" className="w-full justify-start">
+                    Edit
+                  </Button>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.();
+                  }}
+                >
+                  <Button variant="ghost" className="w-full justify-start">
+                    Delete
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
+      </div>
+      <Link
+        href={isAdminView ? `/admin/${id}` : `/laporan/${id}`}
+        className="flex w-full flex-wrap items-center gap-3 sm:flex-nowrap sm:gap-6"
+      >
+        <h2 className="text-sm text-[#768085]">{date}</h2>
+        <span className="border-[#636A6D] rounded-full border px-4 py-2 text-sm">
+          {category}
+        </span>
       </Link>
-      {showMenu && (
-        <div>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="text-2xl select-none" onClick={(e) => e.stopPropagation()}>
-              ...
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="text-xl">
-              <DropdownMenuItem onClick={(e) => {
-                e.stopPropagation();
-                onEdit?.();
-              }}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Edit
-                </Button>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.();
-              }}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Delete
-                </Button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
     </li>
   );
 };
@@ -92,6 +128,22 @@ export const AccordionDisplay = ({
   onRefresh,
 }: AccordionProps) => {
   const { toast } = useToast();
+  const submitReportMutation = api.users.submitReport.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Laporan berhasil diajukan',
+        description: 'Laporan telah berpindah ke status Reported.',
+      });
+      onRefresh?.();
+    },
+    onError: () => {
+      toast({
+        title: 'Gagal mengajukan laporan',
+        description: 'Terjadi kesalahan saat mengajukan laporan.',
+      });
+      onRefresh?.();
+    },
+  });
 
   const deleteReportMutation = api.users.deleteReport.useMutation({
     onSuccess: () => {
@@ -117,13 +169,21 @@ export const AccordionDisplay = ({
     }
   };
 
+  const handleSubmit = async (id: string) => {
+    try {
+      await submitReportMutation.mutateAsync({ id });
+    } catch (e) {
+      console.error('submitReport failed', e);
+    }
+  };
+
   return (
     <Accordion type="multiple">
       <AccordionItem value={title}>
         {/* Trigger */}
         <div>
           <div className="rounded-xl bg-[#E9EDF1] px-5 py-3">
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               {/* Kiri: Logo + Judul + Count */}
               <div className="flex items-center space-x-2">
                 <Image
@@ -137,7 +197,6 @@ export const AccordionDisplay = ({
               </div>
 
               {/* Kanan: Tombol Buat Laporan */}
-              {(!isAdminView && title === "Draft") && <LaporanFormDialog isAdmin={isAdminView ?? false} />}
             </div>
           </div>
         </div>
@@ -158,6 +217,7 @@ export const AccordionDisplay = ({
               isAdminView={isAdminView}
               onEdit={() => onEditReport?.(report)}
               onDelete={() => handleDelete(report.id)}
+              onSubmit={title === 'Draft' ? () => handleSubmit(report.id) : undefined}
             />
           ))}
         </ul>
