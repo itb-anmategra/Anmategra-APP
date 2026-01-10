@@ -600,6 +600,7 @@ export const lembagaRouter = createTRPCRouter({
         .set({
           name: input.nama,
           description: input.deskripsi,
+          ...(input.tipe ? { type: input.tipe } : {}),
         })
         .where(eq(lembaga.id, ctx.session.user.lembagaId!));
 

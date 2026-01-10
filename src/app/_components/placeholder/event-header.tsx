@@ -9,6 +9,7 @@ import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent } from '~/components/ui/dialog';
 import type { Session } from 'next-auth';
 import { api } from '~/trpc/react';
+import { useToast } from '~/hooks/use-toast';
 
 interface EventHeaderProps {
   title: string;
@@ -35,6 +36,7 @@ export function EventHeader({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const toast = useToast();
 
   const { data: myRequests } = api.users.getMyRequestAssociation.useQuery(
     undefined,
@@ -61,15 +63,27 @@ export function EventHeader({
         setIsSubmitted(false);
         setShowConfirmation(false);
         void utils.users.getMyRequestAssociation.invalidate();
+        toast.toast({
+          title: 'Ajuan dibatalkan',
+          description: 'Pengajuan asosiasi telah dibatalkan.',
+        });
       },
       onError: (err) => {
-        alert(err.message || 'Gagal membatalkan pengajuan.');
+        toast.toast({
+          title: 'Gagal membatalkan pengajuan',
+          description: err.message || 'Coba lagi nanti.',
+          variant: 'destructive',
+        });
       },
     });
 
   const handleConfirmCancel = () => {
     if (!eventId) {
-      alert('Event ID tidak tersedia.');
+      toast.toast({
+        title: 'Event ID tidak tersedia',
+        description: 'Silakan muat ulang halaman lalu coba lagi.',
+        variant: 'destructive',
+      });
       return;
     }
     deleteAssociationMutation.mutate({ event_id: eventId });

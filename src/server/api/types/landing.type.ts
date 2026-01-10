@@ -5,6 +5,24 @@ export const GetRecentEventsOutputSchema = z.array(z.custom<Kepanitiaan>());
 
 export const GetTopEventsOutputSchema = z.array(z.custom<Kepanitiaan>());
 
+export const GetAllEventsInputSchema = z.object({
+    limit: z.number().min(1).max(24).default(8),
+    cursor: z.string().optional(),
+    status: z.array(z.enum(['Coming Soon', 'On going', 'Ended'])).optional(),
+    sort: z
+        .enum([
+            'newest',
+            'oldest',
+            'most_participants',
+        ])
+        .optional(),
+});
+
+export const GetAllEventsOutputSchema = z.object({
+    events: z.array(z.custom<Kepanitiaan>()),
+    nextCursor: z.string().nullable(),
+});
+
 export const SearchAllQueryInputSchema = z.object({query: z.string()});
 
 export const MahasiswaSchema = z.object({
