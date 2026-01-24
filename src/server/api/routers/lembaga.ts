@@ -503,6 +503,12 @@ export const lembagaRouter = createTRPCRouter({
           success: true,
         };
       } catch (error) {
+        if (error instanceof Error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message ?? 'Gagal menambahkan anggota secara manual',
+          });
+        }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Gagal menambahkan anggota secara manual',
