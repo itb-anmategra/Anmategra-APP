@@ -1,10 +1,10 @@
 import React from 'react';
 
 import NilaiProfilCard from '../../card/nilai-profil-card';
-import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
+import { Profile } from '../../form/form-nilai-profil';
 
 type NilaiProfilCompProps = {
-  nilaiProfils?: NilaiProfilCardType[];
+  nilaiProfils?: Profile[];
   isLembaga?: boolean;
 };
 
@@ -22,7 +22,7 @@ export default function NilaiProfilComp({
         {nilaiProfils?.map((profil, index) => (
           <NilaiProfilCard
             key={index}
-            profil_id={'Profil ' + (index + 1)}
+            name={profil.profil_name}
             nilai={profil.nilai ?? 0}
           />
         ))}

@@ -110,7 +110,7 @@ export const KepanitiaanCard = ({
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              router.push(`/mahasiswa/profile-kegiatan/${kepanitiaan.id}/rapor/${mahasiswaId}`);
+              router.push(`/profile-kegiatan/${kepanitiaan.id}/rapor/${mahasiswaId}`);
             }}
           >
             Lihat Rapor →
