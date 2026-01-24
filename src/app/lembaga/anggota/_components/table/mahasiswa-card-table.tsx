@@ -53,9 +53,6 @@ type TableMeta = {
   session: Session | null;
   posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
   isKegiatan?: boolean;
-  isEditMode?: boolean;
-  onMoveUp?: (index: number) => void;
-  onMoveDown?: (index: number) => void;
 };
 
 function SortableRow({
@@ -65,6 +62,9 @@ function SortableRow({
   totalRows,
   onMoveUp,
   onMoveDown,
+  currentPage,
+  totalData,
+  itemsPerPage,
 }: {
   row: any;
   isEditMode: boolean;
@@ -72,6 +72,9 @@ function SortableRow({
   totalRows: number;
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
+  currentPage: number;
+  totalData: number;
+  itemsPerPage: number;
 }) {
   const {
     attributes,
@@ -114,7 +117,7 @@ function SortableRow({
               size="sm"
               className="h-8 w-8 p-0"
               onClick={() => onMoveUp(index)}
-              disabled={index === 0}
+              disabled={((currentPage - 1) * itemsPerPage + index) === 0}
             >
               <ChevronUp size={16} />
             </Button>
@@ -123,7 +126,7 @@ function SortableRow({
               size="sm"
               className="h-8 w-8 p-0"
               onClick={() => onMoveDown(index)}
-              disabled={index === totalRows - 1}
+              disabled={((currentPage - 1) * itemsPerPage + index) === totalData - 1}
             >
               <ChevronDown size={16} />
             </Button>
@@ -185,6 +188,11 @@ export function MahasiswaCardTable({
     const actualIndex = (currentPage - 1) * itemsPerPage + index;
     if (actualIndex > 0) {
       setLocalData((items) => arrayMove(items, actualIndex, actualIndex - 1));
+      const newIndex = actualIndex - 1;
+      const newPage = Math.floor(newIndex / itemsPerPage) + 1;
+      if (newPage !== currentPage) {
+        setTimeout(() => setCurrentPage(newPage), 0);
+      }
     }
   }, [currentPage, itemsPerPage]);
 
@@ -192,6 +200,11 @@ export function MahasiswaCardTable({
     const actualIndex = (currentPage - 1) * itemsPerPage + index;
     setLocalData((items) => {
       if (actualIndex < items.length - 1) {
+        const newIndex = actualIndex + 1;
+        const newPage = Math.floor(newIndex / itemsPerPage) + 1;
+        if (newPage !== currentPage) {
+          setTimeout(() => setCurrentPage(newPage), 0);
+        }
         return arrayMove(items, actualIndex, actualIndex + 1);
       }
       return items;
@@ -211,11 +224,8 @@ export function MahasiswaCardTable({
       session,
       posisiBidangData,
       isKegiatan,
-      isEditMode,
-      onMoveUp: handleMoveUp,
-      onMoveDown: handleMoveDown,
     }),
-    [lembagaId, eventId, session, posisiBidangData, isKegiatan, isEditMode, handleMoveUp, handleMoveDown],
+    [lembagaId, eventId, session, posisiBidangData, isKegiatan],
   );
 
   const totalPages = Math.ceil(localData.length / itemsPerPage);
@@ -348,6 +358,9 @@ export function MahasiswaCardTable({
                         totalRows={table.getRowModel().rows.length}
                         onMoveUp={handleMoveUp}
                         onMoveDown={handleMoveDown}
+                        currentPage={currentPage}
+                        totalData={localData.length}
+                        itemsPerPage={itemsPerPage}
                       />
                     ))
                   ) : (
