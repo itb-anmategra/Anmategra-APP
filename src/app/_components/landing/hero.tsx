@@ -18,7 +18,7 @@ export default function HeroSection() {
     if (event.key === 'Enter') {
       const q = searchQuery.trim();
       if (q.length === 0) return;
-      void router.push(`/mahasiswa/pencarian/${encodeURIComponent(q)}`);
+      void router.push(`/pencarian/${encodeURIComponent(q)}`);
     }
   };
 

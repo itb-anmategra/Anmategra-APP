@@ -13,31 +13,31 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 
-type Profile = { id: string; value: number | null };
+export type Profile = { profil_id: string; nilai: number | null, profil_name: string };
 
 // Komponen FormProfil
 interface FormProfilProps {
   profiles: Profile[];
-  onChange: (id: string, value: number | null) => void;
+  onChange: (id: string, nilai: number | null) => void;
 }
 
 const FormProfil: React.FC<FormProfilProps> = ({ profiles, onChange }) => {
   return (
     <div className="flex flex-col gap-4">
       {profiles.map((p, idx) => (
-        <div key={p.id} className="flex justify-between items-center">
+        <div key={p.profil_id} className="flex justify-between items-center">
           <label className="font-[400] text-[20px] leading-[32px] text-[#141718]">
-            Profil {idx + 1}
+            {p.profil_name}
           </label>
           <div className="rounded-[12px] flex items-center border border-[#C4CACE] bg-white px-4 py-1 w-[92px] h-[50px]">
             <input
               type="number"
-              value={p.value ?? ''}
+              value={p.nilai ?? ''}
               onChange={(e) => {
                 // Menghilangkan leading 0
                 const val = e.target.value;
                 const numeric = val === '' ? null : Number(val);
-                onChange(p.id, numeric);
+                onChange(p.profil_id, numeric);
               }}
               className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
                          font-[400] text-[18px] leading-[32px] text-[#636A6D] w-full outline-none text-center"
@@ -66,7 +66,7 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   const handleProfileChange = (id: string, value: number | null) => {
     const sanitized = value === null ? null : Math.min(Math.max(value, 0), 100);
     setProfiles(
-      profiles.map((p) => (p.id === id ? { ...p, value: sanitized } : p)),
+      profiles.map((p) => (p.profil_id === id ? { ...p, value: sanitized } : p)),
     );
   };
 
@@ -75,7 +75,7 @@ const FormNilaiProfil: React.FC<FormNilaiProfilProps> = ({
   const handleSaveProfile = () => {
     // Validasi input
     for (const p of profiles) {
-      if (p.value === null || isNaN(p.value) || p.value < 0 || p.value > 100) {
+      if (p.nilai === null || isNaN(p.nilai) || p.nilai < 0 || p.nilai > 100) {
         setErrorMessage(
           'Pastikan semua profil terisi dan memiliki nilai antara 0-100',
         );
