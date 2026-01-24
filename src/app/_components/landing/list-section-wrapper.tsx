@@ -1,4 +1,7 @@
 import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface ListSectionWrapperProps extends React.PropsWithChildren {
   className?: string;
@@ -10,6 +13,7 @@ export const ListSectionWrapper = ({
   className,
   title,
   children,
+  seeAllLink,
 }: ListSectionWrapperProps) => {
   return (
     <div
@@ -17,12 +21,12 @@ export const ListSectionWrapper = ({
     >
       <div className="flex w-full items-center justify-between gap-4">
         <span className="text-2xl font-semibold text-[#0B5C8A]">{title}</span>
-        {/* <Button asChild variant="ghost" className="flex items-center gap-2">
+        <Button asChild variant="ghost" className="flex items-center gap-2">
           <Link href={seeAllLink}>
             Lihat Semua
-            <ChevronRightIcon />
+            <ChevronRight size={20} />
           </Link>
-        </Button> */}
+        </Button>
       </div>
       {children}
     </div>
