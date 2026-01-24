@@ -19,7 +19,7 @@ import { MahasiswaCardTable } from '~/app/lembaga/anggota/_components/table/maha
 import { Button } from '~/components/ui/button';
 import { toast } from '~/hooks/use-toast';
 
-import { Download } from 'lucide-react';
+import { Download, Edit, Save } from 'lucide-react';
 
 interface AnggotaContentProps {
   session: Session | null;
@@ -41,6 +41,7 @@ export default function AnggotaContent({
   }: AnggotaContentProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
   const pathname = usePathname();
   const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
@@ -203,6 +204,23 @@ export default function AnggotaContent({
               </Link>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-2">
+              <Button
+                onClick={() => setIsEditMode(!isEditMode)}
+                variant={isEditMode ? 'dark_blue' : 'outline'}
+                className="flex items-center gap-2"
+              >
+                {isEditMode ? (
+                  <>
+                    <Save size={20} />
+                    Simpan
+                  </>
+                ) : (
+                  <>
+                    <Edit size={20} />
+                    Edit
+                  </>
+                )}
+              </Button>
               <FilterDropdown
                 filterTitle="Bidang"
                 filterOptions={filterOptions}
@@ -227,6 +245,7 @@ export default function AnggotaContent({
             session={session}
             posisiBidangData={dataPosisiBidang}
             isKegiatan={!isAnggota}
+            isEditMode={isEditMode}
           />
         </div>
       </div>

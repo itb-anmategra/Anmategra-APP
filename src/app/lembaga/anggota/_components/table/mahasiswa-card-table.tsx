@@ -28,6 +28,24 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 type TableMeta = {
   lembagaId?: string;
@@ -35,7 +53,86 @@ type TableMeta = {
   session: Session | null;
   posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
   isKegiatan?: boolean;
+  isEditMode?: boolean;
+  onMoveUp?: (index: number) => void;
+  onMoveDown?: (index: number) => void;
 };
+
+function SortableRow({
+  row,
+  isEditMode,
+  index,
+  totalRows,
+  onMoveUp,
+  onMoveDown,
+}: {
+  row: any;
+  isEditMode: boolean;
+  index: number;
+  totalRows: number;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: row.original.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <TableRow ref={setNodeRef} style={style} key={row.id}>
+      {isEditMode && (
+        <TableCell className="w-12">
+          <button
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical size={20} className="text-gray-400" />
+          </button>
+        </TableCell>
+      )}
+      {row.getVisibleCells().map((cell: any) => (
+        <TableCell key={cell.id} className="text-neutral-700">
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
+      {isEditMode && (
+        <TableCell className="w-24">
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => onMoveUp(index)}
+              disabled={index === 0}
+            >
+              <ChevronUp size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => onMoveDown(index)}
+              disabled={index === totalRows - 1}
+            >
+              <ChevronDown size={16} />
+            </Button>
+          </div>
+        </TableCell>
+      )}
+    </TableRow>
+  );
+}
 
 export function MahasiswaCardTable({
   data,
@@ -44,6 +141,7 @@ export function MahasiswaCardTable({
   session,
   posisiBidangData,
   isKegiatan = false,
+  isEditMode = false,
 }: {
   data: Member[];
   lembagaId?: string;
@@ -51,23 +149,76 @@ export function MahasiswaCardTable({
   session: Session | null;
   posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
   isKegiatan?: boolean;
+  isEditMode?: boolean;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [localData, setLocalData] = React.useState<Member[]>(data);
   const itemsPerPage = 10;
+
+  React.useEffect(() => {
+    setLocalData(data);
+  }, [data]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setLocalData((items) => {
+        const oldGlobalIndex = items.findIndex((item) => item.id === active.id);
+        const newGlobalIndex = items.findIndex((item) => item.id === over.id);
+        if (oldGlobalIndex !== -1 && newGlobalIndex !== -1) {
+          return arrayMove(items, oldGlobalIndex, newGlobalIndex);
+        }
+        return items;
+      });
+    }
+  };
+
+  const handleMoveUp = React.useCallback((index: number) => {
+    const actualIndex = (currentPage - 1) * itemsPerPage + index;
+    if (actualIndex > 0) {
+      setLocalData((items) => arrayMove(items, actualIndex, actualIndex - 1));
+    }
+  }, [currentPage, itemsPerPage]);
+
+  const handleMoveDown = React.useCallback((index: number) => {
+    const actualIndex = (currentPage - 1) * itemsPerPage + index;
+    setLocalData((items) => {
+      if (actualIndex < items.length - 1) {
+        return arrayMove(items, actualIndex, actualIndex + 1);
+      }
+      return items;
+    });
+  }, [currentPage, itemsPerPage]);
 
   const paginatedData = React.useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
-  }, [data, currentPage]);
+    return localData.slice(startIndex, endIndex);
+  }, [localData, currentPage]);
 
   const tableMeta = React.useMemo(
-    () => ({ lembagaId, eventId, session, posisiBidangData, isKegiatan }),
-    [lembagaId, eventId, session, posisiBidangData, isKegiatan],
+    () => ({
+      lembagaId,
+      eventId,
+      session,
+      posisiBidangData,
+      isKegiatan,
+      isEditMode,
+      onMoveUp: handleMoveUp,
+      onMoveDown: handleMoveDown,
+    }),
+    [lembagaId, eventId, session, posisiBidangData, isKegiatan, isEditMode, handleMoveUp, handleMoveDown],
   );
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(localData.length / itemsPerPage);
 
   const columns: ColumnDef<Member>[] = [
     {
@@ -151,55 +302,68 @@ export function MahasiswaCardTable({
       <div className="flex-1">
         {/* Desktop Table View */}
         <div className="hidden md:block w-full overflow-x-auto">
-          <Table className="min-w-max">
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="text-neutral-500">
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="text-left font-normal"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="text-neutral-700"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <Table className="min-w-max">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="text-neutral-500">
+                    {isEditMode && (
+                      <TableHead className="w-12 text-left font-normal"></TableHead>
+                    )}
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        className="text-left font-normal"
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
                     ))}
+                    {isEditMode && (
+                      <TableHead className="w-24 text-left font-normal"></TableHead>
+                    )}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center py-12">
-                    <div className="text-neutral-500">
-                      <p className="text-lg mb-2">Tidak ada anggota ditemukan</p>
-                      <p className="text-sm">Coba ubah filter atau kata kunci pencarian</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableHeader>
+              <TableBody>
+                <SortableContext
+                  items={table.getRowModel().rows.map((row) => row.original.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row, index) => (
+                      <SortableRow
+                        key={row.original.id}
+                        row={row}
+                        isEditMode={isEditMode}
+                        index={index}
+                        totalRows={table.getRowModel().rows.length}
+                        onMoveUp={handleMoveUp}
+                        onMoveDown={handleMoveDown}
+                      />
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={columns.length + (isEditMode ? 2 : 0)} className="text-center py-12">
+                        <div className="text-neutral-500">
+                          <p className="text-lg mb-2">Tidak ada anggota ditemukan</p>
+                          <p className="text-sm">Coba ubah filter atau kata kunci pencarian</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableContext>
+              </TableBody>
+            </Table>
+          </DndContext>
         </div>
 
         {/* Mobile Card View */}
