@@ -428,3 +428,21 @@ export const ToggleRaporVisibilityLembagaOutputSchema = z.object({
   success: z.boolean(),
   rapor_visible: z.boolean(),
 });
+
+export const ReorderAnggotaLembagaInputSchema = z.object({
+  lembaga_id: z.string(),
+  user_ids: z.array(z.string()),
+});
+
+export const ReorderAnggotaLembagaOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+export const ReorderAnggotaKegiatanInputSchema = z.object({
+  event_id: z.string(),
+  user_ids: z.array(z.string()),
+});
+
+export const ReorderAnggotaKegiatanOutputSchema = z.object({
+  success: z.boolean(),
+});

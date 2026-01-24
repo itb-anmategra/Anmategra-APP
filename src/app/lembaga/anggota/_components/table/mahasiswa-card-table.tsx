@@ -59,7 +59,6 @@ function SortableRow({
   row,
   isEditMode,
   index,
-  totalRows,
   onMoveUp,
   onMoveDown,
   currentPage,
@@ -69,7 +68,6 @@ function SortableRow({
   row: any;
   isEditMode: boolean;
   index: number;
-  totalRows: number;
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
   currentPage: number;
@@ -145,6 +143,9 @@ export function MahasiswaCardTable({
   posisiBidangData,
   isKegiatan = false,
   isEditMode = false,
+  onReorder,
+  searchQuery = '',
+  selectedFilters = [],
 }: {
   data: Member[];
   lembagaId?: string;
@@ -153,6 +154,9 @@ export function MahasiswaCardTable({
   posisiBidangData: { posisi: comboboxDataType[]; bidang: comboboxDataType[] };
   isKegiatan?: boolean;
   isEditMode?: boolean;
+  onReorder?: (newOrder: Member[]) => void;
+  searchQuery?: string;
+  selectedFilters?: string[];
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -162,6 +166,27 @@ export function MahasiswaCardTable({
   React.useEffect(() => {
     setLocalData(data);
   }, [data]);
+
+  const filteredData = React.useMemo(() => {
+    let filtered = [...localData];
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (member) =>
+          member.nama.toLowerCase().includes(query) ||
+          member.nim.toLowerCase().includes(query),
+      );
+    }
+
+    if (selectedFilters.length > 0) {
+      filtered = filtered.filter((member) =>
+        selectedFilters.includes(member.divisi),
+      );
+    }
+
+    return filtered;
+  }, [localData, searchQuery, selectedFilters]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -177,7 +202,13 @@ export function MahasiswaCardTable({
         const oldGlobalIndex = items.findIndex((item) => item.id === active.id);
         const newGlobalIndex = items.findIndex((item) => item.id === over.id);
         if (oldGlobalIndex !== -1 && newGlobalIndex !== -1) {
-          return arrayMove(items, oldGlobalIndex, newGlobalIndex);
+          const newOrder = arrayMove(items, oldGlobalIndex, newGlobalIndex);
+          setTimeout(() => {
+            if (onReorder) {
+              onReorder(newOrder);
+            }
+          }, 0);
+          return newOrder;
         }
         return items;
       });
@@ -187,35 +218,49 @@ export function MahasiswaCardTable({
   const handleMoveUp = React.useCallback((index: number) => {
     const actualIndex = (currentPage - 1) * itemsPerPage + index;
     if (actualIndex > 0) {
-      setLocalData((items) => arrayMove(items, actualIndex, actualIndex - 1));
+      setLocalData((items) => {
+        const newOrder = arrayMove(items, actualIndex, actualIndex - 1);
+        setTimeout(() => {
+          if (onReorder) {
+            onReorder(newOrder);
+          }
+        }, 0);
+        return newOrder;
+      });
       const newIndex = actualIndex - 1;
       const newPage = Math.floor(newIndex / itemsPerPage) + 1;
       if (newPage !== currentPage) {
         setTimeout(() => setCurrentPage(newPage), 0);
       }
     }
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, onReorder]);
 
   const handleMoveDown = React.useCallback((index: number) => {
     const actualIndex = (currentPage - 1) * itemsPerPage + index;
     setLocalData((items) => {
       if (actualIndex < items.length - 1) {
+        const newOrder = arrayMove(items, actualIndex, actualIndex + 1);
+        setTimeout(() => {
+          if (onReorder) {
+            onReorder(newOrder);
+          }
+        }, 0);
         const newIndex = actualIndex + 1;
         const newPage = Math.floor(newIndex / itemsPerPage) + 1;
         if (newPage !== currentPage) {
           setTimeout(() => setCurrentPage(newPage), 0);
         }
-        return arrayMove(items, actualIndex, actualIndex + 1);
+        return newOrder;
       }
       return items;
     });
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, onReorder]);
 
   const paginatedData = React.useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return localData.slice(startIndex, endIndex);
-  }, [localData, currentPage]);
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage]);
 
   const tableMeta = React.useMemo(
     () => ({
@@ -228,7 +273,7 @@ export function MahasiswaCardTable({
     [lembagaId, eventId, session, posisiBidangData, isKegiatan],
   );
 
-  const totalPages = Math.ceil(localData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const columns: ColumnDef<Member>[] = [
     {
@@ -355,7 +400,6 @@ export function MahasiswaCardTable({
                         row={row}
                         isEditMode={isEditMode}
                         index={index}
-                        totalRows={table.getRowModel().rows.length}
                         onMoveUp={handleMoveUp}
                         onMoveDown={handleMoveDown}
                         currentPage={currentPage}

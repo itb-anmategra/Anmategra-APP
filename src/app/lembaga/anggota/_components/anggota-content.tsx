@@ -4,7 +4,7 @@ import { type Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Rapor from '~/../public/icons/assessment.svg';
 import Best from '~/../public/icons/best.svg';
 import SearchIcon from '~/../public/icons/search.svg';
@@ -18,6 +18,7 @@ import { TambahAnggotaDialog } from '~/app/lembaga/_components/tambah-anggota-di
 import { MahasiswaCardTable } from '~/app/lembaga/anggota/_components/table/mahasiswa-card-table';
 import { Button } from '~/components/ui/button';
 import { toast } from '~/hooks/use-toast';
+import { api } from '~/trpc/react';
 
 import { Download, Edit, Save } from 'lucide-react';
 
@@ -42,10 +43,52 @@ export default function AnggotaContent({
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  const [reorderedUserIds, setReorderedUserIds] = useState<string[] | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const pathname = usePathname();
   const isAnggota = pageAnggota ?? false;
   const eventId = !isAnggota && pathname ? pathname.split('/')[3] : undefined;
   const lembagaId = session?.user.lembagaId ?? undefined;
+
+  const reorderLembagaMutation = api.lembaga.reorderAnggotaLembaga.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Berhasil menyimpan urutan anggota',
+      });
+      setIsEditMode(false);
+      setReorderedUserIds(null);
+      setIsSaving(false);
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Gagal menyimpan urutan anggota',
+        description: error.message,
+        variant: 'destructive',
+      });
+      setIsSaving(false);
+    },
+  });
+
+  const reorderKegiatanMutation = api.lembaga.reorderAnggotaKegiatan.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Berhasil menyimpan urutan anggota',
+      });
+      setIsEditMode(false);
+      setReorderedUserIds(null);
+      setIsSaving(false);
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Gagal menyimpan urutan anggota',
+        description: error.message,
+        variant: 'destructive',
+      });
+      setIsSaving(false);
+    },
+  });
 
   const filterOptions: FilterOption[] = useMemo(
     () =>
@@ -56,6 +99,45 @@ export default function AnggotaContent({
       })),
     [dataPosisiBidang.bidang],
   );
+
+  const hasActiveFilters = searchQuery.trim() !== '' || selectedFilters.length > 0;
+
+  useEffect(() => {
+    if (hasActiveFilters && isEditMode) {
+      setIsEditMode(false);
+      setReorderedUserIds(null);
+      toast({
+        title: 'Mode edit dinonaktifkan',
+        description: 'Hapus filter untuk mengedit urutan anggota',
+      });
+    }
+  }, [hasActiveFilters, isEditMode]);
+
+  const handleSaveOrder = useCallback(async () => {
+    if (!reorderedUserIds) return;
+    
+    if (isAnggota) {
+      if (!lembagaId) return;
+      
+      setIsSaving(true);
+      reorderLembagaMutation.mutate({
+        lembaga_id: lembagaId,
+        user_ids: reorderedUserIds,
+      });
+    } else {
+      if (!eventId) return;
+      
+      setIsSaving(true);
+      reorderKegiatanMutation.mutate({
+        event_id: eventId,
+        user_ids: reorderedUserIds,
+      });
+    }
+  }, [isAnggota, lembagaId, eventId, reorderedUserIds, reorderLembagaMutation, reorderKegiatanMutation, data.length]);
+
+  const handleReorder = useCallback((newOrder: Member[]) => {
+    setReorderedUserIds(newOrder.map(member => member.id));
+  }, []);
 
   const handleFilterChange = useCallback((filters: string[]) => {
     setSelectedFilters(filters);
@@ -205,14 +287,22 @@ export default function AnggotaContent({
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-x-2">
               <Button
-                onClick={() => setIsEditMode(!isEditMode)}
+                onClick={() => {
+                  if (isEditMode) {
+                    handleSaveOrder();
+                  } else {
+                    setIsEditMode(true);
+                  }
+                }}
                 variant={isEditMode ? 'dark_blue' : 'outline'}
                 className="flex items-center gap-2"
+                disabled={isSaving || hasActiveFilters}
+                title={hasActiveFilters ? 'Hapus filter untuk mengedit urutan' : ''}
               >
                 {isEditMode ? (
                   <>
                     <Save size={20} />
-                    Simpan
+                    {isSaving ? 'Menyimpan...' : 'Simpan'}
                   </>
                 ) : (
                   <>
@@ -239,13 +329,16 @@ export default function AnggotaContent({
 
           {/* Table Section */}
           <MahasiswaCardTable
-            data={filteredData}
+            data={data}
             lembagaId={lembagaId}
             eventId={eventId}
             session={session}
             posisiBidangData={dataPosisiBidang}
             isKegiatan={!isAnggota}
             isEditMode={isEditMode}
+            onReorder={handleReorder}
+            searchQuery={searchQuery}
+            selectedFilters={selectedFilters}
           />
         </div>
       </div>

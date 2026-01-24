@@ -86,6 +86,10 @@ import {
   GetPosisiBidangOptionsOutputSchema,
   RemoveAnggotaLembagaInputSchema,
   RemoveAnggotaLembagaOutputSchema,
+  ReorderAnggotaKegiatanInputSchema,
+  ReorderAnggotaKegiatanOutputSchema,
+  ReorderAnggotaLembagaInputSchema,
+  ReorderAnggotaLembagaOutputSchema,
   ToggleRaporVisibilityLembagaInputSchema,
   ToggleRaporVisibilityLembagaOutputSchema,
   editAnggotaLembagaInputSchema,
@@ -1582,6 +1586,75 @@ export const lembagaRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Terjadi kesalahan saat mengubah visibilitas rapor.',
+        });
+      }
+    }),
+
+  reorderAnggotaLembaga: lembagaProcedure
+    .input(ReorderAnggotaLembagaInputSchema)
+    .output(ReorderAnggotaLembagaOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (ctx.session.user.lembagaId !== input.lembaga_id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Anda tidak memiliki izin untuk mengubah urutan anggota lembaga ini',
+          });
+        }
+
+        await ctx.db.transaction(async (tx) => {
+          for (let i = 0; i < input.user_ids.length; i++) {
+            await tx
+              .update(kehimpunan)
+              .set({ index: i })
+              .where(
+                and(
+                  eq(kehimpunan.userId, input.user_ids[i]!),
+                  eq(kehimpunan.lembagaId, input.lembaga_id),
+                ),
+              );
+          }
+        });
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengubah urutan anggota',
+        });
+      }
+    }),
+
+  reorderAnggotaKegiatan: protectedProcedure
+    .input(ReorderAnggotaKegiatanInputSchema)
+    .output(ReorderAnggotaKegiatanOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.transaction(async (tx) => {
+          for (let i = 0; i < input.user_ids.length; i++) {
+            await tx
+              .update(keanggotaan)
+              .set({ index: i })
+              .where(
+                and(
+                  eq(keanggotaan.user_id, input.user_ids[i]!),
+                  eq(keanggotaan.event_id, input.event_id),
+                ),
+              );
+          }
+        });
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengubah urutan anggota kegiatan',
         });
       }
     }),
