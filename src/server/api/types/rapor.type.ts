@@ -36,6 +36,7 @@ export const GetNilaiKegiatanIndividuOutputSchema = z.object({
   nilai: z.array(
     z.object({
       profil_id: z.string(),
+      profil_name: z.string(),
       nilai: z.number(),
     }),
   ),

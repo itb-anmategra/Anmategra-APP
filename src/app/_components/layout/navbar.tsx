@@ -197,7 +197,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
 
                 {session && (
                   <Link
-                    href={`/mahasiswa/profile-mahasiswa/${session.user.id}`}
+                    href={`/profile-mahasiswa/${session.user.id}`}
                   >
                     {user?.image ? (
                       <Image

@@ -14,8 +14,7 @@ import {
 import { type GetNilaiKegiatanIndividuOutputSchema } from '~/server/api/types/rapor.type';
 import { api } from '~/trpc/react';
 
-import { type NilaiProfilCardType } from '../../card/nilai-profil-card';
-import FormNilaiProfil from '../../form/form-nilai-profil';
+import FormNilaiProfil, { Profile } from '../../form/form-nilai-profil';
 import NilaiProfilComp from './nilai-profil-comp';
 
 type NilaiKegiatanOutput = z.infer<typeof GetNilaiKegiatanIndividuOutputSchema>;
@@ -33,7 +32,7 @@ export default function RaporIndividuHeader({
   isLembaga,
   canEdit = true,
 }: HeaderDataProps) {
-  const [nilaiProfilData, setNilaiProfilData] = useState<NilaiProfilCardType[]>(
+  const [nilaiProfilData, setNilaiProfilData] = useState<Profile[]>(
     dataNilaiProfil?.nilai ? dataNilaiProfil.nilai : [],
   );
 
@@ -44,7 +43,7 @@ export default function RaporIndividuHeader({
     api.rapor.upsertNilaiMahasiswaKegiatan.useMutation();
 
   const handleUpdateNilaiProfilChange = (
-    updatedProfiles: NilaiProfilCardType[],
+    updatedProfiles: Profile[],
   ) => {
     setNilaiProfilData(updatedProfiles);
     if (isLembaga) {
@@ -216,13 +215,15 @@ export default function RaporIndividuHeader({
           <div className="w-full lg:w-auto flex-shrink-0">
             <FormNilaiProfil
               initialProfiles={dataNilaiProfil?.nilai.map((profil) => ({
-                id: profil.profil_id,
-                value: profil.nilai ?? 0,
+                profil_id: profil.profil_id,
+                nilai: profil.nilai ?? 0,
+                profil_name: profil.profil_name,
               }))}
               onSave={(updatedProfiles) => {
                 const updatedNilaiProfils = updatedProfiles.map((p) => ({
-                  profil_id: p.id,
-                  nilai: p.value ?? 0,
+                  profil_id: p.profil_id,
+                  nilai: p.nilai ?? 0,
+                  profil_name: p.profil_name,
                 }));
                 handleUpdateNilaiProfilChange(updatedNilaiProfils);
               }}

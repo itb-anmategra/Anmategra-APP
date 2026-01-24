@@ -181,25 +181,27 @@ export const raporRouter = createTRPCRouter({
 
         const nilaiList = await ctx.db
           .select({
-            profil_id: nilaiProfilKegiatan.profilId,
+            profil_id: profilKegiatan.id,
+            profil_name: profilKegiatan.name,
             nilai: nilaiProfilKegiatan.nilai,
           })
-          .from(nilaiProfilKegiatan)
-          .innerJoin(
-            profilKegiatan,
-            eq(nilaiProfilKegiatan.profilId, profilKegiatan.id),
-          )
-          .where(
+          .from(profilKegiatan)
+          .leftJoin(
+            nilaiProfilKegiatan,
             and(
-              eq(profilKegiatan.eventId, input.event_id),
+              eq(nilaiProfilKegiatan.profilId, profilKegiatan.id),
               eq(nilaiProfilKegiatan.mahasiswaId, input.mahasiswa_id),
             ),
-          );
+          )
+          .where(and(eq(profilKegiatan.eventId, input.event_id)));
 
-        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
-          profil_id,
-          nilai: nilai ?? 0,
-        }));
+        const formattedNilaiList = nilaiList.map(
+          ({ profil_id, profil_name, nilai }) => ({
+            profil_id,
+            profil_name,
+            nilai: nilai ?? 0,
+          }),
+        );
 
         return {
           user_id: dataMahasiswa.user_id,
@@ -374,9 +376,11 @@ export const raporRouter = createTRPCRouter({
     .output(GetNilaiLembagaIndividuOutputSchema)
     .query(async ({ ctx, input }) => {
       try {
-        const [lembagaUser] = await ctx.db.select().from(lembaga).where(
-          eq(lembaga.id, input.lembaga_id),
-        ).limit(1);
+        const [lembagaUser] = await ctx.db
+          .select()
+          .from(lembaga)
+          .where(eq(lembaga.id, input.lembaga_id))
+          .limit(1);
 
         if (!lembagaUser) {
           throw new TRPCError({
@@ -385,7 +389,10 @@ export const raporRouter = createTRPCRouter({
           });
         }
 
-        if (!lembaga.raporVisible && ctx.session.user.lembagaId !== input.lembaga_id) {
+        if (
+          !lembaga.raporVisible &&
+          ctx.session.user.lembagaId !== input.lembaga_id
+        ) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Access denied to this lembaga.',
@@ -424,25 +431,27 @@ export const raporRouter = createTRPCRouter({
 
         const nilaiList = await ctx.db
           .select({
-            profil_id: nilaiProfilLembaga.profilId,
+            profil_id: profilLembaga.id,
+            profil_name: profilLembaga.name,
             nilai: nilaiProfilLembaga.nilai,
           })
-          .from(nilaiProfilLembaga)
-          .innerJoin(
-            profilLembaga,
-            eq(nilaiProfilLembaga.profilId, profilLembaga.id),
-          )
-          .where(
+          .from(profilLembaga)
+          .leftJoin(
+            nilaiProfilLembaga,
             and(
-              eq(profilLembaga.lembagaId, input.lembaga_id),
+              eq(nilaiProfilLembaga.profilId, profilLembaga.id),
               eq(nilaiProfilLembaga.mahasiswaId, input.mahasiswa_id),
             ),
-          );
+          )
+          .where(and(eq(profilLembaga.lembagaId, input.lembaga_id)));
 
-        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
-          profil_id,
-          nilai: nilai ?? 0,
-        }));
+        const formattedNilaiList = nilaiList.map(
+          ({ profil_id, profil_name, nilai }) => ({
+            profil_id,
+            profil_name,
+            nilai: nilai ?? 0,
+          }),
+        );
 
         return {
           user_id: dataMahasiswa.user_id,
@@ -587,25 +596,27 @@ export const raporRouter = createTRPCRouter({
 
         const nilaiList = await ctx.db
           .select({
-            profil_id: nilaiProfilKegiatan.profilId,
+            profil_id: profilKegiatan.id,
+            profil_name: profilKegiatan.name,
             nilai: nilaiProfilKegiatan.nilai,
           })
-          .from(nilaiProfilKegiatan)
-          .innerJoin(
-            profilKegiatan,
-            eq(nilaiProfilKegiatan.profilId, profilKegiatan.id),
-          )
-          .where(
+          .from(profilKegiatan)
+          .leftJoin(
+            nilaiProfilKegiatan,
             and(
-              eq(profilKegiatan.eventId, input.event_id),
+              eq(nilaiProfilKegiatan.profilId, profilKegiatan.id),
               eq(nilaiProfilKegiatan.mahasiswaId, input.mahasiswa_id),
             ),
-          );
+          )
+          .where(and(eq(profilKegiatan.eventId, input.event_id)));
 
-        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
-          profil_id,
-          nilai: nilai ?? 0,
-        }));
+        const formattedNilaiList = nilaiList.map(
+          ({ profil_id, profil_name, nilai }) => ({
+            profil_id,
+            profil_name,
+            nilai: nilai ?? 0,
+          }),
+        );
 
         return {
           user_id: dataMahasiswa.user_id,
@@ -685,25 +696,27 @@ export const raporRouter = createTRPCRouter({
 
         const nilaiList = await ctx.db
           .select({
-            profil_id: nilaiProfilLembaga.profilId,
+            profil_id: profilLembaga.id,
+            profil_name: profilLembaga.name,
             nilai: nilaiProfilLembaga.nilai,
           })
-          .from(nilaiProfilLembaga)
-          .innerJoin(
-            profilLembaga,
-            eq(nilaiProfilLembaga.profilId, profilLembaga.id),
-          )
-          .where(
+          .from(profilLembaga)
+          .leftJoin(
+            nilaiProfilLembaga,
             and(
-              eq(profilLembaga.lembagaId, input.lembaga_id),
+              eq(nilaiProfilLembaga.profilId, profilLembaga.id),
               eq(nilaiProfilLembaga.mahasiswaId, input.mahasiswa_id),
             ),
-          );
+          )
+          .where(and(eq(profilLembaga.lembagaId, input.lembaga_id)));
 
-        const formattedNilaiList = nilaiList.map(({ profil_id, nilai }) => ({
-          profil_id,
-          nilai: nilai ?? 0,
-        }));
+        const formattedNilaiList = nilaiList.map(
+          ({ profil_id, profil_name, nilai }) => ({
+            profil_id,
+            profil_name,
+            nilai: nilai ?? 0,
+          }),
+        );
 
         return {
           user_id: dataMahasiswa.user_id,
