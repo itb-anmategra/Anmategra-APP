@@ -43,6 +43,7 @@ export async function GET(
     .leftJoin(mahasiswa, eq(kehimpunan.userId, mahasiswa.userId))
     .where(eq(kehimpunan.lembagaId, lembaga_id))
     .orderBy(
+      kehimpunan.index,
       kehimpunan.division,
       kehimpunan.position,
       mahasiswa.nim,
@@ -193,6 +194,7 @@ export async function POST(
       userId: string;
       divisi: string;
       posisi: string;
+      index: number;
     }> = [];
 
     for (let rowNumber = 2; rowNumber <= sheet.rowCount; rowNumber++) {
@@ -249,7 +251,7 @@ export async function POST(
         );
       }
 
-      anggotaData.push({ userId: mahasiswaRecord.userId, divisi, posisi });
+      anggotaData.push({ userId: mahasiswaRecord.userId, divisi, posisi, index: rowNumber - 2 });
     }
 
     if (anggotaData.length === 0) {
@@ -272,6 +274,7 @@ export async function POST(
           userId: anggota.userId,
           position: anggota.posisi,
           division: anggota.divisi,
+          index: anggota.index,
         });
 
         insertedCount++;
