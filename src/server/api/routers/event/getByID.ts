@@ -56,6 +56,7 @@ export const getAllAnggota = protectedProcedure
         .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
         .where(and(...conditions))
         .orderBy(
+          keanggotaan.index,
           keanggotaan.division,
           keanggotaan.position,
           mahasiswa.nim,

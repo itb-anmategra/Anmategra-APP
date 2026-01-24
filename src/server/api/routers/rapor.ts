@@ -61,7 +61,7 @@ export const raporRouter = createTRPCRouter({
           .innerJoin(mahasiswa, eq(mahasiswa.userId, keanggotaan.user_id))
           .innerJoin(users, eq(users.id, keanggotaan.user_id))
           .where(eq(keanggotaan.event_id, input.event_id))
-          .orderBy(mahasiswa.nim);
+          .orderBy(keanggotaan.index, mahasiswa.nim);
 
         const mahasiswaIds = mahasiswaList.map((m) => m.user_id);
 
@@ -317,7 +317,7 @@ export const raporRouter = createTRPCRouter({
           .innerJoin(users, eq(kehimpunan.userId, users.id))
           .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
           .where(eq(kehimpunan.lembagaId, input.lembaga_id))
-          .orderBy(mahasiswa.nim);
+          .orderBy(kehimpunan.index, mahasiswa.nim);
 
         const anggotaIds = anggotaList.map((a) => a.user_id);
 
