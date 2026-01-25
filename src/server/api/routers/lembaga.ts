@@ -1598,7 +1598,8 @@ export const lembagaRouter = createTRPCRouter({
         if (ctx.session.user.lembagaId !== input.lembaga_id) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: 'Anda tidak memiliki izin untuk mengubah urutan anggota lembaga ini',
+            message:
+              'Anda tidak memiliki izin untuk mengubah urutan anggota lembaga ini',
           });
         }
 
@@ -1628,10 +1629,29 @@ export const lembagaRouter = createTRPCRouter({
       }
     }),
 
-  reorderAnggotaKegiatan: protectedProcedure
+  reorderAnggotaKegiatan: lembagaProcedure
     .input(ReorderAnggotaKegiatanInputSchema)
     .output(ReorderAnggotaKegiatanOutputSchema)
     .mutation(async ({ ctx, input }) => {
+      const event = await ctx.db.query.events.findFirst({
+        where: eq(events.id, input.event_id),
+        columns: { org_id: true },
+      });
+
+      if (!event) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Kegiatan tidak ditemukan',
+        });
+      }
+      if (event.org_id !== ctx.session.user.lembagaId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message:
+            'Anda tidak memiliki izin untuk mengubah urutan anggota kegiatan ini',
+        });
+      }
+
       try {
         await ctx.db.transaction(async (tx) => {
           for (let i = 0; i < input.user_ids.length; i++) {

@@ -114,6 +114,7 @@ export default function AnggotaContent({
   }, [hasActiveFilters, isEditMode]);
 
   const handleSaveOrder = useCallback(async () => {
+    setIsEditMode(false);
     if (!reorderedUserIds) return;
     
     if (isAnggota) {
@@ -143,29 +144,6 @@ export default function AnggotaContent({
     setSelectedFilters(filters);
   }, []);
 
-  // Client-side filtering
-  const filteredData = useMemo(() => {
-    let filtered = [...data];
-
-    // Filter by search query (search in name and NIM)
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(
-        (member) =>
-          member.nama.toLowerCase().includes(query) ||
-          member.nim.toLowerCase().includes(query),
-      );
-    }
-
-    // Filter by selected divisions
-    if (selectedFilters.length > 0) {
-      filtered = filtered.filter((member) =>
-        selectedFilters.includes(member.divisi),
-      );
-    }
-
-    return filtered;
-  }, [data, searchQuery, selectedFilters]);
 
   const handleExport = async () => {
     try {
