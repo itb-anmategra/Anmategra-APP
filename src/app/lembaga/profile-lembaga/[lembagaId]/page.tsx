@@ -36,7 +36,7 @@ const DetailLembagaPage = async ({
     });
   } catch (error) {
     // No best staff data available yet
-    console.log('No best staff data available for lembaga:', lembagaId, error);
+    // console.log('No best staff data available for lembaga:', lembagaId, error);
   }
 
   return (

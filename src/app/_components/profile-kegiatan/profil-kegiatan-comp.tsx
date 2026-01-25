@@ -3,6 +3,7 @@
 // Library Import
 // Icons Import
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { ArrowRight } from 'lucide-react';
 import type { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -83,63 +84,43 @@ const ProfileAnggotaComp = ({
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div>
+      <div className="space-y-2">
         {filteredAnggota.length > 0 ? (
           filteredAnggota.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between py-4 border-b border-neutral-200"
+              className="flex items-center justify-between py-3 border-b border-neutral-200"
             >
-              <div className="flex items-center gap-x-4">
+              <Link href={`/profile-mahasiswa/${item.id}`} className="flex items-center gap-x-4">
                 <Image
                   src={item.image ?? '/images/placeholder/profile-pic.png'}
                   alt="Profile Picture"
-                  className="w-12 h-12 rounded-full"
-                  width={48}
-                  height={48}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover"
+                  width={56}
+                  height={56}
                 />
-                <div className="flex flex-col">
-                  <h3 className="text-base sm:text-lg font-semibold text-slate-900">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm sm:text-base font-semibold text-slate-900">
                     {item.nama}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    {item.nim} - {item.jurusan}
+                  <p className="text-xs sm:text-sm text-slate-500">
+                    {item.nim} | {item.jurusan}
                   </p>
-                  <div className="flex items-center gap-x-2">
-                    <p className="text-xs sm:text-sm text-slate-600">
-                      {item.posisi}
+                  {(item.posisi || item.divisi) && (
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {[item.posisi, item.divisi].filter(Boolean).join(' | ')}
                     </p>
-                    <p> | </p>
-                    <p className="text-xs sm:text-sm text-slate-600">
-                      {item.divisi}
-                    </p>
-                  </div>
+                  )}
                 </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <button className="text-xs sm:text-sm md:text-base text-sky-600 font-semibold">
-                  <Link
-                    href={
-                      isLembaga
-                        ? `/lembaga/profile-mahasiswa/${item.id}`
-                        : `/mahasiswa/profile-mahasiswa/${item.id}`
-                    }
-                  >
-                    {' '}
-                    Lihat Profil
-                  </Link>
-                </button>
-                {raporVisible && (
-                  <button className="text-xs sm:text-sm md:text-base text-emerald-600 font-semibold">
-                    <Link
-                      href={`/${isKegiatan ? 'profile-kegiatan' : 'profile-lembaga'}/${kegiatanLembagaId}/rapor/${item.id}`}
-                    >
-                      {' '}
-                      Lihat Rapor
-                    </Link>
-                  </button>
-                )}
-              </div>
+              </Link>
+              {raporVisible && (
+                <Link
+                  href={`/${isKegiatan ? 'profile-kegiatan' : 'profile-lembaga'}/${kegiatanLembagaId}/rapor/${item.id}`}
+                  className="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 font-medium underline-offset-4 hover:underline shrink-0 ml-4"
+                >
+                  Rapor <ArrowRight className="inline size-4 ml-1" />
+                </Link>
+              )}
             </div>
           ))
         ) : (

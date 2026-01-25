@@ -10,10 +10,10 @@ import { events, lembaga, mahasiswa, users } from '~/server/db/schema';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
 
 import {
-  GetRecentEventsOutputSchema,
-  GetTopEventsOutputSchema,
   GetAllEventsInputSchema,
   GetAllEventsOutputSchema,
+  GetRecentEventsOutputSchema,
+  GetTopEventsOutputSchema,
   SearchAllOutputSchema,
   SearchAllQueryInputSchema,
   searchPreviewInputSchema,
@@ -439,5 +439,29 @@ export const landingRouter = createTRPCRouter({
         lembaga: lembagaRes,
         kegiatan: kegiatanRes,
       };
+    }),
+
+  getAllEventIds: publicProcedure
+    .input(z.object({ limit: z.number().min(1).max(100).default(100) }))
+    .query(async ({ ctx, input }) => {
+      const events = await ctx.db.query.events.findMany({
+        columns: {
+          id: true,
+        },
+        limit: input.limit,
+      });
+      return events;
+    }),
+
+  getAllLembagaIds: publicProcedure
+    .input(z.object({ limit: z.number().min(1).max(100).default(100) }))
+    .query(async ({ ctx, input }) => {
+      const lembagaList = await ctx.db.query.lembaga.findMany({
+        columns: {
+          id: true,
+        },
+        limit: input.limit,
+      });
+      return lembagaList;
     }),
 });

@@ -1,5 +1,6 @@
 // Library Import
 import { ChevronRight } from 'lucide-react';
+import { type Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
@@ -12,6 +13,27 @@ import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiat
 import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { profileKegiatanId: string };
+}): Promise<Metadata> {
+  const { kegiatan } = await api.profile.getKegiatan({
+    kegiatanId: params.profileKegiatanId,
+  });
+
+  return {
+    title: `${kegiatan?.name} | Anmategra`,
+    description: kegiatan?.description ?? 'Detail kegiatan mahasiswa.',
+    openGraph: {
+      title: kegiatan?.name,
+      description: kegiatan?.description ?? kegiatan?.name,
+      images: [kegiatan?.image || '/images/logo/anmategra-logo.png'],
+      type: 'website',
+    },
+  };
+}
 
 const ProfileKegiatan = async ({
   params,
@@ -47,69 +69,91 @@ const ProfileKegiatan = async ({
       event_id: query,
     });
   } catch (error) {
-    console.log('No best staff data available for kegiatan:', query, error);
+    // console.log('No best staff data available for kegiatan:', query, error);
   }
 
-  return (
-    <div className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-8">
-      <div className="w-full flex min-h-screen flex-col items-center">
-        <div className="w-full max-w-6xl bg-slate-50 py-6 rounded-none sm:rounded-xl">
-          <div className="mb-4 px-1 sm:px-2">
-            <h1 className="text-2xl font-semibold text-slate-600">Kegiatan</h1>
-            <RaporBreadcrumb
-              items={[
-                { label: 'Beranda', href: '/' },
-                {
-                  label: 'Profil Kegiatan',
-                  href: `/mahasiswa/profile-kegiatan/${query}`,
-                },
-              ]}
-            />
-          </div>
-          <EventHeader
-            title={kegiatan?.name ?? 'null'}
-            organizer={lembaga?.name ?? 'null'}
-            backgroundImage={
-              kegiatan?.background_image ??
-              '/images/placeholder/profile-kegiatan-placeholder/kegiatan-header-background.png'
-            }
-            logoImage={
-              kegiatan?.image ??
-              '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
-            }
-            eventId={kegiatan?.id ?? ''}
-            ajuanAsosiasi={Boolean(kegiatan?.id) && !shouldHideAjuanAsosiasi}
-            linkDaftar={kegiatan?.oprec_link}
-            session={session}
-          />
-          <div className="mt-6 sm:mt-8 mb-8">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
-              Deskripsi Kegiatan
-            </h2>
-            <div className="rounded-xl bg-white border border-neutral-200 px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base text-neutral-800 leading-relaxed">
-              {kegiatan?.description?.trim()
-                ? kegiatan.description
-                : 'Belum ada deskripsi untuk kegiatan ini.'}
-            </div>
-          </div>
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: kegiatan?.name,
+    description: kegiatan?.description,
+    startDate: kegiatan?.start_date,
+    endDate: kegiatan?.end_date,
+    image: kegiatan?.image,
+    organizer: {
+      '@type': 'Organization',
+      name: lembaga?.name,
+    },
+  };
 
-          {/* Organogram Section */}
-          {kegiatan?.is_organogram && kegiatan?.organogram_image && (
-            <div className="mt-6 sm:mt-8 mb-8">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
-                Organogram
-              </h2>
-              <OrganogramDialog
-                organogramImage={kegiatan.organogram_image}
-                eventName={kegiatan.name ?? ''}
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-8">
+        <div className="w-full flex min-h-screen flex-col items-center">
+          <div className="w-full max-w-6xl bg-slate-50 py-6 rounded-none sm:rounded-xl">
+            <div className="mb-4 px-1 sm:px-2">
+              <h1 className="text-2xl font-semibold text-slate-600">
+                {kegiatan?.name}
+              </h1>
+              <RaporBreadcrumb
+                items={[
+                  { label: 'Beranda', href: '/' },
+                  {
+                    label: 'Profil Kegiatan',
+                    href: `/mahasiswa/profile-kegiatan/${query}`,
+                  },
+                ]}
               />
             </div>
-          )}
+            <EventHeader
+              title={kegiatan?.name ?? 'null'}
+              organizer={lembaga?.name ?? 'null'}
+              backgroundImage={
+                kegiatan?.background_image ??
+                '/images/placeholder/profile-kegiatan-placeholder/kegiatan-header-background.png'
+              }
+              logoImage={
+                kegiatan?.image ??
+                '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
+              }
+              eventId={kegiatan?.id ?? ''}
+              ajuanAsosiasi={Boolean(kegiatan?.id) && !shouldHideAjuanAsosiasi}
+              linkDaftar={kegiatan?.oprec_link}
+              session={session}
+            />
+            <article className="mt-6 sm:mt-8 mb-8">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
+                Deskripsi Kegiatan
+              </h2>
+              <div className="rounded-xl bg-white border border-neutral-200 px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base text-neutral-800 leading-relaxed">
+                {kegiatan?.description?.trim()
+                  ? kegiatan.description
+                  : 'Belum ada deskripsi untuk kegiatan ini.'}
+              </div>
+            </article>
 
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
-              Penyelenggara
-            </h2>
+            {/* Organogram Section */}
+            {kegiatan?.is_organogram && kegiatan?.organogram_image && (
+              <div className="mt-6 sm:mt-8 mb-8">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
+                  Organogram
+                </h2>
+                <OrganogramDialog
+                  organogramImage={kegiatan.organogram_image}
+                  eventName={kegiatan.name ?? ''}
+                />
+              </div>
+            )}
+
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+                Penyelenggara
+              </h2>
+            </div>
             <Link href={`/mahasiswa/profile-lembaga/${lembaga?.id}`}>
               <PenyelenggaraCard
                 title={lembaga?.name ?? 'Tidak ada nama'}
@@ -120,64 +164,63 @@ const ProfileKegiatan = async ({
                 }
               />
             </Link>
-          </div>
-
-          {/* Best Staff Section */}
-          {latestBestStaff && (
-            <div className="flex flex-col gap-12 w-full mt-8 mb-8">
-              <div className="flex flex-col gap-3 w-full">
-                <div className="flex flex-row justify-between items-center">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
-                    Best Staff Periode{' '}
-                    {new Date(latestBestStaff.start_date).toLocaleDateString(
-                      'id-ID',
-                      {
-                        month: 'long',
-                        year: 'numeric',
-                      },
-                    )}
-                    –
-                    {new Date(latestBestStaff.end_date).toLocaleDateString(
-                      'id-ID',
-                      {
-                        month: 'long',
-                        year: 'numeric',
-                      },
-                    )}
-                  </h2>
-                  <Button asChild variant="ghost">
-                    <Link
-                      href={`/mahasiswa/profile-kegiatan/${query}/histori`}
-                      className="flex items-center gap-2 text-lg"
-                    >
-                      <span>Lihat Histori</span>
-                      <ChevronRight
-                        className="!w-4 !h-4 text-slate-600"
-                        aria-hidden
-                      />
-                    </Link>
-                  </Button>
+            {/* Best Staff Section */}
+            {latestBestStaff && (
+              <div className="flex flex-col gap-12 w-full mt-8 mb-8">
+                <div className="flex flex-col gap-3 w-full">
+                  <div className="flex flex-row justify-between items-center">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+                      Best Staff Periode{' '}
+                      {new Date(latestBestStaff.start_date).toLocaleDateString(
+                        'id-ID',
+                        {
+                          month: 'long',
+                          year: 'numeric',
+                        },
+                      )}
+                      –
+                      {new Date(latestBestStaff.end_date).toLocaleDateString(
+                        'id-ID',
+                        {
+                          month: 'long',
+                          year: 'numeric',
+                        },
+                      )}
+                    </h2>
+                    <Button asChild variant="ghost">
+                      <Link
+                        href={`/mahasiswa/profile-kegiatan/${query}/histori`}
+                        className="flex items-center gap-2 text-lg"
+                      >
+                        <span>Lihat Histori</span>
+                        <ChevronRight
+                          className="!w-4 !h-4 text-slate-600"
+                          aria-hidden
+                        />
+                      </Link>
+                    </Button>
+                  </div>
+                  <CarouselBestStaff
+                    bestStaffList={latestBestStaff.best_staff_list}
+                    isLembaga={false}
+                  />
                 </div>
-                <CarouselBestStaff
-                  bestStaffList={latestBestStaff.best_staff_list}
-                  isLembaga={false}
-                />
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="mt-4">
-            <ProfileAnggotaComp
-              anggota={participant ?? []}
-              session={session}
-              kegiatanLembagaId={query ?? ''}
-              raporVisible={kegiatan?.rapor_visible ?? false}
-              isKegiatan={true}
-            />
+            <div className="mt-4">
+              <ProfileAnggotaComp
+                anggota={participant ?? []}
+                session={session}
+                kegiatanLembagaId={query ?? ''}
+                raporVisible={kegiatan?.rapor_visible ?? false}
+                isKegiatan={true}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

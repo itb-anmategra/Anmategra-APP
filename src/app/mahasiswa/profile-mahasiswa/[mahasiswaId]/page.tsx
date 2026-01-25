@@ -26,7 +26,7 @@ const DetailMahasiswaPage = async ({
       mahasiswa_id: userId,
     });
   } catch (error) {
-    console.log('No best staff data available for mahasiswa:', userId, error);
+    // console.log('No best staff data available for mahasiswa:', userId, error);
   }
   
   return (

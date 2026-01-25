@@ -66,6 +66,7 @@ export const KepanitiaanCard = ({
                 kepanitiaan.lembaga.profilePicture ??
                 '/images/logo/hmif-logo.png'
               }
+              alt={kepanitiaan.lembaga.name}
             />
             <AvatarFallback>
               {kepanitiaan.lembaga.name.slice(0, 2)}
