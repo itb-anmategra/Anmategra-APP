@@ -260,6 +260,7 @@ export const keanggotaan = createTable(
       .notNull(),
     position: varchar('position', { length: 255 }).notNull(),
     division: varchar('division', { length: 255 }).notNull(),
+    index: integer('index').notNull().default(0),
     description: text('description'),
   },
   (table) => ({
@@ -450,6 +451,7 @@ export const kehimpunan = createTable(
       .references(() => lembaga.id),
     division: varchar('division', { length: 255 }).notNull(),
     position: varchar('position', { length: 255 }).notNull(),
+    index: integer('index').notNull().default(0),
   },
   (table) => ({
     uniqueEventUser: uniqueIndex('kehimpunan_lembaga_user_unique').on(

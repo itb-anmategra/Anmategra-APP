@@ -9,7 +9,7 @@ export const KegiatanSection = ({ data }: { data: Kepanitiaan[] }) => {
     <ListSectionWrapper
       className="container mx-auto"
       title="Kegiatan Terbaru"
-      seeAllLink="#"
+      seeAllLink="/mahasiswa/kegiatan"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {data?.map((kepanitiaan) => (
