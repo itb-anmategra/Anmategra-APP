@@ -59,6 +59,7 @@ export interface Event {
   participant_limit: number | null;
   is_highlighted: boolean;
   is_organogram: boolean;
+  organogram_image: string | null;
   rapor_visible: boolean;
 }
 

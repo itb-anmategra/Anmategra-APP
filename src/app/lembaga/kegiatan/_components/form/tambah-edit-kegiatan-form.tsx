@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 // Icon Import
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Trash2 } from 'lucide-react';
 import type { Session } from 'next-auth';
 import Image from 'next/image';
 import React from 'react';
@@ -17,6 +17,14 @@ import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Checkbox } from '~/components/ui/checkbox';
 // Components Import
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '~/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -70,16 +78,7 @@ const EventInputSchema = z
     background_image: z.string().url().optional(),
     organogram_image: z.string().url().or(z.literal('')).optional(),
     rapor_visible: z.boolean().optional(),
-  })
-  .refine(
-    (data) =>
-      !data.is_organogram ||
-      (data.organogram_image && data.organogram_image.length > 0),
-    {
-      message: 'Organogram wajib diupload ketika menggunakan organogram',
-      path: ['organogram_image'],
-    },
-  );
+});
 
 // ✅ Type inference dari schema
 type EventInputSchemaType = z.infer<typeof EventInputSchema>;
@@ -120,7 +119,7 @@ const TambahEditKegiatanForm = ({
           is_highlighted: kegiatan.is_highlighted ?? false,
           is_organogram: kegiatan.is_organogram ?? false,
           background_image: kegiatan.background_image ?? '',
-          organogram_image: '',
+          organogram_image: kegiatan.organogram_image ?? '',
           rapor_visible: kegiatan.rapor_visible ?? false,
         }
       : {
@@ -188,21 +187,22 @@ const TambahEditKegiatanForm = ({
   const isValid = form.formState.isValid;
 
   const startDate = useWatch({ control: form.control, name: 'start_date' });
-  const isOrganogram = useWatch({
-    control: form.control,
-    name: 'is_organogram',
-  });
   const organogramImage = useWatch({
     control: form.control,
     name: 'organogram_image',
   });
 
-  // Auto-check 'Gunakan Organogram' when organogram image is uploaded
-  React.useEffect(() => {
-    if (organogramImage && organogramImage.length > 0 && !isOrganogram) {
-      form.setValue('is_organogram', true);
-    }
-  }, [organogramImage, isOrganogram, form]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+  const handleDeleteOrganogram = () => {
+    form.setValue('organogram_image', '');
+    form.setValue('is_organogram', false);
+    setDeleteDialogOpen(false);
+    // toast({
+    //   title: 'Organogram dihapus',
+    //   description: 'Organogram berhasil dihapus dari kegiatan',
+    // });
+  };
 
   return (
     <Form {...form}>
@@ -528,19 +528,6 @@ const TambahEditKegiatanForm = ({
             /> */}
             <FormField
               control={form.control}
-              name="is_organogram"
-              render={({ field }) => (
-                <FormItem className="flex-1 flex flex-row self-end space-x-3 items-center justify-center space-y-0">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                  <FormLabel>Gunakan Organogram</FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="rapor_visible"
               render={({ field }) => (
                 <FormItem className="flex-1 flex flex-row self-end space-x-3 items-center justify-center space-y-0">
@@ -602,18 +589,32 @@ const TambahEditKegiatanForm = ({
             name="organogram_image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Upload Organogram
-                  {isOrganogram ? (
-                    <span className="text-red-500 ml-1">*</span>
-                  ) : (
+                <div className="flex items-center justify-between">
+                  <FormLabel>
+                    Upload Organogram
                     <span className="text-gray-500 ml-1">(Opsional)</span>
-                  )}
-                </FormLabel>
+                  </FormLabel>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    disabled={!field.value}
+                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
                 <FormControl>
                   <CustomDropzone
+                    key={field.value || 'empty'}
                     label="Upload Organogram"
-                    onFileChange={field.onChange}
+                    onFileChange={(value) => {
+                      field.onChange(value);
+                      if (value) {
+                        form.setValue('is_organogram', true);
+                      }
+                    }}
                     initialValue={field.value}
                   />
                 </FormControl>
@@ -629,6 +630,30 @@ const TambahEditKegiatanForm = ({
           </div>
         </form>
       </div>
+
+      {/* Pop-up Delete Confirmation */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Hapus</DialogTitle>
+            <DialogDescription>
+              Apakah Anda yakin ingin menghapus organogram ini? 
+              Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <DialogClose asChild>
+              <Button variant="outline">Batal</Button>
+            </DialogClose>
+            <Button
+              onClick={handleDeleteOrganogram}
+              variant="warning"
+            >
+              Hapus
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 };

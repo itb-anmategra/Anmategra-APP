@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import BestStaffCard from '~/app/_components/card/best-staff-card';
 // Components Import
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
+import LembagaCard from '~/app/_components/card/lembaga-card';
 import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepanitiaan-button';
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -25,6 +26,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   userId,
   mahasiswaData,
   newestEvent,
+  memberLembaga = [],
   isLembagaView = false,
   bestStaffData = null,
 }) => {
@@ -217,10 +219,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             </div>
           )}
 
-        {/* Kepanitiaan Terbaru */}
+        {/* Kepanitiaan */}
         <div className="space-y-4 pb-12 md:mt-[50px]">
           <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
-            Kepanitiaan Terbaru
+            Kepanitiaan
           </h5>
           {newestEvent && newestEvent.length !== 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -282,6 +284,32 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             </div>
           )}
         </div>
+
+        {/* Lembaga */}
+        {memberLembaga && memberLembaga.length > 0 && (
+          <div className="space-y-4 pb-12">
+            <h5 className="text-xl md:text-2xl font-semibold text-neutral-1000">
+              Lembaga
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {memberLembaga.map((item) => (
+                <Link key={item.id} href={`/mahasiswa/profile-lembaga/${item.id}`}>
+                  <LembagaCard
+                    id={item.id}
+                    nama={item.name}
+                    kategori={item.type ?? 'Lembaga'}
+                    deskripsi={item.description ?? ''}
+                    lembagaPicture={item.image}
+                    memberCount={item.memberCount}
+                    position={item.position}
+                    division={item.division}
+                    variant="vertical"
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

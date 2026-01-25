@@ -67,7 +67,6 @@ const AjuanAsosiasiForm = ({
   resetTrigger,
 }: AjuanAsosiasiFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const utils = api.useUtils();
   const toast = useToast();
   const [posisiOpen, setPosisiOpen] = useState(false);
@@ -90,7 +89,6 @@ const AjuanAsosiasiForm = ({
   });
 
   const resetForm = useCallback(() => {
-    setIsSubmitted(false);
     form.reset();
   }, [form]);
 
@@ -109,9 +107,9 @@ const AjuanAsosiasiForm = ({
 
   const requestAssociationMutation = api.users.requestAssociation.useMutation({
     onSuccess: () => {
-      setIsSubmitted(true);
       onSubmissionSuccess?.();
       setIsOpen(false);
+      form.reset();
       void utils.users.getMyRequestAssociation.invalidate();
       toast.toast({
         title: 'Pengajuan berhasil dikirim',
@@ -128,45 +126,8 @@ const AjuanAsosiasiForm = ({
     onSettled: () => setIsSubmitting(false),
   });
 
-  const deleteAssociationMutation = api.users.deleteRequestAssociation.useMutation({
-    onSuccess: () => {
-      setIsSubmitted(false);
-      form.reset();
-      void utils.users.getMyRequestAssociation.invalidate();
-      toast.toast({
-        title: 'Ajuan dibatalkan',
-        description: 'Pengajuan asosiasi telah dibatalkan.',
-      });
-    },
-    onError: (err) => {
-      toast.toast({
-        title: 'Gagal membatalkan pengajuan',
-        description: err.message || 'Coba lagi nanti.',
-        variant: 'destructive',
-      });
-    },
-    onSettled: () => setIsSubmitting(false),
-  });
-
-  const handleCancelSubmission = () => {
-    if (!eventId) {
-      toast.toast({
-        title: 'Event tidak tersedia',
-        description: 'ID event tidak ditemukan.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    setIsSubmitting(true);
-    deleteAssociationMutation.mutate({ event_id: eventId });
-  };
-
   const onSubmit = (values: AjuanAsosiasiSchemaType) => {
     try {
-      if (isSubmitted) {
-        handleCancelSubmission();
-        return;
-      }
       if (!eventId) {
         toast.toast({
           title: 'Event tidak tersedia',
@@ -379,14 +340,10 @@ const AjuanAsosiasiForm = ({
               <div className="pt-4 flex justify-center">
                 <Button
                   type="submit"
-                  disabled={(!isValid && !isSubmitted) || isSubmitting}
-                  className={`w-32 h-10 font-medium rounded-xl transition-colors duration-200 ${
-                    isSubmitted
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-[#2B6282] hover:bg-[#2B6282] text-white'
-                  }`}
+                  disabled={!isValid || isSubmitting}
+                  className="w-32 h-10 font-medium rounded-xl transition-colors duration-200 bg-[#2B6282] hover:bg-[#2B6282] text-white"
                 >
-                  {isSubmitted ? 'Batalkan Ajuan' : 'KIRIM'}
+                  KIRIM
                 </Button>
               </div>
             </form>

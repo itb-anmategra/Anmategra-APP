@@ -39,7 +39,7 @@ import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
 const AnggotaSchema = z.object({
-  user_id: z.string().min(1, 'User ID wajib diisi'),
+  user_id: z.string().min(1, 'Nama wajib diisi'),
   nim: z.string().min(1, 'NIM wajib diisi'),
   position: z.string().min(1, 'Posisi wajib diisi'),
   division: z.string().min(1, 'Divisi wajib diisi'),
@@ -111,6 +111,8 @@ const TambahEditAnggotaForm = ({
           ? 'Data anggota telah diperbarui.'
           : 'Anggota baru telah ditambahkan ke lembaga.',
       });
+      form.reset();
+      window.location.reload();
     },
     onError: (error) => {
       toast({
@@ -130,6 +132,11 @@ const TambahEditAnggotaForm = ({
 
   const eventMutation = api.event.addNewPanitia.useMutation(mutationOptions);
   const lembagaMutation = api.lembaga.addAnggota.useMutation(mutationOptions);
+  const addManualEventMutation =
+    api.event.addNewPanitiaManual.useMutation(mutationOptions);
+  const addManualLembagaMutation =
+    api.lembaga.addAnggotaManual.useMutation(mutationOptions);
+
   const editLembagaMutation =
     api.lembaga.editAnggota.useMutation(mutationOptions);
   const editEventMutation = api.event.editPanitia.useMutation(mutationOptions);
@@ -211,10 +218,6 @@ const TambahEditAnggotaForm = ({
   }, [nim, nimSearchResults]);
 
   const onSubmit = (values: AnggotaSchemaType) => {
-    const onSuccess = () => {
-      form.reset();
-      location.reload();
-    };
 
     if (isEditMode) {
       // Edit mode - only update position and division
@@ -226,7 +229,6 @@ const TambahEditAnggotaForm = ({
             position: values.position,
             division: values.division,
           },
-          { onSuccess },
         );
       } else {
         editLembagaMutation.mutate(
@@ -236,7 +238,6 @@ const TambahEditAnggotaForm = ({
             position: values.position,
             division: values.division,
           },
-          { onSuccess },
         );
       }
     } else {
@@ -251,9 +252,30 @@ const TambahEditAnggotaForm = ({
       };
 
       if (isKegiatan) {
-        eventMutation.mutate(eventQuery, { onSuccess });
+        if (manualMode) {
+          const addManualQuery = {
+            event_id: eventQuery.event_id,
+            name: eventQuery.user_id, // In manual mode, user_id field contains the name :)
+            nim: eventQuery.nim,
+            position: eventQuery.position,
+            division: eventQuery.division,
+          };
+          addManualEventMutation.mutate(addManualQuery);
+        } else {
+          eventMutation.mutate(eventQuery);
+        }
       } else {
-        lembagaMutation.mutate(lembagaQuery, { onSuccess });
+        if (manualMode) {
+          const addManualQuery = {
+            name: lembagaQuery.user_id, // In manual mode, user_id field contains the name :)
+            nim: lembagaQuery.nim,
+            position: lembagaQuery.position,
+            division: lembagaQuery.division,
+          };
+          addManualLembagaMutation.mutate(addManualQuery);
+        } else {
+          lembagaMutation.mutate(lembagaQuery);
+        }
       }
     }
 
@@ -266,7 +288,7 @@ const TambahEditAnggotaForm = ({
   return (
     <Form {...form}>
       {manualMode && (
-        <p className="text-base text-center text-[#98A2B3] -mt-4">
+        <p className="text-base text-center text-[#98A2B3] -mt-4 mb-4">
           Masukkan informasi anggota baru untuk kegiatan
         </p>
       )}

@@ -59,10 +59,11 @@ export function EventHeader({
   const utils = api.useUtils();
   const deleteAssociationMutation =
     api.users.deleteRequestAssociation.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         setIsSubmitted(false);
         setShowConfirmation(false);
-        void utils.users.getMyRequestAssociation.invalidate();
+        await utils.users.getMyRequestAssociation.invalidate();
+        await utils.users.getMyRequestAssociation.refetch();
         toast.toast({
           title: 'Ajuan dibatalkan',
           description: 'Pengajuan asosiasi telah dibatalkan.',

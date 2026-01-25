@@ -8,6 +8,7 @@ import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
+import { OrganogramDialog } from '~/app/_components/profile-kegiatan/organogram-dialog';
 import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
@@ -134,6 +135,20 @@ const ProfileKegiatan = async ({
                   : 'Belum ada deskripsi untuk kegiatan ini.'}
               </div>
             </article>
+
+            {/* Organogram Section */}
+            {kegiatan?.is_organogram && kegiatan?.organogram_image && (
+              <div className="mt-6 sm:mt-8 mb-8">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
+                  Organogram
+                </h2>
+                <OrganogramDialog
+                  organogramImage={kegiatan.organogram_image}
+                  eventName={kegiatan.name ?? ''}
+                />
+              </div>
+            )}
+
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
                 Penyelenggara
