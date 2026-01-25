@@ -198,10 +198,10 @@ const TambahEditKegiatanForm = ({
     form.setValue('organogram_image', '');
     form.setValue('is_organogram', false);
     setDeleteDialogOpen(false);
-    toast({
-      title: 'Organogram dihapus',
-      description: 'Organogram berhasil dihapus dari kegiatan',
-    });
+    // toast({
+    //   title: 'Organogram dihapus',
+    //   description: 'Organogram berhasil dihapus dari kegiatan',
+    // });
   };
 
   return (
