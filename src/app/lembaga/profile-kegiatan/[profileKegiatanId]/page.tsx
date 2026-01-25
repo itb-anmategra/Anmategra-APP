@@ -40,7 +40,7 @@ const ProfileKegiatan = async ({
       event_id: query,
     });
   } catch (error) {
-    console.log('No best staff data available for kegiatan:', query, error);
+    // console.log('No best staff data available for kegiatan:', query, error);
   }
 
   return (

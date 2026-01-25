@@ -1,12 +1,13 @@
 // Libray Import
 // Icons Import
 import { CalendarIcon, ChevronRight } from 'lucide-react';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
 import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
 import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
-import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
+import LogoKecil from 'public/images/placeholder/logo-hmif.png';
 import React from 'react';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
@@ -19,6 +20,26 @@ import { Card } from '~/components/ui/card';
 import { getServerAuthSession } from '~/server/auth';
 // TRPC Import
 import { api } from '~/trpc/server';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { lembagaId: string };
+}): Promise<Metadata> {
+  const { lembagaData } = await api.profile.getLembaga({
+    lembagaId: params.lembagaId,
+  });
+
+  return {
+    title: `${lembagaData?.name} | Anmategra`,
+    description: lembagaData?.description ?? 'Profil lembaga kemahasiswaan.',
+    openGraph: {
+      title: lembagaData?.name,
+      description: lembagaData?.description ?? lembagaData?.name,
+      images: [lembagaData?.users.image || '/images/logo/anmategra-logo.png'],
+    },
+  };
+}
 
 const DetailLembagaPage = async ({
   params,
@@ -50,12 +71,36 @@ const DetailLembagaPage = async ({
   } catch (error) {
     console.log('No best staff data available for lembaga:', lembagaId, error);
   }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: lembagaData?.name,
+    description: lembagaData?.description,
+    logo: lembagaData?.users.image,
+    member:
+      anggota?.map((member) => ({
+        '@type': 'OrganizationRole',
+        member: {
+          '@type': 'Person',
+          name: member.nama,
+        },
+        roleName: member.posisi || 'Member',
+      })) || [],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="w-full flex min-h-screen flex-col items-center px-[14px] pt-24 sm:pt-10">
         <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-semibold text-slate-600">Lembaga</h1>
+            <h1 className="text-2xl font-semibold text-slate-600">
+              {lembagaData?.name}
+            </h1>
             <RaporBreadcrumb
               items={[
                 { label: 'Beranda', href: '/' },
@@ -69,19 +114,19 @@ const DetailLembagaPage = async ({
           <div className="w-full flex items-center justify-center gap-6 sm:py-12">
             <Image
               src={lembagaData?.users.image ?? DummyFotoLembaga}
-              alt="Foto Lembaga"
+              alt={lembagaData?.name ?? 'Foto Lembaga'}
               width={200}
               height={100}
               className="rounded-full w-32 h-32 md:w-48 md:h-48 object-cover"
             />
-            <div className="space-y-1">
+            <article className="space-y-1">
               <p className="text-xl sm:text-2xl md:text-3xl text-slate-600 font-semibold">
                 {lembagaData?.name}
               </p>
               <p className="text-sm sm:text-lg md:text-xl text-slate-400">
                 {lembagaData?.description}
               </p>
-            </div>
+            </article>
           </div>
 
           {highlightedEvent && (
@@ -93,7 +138,7 @@ const DetailLembagaPage = async ({
                 <Card className="transition-all hover:shadow-md overflow-hidden flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 p-4 sm:p-6">
                   <Image
                     src={highlightedEvent?.image ?? DummyFotoEvent}
-                    alt="Foto Kegiatan"
+                    alt={highlightedEvent?.name ?? 'Foto Kegiatan'}
                     className="w-full sm:w-[220px] md:w-[260px] h-[160px] sm:h-full object-cover flex-shrink-0"
                     width={260}
                     height={160}
@@ -101,8 +146,8 @@ const DetailLembagaPage = async ({
                   <div className="space-y-2 w-full">
                     <Badge className="space-x-2 rounded-full bg-Blue-Dark py-1">
                       <Image
-                        src={lembagaData?.users.image ?? LogoHMIFKecil}
-                        alt="Logo HMIF Kecil"
+                        src={lembagaData?.users.image ?? LogoKecil}
+                        alt={lembagaData?.name ?? 'Logo Kecil'}
                         width={20}
                         height={20}
                         className="rounded-full object-cover"

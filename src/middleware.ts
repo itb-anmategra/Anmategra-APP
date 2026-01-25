@@ -9,6 +9,7 @@ const STATIC = [
   '/favicon.ico',
   '/manifest.json',
   '/robots.txt',
+  '/sitemap.xml',
 ];
 
 export default async function middleware(req: NextRequest) {

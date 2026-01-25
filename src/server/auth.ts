@@ -191,10 +191,8 @@ export const authOptions: NextAuthOptions = {
             eq(a.provider, account.provider) &&
             eq(a.providerAccountId, account.providerAccountId),
         });
-        console.log('yes');
 
         if (!existingAccount) {
-          console.log('yes');
           // Insert new account entry
           await db.insert(accounts).values({
             userId: existingUser.id,

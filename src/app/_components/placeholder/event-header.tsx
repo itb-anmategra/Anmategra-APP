@@ -92,7 +92,7 @@ export function EventHeader({
   const isLembaga = session?.user.role === 'lembaga';
 
   return (
-    <div className="mb-8 overflow-hidden rounded-[36px]">
+    <header className="mb-8 overflow-hidden rounded-[36px]">
       <div className="relative h-56 sm:h-64 md:h-72">
         <div className="absolute inset-0">
           <Image
@@ -236,6 +236,6 @@ export function EventHeader({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </header>
   );
 }
