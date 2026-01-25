@@ -12,6 +12,7 @@ interface ProfileMahasiswaContentProps {
   userId: string;
   mahasiswaData: GetMahasiswaOutput['mahasiswaData'];
   newestEvent: Kepanitiaan[] | null;
+  memberLembaga?: GetMahasiswaOutput['memberLembaga'];
   isLembagaView: boolean;
   bestStaffData?: BestStaffHistoryOutput | null;
 }

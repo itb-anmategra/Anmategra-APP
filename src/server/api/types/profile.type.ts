@@ -15,6 +15,16 @@ export const GetMahasiswaOutputSchema = z.object({
     user: z.custom<User>(),
   }),
   newestEvent: z.array(z.custom<Kepanitiaan>()),
+  memberLembaga: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string().nullable(),
+    image: z.string().url().nullable(),
+    memberCount: z.number().nullable(),
+    type: z.string().nullable(),
+    position: z.string(),
+    division: z.string(),
+  })),
 });
 
 const PanitiaKegiatanSchema = z.object({

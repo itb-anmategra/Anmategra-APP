@@ -7,6 +7,7 @@ import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
 import { PenyelenggaraCard } from '~/app/_components/placeholder/penyelenggara-card';
+import { OrganogramDialog } from '~/app/_components/profile-kegiatan/organogram-dialog';
 import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { Button } from '~/components/ui/button';
 import { getServerAuthSession } from '~/server/auth';
@@ -91,21 +92,36 @@ const ProfileKegiatan = async ({
                 : 'Belum ada deskripsi untuk kegiatan ini.'}
             </div>
           </div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
+
+          {/* Organogram Section */}
+          {kegiatan?.is_organogram && kegiatan?.organogram_image && (
+            <div className="mt-6 sm:mt-8 mb-8">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
+                Organogram
+              </h2>
+              <OrganogramDialog
+                organogramImage={kegiatan.organogram_image}
+                eventName={kegiatan.name ?? ''}
+              />
+            </div>
+          )}
+
+          <div className="mb-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 mb-3">
               Penyelenggara
             </h2>
+            <Link href={`/mahasiswa/profile-lembaga/${lembaga?.id}`}>
+              <PenyelenggaraCard
+                title={lembaga?.name ?? 'Tidak ada nama'}
+                category={lembaga?.type ?? 'Tidak ada kategori'}
+                logo={
+                  lembaga?.image ??
+                  '/images/placeholder/profile-kegiatan-placeholder/oskm-organizer.png'
+                }
+              />
+            </Link>
           </div>
-          <Link href={`/mahasiswa/profile-lembaga/${lembaga?.id}`}>
-            <PenyelenggaraCard
-              title={lembaga?.name ?? 'Tidak ada nama'}
-              category={lembaga?.type ?? 'Tidak ada kategori'}
-              logo={
-                lembaga?.image ??
-                '/images/placeholder/profile-kegiatan-placeholder/oskm-organizer.png'
-              }
-            />
-          </Link>
+
           {/* Best Staff Section */}
           {latestBestStaff && (
             <div className="flex flex-col gap-12 w-full mt-8 mb-8">

@@ -22,6 +22,7 @@ export default async function Home() {
     participant_limit: event.participant_limit,
     is_highlighted: event.is_highlighted,
     is_organogram: event.is_organogram,
+    organogram_image: event.organogram_image,
     background_image: event.background_image,
     rapor_visible: event.rapor_visible,
   }));

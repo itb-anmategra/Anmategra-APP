@@ -120,7 +120,7 @@ const TambahEditKegiatanForm = ({
           is_highlighted: kegiatan.is_highlighted ?? false,
           is_organogram: kegiatan.is_organogram ?? false,
           background_image: kegiatan.background_image ?? '',
-          organogram_image: '',
+          organogram_image: kegiatan.organogram_image ?? '',
           rapor_visible: kegiatan.rapor_visible ?? false,
         }
       : {

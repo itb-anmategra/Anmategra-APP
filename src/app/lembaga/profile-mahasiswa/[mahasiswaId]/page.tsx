@@ -12,7 +12,7 @@ const DetailMahasiswaPage = async ({
   params: Promise<{ mahasiswaId: string }>;
 }) => {
   const userId = (await params).mahasiswaId;
-  const { mahasiswaData, newestEvent } = await api.profile.getMahasiswa({
+  const { mahasiswaData, newestEvent, memberLembaga } = await api.profile.getMahasiswa({
     mahasiswaId: userId,
   });
   const session = await getServerAuthSession();
@@ -32,6 +32,7 @@ const DetailMahasiswaPage = async ({
       userId={userId}
       mahasiswaData={mahasiswaData}
       newestEvent={newestEvent}
+      memberLembaga={memberLembaga}
       isLembagaView={true}
       bestStaffData={bestStaffData}
     />
