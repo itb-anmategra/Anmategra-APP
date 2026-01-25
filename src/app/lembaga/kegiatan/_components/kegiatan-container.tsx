@@ -286,7 +286,8 @@ export default function EventList({ propEvents, session }: EventListProps) {
       <div className="bg-white rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <div className="min-w-[900px]">
-            <div className="flex items-center gap-8 p-3 bg-gray-50 text-lg font-medium text-gray-500">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 text-lg font-medium text-gray-500">
+              <div className="w-[25px] flex-shrink-0"></div>
               <div className="w-[130px] flex-shrink-0">Thumbnail</div>
               <div className="flex-1 min-w-[200px]">Judul</div>
               <div className="w-[131px] flex-shrink-0">Tanggal</div>
@@ -300,9 +301,26 @@ export default function EventList({ propEvents, session }: EventListProps) {
               {activities.map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex items-center gap-8 p-3 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-[130px] h-[90px] bg-gray-200 rounded overflow-hidden relative flex-shrink-0">
+                  <div className="w-[25px] rounded flex items-center justify-center flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto w-auto hover:bg-transparent"
+                      onClick={() =>
+                        toggleHighlight(activity.id, activity.is_highlighted)
+                      }
+                      disabled={updatingHighlightId === activity.id}
+                    >
+                      <Pin
+                        style={{ width: '25px', height: '25px' }}
+                        fill={activity.is_highlighted ? '#141718' : 'none'}
+                        stroke={activity.is_highlighted ? '#141718' : '#141718'}
+                      />
+                    </Button>
+                  </div>
+                  <Link href={`/profile-kegiatan/${activity.id}`} className="w-[130px] h-[90px] bg-gray-200 rounded overflow-hidden relative flex-shrink-0">
                     {activity.thumbnail && (
                       <Image
                         src={activity.thumbnail || '/placeholder.svg'}
@@ -312,27 +330,8 @@ export default function EventList({ propEvents, session }: EventListProps) {
                         width={130}
                       />
                     )}
-                    <div className="absolute top-1 left-0 p-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-1 h-auto w-auto hover:bg-transparent"
-                        onClick={() =>
-                          toggleHighlight(activity.id, activity.is_highlighted)
-                        }
-                        disabled={updatingHighlightId === activity.id}
-                      >
-                        <Pin
-                          style={{ width: '25px', height: '25px' }}
-                          fill={activity.is_highlighted ? '#141718' : 'none'}
-                          stroke={
-                            activity.is_highlighted ? '#141718' : '#141718'
-                          }
-                        />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-[200px]">
+                  </Link>
+                  <Link href={`/profile-kegiatan/${activity.id}`} className="flex-1 min-w-[200px]">
                     <p className="text-lg text-gray-500">{activity.name}</p>
                     {activity.description && (
                       <p className="text-base text-gray-500 truncate">
@@ -341,7 +340,7 @@ export default function EventList({ propEvents, session }: EventListProps) {
                           : activity.description}
                       </p>
                     )}
-                  </div>
+                  </Link>
                   <div className="w-[131px] flex-shrink-0 text-base text-gray-500">
                     {activity.start_date
                       ? format(new Date(activity.start_date), 'dd/MM/yyyy')

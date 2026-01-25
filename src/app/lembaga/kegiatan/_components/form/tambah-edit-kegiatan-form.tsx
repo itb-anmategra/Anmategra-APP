@@ -143,6 +143,9 @@ const TambahEditKegiatanForm = ({
     onSuccess: () => {
       setIsOpen(false);
       location.reload();
+      toast({
+        title: 'Kegiatan berhasil dibuat',
+      })
     },
     onError: (error) => {
       toast({
@@ -158,6 +161,9 @@ const TambahEditKegiatanForm = ({
     onSuccess: () => {
       setIsOpen(false);
       location.reload();
+      toast({
+        title: 'Kegiatan berhasil diubah',
+      })
     },
     onError: (error) => {
       toast({
