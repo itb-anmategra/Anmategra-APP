@@ -26,7 +26,7 @@ export default function HeroSection() {
     <div className="relative mx-4 sm:mx-6 lg:mx-4 flex min-h-[80vh] flex-col">
       {/* Small Ellipse */}
       <Image
-        src="/images/landing/Ellipse16.png"
+        src="/images/landing/Ellipse16.webp"
         alt="Ellipse16"
         height={760}
         width={760}
@@ -36,7 +36,7 @@ export default function HeroSection() {
       />
       {/* Bigger Ellipse */}
       <Image
-        src="/images/landing/Ellipse15.png"
+        src="/images/landing/Ellipse15.webp"
         alt="Ellipse15"
         height={1140}
         width={1140}
@@ -46,7 +46,7 @@ export default function HeroSection() {
       />
       {/* Blue Glow */}
       <Image
-        src="/images/landing/Ellipse17.png"
+        src="/images/landing/Ellipse17.webp"
         alt="Glow Effect"
         width={1200}
         height={1200}
@@ -84,7 +84,7 @@ export default function HeroSection() {
 
             <div className="relative flex w-full max-w-[90%] sm:max-w-4xl items-center justify-center px-2">
               <Image
-                src="/images/landing/ANGGOTA1.png"
+                src="/images/landing/ANGGOTA1.webp"
                 alt="ANGGOTA1"
                 width={725}
                 height={725}
