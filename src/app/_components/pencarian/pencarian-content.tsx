@@ -7,7 +7,7 @@ import { type Session } from 'next-auth';
 // Image Import
 import Image from 'next/image';
 import Link from 'next/link';
-import dummyLembaga from 'public/images/logo/hmif-logo.png';
+import dummyLembaga from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import NotFound from 'public/images/miscellaneous/not-found-general.png';
 // Dummy Asset Import
 import dummyProfile from 'public/images/placeholder/profile-pic.png';

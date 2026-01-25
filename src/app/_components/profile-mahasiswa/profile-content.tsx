@@ -60,7 +60,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               )}
             >
               <AvatarImage
-                src={mahasiswaData?.user.image ?? ''}
+                src={mahasiswaData?.user.image ?? '/images/placeholder/profile-pic.png'}
                 alt="Foto Profil"
                 className="rounded-full object-cover"
               />

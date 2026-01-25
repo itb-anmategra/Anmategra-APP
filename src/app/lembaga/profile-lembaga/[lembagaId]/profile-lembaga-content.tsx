@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
-import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
+import DummyFotoLembaga from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import { useState } from 'react';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';

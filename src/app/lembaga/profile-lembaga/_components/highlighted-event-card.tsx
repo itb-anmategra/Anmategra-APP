@@ -1,8 +1,8 @@
 import { CalendarIcon, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
-import LogoHMIFKecil from 'public/images/placeholder/logo-hmif.png';
+import DummyFotoEvent from 'public/images/placeholder/profile-lembaga-kegiatan.png';
+import DummyFotoLembaga from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import { type FC } from 'react';
 import { Badge } from '~/components/ui/badge';
 import { Card } from '~/components/ui/card';
@@ -65,7 +65,7 @@ const HighlightedEventCard: FC<HighlightedEventCardProps> = ({
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full gap-2 md:gap-0">
             <Badge className="flex flex-row items-center gap-2 md:gap-[6.88px] bg-[#2B6282] py-2 md:py-[3.44px] px-3 md:px-[10.32px] rounded-xl md:rounded-[13.76px]">
               <Image
-                src={lembagaData?.users.image ?? LogoHMIFKecil}
+                src={lembagaData?.users.image ?? DummyFotoLembaga}
                 alt="Logo Lembaga"
                 width={18}
                 height={18}

@@ -31,8 +31,8 @@ export function EventCard({
         <div className="mb-2 flex items-center gap-2">
           <div className="flex items-center gap-1 rounded bg-[#0EA5E9] px-2 py-1 text-xs text-white">
             <Image
-              src="/images/placeholder/pepega.png"
-              alt="ITB"
+              src="/images/placeholder/profile-lembaga-kegiatan.png"
+              alt="Foto Lembaga"
               width={16}
               height={16}
               className="rounded-full"

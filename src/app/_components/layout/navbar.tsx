@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ProfilePic from 'public/images/placeholder/profile-pic.png';
+import LembagaPic from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import React, { useEffect, useState } from 'react';
 // Components Import
 import { Button } from '~/components/ui/button';
@@ -126,23 +127,13 @@ const Navbar = ({ session }: { session: Session | null }) => {
                       : '/lembaga'
                   }
                 >
-                  {lembagaInfo?.foto || session?.user.image ? (
-                    <Image
-                      src={lembagaInfo?.foto ?? session?.user.image ?? ''}
-                      alt="Profile User"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover w-[40px] h-[40px]"
-                    />
-                  ) : (
-                    <Image
-                      src={ProfilePic}
-                      alt="Default Profile"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover w-[40px] h-[40px]"
-                    />
-                  )}
+                  <Image
+                    src={lembagaInfo?.foto ?? LembagaPic}
+                    alt="Profile User"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover w-[40px] h-[40px]"
+                  />
                 </Link>
               </nav>
             </div>

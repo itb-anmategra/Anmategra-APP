@@ -5,9 +5,8 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 // Asset Import
-import DummyFotoLembaga from 'public/images/logo/hmif-logo.png';
-import DummyFotoEvent from 'public/images/placeholder/kegiatan-thumbnail.png';
-import LogoKecil from 'public/images/placeholder/logo-hmif.png';
+import DummyFotoLembaga from 'public/images/placeholder/profile-lembaga-kegiatan.png';
+import DummyFotoEvent from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import React from 'react';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
@@ -146,8 +145,8 @@ const DetailLembagaPage = async ({
                   <div className="space-y-2 w-full">
                     <Badge className="space-x-2 rounded-full bg-Blue-Dark py-1">
                       <Image
-                        src={lembagaData?.users.image ?? LogoKecil}
-                        alt={lembagaData?.name ?? 'Logo Kecil'}
+                        src={lembagaData?.users.image ?? DummyFotoLembaga}
+                        alt={lembagaData?.name ?? 'Foto Lembaga'}
                         width={20}
                         height={20}
                         className="rounded-full object-cover"
