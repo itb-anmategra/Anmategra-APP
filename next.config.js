@@ -7,18 +7,10 @@ await import('./src/env.js');
 /** @type {import("next").NextConfig} */
 const config = {
   experimental: {
-    optimizeCss: true, 
+    optimizeCss: true,
   },
   images: {
-    //TODO: hapus dummyimage.com dan placekitten.com untuk production
-    domains: [
-      'example.com',
-      'dummyimage.com',
-      'placekitten.com',
-      'picsum.photos',
-      'lh3.googleusercontent.com',
-      'utfs.uploadthing.com',
-    ],
+    domains: ['lh3.googleusercontent.com', 'utfs.uploadthing.com'],
     remotePatterns: [
       {
         hostname: 'utfs.io',
