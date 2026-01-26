@@ -11,6 +11,9 @@ COPY . .
 
 ENV SKIP_ENV_VALIDATION=1
 
+ARG NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+
 RUN npm run build
 
 # ---------- Production ----------

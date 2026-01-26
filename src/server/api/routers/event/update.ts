@@ -98,21 +98,12 @@ export const addNewPanitia = lembagaProcedure
         });
       }
 
-      await ctx.db.transaction(async (tx) => {
-        await tx.insert(keanggotaan).values({
-          id: input.event_id + '_' + input.user_id,
-          event_id: input.event_id,
-          user_id: input.user_id,
-          position: input.position,
-          division: input.division,
-        });
-
-        await tx
-          .update(events)
-          .set({
-            participant_count: eventToUpdate.participant_count + 1,
-          })
-          .where(eq(events.id, eventToUpdate.id));
+      await ctx.db.insert(keanggotaan).values({
+        id: input.event_id + '_' + input.user_id,
+        event_id: input.event_id,
+        user_id: input.user_id,
+        position: input.position,
+        division: input.division,
       });
 
       return {
@@ -154,23 +145,14 @@ export const removePanitia = lembagaProcedure
         });
       }
 
-      await ctx.db.transaction(async (tx) => {
-        await tx
-          .delete(keanggotaan)
-          .where(
-            and(
-              eq(keanggotaan.user_id, input.id),
-              eq(keanggotaan.event_id, input.event_id),
-            ),
-          );
-
-        await tx
-          .update(events)
-          .set({
-            participant_count: eventToUpdate.participant_count - 1,
-          })
-          .where(eq(events.id, eventToUpdate.id));
-      });
+      await ctx.db
+        .delete(keanggotaan)
+        .where(
+          and(
+            eq(keanggotaan.user_id, input.id),
+            eq(keanggotaan.event_id, input.event_id),
+          ),
+        );
 
       return {
         success: true,
@@ -285,21 +267,12 @@ export const addNewPanitiaManual = lembagaProcedure
           });
         }
         // User exists, just add them to keanggotaan
-        await ctx.db.transaction(async (tx) => {
-          await tx.insert(keanggotaan).values({
-            id: input.event_id + '_' + existingUser.id,
-            event_id: input.event_id,
-            user_id: existingUser.id,
-            position: input.position,
-            division: input.division,
-          });
-
-          await tx
-            .update(events)
-            .set({
-              participant_count: eventToUpdate.participant_count + 1,
-            })
-            .where(eq(events.id, eventToUpdate.id));
+        await ctx.db.insert(keanggotaan).values({
+          id: input.event_id + '_' + existingUser.id,
+          event_id: input.event_id,
+          user_id: existingUser.id,
+          position: input.position,
+          division: input.division,
         });
 
         return {
@@ -341,13 +314,6 @@ export const addNewPanitiaManual = lembagaProcedure
           position: input.position,
           division: input.division,
         });
-
-        await tx
-          .update(events)
-          .set({
-            participant_count: eventToUpdate.participant_count + 1,
-          })
-          .where(eq(events.id, eventToUpdate.id));
       });
 
       return {
