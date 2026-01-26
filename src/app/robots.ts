@@ -2,13 +2,15 @@ import { MetadataRoute } from 'next';
 import { env } from '~/env';
 
 export default function robots(): MetadataRoute.Robots {
-  const isDev = env.NODE_ENV !== 'production';
+  const baseUrl = env.NEXT_PUBLIC_BASE_URL;
+  const isDevSite = baseUrl.includes('dev');
+
   return {
     rules: {
       userAgent: '*',
-      allow: isDev ? [] : '/',
-      disallow: isDev ? '/' : ['/api/', '/_next/', '/admin/'],
+      allow: isDevSite ? [] : '/',
+      disallow: isDevSite ? '/' : ['/api/', '/_next/', '/admin/'],
     },
-    sitemap: `${env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
+    sitemap: `${baseUrl ?? 'https://anmategra.com'}/sitemap.xml`,
   };
 }
