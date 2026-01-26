@@ -1,150 +1,314 @@
-"use client";
+'use client';
 
-import { useState } from "react";
 import {
   DndContext,
   type DragEndEvent,
+  // type DragOverEvent,
   DragOverlay,
   MouseSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
-import { Droppable } from "./droppable";
-import { type ColumnProps, type ColumnType, ReportColumn } from "./report-column";
-import { type Report } from "./report-card";
+} from '@dnd-kit/core';
+import { useState } from 'react';
+import { api } from '~/trpc/react';
+import { useToast } from '~/hooks/use-toast';
+import { Droppable } from './droppable';
+import { type Report, ReportCard } from './report-card';
+import {
+  type ColumnProps,
+  type ColumnType,
+  ReportColumn,
+} from './report-column';
 
 export interface KanbanBoardProps {
   kanbanData: ColumnProps[];
   displayedColumn: ColumnType[];
   hideColumnAction: (type: ColumnType) => void;
-}
-
-/**
- *
- * @param data Props
- * @returns Convert data to Record<ColumnType, Report[]> to convert data to be used in useState
- */
-function handleConvertDataToRecord(data: ColumnProps[]) {
-  return data.reduce(
-    (acc, column) => {
-      acc[column.title] = column.reports;
-      return acc;
-    },
-    {} as Record<ColumnType, Report[]>,
-  );
+  isAdminView?: boolean;
+  onEditReport?: (report: Report) => void;
+  onRefresh?: () => void;
 }
 
 export const KanbanBoard = ({
   kanbanData,
   hideColumnAction,
   displayedColumn,
+  isAdminView = false, // default: bukan admin
+  onEditReport,
+  onRefresh,
 }: KanbanBoardProps) => {
-  const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint: {
-      distance: 10,
-    },
-  });
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: {
-      distance: 5,
-      delay: 150,
-    },
-  });
-
-  const sensors = useSensors(mouseSensor, touchSensor);
+  const { toast } = useToast();
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 100, tolerance: 5 },
+    }),
+  );
 
   const [reports, setReports] = useState<Record<ColumnType, Report[]>>(() =>
-    handleConvertDataToRecord(kanbanData),
+    kanbanData.reduce(
+      (acc, col) => {
+        acc[col.title] = col.reports;
+        return acc;
+      },
+      {} as Record<ColumnType, Report[]>,
+    ),
   );
 
   const [activeReport, setActiveReport] = useState<Report | null>(null);
 
-  const onDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const submitReportMutation = api.users.submitReport.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Laporan berhasil diajukan',
+        description: 'Laporan telah berpindah ke status Reported.',
+      });
+      onRefresh?.();
+    },
+    onError: () => {
+      toast({
+        title: 'Gagal mengajukan laporan',
+        description: 'Terjadi kesalahan saat mengajukan laporan.',
+      });
+      onRefresh?.();
+    },
+  });
 
+  const deleteReportMutation = api.users.deleteReport.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Laporan berhasil dihapus',
+        description: 'Laporan draft telah dihapus.',
+      });
+      onRefresh?.();
+    },
+    onError: () =>{
+      toast({
+        title: 'Gagal menghapus laporan',
+        description: 'Terjadi kesalahan saat menghapus laporan.',
+      });
+    },
+  });
+
+  const setReportStatusMutation = api.admin.setReportStatus.useMutation({
+    onError: () => {
+      toast({
+        title: 'Gagal memperbarui status',
+        description: 'Perubahan status tidak tersimpan. Coba lagi.',
+      });
+    },
+  });
+
+  const findColumnByReportId = (id: string): ColumnType | undefined =>
+    (Object.keys(reports) as ColumnType[]).find((col) =>
+      reports[col].some((r) => r.id === id),
+    );
+
+  const isForbiddenMove = (source?: ColumnType, dest?: ColumnType) => {
+    if (isAdminView) return false;
+
+    if (!source || !dest) return true;
+
+    if (source === dest) {
+      if (source === 'Draft' || source === 'Reported') return false;
+      return true; 
+    }
+
+    if (source === 'Draft' && dest === 'Reported') return false;
+
+    return true;
+  };
+
+  // const onDragOver = (_event: DragOverEvent) => {
+  //   //empty
+  // };
+
+  const onDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveReport(null);
     if (!over) return;
 
-    const sourceColumn = findColumnByReportId(active.id.toString());
-    const destinationColumn = over.id as ColumnType;
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
 
-    if (sourceColumn && destinationColumn) {
-      const sourceItems = reports[sourceColumn];
-      const destinationItems = reports[destinationColumn];
+    const sourceColumn = findColumnByReportId(activeId);
+    const destinationColumn =
+      findColumnByReportId(overId) ?? (overId as ColumnType);
 
-      if (sourceColumn === destinationColumn) {
-        const reorderedItems = arrayMove(
-          sourceItems,
-          sourceItems.findIndex((item) => item.id === active.id),
-          destinationItems.findIndex((item) => item.id === over.id),
-        );
-        setReports((prev) => ({ ...prev, [sourceColumn]: reorderedItems }));
-      } else {
-        const movedItem = sourceItems.find((item) => item.id === active.id);
-        if (movedItem) {
-          setReports((prev) => ({
+    if (isForbiddenMove(sourceColumn, destinationColumn)) {
+      // debug
+      // console.debug('drag blocked by isForbiddenMove', { activeId, overId, sourceColumn, destinationColumn, isAdminView });
+      return;
+    }
+    if (!sourceColumn || !destinationColumn) return;
+
+    if (!isAdminView && sourceColumn === 'Draft' && destinationColumn === 'Reported') {
+      try {
+        await submitReportMutation.mutateAsync({id:activeId});
+        setReports((prev) => {
+          const src = prev[sourceColumn].filter((r) => r.id !== activeId);
+          const moved = prev[sourceColumn].find((r) => r.id === activeId);
+          return {
             ...prev,
-            [sourceColumn]: prev[sourceColumn].filter(
-              (item) => item.id !== active.id,
-            ),
-            [destinationColumn]: [...prev[destinationColumn], movedItem],
-          }));
-        }
+            [sourceColumn]: src,
+            [destinationColumn]: moved ? [...prev[destinationColumn], moved] : prev[destinationColumn],
+          };
+        });
+      } catch (e) {
+        console.error('submitReport failed', e);
+      }
+      return;
+    }
+
+    const sourceItems = reports[sourceColumn];
+    const destinationItems = reports[destinationColumn];
+
+    const activeIndex = sourceItems.findIndex((r) => r.id === activeId);
+    if (activeIndex === -1) return;
+
+    const activeItem = sourceItems[activeIndex];
+    if (!activeItem) return;
+
+    if (sourceColumn === destinationColumn) {
+      const overIndex = sourceItems.findIndex((r) => r.id === overId);
+      const targetIndex = overIndex >= 0 ? overIndex : sourceItems.length - 1;
+
+      if (activeIndex === targetIndex) return;
+
+      const updated = [...sourceItems];
+      updated.splice(activeIndex, 1);
+      updated.splice(targetIndex, 0, activeItem);
+
+      setReports((prev) => ({
+        ...prev,
+        [sourceColumn]: updated,
+      }));
+      return;
+    }
+
+    const newSource = sourceItems.filter((r) => r.id !== activeId);
+    const overIndexInDestination = destinationItems.findIndex(
+      (r) => r.id === overId,
+    );
+
+    const insertIndex =
+      overIndexInDestination >= 0
+        ? overIndexInDestination
+        : destinationItems.length;
+
+    const newDestination = [
+      ...destinationItems.slice(0, insertIndex),
+      activeItem,
+      ...destinationItems.slice(insertIndex),
+    ];
+
+    const prevState = JSON.parse(JSON.stringify(reports)) as typeof reports;
+    setReports((prev) => ({
+      ...prev,
+      [sourceColumn]: newSource,
+      [destinationColumn]: newDestination,
+    }));
+
+    if (isAdminView && sourceColumn !== destinationColumn) {
+      try {
+        await setReportStatusMutation.mutateAsync({
+          id: activeId,
+          status: destinationColumn,
+        });
+      } catch (e) {
+        setReports(prevState);
       }
     }
   };
 
-  const findColumnByReportId = (id: string) => {
-    return (Object.keys(reports) as ColumnType[]).find((column) =>
-      reports[column].some((report) => report.id === id),
-    );
+  const handleSubmitReport = async (id: string) => {
+    try {
+      await submitReportMutation.mutateAsync({ id });
+      setReports((prev) => {
+        const srcColumn: ColumnType = 'Draft';
+        const destColumn: ColumnType = 'Reported';
+        const src = prev[srcColumn].filter((r) => r.id !== id);
+        const moved = prev[srcColumn].find((r) => r.id === id);
+        return {
+          ...prev,
+          [srcColumn]: src,
+          [destColumn]: moved
+            ? [...prev[destColumn], moved]
+            : prev[destColumn],
+        };
+      });
+    } catch (e) {
+      console.error('submitReport failed', e);
+    }
+  };
+
+  const handleDelete = async (id:string) => {
+    try {
+      await deleteReportMutation.mutateAsync({id});
+      setReports((prev)=> {
+        const copy = {...prev};
+        (Object.keys(copy) as ColumnType[]).forEach((c) => {
+          copy[c] = copy[c].filter((r) => r.id !== id);
+        });
+        return copy;
+      })
+    } catch (e) {
+      console.error('deleteReport failed', e);
+    }
+  };
+
+  const handleEdit = (report: Report) => {
+    if (onEditReport) {
+      onEditReport(report);
+    }
   };
 
   return (
     <div className="container mx-auto">
       <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={(event) => {
-          const { active } = event;
-          const column = findColumnByReportId(active.id.toString());
-          if (column) {
-            const item = reports[column]?.find((item) => item.id === active.id);
-            setActiveReport(item ?? null);
-          }
+        sensors={isAdminView ? sensors : []}
+        onDragStart={({ active }) => {
+          if (!isAdminView) return;
+          const col = findColumnByReportId(active.id.toString());
+          const item = col ? reports[col].find((r) => r.id === active.id.toString()) : null;
+          setActiveReport(item ?? null);
         }}
+        // onDragOver={onDragOver}
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveReport(null)}
       >
-        <div className="flex flex-col gap-4 overflow-x-scroll md:flex-row">
-          {(Object.keys(reports) as ColumnType[]).map((columnId) => (
-            <Droppable id={columnId} key={columnId}>
+        <div className="flex flex-col gap-4 md:flex-row md:overflow-x-auto md:pb-4">
+          {(Object.keys(reports) as ColumnType[]).map((colId) => (
+            <Droppable id={colId} key={colId}>
               <ReportColumn
-                key={columnId}
-                title={columnId}
-                reports={reports[columnId]}
+                key={colId}
+                title={colId}
+                reports={reports[colId]}
                 hideColumn={hideColumnAction}
                 displayedStatus={displayedColumn}
+                activeReportId={activeReport?.id}
+                isAdminView={isAdminView}
+                onEditReport={handleEdit}
+                onDeleteReport={handleDelete}
+                onSubmitReport={
+                  !isAdminView && colId === 'Draft' ? handleSubmitReport : undefined
+                }
               />
             </Droppable>
           ))}
         </div>
+
         <DragOverlay>
-          {activeReport ? (
-            <div className="rounded-md bg-white p-4 shadow">
-              <h3 className="mb-2 font-semibold">{activeReport.name}</h3>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
-                  {activeReport.date}
-                </span>
-                <span className="rounded-full bg-gray-200 px-2 py-1 text-sm">
-                  {activeReport.category}
-                </span>
-              </div>
-            </div>
-          ) : null}
+            {activeReport && (
+              <ReportCard
+                report={activeReport}
+                column={findColumnByReportId(activeReport.id) ?? "Draft"}
+                // onClick={() => {}}
+                // onEdit={() => {}}
+                // onDelete={() => {}}
+              />
+            )}
         </DragOverlay>
       </DndContext>
     </div>

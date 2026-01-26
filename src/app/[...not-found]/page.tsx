@@ -10,7 +10,7 @@ const NotFoundPage = () => {
         <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-16 md:flex-row">
           <div className="align-center flex h-96 w-48 shrink-0 items-center justify-center">
             <Image
-              src="/images/notfound/disks.png"
+              src="/images/miscellaneous/disks.png"
               alt="Coming Soon decoration"
               width={192}
               height={384}
@@ -23,7 +23,7 @@ const NotFoundPage = () => {
               Kami tidak dapat menemukan halaman yang Anda cari
             </p>
             <Link href="/">
-              <Button className="bg-[#2B6777] px-8 py-6 text-lg text-white hover:bg-[#2B6777]/90">
+              <Button variant="dark_blue" className="px-8 py-6 text-lg">
                 Kembali ke Beranda
               </Button>
             </Link>

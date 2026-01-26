@@ -1,187 +1,467 @@
-import {createTRPCRouter, protectedProcedure, publicProcedure,} from "~/server/api/trpc";
-import {type Kepanitiaan} from "~/types/kepanitiaan";
-import {z} from "zod";
-import {mahasiswa, users} from "~/server/db/schema";
-import {eq, ilike, or, sql} from "drizzle-orm";
+import { and, eq, gt, ilike, inArray, lt, or, sql } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
+import { z } from 'zod';
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
+import { events, lembaga, mahasiswa, users } from '~/server/db/schema';
+import { type Kepanitiaan } from '~/types/kepanitiaan';
+
+import {
+  GetAllEventsInputSchema,
+  GetAllEventsOutputSchema,
+  GetRecentEventsOutputSchema,
+  GetTopEventsOutputSchema,
+  SearchAllOutputSchema,
+  SearchAllQueryInputSchema,
+  searchPreviewInputSchema,
+  searchPreviewOutputSchema,
+} from '../types/landing.type';
 
 export const landingRouter = createTRPCRouter({
-    getRecentEvents: publicProcedure.query(async ({ctx}) => {
-        const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-        const events = await ctx.db.query.events.findMany({
-            where: (events, {gte}) => gte(events.start_date, oneMonthAgo),
-            orderBy: (events, {desc}) => desc(events.start_date),
+  getRecentEvents: publicProcedure
+    .input(z.void())
+    .output(GetRecentEventsOutputSchema)
+    .query(async ({ ctx }) => {
+      const events = await ctx.db.query.events.findMany({
+        orderBy: (events, { desc }) => desc(events.start_date),
+        with: {
+          lembaga: {
             with: {
-                lembaga: {
-                    with: {
-                        users: {}
-                    }
-                },
+              users: {},
             },
-            limit: 8,
-            columns: {
-                id: true,
-                name: true,
-                description: true,
-                image: true,
-                start_date: true,
-                end_date: true,
-                participant_count: true,
-                background_image: true,
-            },
-        });
+          },
+        },
+        limit: 8,
+        columns: {
+          id: true,
+          name: true,
+          description: true,
+          image: true,
+          start_date: true,
+          end_date: true,
+          participant_count: true,
+          background_image: true,
+        },
+      });
 
-        const formattedEvents: Kepanitiaan[] = events.map((item) => ({
-            lembaga: {
-                name: item.lembaga?.name ?? "",
-                profilePicture: item.lembaga?.users.image ?? "",
-            },
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            image: item.background_image,
-            quota: item.participant_count ?? 0,
-            startDate: new Date(item.start_date),
-            endDate: item.end_date ? new Date(item.end_date) : null,
-        }));
+      const formattedEvents: Kepanitiaan[] = events.map((item) => ({
+        lembaga: {
+          name: item.lembaga?.name ?? '',
+          profilePicture: item.lembaga?.users.image ?? '',
+        },
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        image: item.background_image,
+        anggotaCount: item.participant_count ?? 0,
+        startDate: new Date(item.start_date),
+        endDate: item.end_date ? new Date(item.end_date) : null,
+      }));
 
-        return formattedEvents;
+      return formattedEvents;
     }),
 
-    getTopEvents: publicProcedure.query(async ({ctx}) => {
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        const events = await ctx.db.query.events.findMany({
-            where: (events, {gte}) => gte(events.start_date, sixMonthsAgo),
-            orderBy: (events, {desc}) => desc(events.participant_count),
+  getAllEvents: publicProcedure
+    .input(GetAllEventsInputSchema)
+    .output(GetAllEventsOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 8;
+      const sort = input.sort ?? 'newest';
+      let cursorDate: Date | undefined;
+      let cursorId: string | undefined;
+      let cursorCount: number | undefined;
+
+      if (input.cursor) {
+        const [datePart, idPart] = input.cursor.split('|');
+        if (datePart && idPart) {
+          if (sort === 'most_participants') {
+            cursorCount = Number(datePart);
+          } else {
+            cursorDate = new Date(datePart);
+          }
+          cursorId = idPart;
+        }
+      }
+
+      const conditions: SQL<unknown>[] = [];
+      if (sort === 'newest' && cursorDate && cursorId) {
+        const date = cursorDate;
+        const id = cursorId;
+        conditions.push(
+          or(
+            lt(events.start_date, date),
+            and(eq(events.start_date, date), lt(events.id, id)),
+          ) as SQL,
+        );
+      }
+      if (sort === 'oldest' && cursorDate && cursorId) {
+        const date = cursorDate;
+        const id = cursorId;
+        conditions.push(
+          or(
+            gt(events.start_date, date),
+            and(eq(events.start_date, date), gt(events.id, id)),
+          ) as SQL,
+        );
+      }
+      if (
+        sort === 'most_participants' &&
+        cursorCount !== undefined &&
+        cursorId
+      ) {
+        const count = cursorCount;
+        const id = cursorId;
+        conditions.push(
+          or(
+            lt(events.participant_count, count),
+            and(eq(events.participant_count, count), lt(events.id, id)),
+          ) as SQL,
+        );
+      }
+
+      if (input.status && input.status.length > 0) {
+        conditions.push(inArray(events.status, input.status));
+      }
+
+      const orderBy =
+        sort === 'oldest'
+          ? (events, { asc }) => [asc(events.start_date), asc(events.id)]
+          : sort === 'most_participants'
+            ? (events, { desc }) => [
+                desc(events.participant_count),
+                desc(events.id),
+              ]
+            : (events, { desc }) => [desc(events.start_date), desc(events.id)];
+
+      const list = await ctx.db.query.events.findMany({
+        where: conditions.length > 0 ? and(...conditions) : undefined,
+        orderBy,
+        with: {
+          lembaga: {
             with: {
-                lembaga: {
-                    columns: {
-                        name: true,
-                    },
-                    with: {
-                        users: {}
-                    }
-                },
+              users: {},
             },
-            limit: 8,
-            columns: {
-                id: true,
-                name: true,
-                description: true,
-                image: true,
-                start_date: true,
-                end_date: true,
-                participant_count: true,
-                background_image: true,
-            },
-        });
+          },
+        },
+        limit: limit + 1,
+        columns: {
+          id: true,
+          name: true,
+          description: true,
+          image: true,
+          start_date: true,
+          end_date: true,
+          participant_count: true,
+          background_image: true,
+        },
+      });
 
-        const formattedEvents: Kepanitiaan[] = events.map((item) => ({
-            lembaga: {
-                name: item.lembaga?.name ?? "",
-                profilePicture: item.lembaga?.users.image ?? "",
-            },
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            quota: item.participant_count ?? 0,
-            image: item.background_image,
-            startDate: new Date(item.start_date),
-            endDate: item.end_date ? new Date(item.end_date) : null,
-        }));
+      const hasMore = list.length > limit;
+      const sliced = hasMore ? list.slice(0, limit) : list;
 
-        return formattedEvents;
+      const formattedEvents: Kepanitiaan[] = sliced.map((item) => ({
+        lembaga: {
+          name: item.lembaga?.name ?? '',
+          profilePicture: item.lembaga?.users.image ?? '',
+        },
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        image: item.background_image,
+        anggotaCount: item.participant_count ?? 0,
+        startDate: new Date(item.start_date),
+        endDate: item.end_date ? new Date(item.end_date) : null,
+      }));
+
+      const lastItem = sliced[sliced.length - 1];
+      const nextCursor =
+        hasMore && lastItem
+          ? sort === 'most_participants'
+            ? `${lastItem.participant_count ?? 0}|${lastItem.id}`
+            : `${new Date(lastItem.start_date).toISOString()}|${lastItem.id}`
+          : null;
+      return {
+        events: formattedEvents,
+        nextCursor,
+      };
     }),
 
-    getResults: protectedProcedure
-        .input(z.object({query: z.string()}))
-        .query(async ({ctx, input}) => {
-            const {query} = input;
-            const limit = 10;
+  getTopEvents: publicProcedure
+    .input(z.void())
+    .output(GetTopEventsOutputSchema)
+    .query(async ({ ctx }) => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      const events = await ctx.db.query.events.findMany({
+        where: (events, { gte }) => gte(events.start_date, sixMonthsAgo),
+        orderBy: (events, { desc }) => desc(events.participant_count),
+        with: {
+          lembaga: {
+            columns: {
+              name: true,
+            },
+            with: {
+              users: {},
+            },
+          },
+        },
+        limit: 8,
+        columns: {
+          id: true,
+          name: true,
+          description: true,
+          image: true,
+          start_date: true,
+          end_date: true,
+          participant_count: true,
+          background_image: true,
+        },
+      });
 
-            // Cek apakah query adalah angka (hanya digit 0-9)
-            const isNumeric = /^\d+$/.test(query);
+      const formattedEvents: Kepanitiaan[] = events.map((item) => ({
+        lembaga: {
+          name: item.lembaga?.name ?? '',
+          profilePicture: item.lembaga?.users.image ?? '',
+        },
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        anggotaCount: item.participant_count ?? 0,
+        image: item.background_image,
+        startDate: new Date(item.start_date),
+        endDate: item.end_date ? new Date(item.end_date) : null,
+      }));
 
-            // Inner join User dan Mahasiswa dengan kondisi pencarian
-            const mahasiswaResults = await ctx.db
-                .select({
-                    userId: users.id,
-                    nama: users.name,
-                    nim: mahasiswa.nim,
-                    jurusan: mahasiswa.jurusan,
-                    image: users.image,
-                })
-                .from(users)
-                .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
-                .where(
-                    isNumeric
-                        ? or(
-                            // Jika query numerik: cari di kolom nim (integer) dan name (string)
-                            // @ts-expect-error Mahasiswa.nim adalah integer
-                            ilike(sql`${mahasiswa.nim}::text`, `%${query}%`), // Cast integer ke text untuk ilike
-                            ilike(users.name, `%${query}%`)
-                        )
-                        : // Jika bukan numerik: cari hanya di kolom name
-                        ilike(users.name, `%${query}%`)
+      return formattedEvents;
+    }),
+
+  searchAll: protectedProcedure
+    .input(SearchAllQueryInputSchema)
+    .output(SearchAllOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const { query } = input;
+      const limit = 10;
+
+      // Cek apakah query adalah angka (hanya digit 0-9)
+      const isNumeric = /^\d+$/.test(query);
+
+      const [mahasiswaResults, lembaga, event] = await Promise.all([
+        // Mahasiswa query
+        // Inner join User dan Mahasiswa dengan kondisi pencarian
+        ctx.db
+          .select({
+            userId: users.id,
+            nama: users.name,
+            nim: mahasiswa.nim,
+            jurusan: mahasiswa.jurusan,
+            image: users.image,
+          })
+          .from(users)
+          .innerJoin(mahasiswa, eq(users.id, mahasiswa.userId))
+          .where(
+            isNumeric
+              ? or(
+                  // Jika query numerik: cari di kolom nim (integer) dan name (string)
+                  // @ts-expect-error Mahasiswa.nim adalah integer
+                  ilike(sql`${mahasiswa.nim}::text`, `%${query}%`), // Cast integer ke text untuk ilike
+                  ilike(users.name, `%${query}%`),
                 )
-                .limit(limit);
+              : // Jika bukan numerik: cari hanya di kolom name
+                ilike(users.name, `%${query}%`),
+          )
+          .limit(limit),
 
-
-            const lembaga = await ctx.db.query.lembaga.findMany({
-                where: (lembaga, {ilike}) => ilike(lembaga.name, `%${query}%`),
-                with: {
-                    users: {},
-                },
-                limit,
-            });
-
-            const formattedLembaga: Kepanitiaan[] = lembaga.map((item) => ({
-                lembaga: {
-                    id: item.id,
-                    name: item.name,
-                    profilePicture: item.users?.image ?? "",
-                },
-                name: item.name,
-                description: item.description,
-                quota: item.memberCount ?? 0,
-                startDate: new Date(item.foundingDate),
-                image: item.users?.image,
-                endDate: item.endingDate ? new Date(item.endingDate) : null,
-            }));
-
-
-            const event = await ctx.db.query.events.findMany({
-                where: (event, {ilike}) => ilike(event.name, `%${query}%`),
-                with: {
-                    lembaga: {
-                        with:{
-                            users: {}
-                        }
-                    },
-                },
-                limit,
-            });
-
-            const formattedKepanitiaan: Kepanitiaan[] = event.map((item) => ({
-                lembaga: {
-                    name: item.lembaga?.name ?? "",
-                    profilePicture: item.lembaga?.users.image ?? "",
-                },
-                id: item.id,
-                name: item.name,
-                description: item.description,
-                image: item.background_image,
-                quota: item.participant_count ?? 0,
-                startDate: new Date(item.start_date),
-                endDate: item.end_date ? new Date(item.end_date) : null,
-            }));
-
-            return {
-                "mahasiswa": mahasiswaResults,
-                "lembaga": formattedLembaga,
-                "kegiatan": formattedKepanitiaan,
-            };
+        // Lembaga query
+        ctx.db.query.lembaga.findMany({
+          where: (lembaga, { ilike }) => ilike(lembaga.name, `%${query}%`),
+          with: {
+            users: {},
+          },
+          limit,
         }),
+
+        // Events query
+        ctx.db.query.events.findMany({
+          where: (event, { ilike }) => ilike(event.name, `%${query}%`),
+          with: {
+            lembaga: {
+              with: {
+                users: {},
+              },
+            },
+          },
+          limit,
+        }),
+      ]);
+
+      const formattedMahasiswa = mahasiswaResults.map((mahasiswa) => ({
+        userId: mahasiswa.userId,
+        nama: mahasiswa.nama ?? '',
+        nim: mahasiswa.nim.toString(),
+        jurusan: mahasiswa.jurusan,
+        image: mahasiswa.image ?? undefined,
+      }));
+
+      const formattedLembaga: Kepanitiaan[] = lembaga.map((item) => ({
+        lembaga: {
+          id: item.id,
+          name: item.name,
+          profilePicture: item.users?.image ?? '',
+        },
+        name: item.name,
+        description: item.description,
+        anggotaCount: item.memberCount ?? 0,
+        startDate: new Date(item.foundingDate),
+        image: item.users?.image,
+        endDate: item.endingDate ? new Date(item.endingDate) : null,
+      }));
+
+      const formattedKepanitiaan: Kepanitiaan[] = event.map((item) => ({
+        lembaga: {
+          name: item.lembaga?.name ?? '',
+          profilePicture: item.lembaga?.users.image ?? '',
+        },
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        image: item.background_image,
+        anggotaCount: item.participant_count ?? 0,
+        startDate: new Date(item.start_date),
+        endDate: item.end_date ? new Date(item.end_date) : null,
+      }));
+
+      return {
+        mahasiswa: formattedMahasiswa,
+        lembaga: formattedLembaga,
+        kegiatan: formattedKepanitiaan,
+      };
+    }),
+
+  searchPreview: protectedProcedure
+    .input(searchPreviewInputSchema)
+    .output(searchPreviewOutputSchema)
+    .query(async ({ ctx, input }) => {
+      const { query } = input;
+      const q = query.trim();
+
+      if (q.length < 2) {
+        return {
+          mahasiswa: [],
+          lembaga: [],
+          kegiatan: [],
+        };
+      }
+      const isNumeric = /^[0-9]+$/.test(q);
+
+      // nim search
+      if (isNumeric) {
+        let mahasiswaRes = await ctx.db
+          .select({
+            userId: mahasiswa.userId,
+            nama: mahasiswa.nama,
+            nim: sql<string>`${mahasiswa.nim}::text`,
+          })
+          .from(mahasiswa)
+          .where(sql`${mahasiswa.nim}::text LIKE ${q + '%'}`)
+          .limit(2);
+
+        if (mahasiswaRes.length === 0) {
+          mahasiswaRes = await ctx.db
+            .select({
+              userId: mahasiswa.userId,
+              nama: mahasiswa.nama,
+              nim: sql<string>`${mahasiswa.nimTpb}::text`,
+            })
+            .from(mahasiswa)
+            .where(
+              and(
+                sql`${mahasiswa.nimTpb} IS NOT NULL`,
+                sql`${mahasiswa.nimTpb}::text LIKE ${q + '%'}`,
+              ),
+            )
+            .limit(2);
+        }
+
+        return {
+          mahasiswa: mahasiswaRes.map((m) => ({
+            userId: m.userId,
+            nama: m.nama ?? '',
+            nim: m.nim,
+          })),
+          lembaga: [],
+          kegiatan: [],
+        };
+      }
+
+      // name search
+      const [mahasiswaRes, lembagaRes, kegiatanRes] = await Promise.all([
+        // Mahasiswa
+        ctx.db
+          .select({
+            userId: mahasiswa.userId,
+            nama: mahasiswa.nama,
+            nim: sql<string>`${mahasiswa.nim}::text`,
+          })
+          .from(mahasiswa)
+          .where(sql`${mahasiswa.nama} ILIKE ${'%' + q + '%'}`)
+          .limit(2),
+
+        // Lembaga
+        ctx.db
+          .select({
+            lembagaId: lembaga.id,
+            name: lembaga.name,
+          })
+          .from(lembaga)
+          .where(sql`${lembaga.name} ILIKE ${'%' + q + '%'}`)
+          .limit(2),
+
+        // Events / Kegiatan
+        ctx.db
+          .select({
+            id: events.id,
+            name: events.name,
+          })
+          .from(events)
+          .where(sql`${events.name} ILIKE ${'%' + q + '%'}`)
+          .limit(2),
+      ]);
+
+      return {
+        mahasiswa: mahasiswaRes.map((m) => ({
+          userId: m.userId,
+          nama: m.nama ?? '',
+          nim: m.nim,
+        })),
+        lembaga: lembagaRes,
+        kegiatan: kegiatanRes,
+      };
+    }),
+
+  getAllEventIds: publicProcedure
+    .input(z.object({ limit: z.number().min(1).max(100).default(100) }))
+    .query(async ({ ctx, input }) => {
+      const events = await ctx.db.query.events.findMany({
+        columns: {
+          id: true,
+        },
+        limit: input.limit,
+      });
+      return events;
+    }),
+
+  getAllLembagaIds: publicProcedure
+    .input(z.object({ limit: z.number().min(1).max(100).default(100) }))
+    .query(async ({ ctx, input }) => {
+      const lembagaList = await ctx.db.query.lembaga.findMany({
+        columns: {
+          id: true,
+        },
+        limit: input.limit,
+      });
+      return lembagaList;
+    }),
 });

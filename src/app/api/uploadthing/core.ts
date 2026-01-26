@@ -1,6 +1,6 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
-import {getServerAuthSession} from "~/server/auth";
+import { type FileRouter, createUploadthing } from 'uploadthing/next';
+import { UploadThingError } from 'uploadthing/server';
+import { getServerAuthSession } from '~/server/auth';
 
 const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
@@ -12,7 +12,7 @@ export const ourFileRouter = {
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 1,
     },
   })
@@ -23,7 +23,9 @@ export const ourFileRouter = {
 
       // If you throw, the user will not be able to upload
       if (!user) {
-        throw new UploadThingError("You must be logged in to upload images") as Error;
+        throw new UploadThingError(
+          'You must be logged in to upload images',
+        ) as Error;
       }
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
@@ -32,6 +34,37 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata }) => {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
+    }),
+
+  reportAttachment: f({
+    pdf: {
+      maxFileSize: '16MB',
+      maxFileCount: 1,
+    },
+    'application/zip': {
+      maxFileSize: '32MB',
+      maxFileCount: 1,
+    },
+    'application/x-7z-compressed': {
+      maxFileSize: '32MB',
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async () => {
+      const user = await getServerAuthSession();
+      if (!user) {
+        throw new UploadThingError(
+          'You must be logged in to upload report attachments',
+        ) as Error;
+      }
+      return { userId: user.user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      return {
+        uploadedBy: metadata.userId,
+        fileUrl: file.url,
+        fileName: file.name,
+      };
     }),
 } satisfies FileRouter;
 

@@ -1,44 +1,54 @@
-import { adminProcedure } from "../../trpc";
-import { z } from "zod";
-import { events } from "~/server/db/schema";
+import { lembagaProcedure } from "../../trpc";
+import { events, keanggotaan } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { DeleteEventInputSchema, DeleteEventOutputSchema } from "../../types/event.type";
 
-export const deleteEvent = adminProcedure
-.input(z.object({ id: z.string() }))
+export const deleteEvent = lembagaProcedure
+.input(DeleteEventInputSchema)
+.output(DeleteEventOutputSchema)
 .mutation(async ({ ctx, input }) => {
   try {
-    const deletedEvent = await ctx.db.delete(events).where(eq(events.id, input.id)).returning();
-    return deletedEvent[0];
-  } catch (error) {
-    console.error("Database Error:", error);
 
-    if (error instanceof Error) {
-      const pgError = error as { code?: string };
+    const existingEvent = await ctx.db.query.events.findFirst({
+      where: and(
+        eq(events.id, input.id),
+        eq(events.org_id, ctx.session.user.lembagaId!)
+      )
+    });
 
-      switch (pgError.code) {
-        case '23505':
-          throw new TRPCError({
-            code: 'CONFLICT',
-            message: "A record with the same unique field already exists."
-          });
-        case '23503':
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: "Invalid reference to another table."
-          });
-        case '23514':
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: "Input values violate database constraints."
-          });
-      }
+    if (!existingEvent) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: "Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya"
+      });
     }
 
-    // Generic error handling
+    const existingKeanggotaan = await ctx.db.query.keanggotaan.findFirst({
+      where: eq(keanggotaan.event_id, input.id)
+    });
+
+    if (existingKeanggotaan) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: "Tidak dapat menghapus kegiatan yang memiliki panitia terdaftar."
+      });
+    }
+
+    await ctx.db.delete(events).where(eq(events.id, input.id));
+
+    return { 
+      success: true, 
+      id: input.id 
+    };
+    
+  } catch (error) {
+    if (error instanceof TRPCError) {
+      throw error;
+    }
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: "An unexpected error occurred during event creation."
+      message: "Terjadi kesalahan tak terduga saat menghapus kegiatan."
     });
   }
 })

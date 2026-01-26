@@ -1,30 +1,28 @@
-import { type ReactNode } from "react";
+import { type Metadata } from 'next';
+import { type ReactNode } from 'react';
+import { getServerAuthSession } from '~/server/auth';
 
-import { type Metadata } from "next";
-import { Sidebar } from "../_components/Sidebar";
-import {getServerAuthSession} from "~/server/auth";
+import Navbar from '../_components/layout/navbar';
 
 // Metadata
 export const metadata: Metadata = {
-  title: "Lembaga",
-  description: "Anmategra by KM ITB",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: 'Lembaga',
+  description: 'Anmategra by KM ITB',
+  icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
-const LembagaLayout = async ({
-  children 
-}:{
-  children: ReactNode
-}) => {
-    const session = await getServerAuthSession();
+const LembagaLayout = async ({ children }: { children: ReactNode }) => {
+  const session = await getServerAuthSession();
   return (
-    <div>
-      <Sidebar session={session}/>
-      <div className="ml-[16rem]">
+    <div className="flex flex-col items-center">
+      <div className="sticky top-0 z-20 w-full">
+        <Navbar session={session} />
+      </div>
+      <div className="w-full max-w-7xl flex-1 pt-16 sm:pt-0 px-6 lg:px-12 mb-10">
         {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LembagaLayout
+export default LembagaLayout;

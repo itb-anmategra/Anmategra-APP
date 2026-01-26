@@ -1,0 +1,9 @@
+# Husky hooks
+.husky/
+
+# Other files to ignore
+node_modules
+.next
+dist
+build
+src/components/ui

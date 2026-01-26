@@ -1,11 +1,14 @@
-import {createCallerFactory, createTRPCRouter} from "~/server/api/trpc";
-import {landingRouter} from "./routers/landing";
-import { lembagaRouter } from "./routers/lembaga";
-import {eventRouter} from "./routers/event";
-import {kegiatanRouter} from "./routers/kegiatan";
-import {userRouter} from "./routers/user";
-import {profileRouter} from "~/server/api/routers/profil";
+import { profileRouter } from '~/server/api/routers/profile';
+import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
 
+import { adminRouter } from './routers/admin';
+import { eventRouter } from './routers/event';
+import { kegiatanRouter } from './routers/kegiatan';
+import { landingRouter } from './routers/landing';
+import { lembagaRouter } from './routers/lembaga';
+import { profilRouter } from './routers/profil';
+import { raporRouter } from './routers/rapor';
+import { userRouter } from './routers/user';
 
 /**
  * This is the primary router for your server.
@@ -13,13 +16,15 @@ import {profileRouter} from "~/server/api/routers/profil";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  // admin: adminRouter,
+  admin: adminRouter,
   landing: landingRouter,
   lembaga: lembagaRouter,
   event: eventRouter,
   kegiatan: kegiatanRouter,
-  profil: profileRouter,
+  profile: profileRouter,
   users: userRouter,
+  profil: profilRouter,
+  rapor: raporRouter,
 });
 
 // export type definition of API

@@ -1,34 +1,102 @@
-import { useDraggable } from "@dnd-kit/core";
+'use client';
+
+import { Button } from '~/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
+
+import { type ColumnType } from './report-column';
+// import Link from 'next/link';
 
 export interface Report {
   id: string;
   name: string;
   date: string;
   category: string;
+  description?: string;
+  urgent?: string;
+  attachment?: string;
 }
 
-export function ReportCard({ report }: { report: Report }) {
-  const { attributes, listeners, setNodeRef} = useDraggable({
-    id: report.id,
-  });
+export interface ReportCardProps {
+  report: Report;
+  column: ColumnType;
+  onClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onSubmit?: () => void;
+}
+
+export function ReportCard({
+  report,
+  column,
+  onClick,
+  onEdit,
+  onDelete,
+  onSubmit,
+}: ReportCardProps) {
+  const showMenu = column === "Draft";
+  const showSubmit = column === "Draft" && Boolean(onSubmit);
+
   return (
-    <button
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      id={report.id}
-      className="rounded-md bg-white px-6 py-5 pr-[20%] shadow"
-      style={{ cursor: "grab" }}
-    >
-      <h3 className="mb-2 text-left text-xl font-semibold text-primary-400">
-        {report.name}
-      </h3>
-      <div className="text-secondary-1100 flex items-center justify-between">
-        <span className="text-sm text-gray-500">{report.date}</span>
-        <span className="rounded-full bg-gray-200 px-2 py-1 text-sm">
-          {report.category}
-        </span>
-      </div>
-    </button>
+    <div className="relative w-full">
+      {(showMenu || showSubmit) && (
+        <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+          {showSubmit && (
+            <Button
+              size="sm"
+              className="rounded-full bg-secondary-400 text-white hover:bg-secondary-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSubmit?.();
+              }}
+            >
+              Kirim
+            </Button>
+          )}
+          {showMenu && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger className="text-2xl select-none">
+                ...
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="text-xl">
+                <DropdownMenuItem onClick={onEdit}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Edit
+                  </Button>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={onDelete}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Delete
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      )}
+
+      <button
+        onClick={onClick}
+        className="rounded-[20px] bg-white px-6 py-5 pr-14 shadow w-full text-left"
+      >
+        <h3 className="mb-2 text-[20px] font-semibold text-primary-400 truncate">
+          {report.name}
+        </h3>
+
+        <div className="flex items-center justify-between text-secondary-1100">
+          <span className="text-[13px] text-gray-500">{report.date.slice(0, 11)}</span>
+
+          <span className="border border-[#636A6D] rounded-full bg-transparent text-[#636A6D] px-4 py-1 text-[13px] truncate max-w-[55%] text-right">
+            {report.category}
+          </span>
+        </div>
+      </button>
+    </div>
   );
 }

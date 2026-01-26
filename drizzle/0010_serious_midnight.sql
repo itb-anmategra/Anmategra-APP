@@ -1,0 +1,1 @@
+ALTER TYPE "support_status" ADD VALUE 'Reported';

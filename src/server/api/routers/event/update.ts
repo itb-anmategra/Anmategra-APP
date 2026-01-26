@@ -1,251 +1,456 @@
-import {protectedProcedure} from "../../trpc";
-import {z} from "zod";
-import {events, keanggotaan, lembaga} from "~/server/db/schema";
-import {TRPCError} from "@trpc/server";
-import {and, eq} from "drizzle-orm";
-import {db} from "~/server/db";
+import { TRPCError } from '@trpc/server';
+import { and, eq } from 'drizzle-orm';
+import { type Prodi } from '~/server/auth';
+import { events, keanggotaan, mahasiswa, users } from '~/server/db/schema';
 
-export const updateEvent = protectedProcedure
-    .input(
-        z.object({
-            id: z.string(),
-            name: z.string(),
-            description: z.string(),
-            image: z.string().url().optional(),
-            background_image: z.string().url().optional(),
-            start_date: z.string().datetime().optional(),
-            end_date: z.string().datetime().nullable().optional(),
-            status: z.enum(["Coming Soon", "On going", "Ended"]),
-            oprec_link: z.string().url().or(z.literal("")).optional(),
-            location: z.string(),
-            participant_limit: z.number().int(),
-            participant_count: z.number().int(),
-            is_highlighted: z.boolean(),
-            is_organogram: z.boolean()
+import daftarProdi from '../../../db/kode-program-studi.json';
+import { lembagaProcedure } from '../../trpc';
+import {
+  AddNewPanitiaKegiatanInputSchema,
+  AddNewPanitiaKegiatanManualInputSchema,
+  AddNewPanitiaKegiatanOutputSchema,
+  EditPanitiaKegiatanInputSchema,
+  EditPanitiaKegiatanOutputSchema,
+  RemovePanitiaKegiatanInputSchema,
+  RemovePanitiaKegiatanOutputSchema,
+  ToggleHighlightInputSchema,
+  ToggleHighlightOutputSchema,
+  ToggleRaporVisibilityInputSchema,
+  ToggleRaporVisibilityOutputSchema,
+  UpdateEventInputSchema,
+  UpdateEventOutputSchema,
+} from '../../types/event.type';
+
+export const updateEvent = lembagaProcedure
+  .input(UpdateEventInputSchema)
+  .output(UpdateEventOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      const updatedEvent = await ctx.db
+        .update(events)
+        .set({
+          org_id: ctx.session.user.lembagaId,
+          ...input,
+          start_date: input.start_date ? new Date(input.start_date) : undefined,
+          end_date: input.end_date ? new Date(input.end_date) : undefined,
         })
-    )
-    .mutation(async ({ctx, input}) => {
-        try {
-            const requester = ctx.session.user.id
-            const org_id = await ctx.db.query.lembaga.findFirst({
-                where: eq(lembaga.userId, requester),
-                columns: {
-                    id: true
-                }
+        .where(eq(events.id, eventToUpdate.id))
+        .returning();
+
+      if (!updatedEvent[0]) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal memperbarui kegiatan.',
+        });
+      }
+
+      return updatedEvent[0];
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan tak terduga saat memperbarui kegiatan.',
+      });
+    }
+  });
+
+export const addNewPanitia = lembagaProcedure
+  .input(AddNewPanitiaKegiatanInputSchema)
+  .output(AddNewPanitiaKegiatanOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.event_id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+          participant_count: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      await ctx.db.transaction(async (tx) => {
+        await tx.insert(keanggotaan).values({
+          id: input.event_id + '_' + input.user_id,
+          event_id: input.event_id,
+          user_id: input.user_id,
+          position: input.position,
+          division: input.division,
+        });
+
+        await tx
+          .update(events)
+          .set({
+            participant_count: eventToUpdate.participant_count + 1,
+          })
+          .where(eq(events.id, eventToUpdate.id));
+      });
+
+      return {
+        success: true,
+        message: 'Panitia berhasil ditambahkan.',
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan tak terduga saat menambahkan panitia.',
+      });
+    }
+  });
+
+export const removePanitia = lembagaProcedure
+  .input(RemovePanitiaKegiatanInputSchema)
+  .output(RemovePanitiaKegiatanOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.event_id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+          participant_count: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .delete(keanggotaan)
+          .where(
+            and(
+              eq(keanggotaan.user_id, input.id),
+              eq(keanggotaan.event_id, input.event_id),
+            ),
+          );
+
+        await tx
+          .update(events)
+          .set({
+            participant_count: eventToUpdate.participant_count - 1,
+          })
+          .where(eq(events.id, eventToUpdate.id));
+      });
+
+      return {
+        success: true,
+        message: 'Panitia berhasil dihapus.',
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan tak terduga saat menghapus panitia.',
+      });
+    }
+  });
+
+export const editPanitia = lembagaProcedure
+  .input(EditPanitiaKegiatanInputSchema)
+  .output(EditPanitiaKegiatanOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.event_id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+          participant_count: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      const result = await ctx.db
+        .update(keanggotaan)
+        .set({
+          position: input.position,
+          division: input.division,
+        })
+        .where(
+          and(
+            eq(keanggotaan.user_id, input.user_id),
+            eq(keanggotaan.event_id, input.event_id),
+          ),
+        )
+        .returning();
+
+      if (!result[0]) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Gagal mengubah data panitia.',
+        });
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan tak terduga saat mengubah panitia.',
+      });
+    }
+  });
+
+export const addNewPanitiaManual = lembagaProcedure
+  .input(AddNewPanitiaKegiatanManualInputSchema)
+  .output(AddNewPanitiaKegiatanOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.event_id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+          participant_count: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      // Check if user already exists by email (primary identifier)
+      const email = `${input.nim}@mahasiswa.itb.ac.id`;
+      const existingUser = await ctx.db.query.users.findFirst({
+        where: eq(users.email, email),
+      });
+
+      if (existingUser) {
+        // Name doesn't match
+        if (existingUser.name !== input.name) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Sudah ada mahasiswa dengan NIM ${input.nim} bernama ${existingUser.name}`,
+          });
+        }
+        // User exists, just add them to keanggotaan
+        await ctx.db.transaction(async (tx) => {
+          await tx.insert(keanggotaan).values({
+            id: input.event_id + '_' + existingUser.id,
+            event_id: input.event_id,
+            user_id: existingUser.id,
+            position: input.position,
+            division: input.division,
+          });
+
+          await tx
+            .update(events)
+            .set({
+              participant_count: eventToUpdate.participant_count + 1,
             })
+            .where(eq(events.id, eventToUpdate.id));
+        });
 
-            if (!org_id) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: "Organization not found."
-                });
-            }
+        return {
+          success: true,
+          message: 'Panitia berhasil ditambahkan.',
+        };
+      }
 
-            const eventToUpdate = await ctx.db.query.events.findFirst({
-                where: and(
-                    eq(events.id, input.id),
-                    eq(events.org_id, org_id.id)
-                ),
-                columns: {
-                    id: true
-                }
-            });
+      const kodeProdi = parseInt(input.nim.substring(0, 3));
+      const jurusan =
+        daftarProdi.find((item: Prodi) => item.kode === kodeProdi)?.jurusan ??
+        'TPB';
 
-            if (!eventToUpdate) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: "Event not found."
-                });
-            }
+      // asumsi cuma ada angkatan 2000-an
+      const angkatan = parseInt(input.nim.substring(3, 5)) + 2000;
 
-            const updatedEvent = await ctx.db.update(events)
-              .set({
-                org_id: org_id.id,
-                ...input,
-                start_date: input.start_date ? new Date(input.start_date) : undefined,
-                end_date: input.end_date ? new Date(input.end_date) : undefined,
-              })
-              .where(eq(events.id, eventToUpdate.id))
-              .returning();
+      await ctx.db.transaction(async (tx) => {
+        const user = await tx
+          .insert(users)
+          .values({
+            name: input.name,
+            email: email,
+            role: 'mahasiswa',
+            emailVerified: null, // Not verified yet
+          })
+          .returning({ id: users.id });
 
-            return updatedEvent[0];
-        } catch (error) {
-            console.error("Database Error:", error);
+        await tx.insert(mahasiswa).values({
+          userId: user[0]!.id,
+          nim: Number(input.nim),
+          jurusan: jurusan,
+          angkatan: angkatan,
+        });
 
-            if (error instanceof Error) {
-                const pgError = error as { code?: string };
+        await tx.insert(keanggotaan).values({
+          id: input.event_id + '_' + user[0]!.id,
+          event_id: input.event_id,
+          user_id: user[0]!.id,
+          position: input.position,
+          division: input.division,
+        });
 
-                switch (pgError.code) {
-                    case '23505':
-                        throw new TRPCError({
-                            code: 'CONFLICT',
-                            message: "A record with the same unique field already exists."
-                        });
-                    case '23503':
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: "Invalid reference to another table."
-                        });
-                    case '23514':
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: "Input values violate database constraints."
-                        });
-                }
-            }
+        await tx
+          .update(events)
+          .set({
+            participant_count: eventToUpdate.participant_count + 1,
+          })
+          .where(eq(events.id, eventToUpdate.id));
+      });
 
-            // Generic error handling
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: "An unexpected error occurred during event creation."
-            });
-        }
-    })
+      return {
+        success: true,
+        message: 'Panitia berhasil ditambahkan.',
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan tak terduga saat menambahkan panitia.',
+      });
+    }
+  });
 
-export const addNewPanitia = protectedProcedure
-    .input(
-        z.object({
-            event_id: z.string(),
-            user_id: z.string(),
-            position: z.string(),
-            division: z.string(),
+export const toggleHighlight = lembagaProcedure
+  .input(ToggleHighlightInputSchema)
+  .output(ToggleHighlightOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+        },
+      });
+
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
+
+      await ctx.db
+        .update(events)
+        .set({
+          is_highlighted: input.is_highlighted,
         })
-    )
-    .mutation(async ({ctx, input}) => {
-        try {
-            const requester = ctx.session.user.id
-            const requester_org_id = await db
-                .select({
-                    org_id: lembaga.id
-                })
-                .from(lembaga)
-                .where(eq(lembaga.userId, requester))
-                .limit(1)
+        .where(eq(events.id, input.id));
 
-            if (!requester_org_id) {
-                console.error("Organization not found.")
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                })
-            }
+      return {
+        success: true,
+        is_highlighted: input.is_highlighted,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan saat mengubah status highlight.',
+      });
+    }
+  });
 
-            if (!requester_org_id[0]) {
-                console.error("Organization not found.")
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                })
-            }
+export const toggleRaporVisibility = lembagaProcedure
+  .input(ToggleRaporVisibilityInputSchema)
+  .output(ToggleRaporVisibilityOutputSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const eventToUpdate = await ctx.db.query.events.findFirst({
+        where: and(
+          eq(events.id, input.id),
+          eq(events.org_id, ctx.session.user.lembagaId!),
+        ),
+        columns: {
+          id: true,
+        },
+      });
 
-            const is_requester_is_event_owner = await db
-                .select({
-                    owner_id: events.org_id,
-                    participant_count: events.participant_count
-                })
-                .from(events)
-                .where(and(eq(events.id, input.event_id), eq(events.org_id, requester_org_id[0].org_id)));
+      if (!eventToUpdate) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Kegiatan tidak ditemukan atau Anda tidak memiliki izin untuk mengubahnya.',
+        });
+      }
 
-            if (!is_requester_is_event_owner[0]) {
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED'
-                })
-            }
-
-            await ctx.db.insert(keanggotaan).values({
-                id: input.event_id + '_' + input.user_id,
-                event_id: input.event_id,
-                user_id: input.user_id,
-                position: input.position,
-                division: input.division,
-            });
-
-            await ctx.db.update(events).set(
-                {
-                    participant_count: is_requester_is_event_owner[0].participant_count + 1
-                }
-            ).where(eq(events.id, input.event_id))
-
-            return {
-                success: true,
-                message: "Panitia added successfully.",
-            }
-        } catch (error) {
-            console.error("Database Error:", error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: "An unexpected error occurred during event creation."
-            });
-        }
-    })
-
-export const removePanitia = protectedProcedure
-    .input(
-        z.object({
-            event_id: z.string(),
-            id: z.string()
+      await ctx.db
+        .update(events)
+        .set({
+          rapor_visible: input.rapor_visible,
         })
-    )
-    .mutation(async ({ctx, input}) => {
-        try {
-            const requester = ctx.session.user.id
-            const requester_org_id = await db
-                .select({
-                    org_id: lembaga.id
-                })
-                .from(lembaga)
-                .where(eq(lembaga.userId, requester))
-                .limit(1)
+        .where(eq(events.id, input.id));
 
-            if (!requester_org_id) {
-                console.error("Organization not found.")
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                })
-            }
-
-            if (!requester_org_id[0]) {
-                console.error("Organization not found.")
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                })
-            }
-
-            const is_requester_is_event_owner = await db
-                .select({
-                    owner_id: events.org_id,
-                    participant_count: events.participant_count
-                })
-                .from(events)
-                .where(and(eq(events.id, input.event_id), eq(events.org_id, requester_org_id[0].org_id)));
-
-            if (!is_requester_is_event_owner[0]) {
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED'
-                })
-            }
-
-            await ctx.db.delete(keanggotaan).where(
-                and(
-                    eq(keanggotaan.event_id, input.event_id),
-                    eq(keanggotaan.id, input.id)
-                )
-            )
-
-            await ctx.db.update(events).set(
-                {
-                    participant_count: is_requester_is_event_owner[0].participant_count - 1
-                }
-            ).where(eq(events.id, input.event_id))
-
-            return {
-                success: true,
-                message: "Panitia added successfully.",
-            }
-
-        } catch (error) {
-            console.error("Database Error:", error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: "An unexpected error occurred during event creation."
-            });
-        }
-    })
+      return {
+        success: true,
+        rapor_visible: input.rapor_visible,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Terjadi kesalahan saat mengubah visibilitas rapor.',
+      });
+    }
+  });

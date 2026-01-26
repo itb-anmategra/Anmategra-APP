@@ -1,17 +1,28 @@
+import { createTRPCRouter } from '~/server/api/trpc';
+
+import { createEvent } from './create';
+import { deleteEvent } from './delete';
+import { getAllAnggota, getEvent } from './getByID';
 import {
-  createTRPCRouter,
-} from "~/server/api/trpc";
-import {getAllAnggota, getEvent} from "./getByID";
-import { createEvent } from "./create";
-import {addNewPanitia, removePanitia, updateEvent} from "./update";
-import { deleteEvent } from "./delete";
+  addNewPanitia,
+  addNewPanitiaManual,
+  editPanitia,
+  removePanitia,
+  toggleHighlight,
+  toggleRaporVisibility,
+  updateEvent,
+} from './update';
 
 export const eventRouter = createTRPCRouter({
-    getByID: getEvent,
-    create: createEvent,
-    update: updateEvent,
-    delete: deleteEvent,
-    getAllAnggota: getAllAnggota,
-    addNewPanitia: addNewPanitia,
-    removePanitia: removePanitia,
+  getByID: getEvent,
+  create: createEvent,
+  update: updateEvent,
+  delete: deleteEvent,
+  toggleHighlight: toggleHighlight,
+  toggleRaporVisibility: toggleRaporVisibility,
+  getAllAnggota: getAllAnggota,
+  addNewPanitia: addNewPanitia,
+  addNewPanitiaManual: addNewPanitiaManual,
+  removePanitia: removePanitia,
+  editPanitia: editPanitia,
 });
