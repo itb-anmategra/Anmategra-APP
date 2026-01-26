@@ -105,7 +105,7 @@ export default function RaporIndividuHeader({
           <Avatar className="size-4 bg-white">
             <AvatarImage
               className="object-contain"
-              src={lembagaImage ?? '/images/logo/hmif-logo.png'}
+              src={lembagaImage ?? '/images/placeholder/profile-lembaga-kegiatan.png'}
             />
             <AvatarFallback>{lembagaName.slice(0, 2)}</AvatarFallback>
           </Avatar>

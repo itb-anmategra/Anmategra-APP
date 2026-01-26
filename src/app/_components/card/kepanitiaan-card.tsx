@@ -49,7 +49,7 @@ export const KepanitiaanCard = ({
       >
         <Image
           src={
-            kepanitiaan.image ?? '/images/miscellaneous/not-found-general.png'
+            kepanitiaan.image ?? '/images/placeholder/profile-lembaga-kegiatan.png'
           }
           alt={kepanitiaan.lembaga.name}
           className="object-cover object-top"
@@ -64,7 +64,7 @@ export const KepanitiaanCard = ({
               className="object-cover"
               src={
                 kepanitiaan.lembaga.profilePicture ??
-                '/images/logo/hmif-logo.png'
+                '/images/placeholder/profile-lembaga-kegiatan.png'
               }
               alt={kepanitiaan.lembaga.name}
             />

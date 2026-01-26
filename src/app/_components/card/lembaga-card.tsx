@@ -74,7 +74,7 @@ const LembagaCard = ({
   return (
     <Card className="px-6 py-4 flex items-center justify-start gap-x-6 transition-all hover:shadow-md">
       <Image 
-        src={lembagaPicture || '/images/placeholder/profile-kegiatan-placeholder/oskm-organizer.png'}
+        src={lembagaPicture || '/images/placeholder/profile-lembaga-kegiatan.png'}
         alt='Foto Lembaga'
         width={100}
         height={100}

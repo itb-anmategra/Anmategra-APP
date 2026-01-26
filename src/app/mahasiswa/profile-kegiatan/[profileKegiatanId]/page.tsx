@@ -114,11 +114,11 @@ const ProfileKegiatan = async ({
               organizer={lembaga?.name ?? 'null'}
               backgroundImage={
                 kegiatan?.background_image ??
-                '/images/placeholder/profile-kegiatan-placeholder/kegiatan-header-background.png'
+                '/images/placeholder/banner-lembaga-kegiatan.png'
               }
               logoImage={
                 kegiatan?.image ??
-                '/images/placeholder/profile-kegiatan-placeholder/oskm-header.png'
+                '/images/placeholder/profile-lembaga-kegiatan.png'
               }
               eventId={kegiatan?.id ?? ''}
               ajuanAsosiasi={Boolean(kegiatan?.id) && !shouldHideAjuanAsosiasi}
@@ -160,7 +160,7 @@ const ProfileKegiatan = async ({
                 category={lembaga?.type ?? 'Tidak ada kategori'}
                 logo={
                   lembaga?.image ??
-                  '/images/placeholder/profile-kegiatan-placeholder/oskm-organizer.png'
+                  '/images/placeholder/profile-lembaga-kegiatan.png'
                 }
               />
             </Link>

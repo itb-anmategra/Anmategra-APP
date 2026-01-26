@@ -96,7 +96,7 @@ export const Sidebar = ({
     profileData = {
       id: lembaga?.id ?? '',
       name: lembaga?.nama ?? '',
-      profilePicture: lembaga?.foto ?? '/images/placeholder/profile-pic.png',
+      profilePicture: lembaga?.foto ?? '/images/placeholder/profile-lembaga-kegiatan.png',
       label: 'Lembaga',
       href: `/profile-lembaga/${lembaga?.id ?? ''}`,
     };
