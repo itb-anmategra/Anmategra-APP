@@ -696,13 +696,6 @@ export const lembagaRouter = createTRPCRouter({
           });
 
           await tx
-            .update(events)
-            .set({
-              participant_count: eventToUpdate.participant_count + 1,
-            })
-            .where(eq(events.id, eventToUpdate.id));
-
-          await tx
             .update(associationRequests)
             .set({
               status: 'Accepted',
@@ -989,19 +982,6 @@ export const lembagaRouter = createTRPCRouter({
                 eq(associationRequestsLembaga.user_id, input.user_id),
               ),
             );
-
-          // Increment lembaga member count
-          const currentLembaga = await tx.query.lembaga.findFirst({
-            where: eq(lembaga.id, ctx.session.user.lembagaId!),
-            columns: { memberCount: true },
-          });
-
-          await tx
-            .update(lembaga)
-            .set({
-              memberCount: (currentLembaga?.memberCount ?? 0) + 1,
-            })
-            .where(eq(lembaga.id, ctx.session.user.lembagaId!));
         });
 
         return {
