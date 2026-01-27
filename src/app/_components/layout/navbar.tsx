@@ -186,7 +186,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                   <Search className="w-5 h-5" />
                 </Button>
 
-                {session && (
+                {session ? (
                   <Link
                     href={`/profile-mahasiswa/${session.user.id}`}
                   >
@@ -207,6 +207,12 @@ const Navbar = ({ session }: { session: Session | null }) => {
                         className="rounded-full object-cover w-[36px] h-[36px]"
                       />
                     )}
+                  </Link>
+                ) : (
+                  <Link href={'/authentication'}>
+                    <Button className="h-8 px-3 py-1 rounded-lg bg-[#00B7B7] text-white hover:bg-secondary-500 font-semibold text-xs">
+                      Login
+                    </Button>
                   </Link>
                 )}
               </div>
