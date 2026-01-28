@@ -16,39 +16,46 @@ import { signIn } from "next-auth/react";
 const LogInPage = () => {
   return (
     <div className='h-screen w-full flex items-center justify-center gap-x-4 bg-slate-100 px-4'>
-      <Card className='max-w-[450px]'>
-        <CardHeader>
-          <CardTitle className='text-2xl flex flex-col gap-y-2'>
+      <Card className='max-w-[450px] w-full'>
+        <CardHeader className='space-y-3'>
+          <CardTitle className='text-xl sm:text-2xl flex flex-col gap-y-2 sm:gap-y-3'>
             <Image 
               src={Logo}
               width={125}
               height={250}
               alt='Logo Anmategra'
+              className='w-[100px] sm:w-[125px] h-auto'
             />
-            <p>Selamat Datang di <span className='bg-clip-text text-transparent bg-gradient-to-br from-primary-400 to-secondary-400 font-bold'>Anmategra</span></p>
+            <p className='text-lg sm:text-2xl leading-tight'>Selamat Datang di <span className='bg-clip-text text-transparent bg-gradient-to-br from-primary-400 to-secondary-400 font-bold'>Anmategra</span></p>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className='text-xs sm:text-sm'>
             Silahkan masuk dengan akun <span className='font-semibold text-gray-500'>microsoft untuk mahasiswa</span> dan <span className='font-semibold text-gray-500'>akun google untuk lembaga</span>.
           </CardDescription>
         </CardHeader>
-        <CardContent className='flex flex-col gap-y-2'>
-          <Button onClick={() => signIn("azure-ad")} variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
+        <CardContent className='flex flex-col gap-y-2 sm:gap-y-3'>
+          <Button onClick={() => signIn("azure-ad")} variant={"outline"} className='flex items-center justify-center gap-x-2 transition-all hover:gap-x-3 h-auto py-3 px-3 sm:px-4'>
             <Image
               src={Microsoft}
-              alt='Logo Microst'
+              alt='Logo Microsoft'
               width={16}
-              height={16} 
+              height={16}
+              className='flex-shrink-0'
             /> 
-            <p className='text-slate-600'>Masuk dengan Microsoft  |  @mahasiswa.itb.ac.id</p>
+            <span className='text-slate-600 text-xs sm:text-sm'>
+              Microsoft  |  @mahasiswa.itb.ac.id
+            </span>
           </Button>
-          <Button onClick={() => signIn("google")} variant={"outline"} className='flex items-center gap-x-2 transition-all hover:gap-x-4'>
+          <Button onClick={() => signIn("google")} variant={"outline"} className='flex items-center justify-center gap-x-2 transition-all hover:gap-x-3 h-auto py-3 px-3 sm:px-4'>
             <Image 
               src={Google}
-              alt='Logo Microsoft'
+              alt='Logo Google'
               width={14}
               height={14}
+              className='flex-shrink-0'
             />
-            <p className='text-slate-600'>Masuk dengan Google  |  @km.itb.ac.id</p>
+            <span className='text-slate-600 text-xs sm:text-sm'>
+              Google  |  @km.itb.ac.id
+            </span>
           </Button>
         </CardContent>
       </Card>
