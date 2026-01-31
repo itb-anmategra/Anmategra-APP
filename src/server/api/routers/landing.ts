@@ -25,8 +25,12 @@ export const landingRouter = createTRPCRouter({
     .input(z.void())
     .output(GetRecentEventsOutputSchema)
     .query(async ({ ctx }) => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
       const events = await ctx.db.query.events.findMany({
         orderBy: (events, { desc }) => desc(events.start_date),
+        where: (events, { gte }) => gte(events.start_date, sixMonthsAgo),
         with: {
           lembaga: {
             with: {
