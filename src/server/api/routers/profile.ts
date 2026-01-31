@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { and, desc, eq } from 'drizzle-orm';
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
 import {
   events,
   keanggotaan,
@@ -21,33 +21,41 @@ import {
 } from '../types/profile.type';
 
 export const profileRouter = createTRPCRouter({
-  getMahasiswa: publicProcedure
+  getMahasiswa: protectedProcedure
     .input(GetMahasiswaInputSchema)
     .output(GetMahasiswaOutputSchema)
     .query(async ({ ctx, input }) => {
-      const [mahasiswaResult, newestEvent, memberLembagaResult] = await Promise.all([
-        ctx.db
-          .select()
-          .from(mahasiswa)
-          .innerJoin(users, eq(mahasiswa.userId, users.id))
-          .where(eq(users.id, input.mahasiswaId))
-          .limit(1),
-        ctx.db
-          .select()
-          .from(events)
-          .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
-          .innerJoin(lembaga, eq(events.org_id, lembaga.id))
-          .innerJoin(users, eq(lembaga.userId, users.id))
-          .where(eq(keanggotaan.user_id, input.mahasiswaId))
-          .orderBy(desc(events.start_date)),
-        ctx.db
-          .select()
-          .from(kehimpunan)
-          .innerJoin(lembaga, eq(kehimpunan.lembagaId, lembaga.id))
-          .innerJoin(users, eq(lembaga.userId, users.id))
-          .where(eq(kehimpunan.userId, input.mahasiswaId))
-          .orderBy(lembaga.name),
-      ]);
+      const [mahasiswaResult, newestEvent, memberLembagaResult] =
+        await Promise.all([
+          ctx.db
+            .select()
+            .from(mahasiswa)
+            .innerJoin(users, eq(mahasiswa.userId, users.id))
+            .where(eq(users.id, input.mahasiswaId))
+            .limit(1),
+          ctx.db
+            .select()
+            .from(events)
+            .innerJoin(keanggotaan, eq(events.id, keanggotaan.event_id))
+            .innerJoin(lembaga, eq(events.org_id, lembaga.id))
+            .innerJoin(users, eq(lembaga.userId, users.id))
+            .where(eq(keanggotaan.user_id, input.mahasiswaId))
+            .orderBy(desc(events.start_date)),
+          ctx.db
+            .select()
+            .from(kehimpunan)
+            .innerJoin(lembaga, eq(kehimpunan.lembagaId, lembaga.id))
+            .innerJoin(users, eq(lembaga.userId, users.id))
+            .where(eq(kehimpunan.userId, input.mahasiswaId))
+            .orderBy(lembaga.name),
+        ]);
+
+      if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Mahasiswa tidak ditemukan.',
+        });
+      }
 
       const formattedKepanitiaan: Kepanitiaan[] = newestEvent.map((item) => ({
         lembaga: {
@@ -64,7 +72,10 @@ export const profileRouter = createTRPCRouter({
         endDate: item.event.end_date ? new Date(item.event.end_date) : null,
         position: item.keanggotaan.position,
         division: item.keanggotaan.division,
-        raporVisible: item.event.rapor_visible,
+        raporVisible:
+          item.event.rapor_visible &&
+          (mahasiswaResult[0]?.mahasiswa.raporVisible ||
+            mahasiswaResult[0]?.mahasiswa.userId === ctx.session.user.id),
       }));
 
       const formattedLembaga = memberLembagaResult.map((item) => ({
@@ -77,13 +88,6 @@ export const profileRouter = createTRPCRouter({
         position: item.kehimpunan.position,
         division: item.kehimpunan.division,
       }));
-
-      if (mahasiswaResult.length === 0 || !mahasiswaResult[0]) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Mahasiswa tidak ditemukan.',
-        });
-      }
 
       return {
         mahasiswaData: mahasiswaResult[0],

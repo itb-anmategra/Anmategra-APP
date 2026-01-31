@@ -20,6 +20,10 @@ import {
 } from '~/server/db/schema';
 
 import {
+  ToggleRaporVisibilityInputSchema,
+  ToggleRaporVisibilityOutputSchema,
+} from '../types/event.type';
+import {
   CreateDraftInputSchema,
   DeleteRequestAssociationInputSchema,
   DeleteRequestAssociationLembagaInputSchema,
@@ -54,6 +58,7 @@ import {
   SubmitReportInputSchema,
   SubmitReportOutputSchema,
 } from '../types/user.type';
+import { toggleRaporVisibility } from './event/update';
 
 export const userRouter = createTRPCRouter({
   /*
@@ -996,5 +1001,19 @@ export const userRouter = createTRPCRouter({
           message: 'Gagal mengambil laporan',
         });
       }
+    }),
+
+  toggleRaporVisibility: protectedProcedure
+    .input(ToggleRaporVisibilityInputSchema)
+    .output(ToggleRaporVisibilityOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(mahasiswa)
+        .set({
+          raporVisible: input.rapor_visible,
+        })
+        .where(eq(mahasiswa.userId, ctx.session.user.id));
+
+      return { success: true, rapor_visible: input.rapor_visible };
     }),
 });

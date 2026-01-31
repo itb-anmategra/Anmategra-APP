@@ -1,0 +1,1 @@
+ALTER TABLE "anmategra_mahasiswa" ADD COLUMN "rapor_visible" boolean DEFAULT true NOT NULL;
