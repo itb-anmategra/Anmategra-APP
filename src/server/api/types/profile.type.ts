@@ -60,6 +60,10 @@ export const GetLembagaOutputSchema = z.object({
   anggota: z.array(PanitiaKegiatanSchema),
 });
 
+export const GetLembagaPublicOutputSchema = GetLembagaOutputSchema.omit({
+  anggota: true,  
+})
+
 export const GetKegiatanInputSchema = z.object({ kegiatanId: z.string() });
 
 export const GetKegiatanOutputSchema = z.object({
@@ -76,3 +80,7 @@ export const GetKegiatanOutputSchema = z.object({
   }),
   participant: z.array(PanitiaKegiatanSchema),
 });
+
+export const GetKegiatanPublicOutputSchema = GetKegiatanOutputSchema.omit({
+  participant: true,
+})

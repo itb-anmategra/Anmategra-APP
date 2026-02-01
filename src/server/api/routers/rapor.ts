@@ -574,6 +574,7 @@ export const raporRouter = createTRPCRouter({
             whatsapp: mahasiswa.whatsapp,
             division: keanggotaan.division,
             position: keanggotaan.position,
+            raporVisible: mahasiswa.raporVisible,
           })
           .from(keanggotaan)
           .innerJoin(mahasiswa, eq(mahasiswa.userId, keanggotaan.user_id))
@@ -593,6 +594,13 @@ export const raporRouter = createTRPCRouter({
           });
 
         const dataMahasiswa = mhs[0]!;
+
+        if (input.mahasiswa_id !== ctx.session.user.id && !dataMahasiswa.raporVisible) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Rapor mahasiswa tidak dapat diakses',
+          });
+        }
 
         const nilaiList = await ctx.db
           .select({
@@ -674,6 +682,7 @@ export const raporRouter = createTRPCRouter({
             whatsapp: mahasiswa.whatsapp,
             division: kehimpunan.division,
             position: kehimpunan.position,
+            raporVisible: mahasiswa.raporVisible,
           })
           .from(kehimpunan)
           .innerJoin(mahasiswa, eq(mahasiswa.userId, kehimpunan.userId))
@@ -693,6 +702,13 @@ export const raporRouter = createTRPCRouter({
           });
 
         const dataMahasiswa = mhs[0]!;
+
+        if (input.mahasiswa_id !== ctx.session.user.id && !dataMahasiswa.raporVisible) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Rapor mahasiswa tidak dapat diakses',
+          });
+        }
 
         const nilaiList = await ctx.db
           .select({

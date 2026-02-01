@@ -11,33 +11,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const eventEntries: MetadataRoute.Sitemap = (events ?? []).map((event) => ({
-    url: `${baseUrl}/mahasiswa/profile-kegiatan/${event.id}`,
+    url: `${baseUrl}/profile-kegiatan/${event.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
-    priority: 0.8,
+    priority: 0.9,
   }));
 
   const lembagaEntries: MetadataRoute.Sitemap = (organizations ?? []).map(
     (org) => ({
-      url: `${baseUrl}/mahasiswa/profile-lembaga/${org.id}`,
+      url: `${baseUrl}/profile-lembaga/${org.id}`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.7,
+      priority: 0.8,
     }),
   );
 
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: `${baseUrl}/mahasiswa`,
+      url: `${baseUrl}`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
-    },
-    {
-      url: `${baseUrl}/mahasiswa/kegiatan`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
     },
   ];
 

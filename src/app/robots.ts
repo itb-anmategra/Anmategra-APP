@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: isDevSite ? [] : '/',
-      disallow: isDevSite ? '/' : ['/api/', '/_next/', '/admin/'],
+      disallow: isDevSite ? '/' : ['/api/', '/_next/', '/admin/', '/lembaga/'],
     },
     sitemap: `${baseUrl ?? 'https://anmategra.com'}/sitemap.xml`,
   };
