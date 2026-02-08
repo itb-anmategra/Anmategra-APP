@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import React from 'react';
 // Components Import
 import ProfileMahasiswaContent from '~/app/_components/profile-mahasiswa/profile-content';
@@ -11,32 +12,39 @@ const DetailMahasiswaPage = async ({
 }: {
   params: Promise<{ mahasiswaId: string }>;
 }) => {
-  const userId = (await params).mahasiswaId;
-  const { mahasiswaData, newestEvent, memberLembaga } = await api.profile.getMahasiswa({
-    mahasiswaId: userId,
-  });
-  const session = await getServerAuthSession();
-
-  let bestStaffData: Awaited<ReturnType<typeof api.lembaga.getAllHistoryBestStaffMahasiswa>> | null = null;
   try {
-    bestStaffData = await api.lembaga.getAllHistoryBestStaffMahasiswa({
-      mahasiswa_id: userId,
-    });
-  } catch (error) {
-    // console.log('No best staff data available for mahasiswa:', userId, error);
-  }
+    const userId = (await params).mahasiswaId;
+    const { mahasiswaData, newestEvent, memberLembaga } =
+      await api.profile.getMahasiswa({
+        mahasiswaId: userId,
+      });
+    const session = await getServerAuthSession();
 
-  return (
-    <ProfileMahasiswaContent
-      session={session}
-      userId={userId}
-      mahasiswaData={mahasiswaData}
-      newestEvent={newestEvent}
-      memberLembaga={memberLembaga}
-      isLembagaView={true}
-      bestStaffData={bestStaffData}
-    />
-  );
+    let bestStaffData: Awaited<
+      ReturnType<typeof api.lembaga.getAllHistoryBestStaffMahasiswa>
+    > | null = null;
+    try {
+      bestStaffData = await api.lembaga.getAllHistoryBestStaffMahasiswa({
+        mahasiswa_id: userId,
+      });
+    } catch (error) {
+      // console.log('No best staff data available for mahasiswa:', userId, error);
+    }
+
+    return (
+      <ProfileMahasiswaContent
+        session={session}
+        userId={userId}
+        mahasiswaData={mahasiswaData}
+        newestEvent={newestEvent}
+        memberLembaga={memberLembaga}
+        isLembagaView={true}
+        bestStaffData={bestStaffData}
+      />
+    );
+  } catch (error) {
+    redirect('/404');
+  }
 };
 
 export default DetailMahasiswaPage;

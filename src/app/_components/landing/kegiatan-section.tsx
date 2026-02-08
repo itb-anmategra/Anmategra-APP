@@ -7,7 +7,7 @@ import { ListSectionWrapper } from './list-section-wrapper';
 export const KegiatanSection = ({ data }: { data: Kepanitiaan[] }) => {
   return (
     <ListSectionWrapper
-      className="container mx-auto"
+      className="container mx-auto mt-8"
       title="Kegiatan Terbaru"
       seeAllLink="/mahasiswa/kegiatan"
     >

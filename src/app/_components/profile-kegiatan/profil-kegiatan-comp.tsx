@@ -91,7 +91,10 @@ const ProfileAnggotaComp = ({
               key={item.id}
               className="flex items-center justify-between py-3 border-b border-neutral-200"
             >
-              <Link href={`/profile-mahasiswa/${item.id}`} className="flex items-center gap-x-4">
+              <Link
+                href={`/profile-mahasiswa/${item.id}`}
+                className="flex items-center gap-x-4"
+              >
                 <Image
                   src={item.image ?? '/images/placeholder/profile-pic.png'}
                   alt="Profile Picture"
@@ -133,10 +136,14 @@ const ProfileAnggotaComp = ({
             />
             <div className="w-full text-center">
               <h5 className="text-2xl font-semibold text-slate-600 text-center">
-                Tidak ada anggota
+                {!!session
+                  ? 'Tidak ada anggota'
+                  : 'Anggota tidak dapat dilihat'}
               </h5>
               <p className="text-slate-400 text-center">
-                Maaf, belum ada anggota yang tercatat untuk kegiatan ini
+                {!!session
+                  ? 'Maaf, belum ada anggota yang tercatat untuk kegiatan ini'
+                  : 'Silakan login untuk melihat anggota'}
               </p>
             </div>
           </div>

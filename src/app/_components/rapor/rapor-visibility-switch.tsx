@@ -7,7 +7,7 @@ import { useToast } from '~/hooks/use-toast';
 import { api } from '~/trpc/react';
 
 type RaporVisibilitySwitchProps = {
-  type: 'event' | 'lembaga';
+  type: 'event' | 'lembaga' | 'mahasiswa';
   id?: string; // Required for event, optional for lembaga
   initialValue: boolean;
 };
@@ -20,7 +20,7 @@ export default function RaporVisibilitySwitch({
   const [isVisible, setIsVisible] = useState(initialValue);
   const { toast } = useToast();
 
-  const eventMutation = api.event.toggleRaporVisibility.useMutation({
+  const mutationOptions = {
     onSuccess: (data) => {
       setIsVisible(data.rapor_visible);
       toast({
@@ -37,26 +37,16 @@ export default function RaporVisibilitySwitch({
         variant: 'destructive',
       });
     },
-  });
+  };
 
-  const lembagaMutation = api.lembaga.toggleRaporVisibility.useMutation({
-    onSuccess: (data) => {
-      setIsVisible(data.rapor_visible);
-      toast({
-        title: 'Success',
-        description: `Rapor visibility ${data.rapor_visible ? 'enabled' : 'disabled'}`,
-      });
-    },
-    onError: (error) => {
-      // Revert the switch on error
-      setIsVisible(!isVisible);
-      toast({
-        title: 'Error',
-        description: error.message ?? 'Failed to update rapor visibility',
-        variant: 'destructive',
-      });
-    },
-  });
+  const eventMutation =
+    api.event.toggleRaporVisibility.useMutation(mutationOptions);
+
+  const lembagaMutation =
+    api.lembaga.toggleRaporVisibility.useMutation(mutationOptions);
+
+  const mahasiswaMutation =
+    api.users.toggleRaporVisibility.useMutation(mutationOptions);
 
   const isLoading = eventMutation.isPending || lembagaMutation.isPending;
 
@@ -74,8 +64,18 @@ export default function RaporVisibilitySwitch({
         id,
         rapor_visible: checked,
       });
-    } else {
+    } else if (type === 'lembaga') {
       lembagaMutation.mutate({
+        rapor_visible: checked,
+      });
+    } else {
+      if (!id) {
+        console.error('Mahasiswa ID is required for mahasiswa type');
+        setIsVisible(!checked); // Revert
+        return;
+      }
+      mahasiswaMutation.mutate({
+        id,
         rapor_visible: checked,
       });
     }

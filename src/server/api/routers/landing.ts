@@ -1,4 +1,15 @@
-import { and, eq, gt, ilike, inArray, lt, or, sql } from 'drizzle-orm';
+import {
+  and,
+  eq,
+  gt,
+  ilike,
+  inArray,
+  isNotNull,
+  lt,
+  ne,
+  or,
+  sql,
+} from 'drizzle-orm';
 import type { SQL } from 'drizzle-orm';
 import { z } from 'zod';
 import {
@@ -25,8 +36,12 @@ export const landingRouter = createTRPCRouter({
     .input(z.void())
     .output(GetRecentEventsOutputSchema)
     .query(async ({ ctx }) => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
       const events = await ctx.db.query.events.findMany({
         orderBy: (events, { desc }) => desc(events.start_date),
+        where: (events, { gte }) => gte(events.start_date, sixMonthsAgo),
         with: {
           lembaga: {
             with: {
@@ -123,7 +138,22 @@ export const landingRouter = createTRPCRouter({
       }
 
       if (input.status && input.status.length > 0) {
-        conditions.push(inArray(events.status, input.status));
+        const filterConditions: SQL<unknown>[] = [];
+        const statusFilters = input.status.filter(
+          (s) => s !== 'Open Recruitment',
+        );
+        if (statusFilters.length > 0) {
+          filterConditions.push(inArray(events.status, statusFilters));
+        }
+        if (input.status.includes('Open Recruitment')) {
+          const oprecConditions: SQL<unknown>[] = [];
+          oprecConditions.push(isNotNull(events.oprec_link));
+          oprecConditions.push(isNotNull(events.end_date));
+          oprecConditions.push(gt(events.end_date, new Date()));
+          oprecConditions.push(ne(events.status, 'Ended'));
+          filterConditions.push(and(...oprecConditions) as SQL);
+        }
+        conditions.push(or(...filterConditions) as SQL);
       }
 
       const orderBy =

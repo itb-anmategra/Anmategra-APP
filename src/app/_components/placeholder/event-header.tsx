@@ -40,7 +40,7 @@ export function EventHeader({
 
   const { data: myRequests } = api.users.getMyRequestAssociation.useQuery(
     undefined,
-    { enabled: Boolean(eventId) },
+    { enabled: Boolean(eventId) && !!session },
   );
 
   const matchingRequest = useMemo(
