@@ -7,6 +7,7 @@ interface ListSectionWrapperProps extends React.PropsWithChildren {
   className?: string;
   title: string;
   seeAllLink: string;
+  hideSeeAll?: boolean;
 }
 
 export const ListSectionWrapper = ({
@@ -14,6 +15,7 @@ export const ListSectionWrapper = ({
   title,
   children,
   seeAllLink,
+  hideSeeAll = false,
 }: ListSectionWrapperProps) => {
   return (
     <div
@@ -21,12 +23,14 @@ export const ListSectionWrapper = ({
     >
       <div className="flex w-full items-center justify-between gap-4">
         <span className="text-xl font-semibold text-[#0B5C8A]">{title}</span>
-        <Button asChild variant="ghost" className="flex items-center gap-2">
-          <Link href={seeAllLink}>
-            Lihat Semua
-            <ChevronRight size={20} />
-          </Link>
-        </Button>
+        {!hideSeeAll && (
+          <Button asChild variant="ghost" className="flex items-center gap-2">
+            <Link href={seeAllLink}>
+              Lihat Semua
+              <ChevronRight size={20} />
+            </Link>
+          </Button>
+        )}
       </div>
       {children}
     </div>
