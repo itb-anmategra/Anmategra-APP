@@ -164,7 +164,7 @@ const TambahEditAnggotaForm = ({
   }, [isEditMode, editData]);
 
   // Server-side search for mahasiswa by name
-  const { data: mahasiswaSearchResults } = api.users.searchMahasiswa.useQuery(
+  const { data: mahasiswaSearchResults, isLoading: isMahasiswaSearchLoading } = api.users.searchMahasiswa.useQuery(
     {
       query: debouncedMahasiswaSearch,
       lembagaId: !isKegiatan ? session?.user.lembagaId : undefined,
@@ -178,7 +178,7 @@ const TambahEditAnggotaForm = ({
   );
 
   // Server-side search for mahasiswa by NIM
-  const { data: nimSearchResults } = api.users.searchMahasiswa.useQuery(
+  const { data: nimSearchResults, isLoading: isNimSearchLoading } = api.users.searchMahasiswa.useQuery(
     {
       query: debouncedNimSearch,
       lembagaId: !isKegiatan ? session?.user.lembagaId : undefined,
@@ -343,9 +343,11 @@ const TambahEditAnggotaForm = ({
                           />
                           <CommandList>
                             <CommandEmpty>
-                              {debouncedMahasiswaSearch.length > 0
-                                ? 'Mahasiswa tidak ditemukan'
-                                : 'Ketik untuk mencari mahasiswa'}
+                              {isMahasiswaSearchLoading
+                                ? 'Loading...'
+                                : debouncedMahasiswaSearch.length > 0
+                                  ? 'Mahasiswa tidak ditemukan'
+                                  : 'Ketik untuk mencari mahasiswa'}
                             </CommandEmpty>
                             <CommandGroup>
                               {(mahasiswaSearchResults?.results ?? []).map(
@@ -438,9 +440,11 @@ const TambahEditAnggotaForm = ({
                           />
                           <CommandList>
                             <CommandEmpty>
-                              {debouncedNimSearch.length > 0
-                                ? 'NIM tidak ditemukan'
-                                : 'Ketik untuk mencari NIM'}
+                              {isNimSearchLoading
+                                ? 'Loading...'
+                                : debouncedNimSearch.length > 0
+                                  ? 'NIM tidak ditemukan'
+                                  : 'Ketik untuk mencari NIM'}
                             </CommandEmpty>
                             <CommandGroup>
                               {(nimSearchResults?.results ?? []).map((n) => (
