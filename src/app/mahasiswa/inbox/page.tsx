@@ -21,7 +21,7 @@ export default function MahasiswaInboxPage() {
   const isLoading = isLoadingEvents || isLoadingLembaga;
 
   return (
-    <main className="flex flex-col min-h-screen bg-[#FAFAFA] px-4 sm:px-8 pt-20 sm:pt-10">
+    <main className="flex flex-col min-h-screen bg-[#FAFAFA] px-4 sm:px-8">
       <h1 className="text-[28px] sm:text-[32px] font-semibold mb-6">Pengajuan Asosiasi</h1>
 
       {isLoading ? (

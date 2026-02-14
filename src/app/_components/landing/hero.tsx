@@ -149,7 +149,7 @@ export default function HeroSection() {
             <div className="w-full px-6 sm:px-8 lg:px-12">
               <div className="flex flex-col items-center justify-center text-center gap-6 sm:gap-8 lg:gap-10">
                 <h1
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight leading-tight max-w-[90vw] sm:max-w-full"
                   style={{
                     opacity: isTitleVisible ? 1 : 0,
                     transform: `translateY(${isTitleVisible ? '0px' : '-40px'})`,

@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 // Components Import
 import { EventHeader } from '~/app/_components/placeholder/event-header';
@@ -51,8 +52,17 @@ const ProfileKegiatan = async ({
         <div className="w-full max-w-7xl bg-slate-50 py-6">
           <div className="mb-4">
             <h1 className="text-xl md:text-2xl font-semibold text-slate-600">
-              Kegiatan
+              {kegiatan?.name}
             </h1>
+            <RaporBreadcrumb
+              items={[
+                { label: 'Beranda', href: '/' },
+                {
+                  label: 'Profil Kegiatan',
+                  href: `/profile-kegiatan/${query}`,
+                },
+              ]}
+            />
           </div>
           <EventHeader
             title={kegiatan?.name ?? 'null'}
