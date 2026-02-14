@@ -36,7 +36,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   const baseHref = '/profile-kegiatan';
 
   return (
-    <div className="w-full flex min-h-screen flex-col items-center px-4 sm:px-6 pt-20 sm:pt-8">
+    <div className="w-full flex min-h-screen flex-col items-center px-4 sm:px-6">
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
