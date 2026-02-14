@@ -188,6 +188,10 @@ export function MahasiswaCardTable({
     return filtered;
   }, [localData, searchQuery, selectedFilters]);
 
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedFilters]);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

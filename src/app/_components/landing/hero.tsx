@@ -1,101 +1,200 @@
 'use client';
 
 // Library Import
-// Icon Import
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-// Component Import
-import { Input } from '~/components/ui/input';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
+import React, { useEffect, useState } from 'react';
 
 export default function HeroSection() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [topValue, setTopValue] = useState('-20%');
+  const [isMobile, setIsMobile] = useState(false);
+  const [isCircleVisible, setIsCircleVisible] = useState(false);
+  const [isTitleVisible, setIsTitleVisible] = useState(false);
+  const [isDescriptionVisible, setIsDescriptionVisible] = useState(false);
+  const [isHeroSmaller, setIsHeroSmaller] = useState(false);
 
-  const router = useRouter();
+  // animasi scroll di mobile
+  const slowScrollTo = (targetY: number, duration: number = 4000) => {
+    const startY = window.pageYOffset;
+    const distance = targetY - startY;
+    const startTime = performance.now();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      const q = searchQuery.trim();
-      if (q.length === 0) return;
-      void router.push(`/pencarian/${encodeURIComponent(q)}`);
-    }
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+
+      window.scrollTo(0, startY + distance * easeOutExpo);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setTopValue('50%');
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const circleAnimationTimer = setTimeout(() => {
+      setIsCircleVisible(true); // slide up untuk circle
+    }, 500);
+
+    const titleAnimationTimer = setTimeout(() => {
+      setIsTitleVisible(true); // slide down untuk judul
+    }, 500);
+
+    const descriptionAnimationTimer = setTimeout(() => {
+      setIsDescriptionVisible(true); // slide up untuk deskripsi
+    }, 800);
+
+    // const scrollTimer = setTimeout(() => {
+    //   if (isMobile) {
+    //     slowScrollTo(window.innerHeight * 0.35, 1000);
+    //   }
+    // }, 2200);
+
+    const resizeTimer = setTimeout(() => {
+      setIsHeroSmaller(true);
+    }, 2200);
+
+    // const moveCircleUpTimer = setTimeout(() => {
+    //   if (isMobile) {
+    //     setTopValue('40%');
+    //   }
+    // }, 2400);
+
+    return () => {
+      clearTimeout(circleAnimationTimer);
+      clearTimeout(titleAnimationTimer);
+      clearTimeout(descriptionAnimationTimer);
+      // clearTimeout(scrollTimer);
+      clearTimeout(resizeTimer);
+      // clearTimeout(moveCircleUpTimer);
+    };
+  }, [isMobile]);
+
+  const handleScrollDown = () => {
+    window.scrollTo({
+      top: window.innerHeight * 0.9,
+      behavior: 'smooth',
+    });
   };
 
   return (
-    <div className="relative mx-4 sm:mx-6 lg:mx-4 flex min-h-[80vh] flex-col">
-      {/* Small Ellipse */}
-      <Image
-        src="/images/landing/Ellipse16.webp"
-        alt="Ellipse16"
-        height={760}
-        width={760}
-        style={{ width: 'auto', height: 'auto' }}
-        className="absolute left-1/2 top-[14%] sm:top-[19%] z-[-1] -translate-x-1/2 -translate-y-1/2 scale-[0.6] sm:scale-[0.75] md:top-[20%] md:scale-[0.7] lg:top-[31%] lg:scale-100 xl:top-[35%] xl:scale-100"
-        priority
-      />
-      {/* Bigger Ellipse */}
-      <Image
-        src="/images/landing/Ellipse15.webp"
-        alt="Ellipse15"
-        height={1140}
-        width={1140}
-        style={{ width: 'auto', height: 'auto' }}
-        className="absolute left-1/2 top-[20%] sm:top-[25%] z-[-2] -translate-x-1/2 -translate-y-1/2 scale-[0.9] sm:scale-125 md:top-[25%] md:scale-100 lg:top-[38%] xl:top-[44%] xl:scale-100"
-        priority
-      />
-      {/* Blue Glow */}
-      <Image
-        src="/images/landing/Ellipse17.webp"
-        alt="Glow Effect"
-        width={1200}
-        height={1200}
-        style={{ width: 'auto', height: 'auto' }}
-        className="absolute left-1/2 top-[55%] z-[-3] -translate-x-1/2 -translate-y-1/2 border-black scale-[0.85] sm:scale-100"
-        priority
-      />
-      <div className="relative z-10">
-        <div className="container mx-auto px-2 sm:px-4 pt-24 sm:pt-28 pb-12 sm:pb-20">
-          <div className="flex flex-col items-center justify-center text-center gap-4 sm:gap-6">
-            <h1 className="text-3xl leading-tight sm:text-5xl lg:text-7xl font-medium tracking-tight max-w-[360px] sm:max-w-none">
-              Pendataan Kemahasiswaan <br />
-              <span className="mt-2 sm:mt-3 bg-gradient-to-b from-[#0B5C8A] to-[#00B7B7] bg-clip-text text-transparent">
-                Terintegrasi
-              </span>
-            </h1>
+    <div className="relative w-full flex flex-col items-center">
+      <div
+        className="relative w-full h-screen transition-all duration-1000"
+        style={{ height: isMobile && isHeroSmaller ? '75vh' : '100vh' }}
+      >
+        {/* Bigger Ellipse */}
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 z-[-3] ${isMobile ? 'w-[600px] h-[600px]' : 'w-[1310px] h-[1310px]'}`}
+          style={{
+            top: topValue,
+            borderRadius: '50%',
+            border: '5px solid transparent',
+            backgroundImage:
+              'linear-gradient(white, white), linear-gradient(180deg, #9ACCEA 0%, #99E5E5 0%, #2488C0 18.5%, #99E5E5 47.21%, #2488C0 72.71%, #99E5E5 100%)',
+            backgroundOrigin: 'border-box',
+            backgroundClip: 'padding-box, border-box',
+            opacity: isCircleVisible ? 1 : 0,
+            transform: `translate(-50%, -50%) translateY(${isCircleVisible ? '0px' : '30px'})`,
+            transition:
+              'opacity 1s ease-out, transform 1s ease-out, top 1s',
+          }}
+        >
+          {/* Small Ellipse */}
+          <div
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[0] ${isMobile ? 'w-[432px] h-[432px]' : 'w-[892px] h-[892px]'}`}
+            style={{
+              borderRadius: '50%',
+              border: '5px solid transparent',
+              backgroundImage:
+                'linear-gradient(white, white), linear-gradient(180deg, rgba(154, 204, 234, 0.00) 0%, rgba(153, 229, 229, 0.00) 0%, rgba(36, 136, 192, 0.13) 18.5%, rgba(153, 229, 229, 0.50) 47.21%, rgba(36, 136, 192, 0.13) 72.71%, rgba(153, 229, 229, 0.00) 100%)',
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box',
+              opacity: isCircleVisible ? 1 : 0,
+              transform: `translate(-50%, -50%) translateY(${isCircleVisible ? '0px' : '30px'})`,
+              transition: 'opacity 1s ease-out, transform 1s ease-out',
+            }}
+          />
 
-            <p className="text-base sm:text-xl text-balance px-2 sm:px-6 max-w-[360px] sm:max-w-2xl">
-              Cari kegiatan, lembaga, atau anggota KM ITB yang Anda inginkan
-              sekarang
-            </p>
+          {/* Blue Glow */}
+          <div
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[1] ${isMobile ? 'w-[200px] h-[200px]' : 'w-[412px] h-[412px]'}`}
+            style={{
+              borderRadius: '50%',
+              opacity: isCircleVisible ? (isMobile ? 0.6 : 0.45) : 0,
+              background: '#06A5FF',
+              filter: isMobile ? 'blur(120px)' : 'blur(196.8px)',
+              transform: `translate(-50%, -50%) translateY(${isCircleVisible ? '0px' : '30px'})`,
+              transition: 'opacity 1s ease-out, transform 1s ease-out',
+            }}
+          />
 
-            <div className="mb-8 sm:mb-14 mt-1 sm:mt-3 w-full max-w-[320px] sm:max-w-2xl">
-              <Input
-                placeholder="Pencarian Lembaga, Kegiatan, atau Mahasiswa"
-                className="rounded-2xl bg-white placeholder:text-neutral-700 focus-visible:ring-transparent w-full"
-                startAdornment={
-                  <MagnifyingGlassIcon className="size-4 text-gray-500" />
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-            </div>
+          {/* Text */}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] w-full transition-all duration-1000"
+            // style={{ top: isMobile && isHeroSmaller ? '65%' : '50%' }}
+          >
+            <div className="w-full px-6 sm:px-8 lg:px-12">
+              <div className="flex flex-col items-center justify-center text-center gap-6 sm:gap-8 lg:gap-10">
+                <h1
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight leading-tight max-w-[90vw] sm:max-w-full"
+                  style={{
+                    opacity: isTitleVisible ? 1 : 0,
+                    transform: `translateY(${isTitleVisible ? '0px' : '-40px'})`,
+                    transition:
+                      'opacity 0.8s ease-out, transform 0.8s ease-out',
+                  }}
+                >
+                  <span className="block">Pendataan Kemahasiswaan</span>
+                  <span className="block mt-1 sm:mt-2 lg:mt-3 bg-gradient-to-b from-[#0B5C8A] to-[#00B7B7] bg-clip-text text-transparent">
+                    Terintegrasi
+                  </span>
+                </h1>
 
-            <div className="relative flex w-full max-w-[90%] sm:max-w-4xl items-center justify-center px-2">
-              <Image
-                src="/images/landing/ANGGOTA1.webp"
-                alt="ANGGOTA1"
-                width={725}
-                height={725}
-                style={{ width: 'auto', height: 'auto' }}
-                className="top-0 w-full max-w-[620px] sm:max-w-none rounded-3xl border-black shadow-[0px_4px_72px_0px_#3174981A]"
-                priority
-              />
+                {/* Description */}
+                <p
+                  className="text-base sm:text-lg lg:text-xl text-balance px-2 sm:px-4 lg:px-6 max-w-xs sm:max-w-lg lg:max-w-2xl"
+                  style={{
+                    opacity: isDescriptionVisible ? 1 : 0,
+                    transform: `translateY(${isDescriptionVisible ? '0px' : '40px'})`,
+                    transition:
+                      'opacity 0.8s ease-out, transform 0.8s ease-out',
+                  }}
+                >
+                  Cari kegiatan, lembaga, atau anggota KM ITB yang Anda inginkan
+                  sekarang
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Scroll Indicator */}
+      {!isMobile && (
+        <button
+          onClick={handleScrollDown}
+          className="relative z-10 -mt-16 sm:-mt-24 lg:-mt-32 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer group"
+          aria-label="Scroll untuk lanjut"
+        >
+          <div className="flex flex-col items-center gap-1 sm:gap-2 animate-bounce">
+            <span className="text-sm font-medium">Scroll untuk lanjut</span>
+            <ChevronDownIcon className="w-6 h-6" />
+          </div>
+        </button>
+      )}
     </div>
   );
 }

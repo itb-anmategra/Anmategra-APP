@@ -59,17 +59,17 @@ export default function LandingContent({
         {/*</div>*/}
         {/* Kegiatan */}
         <div className="space-y-2 w-full mt-2">
-          <div className="flex items-center justify-between">
+          <div>
             <h3 className="text-left text-2xl font-semibold mb-2 text-[#141718]">
               Kepanitiaan Terbaru
             </h3>
-            <Link
+            {/* <Link
               href="/kegiatan"
               className="flex items-center gap-1 text-lg font-semibold text-[#141718]"
             >
               <span>Lihat Semua</span>
               <ChevronRightIcon className="h-6 w-6" />
-            </Link>
+            </Link> */}
           </div>
           <div className="mb-4 pt-[18px]">
             {data.kegiatanTerbaru && data.kegiatanTerbaru.length > 0 ? (

@@ -14,6 +14,7 @@ import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import LembagaCard from '~/app/_components/card/lembaga-card';
 import CariKepanitiaanButton from '~/app/_components/profile-mahasiswa/cari-kepanitiaan-button';
 import EditProfileDialog from '~/app/_components/profile-mahasiswa/edit-profile-dialog';
+import RaporVisibilitySwitch from '~/app/_components/rapor/rapor-visibility-switch';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { type Kepanitiaan } from '~/types/kepanitiaan';
@@ -35,7 +36,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
   const baseHref = '/profile-kegiatan';
 
   return (
-    <div className="w-full flex min-h-screen flex-col items-center px-4 sm:px-6 pt-20 sm:pt-8">
+    <div className="w-full flex min-h-screen flex-col items-center px-4 sm:px-6">
       <div className="max-w-7xl flex w-full flex-col gap-4 py-6">
         {/* Title and Search */}
         <div className="flex flex-col">
@@ -60,7 +61,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
               )}
             >
               <AvatarImage
-                src={mahasiswaData?.user.image ?? '/images/placeholder/profile-pic.png'}
+                src={
+                  mahasiswaData?.user.image ??
+                  '/images/placeholder/profile-pic.png'
+                }
                 alt="Foto Profil"
                 className="rounded-full object-cover"
               />
@@ -112,6 +116,15 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
                   )}
                 </div>
               </div>
+              {session?.user.id === userId && (
+                <div className="pt-4">
+                  <RaporVisibilitySwitch
+                    type="mahasiswa"
+                    id={userId}
+                    initialValue={mahasiswaData.mahasiswa.raporVisible}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -228,7 +241,7 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {newestEvent.map((item: Kepanitiaan) => (
                 <Link key={item.id} href={`${baseHref}/${item.id}`}>
-                  <KepanitiaanCard 
+                  <KepanitiaanCard
                     kepanitiaan={item}
                     showRaporLink={true}
                     mahasiswaId={userId}
@@ -293,7 +306,10 @@ const ProfileMahasiswaContent: React.FC<ProfileMahasiswaContentProps> = ({
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {memberLembaga.map((item) => (
-                <Link key={item.id} href={`/mahasiswa/profile-lembaga/${item.id}`}>
+                <Link
+                  key={item.id}
+                  href={`/mahasiswa/profile-lembaga/${item.id}`}
+                >
                   <LembagaCard
                     id={item.id}
                     nama={item.name}

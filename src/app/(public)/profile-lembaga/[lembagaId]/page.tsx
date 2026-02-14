@@ -1,6 +1,6 @@
 // Libray Import
 // Icons Import
-import { CalendarIcon, ChevronRight } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,13 +11,10 @@ import DummyFotoEvent from 'public/images/placeholder/profile-lembaga-kegiatan.p
 import React from 'react';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
-import CarouselBestStaff from '~/app/_components/carousel/carousel-best-staff';
 import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import { Badge } from '~/components/ui/badge';
-import { Button } from '~/components/ui/button';
 // Components Import
 import { Card } from '~/components/ui/card';
-import { getServerAuthSession } from '~/server/auth';
 // TRPC Import
 import { api } from '~/trpc/server';
 
@@ -26,7 +23,7 @@ export async function generateMetadata({
 }: {
   params: { lembagaId: string };
 }): Promise<Metadata> {
-  const { lembagaData } = await api.profile.getLembaga({
+  const { lembagaData } = await api.profile.getLembagaPublic({
     lembagaId: params.lembagaId,
   });
 
@@ -48,34 +45,8 @@ const DetailLembagaPage = async ({
 }) => {
   try {
     const lembagaId = (await params).lembagaId;
-    const { lembagaData, newestEvent, highlightedEvent, anggota } =
-      await api.profile.getLembaga({ lembagaId: lembagaId });
-
-    const session = await getServerAuthSession();
-
-    let latestBestStaff: {
-      start_date: string;
-      end_date: string;
-      best_staff_list: {
-        user_id: string;
-        name: string;
-        image: string | null;
-        nim: string;
-        jurusan: string;
-        division: string;
-      }[];
-    } | null = null;
-    try {
-      latestBestStaff = await api.lembaga.getLatestBestStaffLembaga({
-        lembaga_id: lembagaId,
-      });
-    } catch (error) {
-      console.log(
-        'No best staff data available for lembaga:',
-        lembagaId,
-        error,
-      );
-    }
+    const { lembagaData, newestEvent, highlightedEvent } =
+      await api.profile.getLembagaPublic({ lembagaId: lembagaId });
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -83,15 +54,6 @@ const DetailLembagaPage = async ({
       name: lembagaData?.name,
       description: lembagaData?.description,
       logo: lembagaData?.users.image,
-      member:
-        anggota?.map((member) => ({
-          '@type': 'OrganizationRole',
-          member: {
-            '@type': 'Person',
-            name: member.nama,
-          },
-          roleName: member.posisi || 'Member',
-        })) || [],
     };
 
     return (
@@ -135,7 +97,7 @@ const DetailLembagaPage = async ({
             </div>
 
             {highlightedEvent && (
-              <Link href={`/mahasiswa/profile-kegiatan/${highlightedEvent.id}`}>
+              <Link href={`/profile-kegiatan/${highlightedEvent.id}`}>
                 <div className="space-y-4 pb-12">
                   <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
                     Highlighted Event
@@ -176,50 +138,6 @@ const DetailLembagaPage = async ({
               </Link>
             )}
 
-            {/* Best Staff Section */}
-            {latestBestStaff && (
-              <div className="flex flex-col gap-12 w-full pb-12">
-                <div className="flex flex-col gap-3 w-full">
-                  <div className="flex flex-row justify-between items-center">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
-                      Best Staff Periode{' '}
-                      {new Date(latestBestStaff.start_date).toLocaleDateString(
-                        'id-ID',
-                        {
-                          month: 'long',
-                          year: 'numeric',
-                        },
-                      )}
-                      –
-                      {new Date(latestBestStaff.end_date).toLocaleDateString(
-                        'id-ID',
-                        {
-                          month: 'long',
-                          year: 'numeric',
-                        },
-                      )}
-                    </h2>
-                    <Button asChild variant="ghost">
-                      <Link
-                        href={`/mahasiswa/profile-lembaga/${lembagaId}/histori`}
-                        className="flex items-center gap-2 text-lg"
-                      >
-                        <span>Lihat Histori</span>
-                        <ChevronRight
-                          className="!w-4 !h-4 text-slate-600"
-                          aria-hidden
-                        />
-                      </Link>
-                    </Button>
-                  </div>
-                  <CarouselBestStaff
-                    bestStaffList={latestBestStaff.best_staff_list}
-                    isLembaga={true}
-                  />
-                </div>
-              </div>
-            )}
-
             {/* Kepanitiaan Terbaru */}
             <div className="space-y-4 sm:pb-12">
               <h5 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600">
@@ -240,8 +158,7 @@ const DetailLembagaPage = async ({
 
             {/* Anggota Section */}
             <ProfileAnggotaComp
-              anggota={anggota ?? []}
-              session={session}
+              anggota={[]}
               kegiatanLembagaId={lembagaId}
               raporVisible={lembagaData.raporVisible}
               isKegiatan={false}

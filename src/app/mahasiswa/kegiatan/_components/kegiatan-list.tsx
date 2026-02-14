@@ -7,11 +7,8 @@ import { api } from '~/trpc/react';
 
 const LIMIT = 8;
 
-type EventStatus = 'Coming Soon' | 'On going' | 'Ended';
-type SortOption =
-  | 'newest'
-  | 'oldest'
-  | 'most_participants';
+type EventStatus = 'Coming Soon' | 'On going' | 'Ended' | 'Open Recruitment';
+type SortOption = 'newest' | 'oldest' | 'most_participants';
 
 const KegiatanList = ({
   selectedStatus,
@@ -59,9 +56,7 @@ const KegiatanList = ({
 
   if (isLoading) {
     return (
-      <div className="py-10 text-center text-slate-500">
-        Memuat kegiatan...
-      </div>
+      <div className="py-10 text-center text-slate-500">Memuat kegiatan...</div>
     );
   }
 
@@ -89,10 +84,7 @@ const KegiatanList = ({
             key={kepanitiaan.id}
             href={`/mahasiswa/profile-kegiatan/${kepanitiaan.id}`}
           >
-            <KepanitiaanCard
-              kepanitiaan={kepanitiaan}
-              orientation="vertical"
-            />
+            <KepanitiaanCard kepanitiaan={kepanitiaan} orientation="vertical" />
           </Link>
         ))}
       </div>

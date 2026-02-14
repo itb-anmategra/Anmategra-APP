@@ -1,3 +1,4 @@
+import { Lock } from 'lucide-react';
 import { type z } from 'zod';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import RaporIndividuPage from '~/app/_components/rapor/individu/rapor-individu-page';
@@ -66,7 +67,8 @@ export default async function RaporIndividuMahasiswaLembagaPage({
             ]}
           />
         </div>
-        <div className="text-center py-6 sm:py-8">
+        <div className="text-center flex flex-col items-center justify-center space-y-8 py-6 sm:py-8">
+          <Lock className='size-20 text-neutral-500' />
           <p className="text-sm sm:text-base text-neutral-500">
             {error instanceof Error &&
             error.message.includes('tidak dapat diakses')

@@ -11,6 +11,11 @@ const STATIC = [
   '/robots.txt',
   '/sitemap.xml',
 ];
+const PUBLIC_ROUTES = [
+  '/profile-lembaga',
+  '/profile-kegiatan',
+  '/404',
+]
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -21,6 +26,11 @@ export default async function middleware(req: NextRequest) {
   }
 
   const { pathname } = req.nextUrl;
+  
+    // Allow public routes without redirection
+    if (PUBLIC_ROUTES.some(route => pathname.startsWith(route)) && !token) {
+      return NextResponse.next();
+    }
 
   // Redirect to authentication if not logged in (except for root and auth page)
   if (pathname !== '/' && pathname !== '/authentication' && pathname !== '/auth-error' && !token) {

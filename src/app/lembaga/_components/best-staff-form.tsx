@@ -206,12 +206,14 @@ function PeriodSelect({
 type DivisionTableProps = {
   divisions: Division[];
   onSelect: (divisionName: string, staff: string) => void;
+  onClear: (divisionName: string) => void;
   initialSelection?: Record<string, string>;
 };
 
 function DivisionTable({
   divisions,
   onSelect,
+  onClear,
   initialSelection,
 }: DivisionTableProps) {
   return (
@@ -222,7 +224,7 @@ function DivisionTable({
       </div>
 
       {divisions.map((divisi, i) => (
-        <div key={i} className="flex items-center gap-12">
+        <div key={i} className="flex items-center gap-2">
           <div className="w-[120px] sm:w-[140px] text-sm text-[#636A6D]">
             {divisi.name}
           </div>
@@ -247,6 +249,17 @@ function DivisionTable({
               </SelectContent>
             </Select>
           </div>
+          {initialSelection?.[divisi.name] && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onClear(divisi.name)}
+              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+              title="Hapus pilihan"
+            >
+              ✕
+            </Button>
+          )}
         </div>
       ))}
     </div>
@@ -504,31 +517,19 @@ const BestStaffForm = ({
       return;
     }
 
-    const emptyDivisi = (divisionData?.divisions ?? []).filter(
-      (d) => !selectedStaff[d]?.trim(),
-    );
-    if (emptyDivisi.length > 0) {
-      toast({
-        variant: 'destructive',
-        title: 'Pilihan belum lengkap',
-        description: `Masih ada divisi yang belum dipilih: ${emptyDivisi.join(', ')}`,
-      });
-      return;
-    }
-
     const start_date = new Date(sYear, sMonth - 1, 1).toISOString();
     const end_date = new Date(eYear, eMonth - 1, 1).toISOString();
 
-    const best_staff_list = Object.entries(selectedStaff).map(
-      ([division, userName]) => {
+    const best_staff_list = Object.entries(selectedStaff)
+      .filter(([_, userName]) => userName?.trim())
+      .map(([division, userName]) => {
         const usersInDivision = divisionDataMapping[division] ?? [];
         const userObj = usersInDivision.find((s) => s.name === userName);
         return {
           user_id: userObj?.user_id ?? '',
           division,
         };
-      },
-    );
+      });
 
     if (eventId) {
       const payload = {
@@ -595,6 +596,13 @@ const BestStaffForm = ({
           }
           onSelect={(division, staff) =>
             setSelectedStaff((prev) => ({ ...prev, [division]: staff }))
+          }
+          onClear={(division) =>
+            setSelectedStaff((prev) => {
+              const newState = { ...prev };
+              delete newState[division];
+              return newState;
+            })
           }
           initialSelection={selectedStaff}
         />

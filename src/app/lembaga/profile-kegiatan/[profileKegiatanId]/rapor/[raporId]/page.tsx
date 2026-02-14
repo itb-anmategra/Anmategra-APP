@@ -1,3 +1,4 @@
+import { Lock } from 'lucide-react';
 import { type z } from 'zod';
 import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import RaporIndividuPage from '~/app/_components/rapor/individu/rapor-individu-page';
@@ -42,11 +43,11 @@ export default async function RaporIndividuMahasiswaKegiatanPage({
         breadcrumbItems={[
           {
             label: 'Profile Kegiatan',
-            href: `/mahasiswa/profile-kegiatan/${profileKegiatanId}`,
+            href: `/profile-kegiatan/${profileKegiatanId}`,
           },
           {
             label: 'Rapor Individu',
-            href: `/mahasiswa/profile-kegiatan/${profileKegiatanId}/rapor/${raporId}`,
+            href: `/profile-kegiatan/${profileKegiatanId}/rapor/${raporId}`,
           },
         ]}
         canEdit={false}
@@ -63,13 +64,14 @@ export default async function RaporIndividuMahasiswaKegiatanPage({
             items={[
               {
                 label: 'Profile Kegiatan',
-                href: '/mahasiswa/profile-kegiatan',
+                href: `/profile-kegiatan/${profileKegiatanId}`,
               },
-              { label: 'Rapor Individu', href: '/mahasiswa/profile-kegiatan' },
+              { label: 'Rapor Individu', href: `/profile-kegiatan/${profileKegiatanId}/rapor/${raporId}` },
             ]}
           />
         </div>
-        <div className="text-center py-6 sm:py-8">
+        <div className="text-center flex flex-col items-center justify-center space-y-8 py-6 sm:py-8">
+          <Lock className='size-20 text-neutral-500' />
           <p className="text-sm sm:text-base text-neutral-500">
             {error instanceof Error &&
             error.message.includes('tidak dapat diakses')

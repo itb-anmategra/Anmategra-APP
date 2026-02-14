@@ -148,6 +148,7 @@ export const mahasiswa = createTable('mahasiswa', {
   angkatan: integer('angkatan').notNull(),
   lineId: varchar('line_id', { length: 255 }),
   whatsapp: varchar('whatsapp', { length: 255 }),
+  raporVisible: boolean('rapor_visible').notNull().default(true),
   ...timestamps,
 });
 

@@ -11,12 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+
 import KegiatanList from './kegiatan-list';
 
 const STATUS_OPTIONS: FilterOption[] = [
   { id: 'coming-soon', label: 'Coming Soon', value: 'Coming Soon' },
   { id: 'on-going', label: 'On going', value: 'On going' },
   { id: 'ended', label: 'Ended', value: 'Ended' },
+  {
+    id: 'open-recruitment',
+    label: 'Open Recruitment',
+    value: 'Open Recruitment',
+  },
 ];
 
 const SORT_OPTIONS = [
@@ -26,7 +32,7 @@ const SORT_OPTIONS = [
 ] as const;
 
 type SortOption = (typeof SORT_OPTIONS)[number]['value'];
-type EventStatus = 'Coming Soon' | 'On going' | 'Ended';
+type EventStatus = 'Coming Soon' | 'On going' | 'Ended' | 'Open Recruitment';
 
 const KegiatanPageContent = () => {
   const [selectedStatus, setSelectedStatus] = useState<EventStatus[]>([]);
@@ -42,7 +48,7 @@ const KegiatanPageContent = () => {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-8">
+    <div className="px-4 sm:px-6 lg:px-8">
       <div className="w-full flex min-h-screen flex-col items-center">
         <div className="w-full max-w-6xl bg-slate-50 py-6 rounded-none sm:rounded-xl">
           <div className="mb-4 px-1 sm:px-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -58,7 +64,10 @@ const KegiatanPageContent = () => {
                 selectedFilters={statusFilters}
                 onFilterChange={handleStatusChange}
               />
-              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+              <Select
+                value={sortBy}
+                onValueChange={(value) => setSortBy(value as SortOption)}
+              >
                 <SelectTrigger className="w-full rounded-[24px] border border-neutral-400 bg-neutral-50 px-4 py-3 text-black sm:w-[220px]">
                   <SelectValue placeholder="Urutkan" />
                 </SelectTrigger>
@@ -73,10 +82,7 @@ const KegiatanPageContent = () => {
             </div>
           </div>
           <div className="px-1 sm:px-2">
-            <KegiatanList
-              selectedStatus={statusFilters}
-              sortBy={sortBy}
-            />
+            <KegiatanList selectedStatus={statusFilters} sortBy={sortBy} />
           </div>
         </div>
       </div>
