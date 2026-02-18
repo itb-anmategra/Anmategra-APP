@@ -6,6 +6,7 @@ import Link from 'next/link';
 // Asset Import
 import DummyFotoLembaga from 'public/images/placeholder/profile-lembaga-kegiatan.png';
 import { useState } from 'react';
+import { RaporBreadcrumb } from '~/app/_components/breadcrumb';
 import { KepanitiaanCard } from '~/app/_components/card/kepanitiaan-card';
 import ProfileAnggotaComp from '~/app/_components/profile-kegiatan/profil-kegiatan-comp';
 import EditProfileLembaga from '~/app/lembaga/profile-lembaga/_components/edit-profil-lembaga';
@@ -55,9 +56,17 @@ export default function ProfileLembagaContent({
           <div className="flex max-w-7xl w-full flex-col gap-4 py-6">
             <div className="flex flex-col">
               <h1 className="text-xl md:text-2xl font-semibold text-slate-600">
-                Beranda
+                {lembagaData?.name}
               </h1>
-              <p className="text-slate-400">Beranda / Nama Lembaga</p>
+              <RaporBreadcrumb
+                items={[
+                  { label: 'Beranda', href: '/' },
+                  {
+                    label: 'Profil Lembaga',
+                    href: `/profile-lembaga/${lembagaId}`,
+                  },
+                ]}
+              />
             </div>
             <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-x-10 py-12 transition-all duration-500 ease-in-out">
               <div className="w-full md:w-3/4 flex flex-col gap-8 items-center justify-center">
