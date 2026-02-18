@@ -55,6 +55,16 @@ const ProfileKegiatan = async ({
         '@type': 'Organization',
         name: lembaga?.name,
       },
+      location: {
+        '@type': 'Place',
+        name: 'Institut Teknologi Bandung',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Jl. Ganesha No.10',
+          addressLocality: 'Bandung',
+          addressCountry: 'ID',
+        },
+      },
     };
 
     return (
