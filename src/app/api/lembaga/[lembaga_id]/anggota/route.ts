@@ -233,7 +233,9 @@ export async function POST(
         );
       }
 
-      if (mahasiswaRecord.users.name !== nama) {
+      const expectedName = mahasiswaRecord.users.name?.toLocaleLowerCase();
+      const actualName = nama.toLocaleLowerCase();
+      if (expectedName !== actualName) {
         return Response.json(
           {
             error: `Name mismatch for NIM ${nim}: expected ${mahasiswaRecord.users.name}, got ${nama}.\n Please contact admin if this is an error.`,
