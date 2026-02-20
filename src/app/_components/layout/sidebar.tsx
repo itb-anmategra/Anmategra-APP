@@ -9,7 +9,7 @@ import {
   HomeIcon,
   PersonIcon,
 } from '@radix-ui/react-icons';
-import { LogOut, X } from 'lucide-react';
+import { BookOpen, LogOut, X } from 'lucide-react';
 // Auth Import
 import { type Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
@@ -29,6 +29,7 @@ import {
 // Lib Import
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
+
 // Type Import
 
 // Assets Import
@@ -58,6 +59,11 @@ const SIDEBAR_ITEMS_LEMBAGA: SidebarItemType[] = [
     href: '/laporan',
     icon: <ExclamationTriangleIcon />,
   },
+  {
+    label: 'Manual',
+    href: '/api/manual',
+    icon: <BookOpen className="w-5 h-5" />,
+  },
 ];
 
 const SIDEBAR_ITEMS_MAHASISWA: SidebarItemType[] = [
@@ -69,6 +75,11 @@ const SIDEBAR_ITEMS_MAHASISWA: SidebarItemType[] = [
     icon: <ExclamationTriangleIcon />,
   },
   { label: 'Inbox', href: '/mahasiswa/inbox', icon: <EnvelopeOpenIcon /> },
+  {
+    label: 'Manual',
+    href: '/api/manual',
+    icon: <BookOpen className="w-5 h-5" />,
+  },
 ];
 
 export const Sidebar = ({
@@ -96,12 +107,15 @@ export const Sidebar = ({
     profileData = {
       id: lembaga?.id ?? '',
       name: lembaga?.nama ?? '',
-      profilePicture: lembaga?.foto ?? '/images/placeholder/profile-lembaga-kegiatan.png',
+      profilePicture:
+        lembaga?.foto ?? '/images/placeholder/profile-lembaga-kegiatan.png',
       label: 'Lembaga',
       href: `/profile-lembaga/${lembaga?.id ?? ''}`,
     };
   } else {
-    const mahasiswa = api.users.getMahasiswaById.useQuery({ userId: user?.id ?? '' })?.data?.mahasiswaData?.user;
+    const mahasiswa = api.users.getMahasiswaById.useQuery({
+      userId: user?.id ?? '',
+    })?.data?.mahasiswaData?.user;
     profileData = {
       id: user?.id ?? '',
       name: user?.name ?? '',
