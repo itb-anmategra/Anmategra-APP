@@ -4,6 +4,7 @@ import Image from 'next/image';
 import TrashCan from 'public/icons/trash.svg';
 import React, { useState } from 'react';
 import { Button } from '~/components/ui/button';
+
 // import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 
 type UploadState =
@@ -34,11 +35,56 @@ const CsvFormContent = ({
     status: 'initial',
   });
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isUploadConfirmOpen, setIsUploadConfirmOpen] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+  const handleFileUpload = async (file: File) => {
+    setUploadState({ status: 'uploading', file: file, progress: 0 });
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(getUploadEndpoint(), {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = (await response.json()) as {
+        message?: string;
+        data?: any;
+        error?: string;
+        details?: string;
+      };
+
+      if (response.ok) {
+        setUploadState({
+          status: 'success',
+          message: result.message ?? 'File imported successfully',
+          data: result.data,
+        });
+        onImportSuccess?.(result.data);
+      } else {
+        const errorMsg = result.error ?? result.details ?? 'Upload failed';
+        setUploadState({
+          status: 'error',
+          error: errorMsg,
+        });
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Upload failed';
+      setUploadState({
+        status: 'error',
+        error: errorMessage,
+      });
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
+      // Validate file type before showing confirmation
       if (!/\.(xlsx|xls)$/.exec(file.name)) {
         setUploadState({
           status: 'error',
@@ -46,48 +92,42 @@ const CsvFormContent = ({
         });
         return;
       }
+      setPendingFile(file);
+      setIsUploadConfirmOpen(true);
+    }
+  };
 
-      setUploadState({ status: 'uploading', file: file, progress: 0 });
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsHovered(false);
 
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch(getUploadEndpoint(), {
-          method: 'POST',
-          body: formData,
-        });
-
-        const result = (await response.json()) as {
-          message?: string;
-          data?: any;
-          error?: string;
-          details?: string;
-        };
-
-        if (response.ok) {
-          setUploadState({
-            status: 'success',
-            message: result.message ?? 'File imported successfully',
-            data: result.data,
-          });
-          onImportSuccess?.(result.data);
-        } else {
-          const errorMsg = result.error ?? result.details ?? 'Upload failed';
-          setUploadState({
-            status: 'error',
-            error: errorMsg,
-          });
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Upload failed';
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      // Validate file type before showing confirmation
+      if (!/\.(xlsx|xls)$/.exec(file.name)) {
         setUploadState({
           status: 'error',
-          error: errorMessage,
+          error: `Invalid file format. Please upload Excel file (.xlsx or .xls)`,
         });
+        return;
       }
+      setPendingFile(file);
+      setIsUploadConfirmOpen(true);
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsHovered(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsHovered(false);
   };
 
   const getImportTypeInfo = () => {
@@ -143,6 +183,18 @@ const CsvFormContent = ({
     setIsConfirmOpen(false);
   };
 
+  const handleConfirmUpload = async () => {
+    setIsUploadConfirmOpen(false);
+    if (pendingFile) {
+      await handleFileUpload(pendingFile);
+      setPendingFile(null);
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setIsUploadConfirmOpen(false);
+    setPendingFile(null);
+  };
 
   const renderContent = () => {
     switch (uploadState.status) {
@@ -159,6 +211,10 @@ const CsvFormContent = ({
               className={`group flex flex-col justify-center items-center h-full max-h-[400px] p-[150px_20px] bg-white font-normal text-center rounded-[10px] border-2 border-dashed ${isHovered ? 'border-[#00B7B7]' : 'border-[#C4CACE]'}`}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
             >
               <Image
                 src={
@@ -169,17 +225,17 @@ const CsvFormContent = ({
                 alt="Upload Icon"
                 width={60}
                 height={60}
-                className="pb-5"
+                className="pb-5 pointer-events-none"
               />
 
-              <p className="font-semibold text-xl text-[#636A6D] group-hover:text-[#00A5A5]">
+              <p className="font-semibold text-xl text-[#636A6D] group-hover:text-[#00A5A5] pointer-events-none">
                 Select an Excel file to upload{' '}
               </p>
-              <p className="font-bold text-md text-[#C7CCCF] pb-5">
+              <p className="font-bold text-md text-[#C7CCCF] pb-5 pointer-events-none">
                 or drag and drop it here{' '}
               </p>
 
-              <div className="upload-container">
+              <div className="upload-container pointer-events-none">
                 <input
                   id="fileInput"
                   type="file"
@@ -195,7 +251,7 @@ const CsvFormContent = ({
                     }
                   }}
                   variant="light_blue"
-                  className="pt-[7px] pb-[7px] text-[12px] font-semibold"
+                  className="pt-[7px] pb-[7px] text-[12px] font-semibold pointer-events-auto"
                 >
                   + Unggah dokumen
                 </Button>
@@ -382,7 +438,7 @@ const CsvFormContent = ({
     <div className="flex flex-col h-full">
       {renderContent()}
 
-      {/* confirmation message */}
+      {/* delete confirmation dialog */}
       {isConfirmOpen && (
         <>
           {/* bg hitam */}
@@ -407,6 +463,43 @@ const CsvFormContent = ({
                 className="text-[12px] font-semibold"
               >
                 YAKIN
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* upload confirmation dialog */}
+      {isUploadConfirmOpen && pendingFile && (
+        <>
+          {/* bg hitam */}
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-screen bg-black/50 z-[1000]" />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-[#ccc] w-[500px] rounded-[20px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.1)] z-[1001]">
+            <p className="text-center font-semibold text-[16px] mb-2">
+              Konfirmasi Upload
+            </p>
+            <p className="text-center text-[14px] text-[#666]">
+              Apakah Anda yakin ingin mengunggah file:
+            </p>
+            <p className="text-center font-semibold text-[14px] mt-1 mb-4">
+              {pendingFile.name}
+            </p>
+
+            <div className="flex flex-row justify-center gap-4 mt-3">
+              <Button
+                onClick={handleCancelUpload}
+                variant="warning"
+                className="text-[12px] font-semibold"
+              >
+                BATAL
+              </Button>
+
+              <Button
+                onClick={handleConfirmUpload}
+                variant="dark_blue"
+                className="text-[12px] font-semibold"
+              >
+                UPLOAD
               </Button>
             </div>
           </div>
